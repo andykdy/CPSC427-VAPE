@@ -116,6 +116,8 @@ void Salmon::update(float ms, std::map<int, bool> &keyMap)
         if (keyMap[GLFW_KEY_RIGHT]) accelX += 1.f;
         accelerate(accelX,accelY);
 
+        // TODO: have up/down apply acceleration in the direction being faced?
+
         // move based on velocity
         m_position.x += m_velocity.x;
         m_position.y += m_velocity.y;
@@ -156,11 +158,10 @@ void Salmon::draw(const mat3& projection)
 	// transform_rotate()
 	// transform_scale()
 
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// REMOVE THE FOLLOWING LINES BEFORE ADDING ANY TRANSFORMATION CODE
+
 	transform_translate({ m_position.x, m_position.y });
 	transform_scale(m_scale);
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	transform_rotate(m_rotation);
 
 
 	transform_end();

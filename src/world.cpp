@@ -414,5 +414,9 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 	// default facing direction is (1, 0)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
+    // Face salmon towards cursor
+    vec2 salmon_position = m_salmon.get_position();
+    float rad = atan2(xpos - salmon_position.x, ypos - salmon_position.y);
+    rad -= 3.14/2; // fix rotation by 90 degrees
+    m_salmon.set_rotation(rad);
 }
