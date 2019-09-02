@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <cmath>
 
 bool Salmon::init()
 {
@@ -98,12 +99,17 @@ void Salmon::destroy()
 }
 
 // Called on each frame by World::update()
-void Salmon::update(float ms, std::map<int, bool> &keyMap)
+void Salmon::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 {
 	const float SALMON_SPEED = 200.f;
 	float step = SALMON_SPEED * (ms / 1000);
 	if (m_is_alive)
 	{
+	    // Update rotation to face mouse
+        float rad = atan2(mouse_position.x - m_position.x, mouse_position.y - m_position.y);
+        rad -= 3.14/2; // adjust rotation by 90 degrees
+        set_rotation(rad);
+
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// UPDATE SALMON POSITION HERE BASED ON KEY PRESSED (World::on_key())
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -208,7 +214,7 @@ void Salmon::draw(const mat3& projection)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// HERE TO SET THE CORRECTLY LIGHT UP THE SALMON IF HE HAS EATEN RECENTLY
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	int light_up = 0;
+	int light_up = (m_light_up_countdown_ms > 0 ? 1 : 0);
 	glUniform1iv(light_up_uloc, 1, &light_up);
 
 

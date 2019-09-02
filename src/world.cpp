@@ -184,7 +184,7 @@ bool World::update(float elapsed_ms)
 	
 	// Updating all entities, making the turtle and fish
 	// faster based on current
-	m_salmon.update(elapsed_ms, keyMap);
+	m_salmon.update(elapsed_ms, keyMap, mouse_position);
 	for (auto& turtle : m_turtles)
 		turtle.update(elapsed_ms * m_current_speed);
 	for (auto& fish : m_fish)
@@ -414,9 +414,7 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 	// default facing direction is (1, 0)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    // Face salmon towards cursor
-    vec2 salmon_position = m_salmon.get_position();
-    float rad = atan2(xpos - salmon_position.x, ypos - salmon_position.y);
-    rad -= 3.14/2; // fix rotation by 90 degrees
-    m_salmon.set_rotation(rad);
+    mouse_position.x = xpos;
+    mouse_position.y = ypos;
+    // Salmon rotation calculation handled in salmon.update
 }

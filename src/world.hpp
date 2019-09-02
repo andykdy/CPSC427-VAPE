@@ -62,6 +62,9 @@ private:
 	// Key map
 	std::map<int, bool> keyMap;
 
+	// Mouse position
+	vec2 mouse_position;
+
 	// Water effect
 	Water m_water;
 
