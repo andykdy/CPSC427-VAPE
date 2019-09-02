@@ -116,7 +116,7 @@ void Salmon::update(float ms, std::map<int, bool> &keyMap)
         if (keyMap[GLFW_KEY_RIGHT]) accelX += 1.f;
         accelerate(accelX,accelY);
 
-        // TODO: have up/down apply acceleration in the direction being faced?
+        // TODO: have mousedown apply acceleration in the direction being faced?
 
         // move based on velocity
         m_position.x += m_velocity.x;
@@ -124,15 +124,16 @@ void Salmon::update(float ms, std::map<int, bool> &keyMap)
 
 
         // Decay velocity
+        float friction = 0.02;
         if (m_velocity.x > 0.f)
-            m_velocity.x -= 0.1* m_velocity.x;
+            m_velocity.x -= friction* m_velocity.x;
         else if (m_velocity.x < 0.f)
-            m_velocity.x += -0.1* m_velocity.x;
+            m_velocity.x += -friction* m_velocity.x;
 
         if (m_velocity.y > 0.f)
-            m_velocity.y -= 0.1*m_velocity.y;
+            m_velocity.y -= friction*m_velocity.y;
         else if (m_velocity.y < 0.f)
-            m_velocity.y += -0.1*m_velocity.y;
+            m_velocity.y += -friction*m_velocity.y;
 	}
 	else
 	{
@@ -197,6 +198,10 @@ void Salmon::draw(const mat3& projection)
 
 	// !!! Salmon Color
 	float color[] = { 1.f, 1.f, 1.f };
+	if (!is_alive()) {
+	    color[1] = 0.5f;
+	    color[2] = 0.5f;
+	}
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
@@ -256,7 +261,7 @@ void Salmon::set_rotation(float radians)
 }
 
 void Salmon::accelerate(float x, float y) {
-    float max = 5.f;
+    float max = 4.f;
 
     float newX = m_velocity.x + x;
     if (newX > max) newX = max;
