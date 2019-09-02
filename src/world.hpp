@@ -14,6 +14,7 @@
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
 #include <SDL_mixer.h>
+#include <map>
 
 // Container for all our entities and game logic. Individual rendering / update is 
 // deferred to the relative update() methods
@@ -57,6 +58,9 @@ private:
 	// The draw loop first renders to this texture, then it is used for the water shader
 	GLuint m_frame_buffer;
 	Texture m_screen_tex;
+
+	// Key map
+	std::map<int, bool> keyMap;
 
 	// Water effect
 	Water m_water;

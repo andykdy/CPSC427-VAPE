@@ -112,7 +112,7 @@ bool World::init(vec2 screen)
 		return false;
 	}
 
-	// Playing background music undefinitely
+	// Playing background music indefinitely
 	Mix_PlayMusic(m_background_music, -1);
 	
 	fprintf(stderr, "Loaded music\n");
@@ -184,7 +184,7 @@ bool World::update(float elapsed_ms)
 	
 	// Updating all entities, making the turtle and fish
 	// faster based on current
-	m_salmon.update(elapsed_ms);
+	m_salmon.update(elapsed_ms, keyMap);
 	for (auto& turtle : m_turtles)
 		turtle.update(elapsed_ms * m_current_speed);
 	for (auto& fish : m_fish)
@@ -373,6 +373,16 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// key is of 'type' GLFW_KEY_
 	// action can be GLFW_PRESS GLFW_RELEASE GLFW_REPEAT
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    // Movement keys- track if being held
+    if (key == GLFW_KEY_W || key == GLFW_KEY_UP)
+        (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[GLFW_KEY_UP] = true :  keyMap[GLFW_KEY_UP] = false;
+    if (key == GLFW_KEY_S || key == GLFW_KEY_DOWN)
+        (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[GLFW_KEY_DOWN] = true : keyMap[GLFW_KEY_DOWN] = false;
+    if (key == GLFW_KEY_A || key == GLFW_KEY_LEFT)
+        (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[GLFW_KEY_LEFT] = true : keyMap[GLFW_KEY_LEFT] = false;
+    if (key == GLFW_KEY_D || key == GLFW_KEY_RIGHT)
+        (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[GLFW_KEY_RIGHT] = true : keyMap[GLFW_KEY_RIGHT] = false;
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)

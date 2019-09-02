@@ -78,6 +78,7 @@ bool Salmon::init()
 	m_is_alive = true;
 	m_num_indices = indices.size();
 	m_position = { 50.f, 100.f };
+	m_velocity = { 0.f, 0.f };
 	m_rotation = 0.f;
 	m_light_up_countdown_ms = -1.f;
 
@@ -97,7 +98,7 @@ void Salmon::destroy()
 }
 
 // Called on each frame by World::update()
-void Salmon::update(float ms)
+void Salmon::update(float ms, std::map<int, bool> &keyMap)
 {
 	const float SALMON_SPEED = 200.f;
 	float step = SALMON_SPEED * (ms / 1000);
@@ -107,8 +108,29 @@ void Salmon::update(float ms)
 		// UPDATE SALMON POSITION HERE BASED ON KEY PRESSED (World::on_key())
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+        int accelX = 0.f;
+        int accelY = 0.f;
+        if (keyMap[GLFW_KEY_UP]) accelY -= 1.f;
+        if (keyMap[GLFW_KEY_DOWN]) accelY += 1.f;
+        if (keyMap[GLFW_KEY_LEFT]) accelX -= 1.f;
+        if (keyMap[GLFW_KEY_RIGHT]) accelX += 1.f;
+        accelerate(accelX,accelY);
 
-		
+        // move based on velocity
+        m_position.x += m_velocity.x;
+        m_position.y += m_velocity.y;
+
+
+        // Decay velocity
+        if (m_velocity.x > 0.f)
+            m_velocity.x -= 0.1* m_velocity.x;
+        else if (m_velocity.x < 0.f)
+            m_velocity.x += -0.1* m_velocity.x;
+
+        if (m_velocity.y > 0.f)
+            m_velocity.y -= 0.1*m_velocity.y;
+        else if (m_velocity.y < 0.f)
+            m_velocity.y += -0.1*m_velocity.y;
 	}
 	else
 	{
@@ -136,7 +158,7 @@ void Salmon::draw(const mat3& projection)
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// REMOVE THE FOLLOWING LINES BEFORE ADDING ANY TRANSFORMATION CODE
-	transform_translate({ 100.f, 100.f });
+	transform_translate({ m_position.x, m_position.y });
 	transform_scale(m_scale);
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -230,6 +252,21 @@ void Salmon::move(vec2 off)
 void Salmon::set_rotation(float radians)
 {
 	m_rotation = radians;
+}
+
+void Salmon::accelerate(float x, float y) {
+    float max = 5.f;
+
+    float newX = m_velocity.x + x;
+    if (newX > max) newX = max;
+    if (newX < -max) newX = -max;
+
+    float newY = m_velocity.y + y;
+    if (newY > max) newY = max;
+    if (newY < -max) newY = -max;
+
+    m_velocity.x = newX;
+    m_velocity.y = newY;
 }
 
 bool Salmon::is_alive()const

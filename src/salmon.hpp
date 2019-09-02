@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include "common.hpp"
 
 class Turtle;
@@ -16,7 +17,7 @@ public:
 	
 	// Update salmon position based on direction
 	// ms represents the number of milliseconds elapsed from the previous update() call
-	void update(float ms);
+	void update(float ms, std::map<int, bool> &keyMap);
 	
 	// Renders the salmon
 	void draw(const mat3& projection)override;
@@ -34,6 +35,9 @@ public:
 	// Set salmon rotation in radians
 	void set_rotation(float radians);
 
+	// Change salmon velocity
+	void accelerate(float x, float y);
+
 	// True if the salmon is alive
 	bool is_alive()const;
 
@@ -47,6 +51,7 @@ private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up
 	bool m_is_alive; // True if the salmon is alive
 	vec2 m_position; // Window coordinates
+	vec2 m_velocity; // Velocity
 	vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
 	float m_rotation; // in radians
 	size_t m_num_indices; // passed to glDrawElements
