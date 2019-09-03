@@ -187,6 +187,30 @@ bool World::update(float elapsed_ms)
 		else
 			++fish_it;
 	}
+
+	// Checking Bullet - Turtle collisions
+    auto bullet_it = m_bullets.begin();
+    while (bullet_it != m_bullets.end())
+    {
+        bool eraseBullet = false;
+        auto turtle_it = m_turtles.begin();
+        while (turtle_it != m_turtles.end())
+        {
+            if (bullet_it->collides_with(*turtle_it))
+            {
+                // TODO sound?
+                eraseBullet = true;
+                turtle_it = m_turtles.erase(turtle_it);
+                break;
+            } else {
+                ++turtle_it;
+            }
+        }
+        if (eraseBullet)
+            bullet_it = m_bullets.erase(bullet_it);
+        else
+            ++bullet_it;
+    }
 	
 	// Updating all entities, making the turtle and fish
 	// faster based on current
@@ -195,6 +219,8 @@ bool World::update(float elapsed_ms)
 		turtle.update(elapsed_ms * m_current_speed);
 	for (auto& fish : m_fish)
 		fish.update(elapsed_ms * m_current_speed);
+	for (auto& bullet : m_bullets)
+	    bullet.update(elapsed_ms*m_current_speed);
 
 	// Removing out of screen turtles
 	auto turtle_it = m_turtles.begin();
@@ -222,6 +248,19 @@ bool World::update(float elapsed_ms)
 		}
 
 		++fish_it;
+	}
+
+	// Removing out of screen bullets
+    bullet_it = m_bullets.begin();
+	while(bullet_it != m_bullets.end()) {
+        float w = bullet_it->get_bounding_box().x / 2;
+        if (bullet_it->get_position().x + w < 0.f)
+        {
+            bullet_it = m_bullets.erase(bullet_it);
+            continue;
+        }
+
+        ++bullet_it;
 	}
 
 	// Spawning new turtles
@@ -385,10 +424,9 @@ bool World::spawn_fish()
 
 bool World::spawn_bullet() {
     vec2 position = m_salmon.get_position();
-    float rotation = m_salmon.get_rotation();
 
     Bullet bullet;
-    if (bullet.init(position, rotation)) {
+    if (bullet.init(position, mouse_position)) {
         m_bullets.emplace_back(bullet);
         return true;
     }

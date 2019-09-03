@@ -15,14 +15,20 @@ class Bullet : public Renderable {
     static Texture bullet_texture;
 
 public:
-    bool init(vec2 position, float rotation);
+    bool init(vec2 position, vec2 mouse_position);
     void destroy();
     void update(float ms);
     void draw(const mat3& projection)override;
 
+    // Returns the current bullet position
+    vec2 get_position()const;
+
     // Collision routines for turtles and fish
     bool collides_with(const Turtle& turtle);
     bool collides_with(const Fish& fish);
+
+    // Returns the bullet' bounding box for collision detection, called by collides_with()
+    vec2 get_bounding_box()const;
 
 private:
     vec2 m_position; // Window coordinates

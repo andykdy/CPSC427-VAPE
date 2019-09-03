@@ -2,11 +2,14 @@
 // Created by Cody on 9/2/2019.
 //
 
+#include <cmath>
 #include "bullet.hpp"
 
 Texture Bullet::bullet_texture;
 
-bool Bullet::init(vec2 position, float rotation) {
+float BULLET_SPEED = 15;
+
+bool Bullet::init(vec2 position, vec2 mouse_position) {
     // Load shared texture
     if (!bullet_texture.is_valid())
     {
@@ -16,8 +19,6 @@ bool Bullet::init(vec2 position, float rotation) {
             return false;
         }
     }
-
-    // TODO adjust following to work for bullet
 
     // The position corresponds to the center of the texture
     float wr = bullet_texture.width * 0.5f;
@@ -58,11 +59,15 @@ bool Bullet::init(vec2 position, float rotation) {
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
 
-    // Setting initial values, scale is negative to make it face the opposite way
-    // 1.0 would be as big as the original texture
-    m_scale.x = -0.4f;
+
+    m_scale.x = 0.4f;
     m_scale.y = 0.4f;
-    m_rotation = 0.f;
+
+    m_rotation = atan2(mouse_position.x - position.x, mouse_position.y - position.y);
+
+    // place bullet n away from center of salmon
+    m_position.x = position.x + 100*sin(m_rotation);
+    m_position.y = position.y + 100*cos(m_rotation);
 
     return true;
 }
@@ -78,7 +83,8 @@ void Bullet::destroy() {
 }
 
 void Bullet::update(float ms) {
-    // TODO move in direction fired at const speed
+    m_position.x += BULLET_SPEED*sin(m_rotation);
+    m_position.y += BULLET_SPEED*cos(m_rotation);
 }
 
 void Bullet::draw(const mat3 &projection) {
@@ -129,6 +135,12 @@ void Bullet::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
+vec2 Bullet::get_position()const
+{
+    return m_position;
+}
+
+
 bool Bullet::collides_with(const Turtle &turtle) {
     float dx = m_position.x - turtle.get_position().x;
     float dy = m_position.y - turtle.get_position().y;
@@ -153,4 +165,11 @@ bool Bullet::collides_with(const Fish &fish) {
     if (d_sq < r * r)
         return true;
     return false;
+}
+
+// Returns the local bounding coordinates scaled by the current size of the turtle
+vec2 Bullet::get_bounding_box()const
+{
+    // fabs is to avoid negative scale due to the facing direction
+    return { std::fabs(m_scale.x) * bullet_texture.width, std::fabs(m_scale.y) * bullet_texture.height };
 }

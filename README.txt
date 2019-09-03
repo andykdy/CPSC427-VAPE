@@ -4,10 +4,20 @@ Cody Newman
 35833145
 k2a0b
 
+Citations:
+Not sure if these need to be cited but:
+https://www.glfw.org/docs/latest/input_guide.html
+https://math.stackexchange.com/q/2587852
+https://en.wikipedia.org/wiki/Right_triangle
+https://www.purplemath.com/modules/grphtrig.htm
+
 
 Creative portion:
 - momentum
 - leftmouse applies acceleration in the direction of the mouse
+- right ctrl fires bullets (in the direction being faced) which kill turtles
 
 Ideas for creative part:
+Better background
+UI to show points and debug details. Lives?
 Add states, and create a menu, leaderboard, and difficulty (if randomizing turtles)
