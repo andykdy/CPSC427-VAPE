@@ -75,8 +75,10 @@ bool World::init(vec2 screen)
 	glfwSetWindowUserPointer(m_window, this);
 	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((World*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
 	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((World*)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1); };
+	auto mouse_button_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2) { ((World*)glfwGetWindowUserPointer(wnd))->on_mouse_button(wnd, _0, _1, _2); };
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
+	glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
 	// Create a frame buffer
 	m_frame_buffer = 0;
@@ -458,4 +460,11 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
     mouse_position.x = xpos;
     mouse_position.y = ypos;
     // Salmon rotation calculation handled in salmon.update
+}
+
+void World::on_mouse_button (GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[GLFW_MOUSE_BUTTON_LEFT] = true : keyMap[GLFW_MOUSE_BUTTON_LEFT] = false ;
+    }
 }

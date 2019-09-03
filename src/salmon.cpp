@@ -107,8 +107,8 @@ void Salmon::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 	{
 	    // Update rotation to face mouse
         float rad = atan2(mouse_position.x - m_position.x, mouse_position.y - m_position.y);
-        rad -= 3.14/2; // adjust rotation by 90 degrees
-        set_rotation(rad);
+        float adjustedRad = rad - 3.14/2; // adjust rotation by 90 degrees
+        set_rotation(adjustedRad);
 
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// UPDATE SALMON POSITION HERE BASED ON KEY PRESSED (World::on_key())
@@ -116,13 +116,16 @@ void Salmon::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 
         int accelX = 0.f;
         int accelY = 0.f;
-        if (keyMap[GLFW_KEY_UP]) accelY -= 1.f;
-        if (keyMap[GLFW_KEY_DOWN]) accelY += 1.f;
-        if (keyMap[GLFW_KEY_LEFT]) accelX -= 1.f;
-        if (keyMap[GLFW_KEY_RIGHT]) accelX += 1.f;
+        if (!keyMap[GLFW_MOUSE_BUTTON_LEFT]) {
+            if (keyMap[GLFW_KEY_UP]) accelY -= 1.f;
+            if (keyMap[GLFW_KEY_DOWN]) accelY += 1.f;
+            if (keyMap[GLFW_KEY_LEFT]) accelX -= 1.f;
+            if (keyMap[GLFW_KEY_RIGHT]) accelX += 1.f;
+        } else {
+            accelX = 2*sin(rad);
+            accelY = 2*cos(rad);
+        }
         accelerate(accelX,accelY);
-
-        // TODO: have mousedown apply acceleration in the direction being faced?
 
         // move based on velocity
         m_position.x += m_velocity.x;
