@@ -256,6 +256,10 @@ vec2 Salmon::get_position()const
 	return m_position;
 }
 
+float Salmon::get_rotation() const {
+    return m_rotation;
+}
+
 void Salmon::move(vec2 off)
 {
 	m_position.x += off.x; m_position.y += off.y;

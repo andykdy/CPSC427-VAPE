@@ -46,7 +46,8 @@ set(SOURCE_FILES
 	src/turtle.hpp
 	src/water.hpp
 	src/world.hpp
-	)
+    src/bullet.cpp
+    src/bullet.hpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC src/)

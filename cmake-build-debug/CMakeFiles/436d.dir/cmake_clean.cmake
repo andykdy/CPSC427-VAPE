@@ -6,6 +6,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/436d.dir/src/turtle.cpp.obj"
   "CMakeFiles/436d.dir/src/water.cpp.obj"
   "CMakeFiles/436d.dir/src/world.cpp.obj"
+  "CMakeFiles/436d.dir/src/bullet.cpp.obj"
   "436d.pdb"
   "436d.exe"
   "436d.exe.manifest"

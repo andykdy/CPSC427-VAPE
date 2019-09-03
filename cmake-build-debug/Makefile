@@ -149,6 +149,33 @@ src/a1.cpp.s:
 	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/a1.cpp.s
 .PHONY : src/a1.cpp.s
 
+src/bullet.obj: src/bullet.cpp.obj
+
+.PHONY : src/bullet.obj
+
+# target to build an object file
+src/bullet.cpp.obj:
+	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/bullet.cpp.obj
+.PHONY : src/bullet.cpp.obj
+
+src/bullet.i: src/bullet.cpp.i
+
+.PHONY : src/bullet.i
+
+# target to preprocess a source file
+src/bullet.cpp.i:
+	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/bullet.cpp.i
+.PHONY : src/bullet.cpp.i
+
+src/bullet.s: src/bullet.cpp.s
+
+.PHONY : src/bullet.s
+
+# target to generate assembly for a file
+src/bullet.cpp.s:
+	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/bullet.cpp.s
+.PHONY : src/bullet.cpp.s
+
 src/common.obj: src/common.cpp.obj
 
 .PHONY : src/common.obj
@@ -323,6 +350,9 @@ help:
 	@echo ... src/a1.obj
 	@echo ... src/a1.i
 	@echo ... src/a1.s
+	@echo ... src/bullet.obj
+	@echo ... src/bullet.i
+	@echo ... src/bullet.s
 	@echo ... src/common.obj
 	@echo ... src/common.i
 	@echo ... src/common.s

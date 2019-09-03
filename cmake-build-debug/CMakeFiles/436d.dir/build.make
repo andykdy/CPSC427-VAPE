@@ -231,6 +231,31 @@ CMakeFiles/436d.dir/src/world.cpp.obj.provides: CMakeFiles/436d.dir/src/world.cp
 CMakeFiles/436d.dir/src/world.cpp.obj.provides.build: CMakeFiles/436d.dir/src/world.cpp.obj
 
 
+CMakeFiles/436d.dir/src/bullet.cpp.obj: CMakeFiles/436d.dir/flags.make
+CMakeFiles/436d.dir/src/bullet.cpp.obj: CMakeFiles/436d.dir/includes_CXX.rsp
+CMakeFiles/436d.dir/src/bullet.cpp.obj: ../src/bullet.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="C:\Users\ctman\CLionProjects\CPSC 427\A1\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/436d.dir/src/bullet.cpp.obj"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\436d.dir\src\bullet.cpp.obj -c "C:\Users\ctman\CLionProjects\CPSC 427\A1\src\bullet.cpp"
+
+CMakeFiles/436d.dir/src/bullet.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/436d.dir/src/bullet.cpp.i"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Users\ctman\CLionProjects\CPSC 427\A1\src\bullet.cpp" > CMakeFiles\436d.dir\src\bullet.cpp.i
+
+CMakeFiles/436d.dir/src/bullet.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/436d.dir/src/bullet.cpp.s"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\ctman\CLionProjects\CPSC 427\A1\src\bullet.cpp" -o CMakeFiles\436d.dir\src\bullet.cpp.s
+
+CMakeFiles/436d.dir/src/bullet.cpp.obj.requires:
+
+.PHONY : CMakeFiles/436d.dir/src/bullet.cpp.obj.requires
+
+CMakeFiles/436d.dir/src/bullet.cpp.obj.provides: CMakeFiles/436d.dir/src/bullet.cpp.obj.requires
+	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/bullet.cpp.obj.provides.build
+.PHONY : CMakeFiles/436d.dir/src/bullet.cpp.obj.provides
+
+CMakeFiles/436d.dir/src/bullet.cpp.obj.provides.build: CMakeFiles/436d.dir/src/bullet.cpp.obj
+
+
 # Object files for target 436d
 436d_OBJECTS = \
 "CMakeFiles/436d.dir/src/a1.cpp.obj" \
@@ -239,7 +264,8 @@ CMakeFiles/436d.dir/src/world.cpp.obj.provides.build: CMakeFiles/436d.dir/src/wo
 "CMakeFiles/436d.dir/src/salmon.cpp.obj" \
 "CMakeFiles/436d.dir/src/turtle.cpp.obj" \
 "CMakeFiles/436d.dir/src/water.cpp.obj" \
-"CMakeFiles/436d.dir/src/world.cpp.obj"
+"CMakeFiles/436d.dir/src/world.cpp.obj" \
+"CMakeFiles/436d.dir/src/bullet.cpp.obj"
 
 # External object files for target 436d
 436d_EXTERNAL_OBJECTS =
@@ -251,6 +277,7 @@ CMakeFiles/436d.dir/src/world.cpp.obj.provides.build: CMakeFiles/436d.dir/src/wo
 436d.exe: CMakeFiles/436d.dir/src/turtle.cpp.obj
 436d.exe: CMakeFiles/436d.dir/src/water.cpp.obj
 436d.exe: CMakeFiles/436d.dir/src/world.cpp.obj
+436d.exe: CMakeFiles/436d.dir/src/bullet.cpp.obj
 436d.exe: CMakeFiles/436d.dir/build.make
 436d.exe: ../ext/glfw/lib/glfw3dll-x86.lib
 436d.exe: ../ext/sdl/lib/SDL2-x86.lib
@@ -258,7 +285,7 @@ CMakeFiles/436d.dir/src/world.cpp.obj.provides.build: CMakeFiles/436d.dir/src/wo
 436d.exe: CMakeFiles/436d.dir/linklibs.rsp
 436d.exe: CMakeFiles/436d.dir/objects1.rsp
 436d.exe: CMakeFiles/436d.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="C:\Users\ctman\CLionProjects\CPSC 427\A1\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable 436d.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="C:\Users\ctman\CLionProjects\CPSC 427\A1\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX executable 436d.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\436d.dir\link.txt --verbose=$(VERBOSE)
 	"C:\Program Files\JetBrains\CLion 2018.1.2\bin\cmake\bin\cmake.exe" -E copy_if_different "C:/Users/ctman/CLionProjects/CPSC 427/A1/ext/glfw/lib/glfw3-x86.dll" "C:/Users/ctman/CLionProjects/CPSC 427/A1/cmake-build-debug/glfw3.dll"
 	"C:\Program Files\JetBrains\CLion 2018.1.2\bin\cmake\bin\cmake.exe" -E copy_if_different "C:/Users/ctman/CLionProjects/CPSC 427/A1/ext/sdl/lib/SDL2-x86.dll" "C:/Users/ctman/CLionProjects/CPSC 427/A1/cmake-build-debug/SDL2.dll"
@@ -276,6 +303,7 @@ CMakeFiles/436d.dir/requires: CMakeFiles/436d.dir/src/salmon.cpp.obj.requires
 CMakeFiles/436d.dir/requires: CMakeFiles/436d.dir/src/turtle.cpp.obj.requires
 CMakeFiles/436d.dir/requires: CMakeFiles/436d.dir/src/water.cpp.obj.requires
 CMakeFiles/436d.dir/requires: CMakeFiles/436d.dir/src/world.cpp.obj.requires
+CMakeFiles/436d.dir/requires: CMakeFiles/436d.dir/src/bullet.cpp.obj.requires
 
 .PHONY : CMakeFiles/436d.dir/requires
 

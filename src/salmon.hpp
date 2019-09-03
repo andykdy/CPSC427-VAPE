@@ -29,6 +29,9 @@ public:
 	// Returns the current salmon position
 	vec2 get_position()const;
 
+	// Returns the current salmon rotation
+	float get_rotation()const;
+
 	// Moves the salmon's position by the specified offset
 	void move(vec2 off);
 

@@ -13,6 +13,7 @@ namespace
 	const size_t MAX_FISH = 5;
 	const size_t TURTLE_DELAY_MS = 2000;
 	const size_t FISH_DELAY_MS = 5000;
+	const size_t BULLET_COOLDOWN_MS = 1000;
 
 	namespace
 	{
@@ -141,8 +142,11 @@ void World::destroy()
 		turtle.destroy();
 	for (auto& fish : m_fish)
 		fish.destroy();
+	for (auto& bullet : m_bullets)
+	    bullet.destroy();
 	m_turtles.clear();
 	m_fish.clear();
+	m_bullets.clear();
 	glfwDestroyWindow(m_window);
 }
 
@@ -247,6 +251,15 @@ bool World::update(float elapsed_ms)
 		m_next_fish_spawn = (FISH_DELAY_MS / 2) + m_dist(m_rng) * (FISH_DELAY_MS / 2);
 	}
 
+	// Spawning bullets
+    m_bullet_cooldown -= elapsed_ms * m_current_speed;
+	if (keyMap[GLFW_KEY_RIGHT_CONTROL] && m_bullet_cooldown < 0.f) {
+	    if (!spawn_bullet())
+	        return false;
+	    Bullet& new_bullet = m_bullets.back();
+	    m_bullet_cooldown = BULLET_COOLDOWN_MS;
+	}
+
 	// If salmon is dead, restart the game after the fading animation
 	if (!m_salmon.is_alive() &&
 		m_water.get_salmon_dead_time() > 5) {
@@ -256,6 +269,7 @@ bool World::update(float elapsed_ms)
 		m_salmon.init();
 		m_turtles.clear();
 		m_fish.clear();
+		m_bullets.clear();
 		m_water.reset_salmon_dead_time();
 		m_current_speed = 1.f;
 	}
@@ -309,6 +323,8 @@ void World::draw()
 		turtle.draw(projection_2D);
 	for (auto& fish : m_fish)
 		fish.draw(projection_2D);
+	for (auto& bullet : m_bullets)
+	    bullet.draw(projection_2D);
 	m_salmon.draw(projection_2D);
 
 	/////////////////////
@@ -365,6 +381,19 @@ bool World::spawn_fish()
 	return false;
 }
 
+bool World::spawn_bullet() {
+    vec2 position = m_salmon.get_position();
+    float rotation = m_salmon.get_rotation();
+
+    Bullet bullet;
+    if (bullet.init(position, rotation)) {
+        m_bullets.emplace_back(bullet);
+        return true;
+    }
+    fprintf(stderr, "Failed to spawn bullet");
+    return false;
+}
+
 // On key callback
 void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
@@ -375,14 +404,26 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     // Movement keys- track if being held
-    if (key == GLFW_KEY_W || key == GLFW_KEY_UP)
+    if (key == GLFW_KEY_UP)
         (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[GLFW_KEY_UP] = true :  keyMap[GLFW_KEY_UP] = false;
-    if (key == GLFW_KEY_S || key == GLFW_KEY_DOWN)
+    if (key == GLFW_KEY_DOWN)
         (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[GLFW_KEY_DOWN] = true : keyMap[GLFW_KEY_DOWN] = false;
-    if (key == GLFW_KEY_A || key == GLFW_KEY_LEFT)
+    if (key == GLFW_KEY_LEFT)
         (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[GLFW_KEY_LEFT] = true : keyMap[GLFW_KEY_LEFT] = false;
-    if (key == GLFW_KEY_D || key == GLFW_KEY_RIGHT)
+    if (key == GLFW_KEY_RIGHT)
         (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[GLFW_KEY_RIGHT] = true : keyMap[GLFW_KEY_RIGHT] = false;
+
+    if (key == GLFW_KEY_RIGHT_CONTROL)
+        (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[GLFW_KEY_RIGHT_CONTROL] = true :  keyMap[GLFW_KEY_RIGHT_CONTROL] = false;
+
+    // Switch to advanced controls
+    if (action == GLFW_RELEASE && key == GLFW_KEY_A){
+
+    }
+    // Switch to basic controls
+    if (action == GLFW_RELEASE && key == GLFW_KEY_B) {
+
+    }
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)

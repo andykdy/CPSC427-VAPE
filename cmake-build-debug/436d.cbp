@@ -93,6 +93,12 @@
 		<Unit filename="C:/Users/ctman/CLionProjects/CPSC 427/A1/src/a1.cpp">
 			<Option target="436d"/>
 		</Unit>
+		<Unit filename="C:/Users/ctman/CLionProjects/CPSC 427/A1/src/bullet.cpp">
+			<Option target="436d"/>
+		</Unit>
+		<Unit filename="C:/Users/ctman/CLionProjects/CPSC 427/A1/src/bullet.hpp">
+			<Option target="436d"/>
+		</Unit>
 		<Unit filename="C:/Users/ctman/CLionProjects/CPSC 427/A1/src/common.cpp">
 			<Option target="436d"/>
 		</Unit>
