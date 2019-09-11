@@ -103,26 +103,31 @@ void Salmon::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 	float step = motion.speed * (ms / 1000);
 	if (m_is_alive)
 	{
-	    // Update rotation to face mouse
-        float rad = atan2(mouse_position.x - motion.position.x, mouse_position.y - motion.position.y);
-        float adjustedRad = rad - 3.14/2; // adjust rotation by 90 degrees
-        set_rotation(adjustedRad);
 
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		// UPDATE SALMON POSITION HERE BASED ON KEY PRESSED (World::on_key())
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		int accelX = 0.f;
+		int accelY = 0.f;
+		if (keyMap[GLFW_KEY_A]) {
+			// Update rotation to face mouse
+			float rad = atan2(mouse_position.x - motion.position.x, mouse_position.y - motion.position.y);
+			float adjustedRad = rad - 3.14/2; // adjust rotation by 90 degrees
+			set_rotation(adjustedRad);
 
-        int accelX = 0.f;
-        int accelY = 0.f;
-        if (!keyMap[GLFW_MOUSE_BUTTON_LEFT]) {
-            if (keyMap[GLFW_KEY_UP]) accelY -= 1.f;
-            if (keyMap[GLFW_KEY_DOWN]) accelY += 1.f;
-            if (keyMap[GLFW_KEY_LEFT]) accelX -= 1.f;
-            if (keyMap[GLFW_KEY_RIGHT]) accelX += 1.f;
-        } else {
-            accelX = 2*sin(rad);
-            accelY = 2*cos(rad);
-        }
+			// mousedown movement
+			if (keyMap[GLFW_MOUSE_BUTTON_LEFT]) {
+				accelX = 2*sin(rad);
+				accelY = 2*cos(rad);
+			}
+		} else {
+			// Basic rotation based on mouse location
+			set_rotation(mouse_position.x / 100);
+
+			// Arrow key movement;
+			if (keyMap[GLFW_KEY_UP]) accelY -= 1.f;
+			if (keyMap[GLFW_KEY_DOWN]) accelY += 1.f;
+			if (keyMap[GLFW_KEY_LEFT]) accelX -= 1.f;
+			if (keyMap[GLFW_KEY_RIGHT]) accelX += 1.f;
+		}
+
         accelerate(accelX,accelY);
 
         // move based on velocity

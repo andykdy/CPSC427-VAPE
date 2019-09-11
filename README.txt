@@ -14,7 +14,10 @@ https://www.purplemath.com/modules/grphtrig.htm
 
 Creative portion:
 - momentum
-- leftmouse applies acceleration in the direction of the mouse
+Advanced controls:
+    - Salmon rotates to face mouse
+    - leftmouse applies acceleration in the direction of the mouse
+Before the template changed and before I read the other assignments, added:
 - right ctrl fires bullets (in the direction being faced) which kill turtles
 
 Ideas for creative part:

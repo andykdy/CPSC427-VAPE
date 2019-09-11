@@ -477,11 +477,11 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 
     // Switch to advanced controls
     if (action == GLFW_RELEASE && key == GLFW_KEY_A){
-
+    	keyMap[GLFW_KEY_A] = true;
     }
     // Switch to basic controls
     if (action == GLFW_RELEASE && key == GLFW_KEY_B) {
-
+		keyMap[GLFW_KEY_A] = false;
     }
 
 	// Resetting game
