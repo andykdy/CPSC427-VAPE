@@ -80,9 +80,6 @@ bool Salmon::init()
 	physics.scale = { -35.f, 35.f };
 
 	m_is_alive = true;
-	m_position = { 50.f, 100.f };
-	m_velocity = { 0.f, 0.f };
-	m_rotation = 0.f;
 	m_light_up_countdown_ms = -1.f;
 
 	return true;
@@ -107,7 +104,7 @@ void Salmon::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 	if (m_is_alive)
 	{
 	    // Update rotation to face mouse
-        float rad = atan2(mouse_position.x - m_position.x, mouse_position.y - m_position.y);
+        float rad = atan2(mouse_position.x - motion.position.x, mouse_position.y - motion.position.y);
         float adjustedRad = rad - 3.14/2; // adjust rotation by 90 degrees
         set_rotation(adjustedRad);
 
@@ -129,8 +126,8 @@ void Salmon::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
         accelerate(accelX,accelY);
 
         // move based on velocity
-        m_position.x += m_velocity.x;
-        m_position.y += m_velocity.y;
+        motion.position.x += m_velocity.x;
+        motion.position.y += m_velocity.y;
 
 
         // Decay velocity
@@ -170,9 +167,9 @@ void Salmon::draw(const mat3& projection)
 	// scale()
 
 
-	transform.translate({ m_position.x, m_position.y });
-    transform.scale(m_scale);
-    transform.rotate(m_rotation);
+	transform.translate({ motion.position.x, motion.position.y });
+    transform.scale(physics.scale);
+    transform.rotate(motion.radians);
 
 	transform.end();
 
@@ -276,7 +273,7 @@ vec2 Salmon::get_position() const
 }
 
 float Salmon::get_rotation() const {
-    return m_rotation;
+    return motion.radians;
 }
 
 void Salmon::move(vec2 off)
