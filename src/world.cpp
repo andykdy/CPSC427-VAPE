@@ -24,9 +24,9 @@ namespace
 }
 
 World::World() : 
-	m_points(0),
-	m_next_turtle_spawn(0.f),
-	m_next_fish_spawn(0.f)
+m_points(0),
+m_next_turtle_spawn(0.f),
+m_next_fish_spawn(0.f)
 {
 	// Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -58,7 +58,7 @@ bool World::init(vec2 screen)
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 0);
-	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "A1 Assignment", nullptr, nullptr);
+	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "Salmon Game Assignment", nullptr, nullptr);
 	if (m_window == nullptr)
 		return false;
 
@@ -81,6 +81,12 @@ bool World::init(vec2 screen)
 	m_frame_buffer = 0;
 	glGenFramebuffers(1, &m_frame_buffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
+
+	// For some high DPI displays (ex. Retina Display on Macbooks)
+	// https://stackoverflow.com/questions/36672935/why-retina-screen-coordinate-value-is-twice-the-value-of-pixel-value
+	int fb_width, fb_height;
+	glfwGetFramebufferSize(m_window, &fb_width, &fb_height);
+	m_screen_scale = static_cast<float>(fb_width) / screen.x;
 
 	// Initialize the screen texture
 	m_screen_tex.create_from_screen(m_window);
@@ -112,14 +118,14 @@ bool World::init(vec2 screen)
 		return false;
 	}
 
-	// Playing background music undefinitely
+	// Playing background music indefinitely
 	Mix_PlayMusic(m_background_music, -1);
 	
 	fprintf(stderr, "Loaded music\n");
 
 	m_current_speed = 1.f;
 
-	return m_salmon.init() && m_water.init();
+	return m_salmon.init() && m_water.init() && m_pebbles_emitter.init();
 }
 
 // Releases all the associated resources
@@ -137,6 +143,7 @@ void World::destroy()
 	Mix_CloseAudio();
 
 	m_salmon.destroy();
+	m_pebbles_emitter.destroy();
 	for (auto& turtle : m_turtles)
 		turtle.destroy();
 	for (auto& fish : m_fish)
@@ -150,8 +157,8 @@ void World::destroy()
 bool World::update(float elapsed_ms)
 {
 	int w, h;
-        glfwGetFramebufferSize(m_window, &w, &h);
-	vec2 screen = { (float)w, (float)h };
+	glfwGetFramebufferSize(m_window, &w, &h);
+	vec2 screen = { (float)w / m_screen_scale, (float)h / m_screen_scale };
 
 	// Checking Salmon - Turtle collisions
 	for (const auto& turtle : m_turtles)
@@ -181,14 +188,31 @@ bool World::update(float elapsed_ms)
 		else
 			++fish_it;
 	}
+
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// HANDLE SALMON - WALL COLLISIONS HERE
+	// DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 2
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// HANDLE PEBBLE COLLISIONS HERE
+	// DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 3
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
 	// Updating all entities, making the turtle and fish
-	// faster based on current
+	// faster based on current.
+	// In a pure ECS engine we would classify entities by their bitmap tags during the update loop
+	// rather than by their class. 
 	m_salmon.update(elapsed_ms);
 	for (auto& turtle : m_turtles)
 		turtle.update(elapsed_ms * m_current_speed);
 	for (auto& fish : m_fish)
 		fish.update(elapsed_ms * m_current_speed);
+
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// HANDLE PEBBLE SPAWN/UPDATES HERE
+	// DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 3
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	// Removing out of screen turtles
 	auto turtle_it = m_turtles.begin();
@@ -226,7 +250,7 @@ bool World::update(float elapsed_ms)
 			return false;
 
 		Turtle& new_turtle = m_turtles.back();
-	
+
 		// Setting random initial position
 		new_turtle.set_position({ screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100) });
 
@@ -250,16 +274,15 @@ bool World::update(float elapsed_ms)
 	// If salmon is dead, restart the game after the fading animation
 	if (!m_salmon.is_alive() &&
 		m_water.get_salmon_dead_time() > 5) {
-		int w, h;
-		glfwGetWindowSize(m_window, &w, &h);
 		m_salmon.destroy();
 		m_salmon.init();
+		m_pebbles_emitter.destroy();
+		m_pebbles_emitter.init();
 		m_turtles.clear();
 		m_fish.clear();
 		m_water.reset_salmon_dead_time();
 		m_current_speed = 1.f;
 	}
-
 	return true;
 }
 
@@ -272,7 +295,7 @@ void World::draw()
 
 	// Getting size of window
 	int w, h;
-    glfwGetFramebufferSize(m_window, &w, &h);
+	glfwGetFramebufferSize(m_window, &w, &h);
 
 	// Updating window title with points
 	std::stringstream title_ss;
@@ -295,14 +318,22 @@ void World::draw()
 	// PS: 1.f / w in [1][1] is correct.. do you know why ? (:
 	float left = 0.f;// *-0.5;
 	float top = 0.f;// (float)h * -0.5;
-	float right = (float)w;// *0.5;
-	float bottom = (float)h;// *0.5;
+	float right = (float)w / m_screen_scale;// *0.5;
+	float bottom = (float)h / m_screen_scale;// *0.5;
 
 	float sx = 2.f / (right - left);
 	float sy = 2.f / (top - bottom);
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
+
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// DRAW DEBUG INFO HERE
+	// DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 2
+	// You will want to create your own data structures for passing in 
+	// relevant information to your debug draw call.
+	// The shaders coloured.vs.glsl and coloured.fs.glsl should be helpful.
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	// Drawing entities
 	for (auto& turtle : m_turtles)
@@ -334,7 +365,7 @@ void World::draw()
 }
 
 // Should the game be over ?
-bool World::is_over()const
+bool World::is_over() const
 {
 	return glfwWindowShouldClose(m_window);
 }
@@ -381,6 +412,8 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		glfwGetWindowSize(m_window, &w, &h);
 		m_salmon.destroy(); 
 		m_salmon.init();
+		m_pebbles_emitter.destroy();
+		m_pebbles_emitter.init();
 		m_turtles.clear();
 		m_fish.clear();
 		m_water.reset_salmon_dead_time();
@@ -403,6 +436,4 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 	// xpos and ypos are relative to the top-left of the window, the salmon's 
 	// default facing direction is (1, 0)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
 }

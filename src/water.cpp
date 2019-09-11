@@ -7,7 +7,7 @@ bool Water::init() {
 
 	// Since we are not going to apply transformation to this screen geometry
 	// The coordinates are set to fill the standard openGL window [-1, -1 .. 1, 1]
-	// Make the size slightly larger then the screen to crop the boundary
+	// Make the size slightly larger then the screen to crop the boundary.
 	static const GLfloat screen_vertex_buffer_data[] = {
 		-1.05f, -1.05f, 0.0f,
 		1.05f, -1.05f, 0.0f,
@@ -35,6 +35,7 @@ bool Water::init() {
 	return true;
 }
 
+// Releases all graphics resources
 void Water::destroy() {
 	glDeleteBuffers(1, &mesh.vbo);
 

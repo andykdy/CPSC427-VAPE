@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(436d)
+project(salmon)
 
 # Set c++11
 # https://stackoverflow.com/questions/10851247/how-to-activate-c-11-in-cmake
@@ -31,13 +31,14 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CU
 # file(GLOB SOURCE_FILES src/*.cpp src/*.hpp)
 
 set(SOURCE_FILES
-	src/a1.cpp
+	src/main.cpp
 	src/common.cpp
 	src/fish.cpp
 	src/salmon.cpp
 	src/turtle.cpp
 	src/water.cpp
 	src/world.cpp
+  src/pebbles.cpp
 
     src/project_path.hpp
 	src/common.hpp
@@ -46,6 +47,7 @@ set(SOURCE_FILES
 	src/turtle.hpp
 	src/water.hpp
 	src/world.hpp
+  src/pebbles.hpp
 	)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

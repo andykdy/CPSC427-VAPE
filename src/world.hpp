@@ -6,6 +6,7 @@
 #include "turtle.hpp"
 #include "fish.hpp"
 #include "water.hpp"
+#include "pebbles.hpp"
 
 // stlib
 #include <vector>
@@ -52,6 +53,7 @@ private:
 private:
 	// Window handle
 	GLFWwindow* m_window;
+	float m_screen_scale; // Screen to pixel coordinates scale factor
 
 	// Screen texture
 	// The draw loop first renders to this texture, then it is used for the water shader
@@ -68,6 +70,7 @@ private:
 	Salmon m_salmon;
 	std::vector<Turtle> m_turtles;
 	std::vector<Fish> m_fish;
+	Pebbles m_pebbles_emitter;
 
 	float m_current_speed;
 	float m_next_turtle_spawn;
