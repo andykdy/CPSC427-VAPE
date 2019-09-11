@@ -31,7 +31,7 @@ bool Turtle::init()
 	vertices[3].position = { -wr, -hr, -0.02f };
 	vertices[3].texcoord = { 0.f, 0.f };
 
-	// counterclockwise as it's the default opengl front winding direction
+	// Counterclockwise as it's the default opengl front winding direction
 	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
 
 	// Clearing errors
@@ -56,16 +56,16 @@ bool Turtle::init()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
+	motion.radians = 0.f;
+	motion.speed = 200.f;
+
 	// Setting initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture
-	m_scale.x = -0.4f;
-	m_scale.y = 0.4f;
-	m_rotation = 0.f;
+	// 1.0 would be as big as the original texture.
+	physics.scale = { -0.4f, 0.4f };
 
 	return true;
 }
 
-// Call if init() was successful
 // Releases all graphics resources
 void Turtle::destroy()
 {
@@ -82,20 +82,19 @@ void Turtle::update(float ms)
 {
 	// Move fish along -X based on how much time has passed, this is to (partially) avoid
 	// having entities move at different speed based on the machine.
-	const float TURTLE_SPEED = 200.f;
-	float step = -TURTLE_SPEED * (ms / 1000);
-	m_position.x += step;
+	float step = -1.0 * motion.speed * (ms / 1000);
+	motion.position.x += step;
 }
 
 void Turtle::draw(const mat3& projection)
 {
 	// Transformation code, see Rendering and Transformation in the template specification for more info
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
-	transform_begin();
-	transform_translate(m_position);
-	transform_rotate(m_rotation);
-	transform_scale(m_scale);
-	transform_end();
+	transform.begin();
+	transform.translate(motion.position);
+	transform.rotate(motion.radians);
+	transform.scale(physics.scale);
+	transform.end();
 
 	// Setting shaders
 	glUseProgram(effect.program);
@@ -127,7 +126,7 @@ void Turtle::draw(const mat3& projection)
 	glBindTexture(GL_TEXTURE_2D, turtle_texture.id);
 
 	// Setting uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
+	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.out);
 	float color[] = { 1.f, 1.f, 1.f };
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
@@ -138,17 +137,17 @@ void Turtle::draw(const mat3& projection)
 
 vec2 Turtle::get_position()const
 {
-	return m_position;
+	return motion.position;
 }
 
 void Turtle::set_position(vec2 position)
 {
-	m_position = position;
+	motion.position = position;
 }
 
-// Returns the local bounding coordinates scaled by the current size of the turtle 
-vec2 Turtle::get_bounding_box()const
+vec2 Turtle::get_bounding_box() const
 {
-	// fabs is to avoid negative scale due to the facing direction
-	return { std::fabs(m_scale.x) * turtle_texture.width, std::fabs(m_scale.y) * turtle_texture.height };
+	// Returns the local bounding coordinates scaled by the current size of the turtle 
+	// fabs is to avoid negative scale due to the facing direction.
+	return { std::fabs(physics.scale.x) * turtle_texture.width, std::fabs(physics.scale.y) * turtle_texture.height };
 }

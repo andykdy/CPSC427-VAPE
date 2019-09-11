@@ -29,15 +29,24 @@ struct mat3 { vec3 c0, c1, c2; };
 // Utility functions
 float dot(vec2 l, vec2 r);
 float dot(vec3 l, vec3 r);
-mat3  mul(const mat3& l, const mat3& r);
-vec2  normalize(vec2 v);
+mat3 mul(const mat3& l, const mat3& r);
+vec2 mul(vec2 a, float b);
+vec3 mul(mat3 m, vec3 v);
+vec2 normalize(vec2 v);
+vec2 add(vec2 a, vec2 b);
+vec2 sub(vec2 a, vec2 b);
+vec2 to_vec2(vec3 v);
+float sq_len(vec2 a);
+float len(vec2 a);
+
+
 
 // OpenGL utilities
 // cleans error buffer
 void gl_flush_errors();
 bool gl_has_errors();
 
-// Single Vertex Buffer element for non-textured meshes (colored.vs.glsl)
+// Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & salmon.vs.glsl)
 struct Vertex
 {
 	vec3 position;
@@ -64,50 +73,61 @@ struct Texture
 	
 	// Loads texture from file specified by path
 	bool load_from_file(const char* path);
-	// Screen texture
-	bool create_from_screen(GLFWwindow const * const window);
 	bool is_valid()const; // True if texture is valid
+	bool create_from_screen(GLFWwindow const * const window); // Screen texture
 };
 
-// A Mesh is a collection of a VertexBuffer and an IndexBuffer. A VAO
-// represents a Vertex Array Object and is the container for 1 or more Vertex Buffers and 
-// an Index Buffer
-struct Mesh
-{
-	GLuint vao;
-	GLuint vbo;
-	GLuint ibo;
-};
-
-// Container for Vertex and Fragment shader, which are then put(linked) together in a
-// single program that is then bound to the pipeline.
-struct Effect
-{
-	bool load_from_file(const char* vs_path, const char* fs_path);
-	void release();
-
-	GLuint vertex;
-	GLuint fragment;
-	GLuint program;
-};
-
-// Helper container for all the information we need when rendering an object together
-// with its transform.
-struct Renderable
-{
-	Mesh mesh;
-	Effect effect;
-	mat3 transform;
-
-	// projection contains the orthographic projection matrix. As every Renderable::draw()
+// An entity boils down to a collection of components,
+// organized by their in-game context (mesh, effect, motion, etc...)
+struct Entity {
+	// projection contains the orthographic projection matrix. As every Entity::draw()
 	// renders itself it needs it to correctly bind it to its shader.
 	virtual void draw(const mat3& projection) = 0;
 
+protected:
+	// A Mesh is a collection of a VertexBuffer and an IndexBuffer. A VAO
+	// represents a Vertex Array Object and is the container for 1 or more Vertex Buffers and 
+	// an Index Buffer.
+	struct Mesh {
+		GLuint vao;
+		GLuint vbo;
+		GLuint ibo;
+	} mesh;
+
+	// Effect component of Entity for Vertex and Fragment shader, which are then put(linked) together in a
+	// single program that is then bound to the pipeline.
+	struct Effect {
+		GLuint vertex;
+		GLuint fragment;
+		GLuint program;
+
+		bool load_from_file(const char* vs_path, const char* fs_path); // load shaders from files and link into program
+		void release(); // release shaders and program
+	} effect;
+
+	// All data relevant to the motion of the salmon.
+	struct Motion {
+		vec2 position;
+		float radians;
+		float speed;
+	} motion;
+
+	// Scale is used in the bounding box calculations, 
+	// and so contextually belongs here (for now).
+	struct Physics {
+		vec2 scale;
+	} physics;
+
+	// Transform component handles transformations passed to the Vertex shader.
 	// gl Immediate mode equivalent, see the Rendering and Transformations section in the
-	// specification pdf
-	void transform_begin();
-	void transform_scale(vec2 scale);
-	void transform_rotate(float radians);
-	void transform_translate(vec2 pos);
-	void transform_end();
+	// specification pdf.
+	struct Transform {
+		mat3 out;
+
+		void begin();
+		void scale(vec2 scale);
+		void rotate(float radians);
+		void translate(vec2 offset);
+		void end();
+	} transform;
 };

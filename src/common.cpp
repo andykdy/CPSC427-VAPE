@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <cmath>
 
 void gl_flush_errors()
 {
@@ -24,19 +25,19 @@ bool gl_has_errors()
 		const char* error_str = "";
 		switch (error)
 		{
-		case GL_INVALID_OPERATION:
+			case GL_INVALID_OPERATION:
 			error_str = "INVALID_OPERATION";
 			break;
-		case GL_INVALID_ENUM:
+			case GL_INVALID_ENUM:
 			error_str = "INVALID_ENUM";
 			break;
-		case GL_INVALID_VALUE:
+			case GL_INVALID_VALUE:
 			error_str = "INVALID_VALUE";
 			break;
-		case GL_OUT_OF_MEMORY:
+			case GL_OUT_OF_MEMORY:
 			error_str = "OUT_OF_MEMORY";
 			break;
-		case GL_INVALID_FRAMEBUFFER_OPERATION:
+			case GL_INVALID_FRAMEBUFFER_OPERATION:
 			error_str = "INVALID_FRAMEBUFFER_OPERATION";
 			break;
 		}
@@ -57,6 +58,18 @@ float dot(vec3 l, vec3 r)
 {
 	return l.x * r.x + l.y * r.y + l.z * r.z;
 }
+
+vec2 add(vec2 a, vec2 b) { return { a.x+b.x, a.y+b.y }; }
+vec2 sub(vec2 a, vec2 b) { return { a.x-b.x, a.y-b.y }; }
+vec2 mul(vec2 a, float b) { return { a.x*b, a.y*b }; }
+vec3 mul(mat3 m, vec3 v) { return {
+  dot(vec3{m.c0.x, m.c1.x, m.c2.x}, v),
+  dot(vec3{m.c0.y, m.c1.y, m.c2.y}, v),
+  dot(vec3{m.c0.z, m.c1.z, m.c2.z}, v)
+}; }
+float sq_len(vec2 a) { return dot(a, a); }
+float len(vec2 a) { return std::sqrt(sq_len(a)); }
+vec2 to_vec2(vec3 v) { return { v.x, v.y }; }
 
 mat3 mul(const mat3 & l, const mat3 & r)
 {
@@ -121,7 +134,7 @@ bool Texture::create_from_screen(GLFWwindow const * const window) {
 	glGenTextures(1, &id);
 	glBindTexture(GL_TEXTURE_2D, id);
 
-    glfwGetFramebufferSize(const_cast<GLFWwindow *>(window), &width, &height);
+	glfwGetFramebufferSize(const_cast<GLFWwindow *>(window), &width, &height);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -136,7 +149,7 @@ bool Texture::create_from_screen(GLFWwindow const * const window) {
 	// Set id as colour attachement #0
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, id, 0);
 
-	// Set the list of draw buffers.
+	// Set the list of draw buffers
 	GLenum draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
 	glDrawBuffers(1, draw_buffers); // "1" is the size of DrawBuffers
 
@@ -174,7 +187,7 @@ namespace
 	}
 }
 
-bool Effect::load_from_file(const char* vs_path, const char* fs_path)
+bool Entity::Effect::load_from_file(const char* vs_path, const char* fs_path) 
 {
 	gl_flush_errors();
 
@@ -246,39 +259,39 @@ bool Effect::load_from_file(const char* vs_path, const char* fs_path)
 	return true;
 }
 
-void Effect::release()
+void Entity::Effect::release()
 {
 	glDeleteProgram(program);
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
 }
 
-void Renderable::transform_begin()
+void Entity::Transform::begin()
 {
-	transform = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };
+	out = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };
 }
 
-void Renderable::transform_scale(vec2 scale)
+void Entity::Transform::scale(vec2 scale)
 {
 	mat3 S = { { scale.x, 0.f, 0.f },{ 0.f, scale.y, 0.f },{ 0.f, 0.f, 1.f } };
-	transform = mul(transform, S);
+	out = mul(out, S);
 }
 
-void Renderable::transform_rotate(float radians)
+void Entity::Transform::rotate(float radians)
 {
 	float c = cosf(radians);
 	float s = sinf(radians);
 	mat3 R = { { c, s, 0.f },{ -s, c, 0.f },{ 0.f, 0.f, 1.f } };
-	transform = mul(transform, R);
+	out = mul(out, R);
 }
 
-void Renderable::transform_translate(vec2 offset)
+void Entity::Transform::translate(vec2 offset)
 {
 	mat3 T = { { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ offset.x, offset.y, 1.f } };
-	transform = mul(transform, T);
+	out = mul(out, T);
 }
 
-void Renderable::transform_end()
+void Entity::Transform::end()
 {
 	//
 }

@@ -6,15 +6,14 @@
 #include "fish.hpp"
 
 // stlib
-#include <vector>
 #include <string>
 #include <algorithm>
 #include <cmath>
 
 bool Salmon::init()
 {
-	std::vector<Vertex> vertices;
-	std::vector<uint16_t> indices;
+	m_vertices.clear();
+  m_indices.clear();
 
 	// Reads the salmon mesh from a file, which contains a list of vertices and indices
 	FILE* mesh_file = fopen(mesh_path("salmon.mesh"), "r");
@@ -33,7 +32,7 @@ bool Salmon::init()
 		Vertex vertex;
 		vertex.position = { x, y, -z }; 
 		vertex.color = { (float)r / 255, (float)g / 255, (float)b / 255 };
-		vertices.push_back(vertex);
+		m_vertices.push_back(vertex);
 	}
 
 	// Reading associated indices
@@ -43,9 +42,9 @@ bool Salmon::init()
 	{
 		int idx[3];
 		fscanf(mesh_file, "%d %d %d\n", idx, idx + 1, idx + 2);
-		indices.push_back((uint16_t)idx[0]);
-		indices.push_back((uint16_t)idx[1]);
-		indices.push_back((uint16_t)idx[2]);
+		m_indices.push_back((uint16_t)idx[0]);
+		m_indices.push_back((uint16_t)idx[1]);
+		m_indices.push_back((uint16_t)idx[2]);
 	}
 
 	// Done reading
@@ -57,12 +56,12 @@ bool Salmon::init()
 	// Vertex Buffer creation
 	glGenBuffers(1, &mesh.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * m_vertices.size(), m_vertices.data(), GL_STATIC_DRAW);
 
 	// Index Buffer creation
 	glGenBuffers(1, &mesh.ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * indices.size(), indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * m_indices.size(), m_indices.data(), GL_STATIC_DRAW);
 
 	// Vertex Array (Container for Vertex + Index buffer)
 	glGenVertexArrays(1, &mesh.vao);
@@ -70,12 +69,16 @@ bool Salmon::init()
 		return false;
 
 	// Loading shaders
-	if (!effect.load_from_file(shader_path("colored.vs.glsl"), shader_path("colored.fs.glsl")))
+	if (!effect.load_from_file(shader_path("salmon.vs.glsl"), shader_path("salmon.fs.glsl")))
 		return false;
 	
 	// Setting initial values
-	m_scale.x = -35.f;
-	m_scale.y = 35.f;
+	motion.position = { 50.f, 100.f };
+	motion.radians = 0.f;
+	motion.speed = 200.f;
+
+	physics.scale = { -35.f, 35.f };
+
 	m_is_alive = true;
 	m_num_indices = indices.size();
 	m_position = { 50.f, 100.f };
@@ -101,8 +104,7 @@ void Salmon::destroy()
 // Called on each frame by World::update()
 void Salmon::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 {
-	const float SALMON_SPEED = 200.f;
-	float step = SALMON_SPEED * (ms / 1000);
+	float step = motion.speed * (ms / 1000);
 	if (m_is_alive)
 	{
 	    // Update rotation to face mouse
@@ -157,24 +159,23 @@ void Salmon::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 
 void Salmon::draw(const mat3& projection)
 {
-	transform_begin();
+	transform.begin();
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// SALMON TRANSFORMATION CODE HERE
 
 	// see Transformations and Rendering in the specification pdf
 	// the following functions are available:
-	// transform_translate()
-	// transform_rotate()
-	// transform_scale()
+	// translate()
+	// rotate()
+	// scale()
 
 
 	transform_translate({ m_position.x, m_position.y });
 	transform_scale(m_scale);
 	transform_rotate(m_rotation);
 
-
-	transform_end();
+	transform.end();
 
 	// Setting shaders
 	glUseProgram(effect.program);
@@ -203,7 +204,7 @@ void Salmon::draw(const mat3& projection)
 	glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)sizeof(vec3));
 
 	// Setting uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
+	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.out);
 
 	// !!! Salmon Color
 	float color[] = { 1.f, 1.f, 1.f };
@@ -220,19 +221,28 @@ void Salmon::draw(const mat3& projection)
 	int light_up = (m_light_up_countdown_ms > 0 ? 1 : 0);
 	glUniform1iv(light_up_uloc, 1, &light_up);
 
+	// Get number of infices from buffer,
+	// we know our vbo contains both colour and position information, so...
+	GLint size = 0;
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+	GLsizei num_indices = size / sizeof(uint16_t);
 
 	// Drawing!
-	glDrawElements(GL_TRIANGLES,(GLsizei)m_num_indices, GL_UNSIGNED_SHORT, nullptr);
+	glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_SHORT, nullptr);
 }
 
-// Simple bounding box collision check, 
+// Simple bounding box collision check
+// This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
+// if the center point of either object is inside the other's bounding-box-circle. You don't
+// need to try to use this technique.
 bool Salmon::collides_with(const Turtle& turtle)
 {
-	float dx = m_position.x - turtle.get_position().x;
-	float dy = m_position.y - turtle.get_position().y;
+	float dx = motion.position.x - turtle.get_position().x;
+	float dy = motion.position.y - turtle.get_position().y;
 	float d_sq = dx * dx + dy * dy;
 	float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
-	float my_r = std::max(m_scale.x, m_scale.y);
+	float my_r = std::max(physics.scale.x, physics.scale.y);
 	float r = std::max(other_r, my_r);
 	r *= 0.6f;
 	if (d_sq < r * r)
@@ -242,11 +252,11 @@ bool Salmon::collides_with(const Turtle& turtle)
 
 bool Salmon::collides_with(const Fish& fish)
 {
-	float dx = m_position.x - fish.get_position().x;
-	float dy = m_position.y - fish.get_position().y;
+	float dx = motion.position.x - fish.get_position().x;
+	float dy = motion.position.y - fish.get_position().y;
 	float d_sq = dx * dx + dy * dy;
 	float other_r = std::max(fish.get_bounding_box().x, fish.get_bounding_box().y);
-	float my_r = std::max(m_scale.x, m_scale.y);
+	float my_r = std::max(physics.scale.x, physics.scale.y);
 	float r = std::max(other_r, my_r);
 	r *= 0.6f;
 	if (d_sq < r * r)
@@ -254,9 +264,16 @@ bool Salmon::collides_with(const Fish& fish)
 	return false;
 }
 
-vec2 Salmon::get_position()const
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// HANDLE SALMON - WALL COLLISIONS HERE
+// DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 2
+// You will want to write new functions from scratch for checking/handling 
+// salmon - wall collisions.
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+vec2 Salmon::get_position() const
 {
-	return m_position;
+	return motion.position;
 }
 
 float Salmon::get_rotation() const {
@@ -265,12 +282,13 @@ float Salmon::get_rotation() const {
 
 void Salmon::move(vec2 off)
 {
-	m_position.x += off.x; m_position.y += off.y;
+	motion.position.x += off.x; 
+	motion.position.y += off.y; 
 }
 
 void Salmon::set_rotation(float radians)
 {
-	m_rotation = radians;
+	motion.radians = radians;
 }
 
 void Salmon::accelerate(float x, float y) {
@@ -288,7 +306,7 @@ void Salmon::accelerate(float x, float y) {
     m_velocity.y = newY;
 }
 
-bool Salmon::is_alive()const
+bool Salmon::is_alive() const
 {
 	return m_is_alive;
 }
