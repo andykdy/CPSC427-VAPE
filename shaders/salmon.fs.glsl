@@ -22,5 +22,6 @@ void main()
 	{
 		// 0.6 is just to make it not too strong
 		color.xyz += (1.0 - radius) * 0.6 * vec3(1.0, 1.0, 1.0);
+		color.xyz -= vec3(0.f,0.f, 1.f);
 	}
 }
