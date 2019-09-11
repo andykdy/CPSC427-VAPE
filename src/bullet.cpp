@@ -90,11 +90,11 @@ void Bullet::update(float ms) {
 void Bullet::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
-    transform_begin();
-    transform_translate(m_position);
-    transform_rotate(m_rotation);
-    transform_scale(m_scale);
-    transform_end();
+    transform.begin();
+    transform.translate(m_position);
+    transform.rotate(m_rotation);
+    transform.scale(m_scale);
+    transform.end();
 
     // Setting shaders
     glUseProgram(effect.program);

@@ -13,7 +13,7 @@
 bool Salmon::init()
 {
 	m_vertices.clear();
-  m_indices.clear();
+	m_indices.clear();
 
 	// Reads the salmon mesh from a file, which contains a list of vertices and indices
 	FILE* mesh_file = fopen(mesh_path("salmon.mesh"), "r");
@@ -80,7 +80,6 @@ bool Salmon::init()
 	physics.scale = { -35.f, 35.f };
 
 	m_is_alive = true;
-	m_num_indices = indices.size();
 	m_position = { 50.f, 100.f };
 	m_velocity = { 0.f, 0.f };
 	m_rotation = 0.f;
@@ -171,9 +170,9 @@ void Salmon::draw(const mat3& projection)
 	// scale()
 
 
-	transform_translate({ m_position.x, m_position.y });
-	transform_scale(m_scale);
-	transform_rotate(m_rotation);
+	transform.translate({ m_position.x, m_position.y });
+    transform.scale(m_scale);
+    transform.rotate(m_rotation);
 
 	transform.end();
 

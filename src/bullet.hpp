@@ -10,7 +10,7 @@
 #include "turtle.hpp"
 #include "fish.hpp"
 
-class Bullet : public Renderable {
+class Bullet : public Entity {
     // Shared between all bullets, no need to load one for each instance
     static Texture bullet_texture;
 

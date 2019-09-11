@@ -110,44 +110,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named 436d
+# Target rules for targets named salmon
 
 # Build rule for target.
-436d: cmake_check_build_system
-	$(MAKE) -f CMakeFiles\Makefile2 436d
-.PHONY : 436d
+salmon: cmake_check_build_system
+	$(MAKE) -f CMakeFiles\Makefile2 salmon
+.PHONY : salmon
 
 # fast build rule for target.
-436d/fast:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/build
-.PHONY : 436d/fast
-
-src/a1.obj: src/a1.cpp.obj
-
-.PHONY : src/a1.obj
-
-# target to build an object file
-src/a1.cpp.obj:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/a1.cpp.obj
-.PHONY : src/a1.cpp.obj
-
-src/a1.i: src/a1.cpp.i
-
-.PHONY : src/a1.i
-
-# target to preprocess a source file
-src/a1.cpp.i:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/a1.cpp.i
-.PHONY : src/a1.cpp.i
-
-src/a1.s: src/a1.cpp.s
-
-.PHONY : src/a1.s
-
-# target to generate assembly for a file
-src/a1.cpp.s:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/a1.cpp.s
-.PHONY : src/a1.cpp.s
+salmon/fast:
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/build
+.PHONY : salmon/fast
 
 src/bullet.obj: src/bullet.cpp.obj
 
@@ -155,7 +128,7 @@ src/bullet.obj: src/bullet.cpp.obj
 
 # target to build an object file
 src/bullet.cpp.obj:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/bullet.cpp.obj
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/bullet.cpp.obj
 .PHONY : src/bullet.cpp.obj
 
 src/bullet.i: src/bullet.cpp.i
@@ -164,7 +137,7 @@ src/bullet.i: src/bullet.cpp.i
 
 # target to preprocess a source file
 src/bullet.cpp.i:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/bullet.cpp.i
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/bullet.cpp.i
 .PHONY : src/bullet.cpp.i
 
 src/bullet.s: src/bullet.cpp.s
@@ -173,7 +146,7 @@ src/bullet.s: src/bullet.cpp.s
 
 # target to generate assembly for a file
 src/bullet.cpp.s:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/bullet.cpp.s
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/bullet.cpp.s
 .PHONY : src/bullet.cpp.s
 
 src/common.obj: src/common.cpp.obj
@@ -182,7 +155,7 @@ src/common.obj: src/common.cpp.obj
 
 # target to build an object file
 src/common.cpp.obj:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/common.cpp.obj
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/common.cpp.obj
 .PHONY : src/common.cpp.obj
 
 src/common.i: src/common.cpp.i
@@ -191,7 +164,7 @@ src/common.i: src/common.cpp.i
 
 # target to preprocess a source file
 src/common.cpp.i:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/common.cpp.i
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/common.cpp.i
 .PHONY : src/common.cpp.i
 
 src/common.s: src/common.cpp.s
@@ -200,7 +173,7 @@ src/common.s: src/common.cpp.s
 
 # target to generate assembly for a file
 src/common.cpp.s:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/common.cpp.s
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/common.cpp.s
 .PHONY : src/common.cpp.s
 
 src/fish.obj: src/fish.cpp.obj
@@ -209,7 +182,7 @@ src/fish.obj: src/fish.cpp.obj
 
 # target to build an object file
 src/fish.cpp.obj:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/fish.cpp.obj
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/fish.cpp.obj
 .PHONY : src/fish.cpp.obj
 
 src/fish.i: src/fish.cpp.i
@@ -218,7 +191,7 @@ src/fish.i: src/fish.cpp.i
 
 # target to preprocess a source file
 src/fish.cpp.i:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/fish.cpp.i
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/fish.cpp.i
 .PHONY : src/fish.cpp.i
 
 src/fish.s: src/fish.cpp.s
@@ -227,8 +200,62 @@ src/fish.s: src/fish.cpp.s
 
 # target to generate assembly for a file
 src/fish.cpp.s:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/fish.cpp.s
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/fish.cpp.s
 .PHONY : src/fish.cpp.s
+
+src/main.obj: src/main.cpp.obj
+
+.PHONY : src/main.obj
+
+# target to build an object file
+src/main.cpp.obj:
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/main.cpp.obj
+.PHONY : src/main.cpp.obj
+
+src/main.i: src/main.cpp.i
+
+.PHONY : src/main.i
+
+# target to preprocess a source file
+src/main.cpp.i:
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
+
+src/main.s: src/main.cpp.s
+
+.PHONY : src/main.s
+
+# target to generate assembly for a file
+src/main.cpp.s:
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
+
+src/pebbles.obj: src/pebbles.cpp.obj
+
+.PHONY : src/pebbles.obj
+
+# target to build an object file
+src/pebbles.cpp.obj:
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/pebbles.cpp.obj
+.PHONY : src/pebbles.cpp.obj
+
+src/pebbles.i: src/pebbles.cpp.i
+
+.PHONY : src/pebbles.i
+
+# target to preprocess a source file
+src/pebbles.cpp.i:
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/pebbles.cpp.i
+.PHONY : src/pebbles.cpp.i
+
+src/pebbles.s: src/pebbles.cpp.s
+
+.PHONY : src/pebbles.s
+
+# target to generate assembly for a file
+src/pebbles.cpp.s:
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/pebbles.cpp.s
+.PHONY : src/pebbles.cpp.s
 
 src/salmon.obj: src/salmon.cpp.obj
 
@@ -236,7 +263,7 @@ src/salmon.obj: src/salmon.cpp.obj
 
 # target to build an object file
 src/salmon.cpp.obj:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/salmon.cpp.obj
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/salmon.cpp.obj
 .PHONY : src/salmon.cpp.obj
 
 src/salmon.i: src/salmon.cpp.i
@@ -245,7 +272,7 @@ src/salmon.i: src/salmon.cpp.i
 
 # target to preprocess a source file
 src/salmon.cpp.i:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/salmon.cpp.i
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/salmon.cpp.i
 .PHONY : src/salmon.cpp.i
 
 src/salmon.s: src/salmon.cpp.s
@@ -254,7 +281,7 @@ src/salmon.s: src/salmon.cpp.s
 
 # target to generate assembly for a file
 src/salmon.cpp.s:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/salmon.cpp.s
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/salmon.cpp.s
 .PHONY : src/salmon.cpp.s
 
 src/turtle.obj: src/turtle.cpp.obj
@@ -263,7 +290,7 @@ src/turtle.obj: src/turtle.cpp.obj
 
 # target to build an object file
 src/turtle.cpp.obj:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/turtle.cpp.obj
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/turtle.cpp.obj
 .PHONY : src/turtle.cpp.obj
 
 src/turtle.i: src/turtle.cpp.i
@@ -272,7 +299,7 @@ src/turtle.i: src/turtle.cpp.i
 
 # target to preprocess a source file
 src/turtle.cpp.i:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/turtle.cpp.i
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/turtle.cpp.i
 .PHONY : src/turtle.cpp.i
 
 src/turtle.s: src/turtle.cpp.s
@@ -281,7 +308,7 @@ src/turtle.s: src/turtle.cpp.s
 
 # target to generate assembly for a file
 src/turtle.cpp.s:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/turtle.cpp.s
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/turtle.cpp.s
 .PHONY : src/turtle.cpp.s
 
 src/water.obj: src/water.cpp.obj
@@ -290,7 +317,7 @@ src/water.obj: src/water.cpp.obj
 
 # target to build an object file
 src/water.cpp.obj:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/water.cpp.obj
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/water.cpp.obj
 .PHONY : src/water.cpp.obj
 
 src/water.i: src/water.cpp.i
@@ -299,7 +326,7 @@ src/water.i: src/water.cpp.i
 
 # target to preprocess a source file
 src/water.cpp.i:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/water.cpp.i
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/water.cpp.i
 .PHONY : src/water.cpp.i
 
 src/water.s: src/water.cpp.s
@@ -308,7 +335,7 @@ src/water.s: src/water.cpp.s
 
 # target to generate assembly for a file
 src/water.cpp.s:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/water.cpp.s
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/water.cpp.s
 .PHONY : src/water.cpp.s
 
 src/world.obj: src/world.cpp.obj
@@ -317,7 +344,7 @@ src/world.obj: src/world.cpp.obj
 
 # target to build an object file
 src/world.cpp.obj:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/world.cpp.obj
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/world.cpp.obj
 .PHONY : src/world.cpp.obj
 
 src/world.i: src/world.cpp.i
@@ -326,7 +353,7 @@ src/world.i: src/world.cpp.i
 
 # target to preprocess a source file
 src/world.cpp.i:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/world.cpp.i
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/world.cpp.i
 .PHONY : src/world.cpp.i
 
 src/world.s: src/world.cpp.s
@@ -335,7 +362,7 @@ src/world.s: src/world.cpp.s
 
 # target to generate assembly for a file
 src/world.cpp.s:
-	$(MAKE) -f CMakeFiles\436d.dir\build.make CMakeFiles/436d.dir/src/world.cpp.s
+	$(MAKE) -f CMakeFiles\salmon.dir\build.make CMakeFiles/salmon.dir/src/world.cpp.s
 .PHONY : src/world.cpp.s
 
 # Help Target
@@ -344,12 +371,9 @@ help:
 	@echo ... all (the default if no target is provided)
 	@echo ... clean
 	@echo ... depend
-	@echo ... 436d
+	@echo ... salmon
 	@echo ... edit_cache
 	@echo ... rebuild_cache
-	@echo ... src/a1.obj
-	@echo ... src/a1.i
-	@echo ... src/a1.s
 	@echo ... src/bullet.obj
 	@echo ... src/bullet.i
 	@echo ... src/bullet.s
@@ -359,6 +383,12 @@ help:
 	@echo ... src/fish.obj
 	@echo ... src/fish.i
 	@echo ... src/fish.s
+	@echo ... src/main.obj
+	@echo ... src/main.i
+	@echo ... src/main.s
+	@echo ... src/pebbles.obj
+	@echo ... src/pebbles.i
+	@echo ... src/pebbles.s
 	@echo ... src/salmon.obj
 	@echo ... src/salmon.i
 	@echo ... src/salmon.s
