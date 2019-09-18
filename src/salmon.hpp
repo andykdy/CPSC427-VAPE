@@ -11,7 +11,7 @@ class Salmon : public Entity
 {
 public:
 	// Creates all the associated render resources and default transform
-	bool init();
+	bool init(vec2 screen);
 
 	// Releases all associated resources
 	void destroy();

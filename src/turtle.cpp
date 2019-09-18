@@ -80,10 +80,8 @@ void Turtle::destroy()
 
 void Turtle::update(float ms)
 {
-	// Move fish along -X based on how much time has passed, this is to (partially) avoid
-	// having entities move at different speed based on the machine.
-	float step = -1.0 * motion.speed * (ms / 1000);
-	motion.position.x += step;
+	float step = motion.speed * (ms / 1000);
+	motion.position.y += step;
 }
 
 void Turtle::draw(const mat3& projection)

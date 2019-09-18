@@ -1,51 +1,46 @@
-// internal
-#include "common.hpp"
-#include "world.hpp"
+/*!
+ * @author: Cody Newman
+ *
+ * Created on: 9/16/2019
+ */
 
-#define GL3W_IMPLEMENTATION
-#include <gl3w.h>
-
-// stlib
 #include <chrono>
 #include <iostream>
+#include "Engine/GameEngine.hpp"
+#include "Engine/States/Level.hpp"
 
 using Clock = std::chrono::high_resolution_clock;
 
-// Global 
-World world;
-const int width = 1200;
-const int height = 800;
-
-// Entry point
-int main(int argc, char* argv[])
-{
-	// Initializing world (after renderer.init().. sorry)
-	if (!world.init({ (float)width, (float)height }))
-	{
-		// Time to read the error message
-		std::cout << "Press any key to exit" << std::endl;
-		std::cin.get();
+int main(int argv, char** args) {
+	GameEngine game{};
+	try {
+		game.init();
+	}
+	catch(std::runtime_error &e){
+		printf(e.what());
+        // Time to read the error message
+        std::cout << "Press any key to exit" << std::endl;
+        std::cin.get();
 		return EXIT_FAILURE;
 	}
+	GameState *start = new Level;
+	game.changeState(start);
 
-	auto t = Clock::now();
+    auto t = Clock::now();
 
-	// variable timestep loop.. can be improved (:
-	while (!world.is_over())
-	{
-		// Processes system messages, if this wasn't present the window would become unresponsive
-		glfwPollEvents();
+	while(game.isRunning()){
+        glfwPollEvents();
 
-		// Calculating elapsed times in milliseconds from the previous iteration
-		auto now = Clock::now();
-		float elapsed_sec = (float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
-		t = now;
+        // Calculating elapsed times in milliseconds from the previous iteration
+        auto now = Clock::now();
+        float elapsed_sec = (float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
+        t = now;
 
-		world.update(elapsed_sec);
-		world.draw();
+		game.update(elapsed_sec);
+		game.draw();
 	}
 
-	world.destroy();
+	game.terminate();
 
 	return EXIT_SUCCESS;
 }

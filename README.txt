@@ -1,26 +1,9 @@
-# 427 2019 Winter 1, Assignment 1
-
-Cody Newman
-35833145
-k2a0b
-
-Citations:
-Not sure if these need to be cited but:
-https://www.glfw.org/docs/latest/input_guide.html
-https://math.stackexchange.com/q/2587852
-https://en.wikipedia.org/wiki/Right_triangle
-https://www.purplemath.com/modules/grphtrig.htm
+# 427 2019 Winter 1
 
 
-Creative portion:
-- momentum
-Advanced controls:
-    - Salmon rotates to face mouse
-    - leftmouse applies acceleration in the direction of the mouse
-Before the template changed and before I read the other assignments, added:
-- right ctrl fires bullets (in the direction being faced) which kill turtles
-
-Ideas for creative part:
-Better background
-UI to show points and debug details. Lives?
-Add states, and create a menu, leaderboard, and difficulty (if randomizing turtles)
+Andrea Park 45168151
+Andy (Dong Young) Kim 16785157
+Cody Newman 35833145
+Matteo Alps-Mocellin 32909146
+Sam Parhimchik 41037152
+Tanha Kabir 10850155

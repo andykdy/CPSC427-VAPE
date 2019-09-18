@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <cmath>
 
-bool Salmon::init()
+bool Salmon::init(vec2 screen)
 {
 	m_vertices.clear();
 	m_indices.clear();
@@ -73,8 +73,8 @@ bool Salmon::init()
 		return false;
 	
 	// Setting initial values
-	motion.position = { 50.f, 100.f };
-	motion.radians = 0.f;
+	motion.position = { screen.x / 2, screen.y - 100 };
+	motion.radians = 1.5708;
 	motion.speed = 200.f;
 
 	physics.scale = { -35.f, 35.f };
@@ -104,29 +104,14 @@ void Salmon::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 	if (m_is_alive)
 	{
 
-		int accelX = 0.f;
-		int accelY = 0.f;
-		if (keyMap[GLFW_KEY_A]) {
-			// Update rotation to face mouse
-			float rad = atan2(mouse_position.x - motion.position.x, mouse_position.y - motion.position.y);
-			float adjustedRad = rad - 3.14/2; // adjust rotation by 90 degrees
-			set_rotation(adjustedRad);
+		float accelX = 0.f;
+		float accelY = 0.f;
 
-			// mousedown movement
-			if (keyMap[GLFW_MOUSE_BUTTON_LEFT]) {
-				accelX = 2*sin(rad);
-				accelY = 2*cos(rad);
-			}
-		} else {
-			// Basic rotation based on mouse location
-			set_rotation(mouse_position.x / 100);
-
-			// Arrow key movement;
-			if (keyMap[GLFW_KEY_UP]) accelY -= 1.f;
-			if (keyMap[GLFW_KEY_DOWN]) accelY += 1.f;
-			if (keyMap[GLFW_KEY_LEFT]) accelX -= 1.f;
-			if (keyMap[GLFW_KEY_RIGHT]) accelX += 1.f;
-		}
+        // Arrow key movement;
+        if (keyMap[GLFW_KEY_UP]) accelY -= 1.f;
+        if (keyMap[GLFW_KEY_DOWN]) accelY += 1.f;
+        if (keyMap[GLFW_KEY_LEFT]) accelX -= 1.f;
+        if (keyMap[GLFW_KEY_RIGHT]) accelX += 1.f;
 
         accelerate(accelX,accelY);
 
@@ -161,16 +146,6 @@ void Salmon::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 void Salmon::draw(const mat3& projection)
 {
 	transform.begin();
-
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// SALMON TRANSFORMATION CODE HERE
-
-	// see Transformations and Rendering in the specification pdf
-	// the following functions are available:
-	// translate()
-	// rotate()
-	// scale()
-
 
 	transform.translate({ motion.position.x, motion.position.y });
     transform.scale(physics.scale);
@@ -264,13 +239,6 @@ bool Salmon::collides_with(const Fish& fish)
 		return true;
 	return false;
 }
-
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// HANDLE SALMON - WALL COLLISIONS HERE
-// DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 2
-// You will want to write new functions from scratch for checking/handling 
-// salmon - wall collisions.
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 vec2 Salmon::get_position() const
 {
