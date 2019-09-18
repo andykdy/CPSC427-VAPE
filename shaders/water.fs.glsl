@@ -27,7 +27,7 @@ vec4 color_shift(vec4 in_color)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	vec4 color = in_color;
-	color += vec4(0, 0, 0.5, 0);
+	color -= vec4(0.1, 0.1, 0.1, 0);
 	return color;
 }
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(salmon)
+project(vape)
 
 # Set c++11
 # https://stackoverflow.com/questions/10851247/how-to-activate-c-11-in-cmake
@@ -36,23 +36,24 @@ set(SOURCE_FILES
     src/Engine/GameEngine.cpp
     src/Engine/GameEngine.hpp
     src/Engine/GameState.hpp
-    src/Engine/States/Level.cpp
-    src/Engine/States/Level.hpp
-    src/fish.cpp
-    src/salmon.cpp
-    src/turtle.cpp
-    src/water.cpp
-    src/pebbles.cpp
+    src/Engine/States/LevelState.cpp
+    src/Engine/States/LevelState.hpp
+    src/Engine/States/MainMenuState.cpp
+    src/Engine/States/MainMenuState.hpp
 
-    src/project_path.hpp
+        src/Entities/fish.cpp
+        src/Entities/Player.cpp
+        src/Entities/turtle.cpp
+        src/Entities/Space.cpp
+
+        src/project_path.hpp
     src/common.hpp
-    src/fish.hpp
-    src/salmon.hpp
-    src/turtle.hpp
-    src/water.hpp
-    src/pebbles.hpp
-    src/bullet.cpp
-    src/bullet.hpp)
+        src/Entities/fish.hpp
+        src/Entities/Player.hpp
+        src/Entities/turtle.hpp
+        src/Entities/Space.hpp
+        src/Entities/bullet.cpp
+        src/Entities/bullet.hpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC src/)

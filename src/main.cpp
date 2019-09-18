@@ -7,7 +7,7 @@
 #include <chrono>
 #include <iostream>
 #include "Engine/GameEngine.hpp"
-#include "Engine/States/Level.hpp"
+#include "Engine/States/MainMenuState.hpp"
 
 using Clock = std::chrono::high_resolution_clock;
 
@@ -23,7 +23,7 @@ int main(int argv, char** args) {
         std::cin.get();
 		return EXIT_FAILURE;
 	}
-	GameState *start = new Level;
+	GameState *start = new MainMenuState;
 	game.changeState(start);
 
     auto t = Clock::now();
