@@ -121,7 +121,7 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 
 
         // Decay velocity
-        float friction = 0.02;
+        float friction = 0.10;
         if (m_velocity.x > 0.f)
             m_velocity.x -= friction* m_velocity.x;
         else if (m_velocity.x < 0.f)
@@ -184,10 +184,6 @@ void Player::draw(const mat3& projection)
 
 	// !!! Player Color
 	float color[] = { 1.f, 1.f, 1.f };
-	if (!is_alive()) {
-	    color[1] = 0.2f;
-	    color[2] = 0.2f;
-	}
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 

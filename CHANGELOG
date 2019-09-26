@@ -1,0 +1,9 @@
+CHANGELOG:
+
+
+Sept 26th 2019 <Andy Kim>
+- Removed features from fish assignment
+	- Wave shader removed
+- Friction value increased
+- Changed game resolution
+	- 1200 -> 1000 

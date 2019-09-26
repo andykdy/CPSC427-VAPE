@@ -3,6 +3,7 @@
 //
 
 #include <cmath>
+#include <algorithm>
 #include "bullet.hpp"
 
 Texture Bullet::bullet_texture;
