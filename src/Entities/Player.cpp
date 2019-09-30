@@ -79,6 +79,7 @@ bool Player::init(vec2 screen)
 
 	physics.scale = { -35.f, 35.f };
 
+	m_screen = screen;
 	m_is_alive = true;
 	m_light_up_countdown_ms = -1.f;
 
@@ -103,7 +104,7 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 	float step = motion.speed * (ms / 1000);
 	if (m_is_alive)
 	{
-
+		vec2 screenBuffer = { 20.0f,50.0f };
 		float accelX = 0.f;
 		float accelY = 0.f;
 
@@ -116,8 +117,9 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
         accelerate(accelX,accelY);
 
         // move based on velocity
-        motion.position.x += m_velocity.x;
-        motion.position.y += m_velocity.y;
+		// std::clamp is not available, so using min max clamping instead 
+        motion.position.x = std::min(std::max(motion.position.x + m_velocity.x, screenBuffer.x), m_screen.x - screenBuffer.x);
+        motion.position.y = std::min(std::max(motion.position.y + m_velocity.y, screenBuffer.y), m_screen.y - screenBuffer.y);
 
 
         // Decay velocity

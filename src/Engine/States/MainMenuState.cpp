@@ -86,13 +86,17 @@ void MainMenuState::draw(GameEngine *game) {
 }
 
 void MainMenuState::on_key(GameEngine *game, GLFWwindow *wwindow, int key, int i, int action, int mod) {
-    game->changeState(new LevelState());
 }
 
 void MainMenuState::on_mouse_move(GameEngine *game, GLFWwindow *window, double xpos, double ypos) {
-
+	mouse_position.x = xpos;
+	mouse_position.y = ypos;
 }
 
 void MainMenuState::on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) {
-
+	if (mouse_position.x >= 200 && mouse_position.x <= 600 && mouse_position.y >= 600 && mouse_position.y <= 700) {
+		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+			game->changeState(new LevelState());
+		}
+	}
 }
