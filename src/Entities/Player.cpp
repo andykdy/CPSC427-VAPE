@@ -80,8 +80,8 @@ bool Player::init(vec2 screen)
 	physics.scale = { -35.f, 35.f };
 
 	m_screen = screen;
-	m_is_alive = true;
 	m_light_up_countdown_ms = -1.f;
+	m_health = 3.0f;
 
 	return true;
 }
@@ -102,7 +102,7 @@ void Player::destroy()
 void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 {
 	float step = motion.speed * (ms / 1000);
-	if (m_is_alive)
+	if (is_alive())
 	{
 		vec2 screenBuffer = { 20.0f,50.0f };
 		float accelX = 0.f;
@@ -143,6 +143,9 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 
 	if (m_light_up_countdown_ms > 0.f)
 		m_light_up_countdown_ms -= ms;
+	if (m_iframe > 0.f) {
+		m_iframe -= ms;
+	}
 }
 
 void Player::draw(const mat3& projection)
@@ -186,6 +189,9 @@ void Player::draw(const mat3& projection)
 
 	// !!! Player Color
 	float color[] = { 1.f, 1.f, 1.f };
+	if (m_iframe > 0.0f) {
+		color[1] *= 2.0f;
+	}
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
@@ -275,17 +281,28 @@ void Player::accelerate(float x, float y) {
 
 bool Player::is_alive() const
 {
-	return m_is_alive;
+	return m_health > 0;
 }
 
-// Called when the salmon collides with a turtle
-void Player::kill()
+// Called when the player collides with an enemy
+void Player::lose_health(float amount)
 {
-	m_is_alive = false;
+	m_health -= amount;
 }
 
 // Called when the salmon collides with a fish
 void Player::light_up()
 {
 	m_light_up_countdown_ms = 1500.f;
+}
+
+// Called when the player takes damage
+void Player::set_iframes(float magnitude)
+{
+	m_iframe = magnitude;
+}
+
+float Player::get_iframes()
+{
+	return m_iframe;
 }

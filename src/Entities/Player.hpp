@@ -46,14 +46,20 @@ public:
 	bool is_alive()const;
 
 	// Kills the salmon, changing its alive state and triggering on death events
-	void kill();
+	void lose_health(float amount);
 
 	// Called when the salmon collides with a fish, starts lighting up the salmon
 	void light_up();
 
+	// Called when the salmon collides with an enemy, activate invulerability frames 
+	void set_iframes(float magnitude);
+
+	float get_iframes();
+
 private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up
-	bool m_is_alive; // True if the salmon is alive
+	float m_iframe; // Used to indicate how long the player should be invulnerable for
+	float m_health;
 	vec2 m_velocity; // Velocity
 	vec2 m_screen; // Screen space
 
