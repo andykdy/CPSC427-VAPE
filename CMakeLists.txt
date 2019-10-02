@@ -55,6 +55,11 @@ set(SOURCE_FILES
         src/Entities/bullet.cpp
         src/Entities/bullet.hpp)
 
+if (IS_OS_MAC)
+    include_directories(/usr/local/include)
+    link_directories(/usr/local/lib)
+endif()
+
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC src/)
 
