@@ -91,17 +91,27 @@ void LevelState::update(GameEngine *game) {
     vec2 screen = { (float)w / game->getM_screen_scale(), (float)h / game->getM_screen_scale() };
 
     // Checking Player - Turtle collisions
-    for (const auto& turtle : m_turtles)
-    {
-        if (m_player.collides_with(turtle))
+	auto turtle_it = m_turtles.begin();
+	while (turtle_it != m_turtles.end())
+	{
+        if (m_player.collides_with(*turtle_it))
         {
             if (m_player.is_alive()) {
-                Mix_PlayChannel(-1, m_player_dead_sound, 0);
-                m_space.set_salmon_dead();
-            }
-            m_player.kill();
+				if (m_player.get_iframes() <= 0.f) {
+					m_player.set_iframes(500.f);
+					m_player.lose_health(1.f);
+					if (!m_player.is_alive()) {
+						Mix_PlayChannel(-1, m_player_dead_sound, 0);
+						m_space.set_salmon_dead();
+					}
+					m_turtles.erase(turtle_it);
+				}
+			}
             break;
-        }
+		}
+		else {
+			turtle_it++;
+		}
     }
 
     // Checking Player - Fish collisions
@@ -161,7 +171,7 @@ void LevelState::update(GameEngine *game) {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     // Removing out of screen turtles
-    auto turtle_it = m_turtles.begin();
+    turtle_it = m_turtles.begin();
     while (turtle_it != m_turtles.end())
     {
         float w = turtle_it->get_bounding_box().x / 2;
