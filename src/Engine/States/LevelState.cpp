@@ -353,11 +353,9 @@ void LevelState::draw(GameEngine *game) {
 }
 
 void LevelState::init_hearts() {
-    fprintf(stderr, "init\n");
     for(int i = 0; i < NUMBER_OF_LIVES; i++) {
-        fprintf(stderr, "init heart\n");
         HealthHeart heart;
-        
+
         if(heart.init( {(200 + ((float)i * 150)), 0})) {
             m_hearts.emplace_back(heart);
         } else {
