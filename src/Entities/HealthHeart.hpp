@@ -12,14 +12,14 @@ class HealthHeart: public Entity {
     static Texture health_heart_texture;
 
 public:
-    bool init(vec2 position, float rotation);
+    bool init(vec2 position);
     void update(float ms);
     void draw(const mat3& projection)override;
+    void destroy();
 
 private:
     vec2 m_position; // Window coordinates
     vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
-    float m_rotation; // in radians
 };
 
 

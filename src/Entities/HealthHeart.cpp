@@ -8,7 +8,7 @@
 
 Texture HealthHeart::health_heart_texture;
 
-bool HealthHeart::init(vec2 position, float rotation) {
+bool HealthHeart::init(vec2 position) {
     // Load shared texture
     if (!health_heart_texture.is_valid())
     {
@@ -62,12 +62,6 @@ bool HealthHeart::init(vec2 position, float rotation) {
     m_scale.x = 0.4f;
     m_scale.y = 0.4f;
 
-    m_rotation = rotation;
-
-    // place bullet n away from center of salmon
-    m_position.x = position.x + 100*sin(m_rotation);
-    m_position.y = position.y + 100*cos(m_rotation);
-
     return true;
 }
 
@@ -76,7 +70,6 @@ void HealthHeart::draw(const mat3 &projection) {
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     transform.begin();
     transform.translate(m_position);
-    transform.rotate(m_rotation);
     transform.scale(m_scale);
     transform.end();
 
@@ -117,4 +110,14 @@ void HealthHeart::draw(const mat3 &projection) {
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+}
+
+void HealthHeart::destroy() {
+    glDeleteBuffers(1, &mesh.vbo);
+    glDeleteBuffers(1, &mesh.ibo);
+    glDeleteBuffers(1, &mesh.vao);
+
+    glDeleteShader(effect.vertex);
+    glDeleteShader(effect.fragment);
+    glDeleteShader(effect.program);
 }

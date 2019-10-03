@@ -18,6 +18,7 @@
 #include "Entities/fish.hpp"
 #include "Entities/Space.hpp"
 #include "Entities/bullet.hpp"
+#include "Entities/HealthHeart.hpp"
 
 // stlib
 #include <vector>
@@ -49,6 +50,8 @@ public:
     void on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) override;
 
 private:
+    void init_hearts();
+
     // Generates a new turtle
     bool spawn_turtle();
 
@@ -70,11 +73,15 @@ private:
     // Number of fish eaten by the salmon, displayed in the window title
     unsigned int m_points;
 
+    // Number of lives before death
+    const float NUMBER_OF_LIVES = 3;
+
     // Game entities
     Player m_player;
     std::vector<Turtle> m_turtles;
     std::vector<Fish> m_fish;
     std::vector<Bullet> m_bullets;
+    std::vector<HealthHeart> m_hearts;
 
     float m_current_speed;
     float m_next_turtle_spawn;
