@@ -53,7 +53,9 @@ set(SOURCE_FILES
         src/Entities/turtle.hpp
         src/Entities/Space.hpp
         src/Entities/bullet.cpp
-        src/Entities/bullet.hpp)
+        src/Entities/bullet.hpp
+        src/Entities/HealthHeart.cpp
+        src/Entities/HealthHeart.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
