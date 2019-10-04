@@ -1,5 +1,10 @@
 CHANGELOG:
 
+Oct 3rd 2019 <Tanha>
+- Added hearts to represent 3 lives for health
+-> heart = new entity
+- Changed health system of the player to be set from the level
+
 Sept 30th 2019 <Andy Kim>
 - Implemented Invulerable frames after hit
 - Introduced rudamentary health system 

@@ -61,8 +61,10 @@ void LevelState::init(GameEngine *game) {
 
     m_current_speed = 1.f;
 
-    m_player.init(screen);
+    m_player.init(screen, NUMBER_OF_LIVES);
     m_space.init();
+
+    init_hearts();
 }
 
 void LevelState::terminate() {
@@ -84,9 +86,13 @@ void LevelState::terminate() {
         fish.destroy();
     for (auto& bullet : m_bullets)
         bullet.destroy();
+    for(auto& heart: m_hearts)
+        heart.destroy();
+
     m_turtles.clear();
     m_fish.clear();
     m_bullets.clear();
+    m_hearts.clear();
 }
 
 void LevelState::update(GameEngine *game) {
@@ -104,8 +110,10 @@ void LevelState::update(GameEngine *game) {
 				if (m_player.get_iframes() <= 0.f) {
 					m_player.set_iframes(500.f);
 					m_player.lose_health(1.f);
+					auto heart_it = m_hearts.begin();
+					m_hearts.erase(heart_it);
+                    Mix_PlayChannel(-1, m_player_dead_sound, 0);
 					if (!m_player.is_alive()) {
-						Mix_PlayChannel(-1, m_player_dead_sound, 0);
 						m_space.set_salmon_dead();
 					}
 					m_turtles.erase(turtle_it);
@@ -261,10 +269,11 @@ void LevelState::update(GameEngine *game) {
     if (!m_player.is_alive() &&
         m_space.get_salmon_dead_time() > 5) {
         m_player.destroy();
-        m_player.init(screen);
+        m_player.init(screen, NUMBER_OF_LIVES);
         m_turtles.clear();
         m_fish.clear();
         m_bullets.clear();
+        m_hearts.clear();
         m_space.reset_salmon_dead_time();
         m_current_speed = 1.f;
     }
@@ -324,6 +333,8 @@ void LevelState::draw(GameEngine *game) {
         fish.draw(projection_2D);
     for (auto& bullet : m_bullets)
         bullet.draw(projection_2D);
+    for(auto& heart : m_hearts)
+        heart.draw(projection_2D);
     m_player.draw(projection_2D);
 
     /////////////////////
@@ -346,6 +357,18 @@ void LevelState::draw(GameEngine *game) {
     //////////////////
     // Presenting
     glfwSwapBuffers(m_window);
+}
+
+void LevelState::init_hearts() {
+    for(int i = 0; i < NUMBER_OF_LIVES; i++) {
+        HealthHeart heart;
+
+        if(heart.init( {(70 + ((float)(NUMBER_OF_LIVES - i - 1) * 50)), 70})) {
+            m_hearts.emplace_back(heart);
+        } else {
+            fprintf(stderr, "Failed to init heart");
+        }
+    }
 }
 
 // Creates a new turtle and if successfull adds it to the list of turtles
@@ -397,11 +420,13 @@ void LevelState::on_key(GameEngine *game, GLFWwindow *wwindow, int key, int i, i
         glfwGetFramebufferSize(game->getM_window(), &w, &h);
         vec2 screen = { (float)w / game->getM_screen_scale(), (float)h / game->getM_screen_scale() };
         m_player.destroy();
-        m_player.init(screen);
+        m_player.init(screen, NUMBER_OF_LIVES);
         m_turtles.clear();
         m_fish.clear();
         m_space.reset_salmon_dead_time();
         m_current_speed = 1.f;
+
+        init_hearts();
     }
 
     // Control the current speed with `<` `>`

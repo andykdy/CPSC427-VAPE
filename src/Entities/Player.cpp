@@ -13,7 +13,7 @@
 Texture Player::player_texture;
 Texture Player::vamp_texture;
 
-bool Player::init(vec2 screen)
+bool Player::init(vec2 screen, float health)
 {
 	m_vertices.clear();
 	m_indices.clear();
@@ -77,7 +77,7 @@ bool Player::init(vec2 screen)
 
 	m_screen = screen;
 	m_light_up_countdown_ms = -1.f;
-	m_health = 3.0f;
+	m_health = health;
 
 	return true;
 }
