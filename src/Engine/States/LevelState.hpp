@@ -26,6 +26,7 @@
 
 #include <Engine/GameState.hpp>
 #include <Entities/Vamp.hpp>
+#include <Entities/Bosses/Boss1.hpp>
 
 class LevelState : public GameState {
 public:
@@ -52,6 +53,7 @@ public:
 
 private:
     void init_hearts();
+    void lose_health();
 
     // Generates a new turtle
     bool spawn_turtle();
@@ -59,9 +61,6 @@ private:
     // Generates a new fish
     bool spawn_fish();
 
-    bool spawn_bullet();
-
-private:
     // Tracks keys being pressed
     std::map<int, bool> keyMap;
 
@@ -79,15 +78,18 @@ private:
 
     // Game entities
     Player m_player;
+    Boss1 m_boss;
     std::vector<Turtle> m_turtles;
     std::vector<Fish> m_fish;
-    std::vector<Bullet> m_bullets;
     std::vector<HealthHeart> m_hearts;
 
     float m_current_speed;
+    float m_level_start;
     float m_next_turtle_spawn;
     float m_next_fish_spawn;
-    float m_bullet_cooldown;
+
+    bool m_spawn_enemies;
+    bool m_boss_mode;
 
     // Vamp mode
     Vamp m_vamp;
@@ -96,9 +98,10 @@ private:
     unsigned int m_vamp_mode_charge;
 
     Mix_Music* m_background_music;
+    Mix_Music* m_boss_music;
+    Mix_Music* m_victory_music;
     Mix_Chunk* m_player_dead_sound;
     Mix_Chunk* m_player_eat_sound;
-    Mix_Chunk* m_player_bullet_sound;
     Mix_Chunk* m_player_explosion;
 
     // C++ rng

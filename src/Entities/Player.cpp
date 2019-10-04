@@ -10,11 +10,26 @@
 #include <algorithm>
 #include <cmath>
 
+// Same as static in c, local to compilation unit
+namespace
+{
+	const size_t BULLET_COOLDOWN_MS = 300;
+}
+
 Texture Player::player_texture;
 Texture Player::vamp_texture;
 
 bool Player::init(vec2 screen, float health)
 {
+	// Load sound
+	m_player_bullet_sound = Mix_LoadWAV(audio_path("pow.wav"));
+	if ( m_player_bullet_sound == nullptr)
+	{
+		fprintf(stderr, "Failed to load sound player_bullet.wav\n %s\n %s\n %s\n make sure the data directory is present",
+				audio_path("player_bullet.wav"));
+		throw std::runtime_error("Failed to load sound player_bullet.wav");
+	}
+
 	m_vertices.clear();
 	m_indices.clear();
 
@@ -77,7 +92,9 @@ bool Player::init(vec2 screen, float health)
 
 	m_screen = screen;
 	m_light_up_countdown_ms = -1.f;
+	m_bullet_cooldown = -1.f;
 	m_health = health;
+	m_iframe = 0.f;
 
 	return true;
 }
@@ -85,6 +102,13 @@ bool Player::init(vec2 screen, float health)
 // Releases all graphics resources
 void Player::destroy()
 {
+	if (m_player_bullet_sound != nullptr)
+		Mix_FreeChunk(m_player_bullet_sound);
+
+	for (auto& bullet : bullets)
+		bullet.destroy();
+	bullets.clear();
+
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
 	glDeleteBuffers(1, &mesh.vao);
@@ -97,6 +121,18 @@ void Player::destroy()
 // Called on each frame by World::update()
 void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 {
+	// Update player bullets
+	for (auto& bullet : bullets)
+		bullet.update(ms);
+
+	// Spawning player bullets
+	m_bullet_cooldown -= ms;
+	if (is_alive() && keyMap[GLFW_KEY_SPACE] && m_bullet_cooldown < 0.f) {
+		spawn_bullet();
+		m_bullet_cooldown = BULLET_COOLDOWN_MS;
+		Mix_PlayChannel(-1, m_player_bullet_sound, 0);
+	}
+
 	float step = motion.speed * (ms / 1000);
 	if (is_alive())
 	{
@@ -146,6 +182,10 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 
 void Player::draw(const mat3& projection)
 {
+    // Draw player bullets
+    for (auto& bullet : bullets)
+        bullet.draw(projection);
+
 	transform.begin();
 	transform.translate(motion.position);
 	transform.scale(physics.scale);
@@ -278,6 +318,20 @@ void Player::gain_health(float amount)
 void Player::light_up()
 {
 	m_light_up_countdown_ms = 1500.f;
+}
+
+void Player::spawn_bullet() {
+	Bullet bullet;
+	if (bullet.init(motion.position, motion.radians + 3.14)) {
+		bullets.emplace_back(bullet);
+	} else {
+		throw std::runtime_error("Failed to spawn bullet");
+	}
+}
+
+vec2 Player::get_bounding_box() const {
+    // fabs is to avoid negative scale due to the facing direction
+    return { std::fabs(physics.scale.x) * player_texture.width, std::fabs(physics.scale.y) * player_texture.height };
 }
 
 // Called when the player takes damage
