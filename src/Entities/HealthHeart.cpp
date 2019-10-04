@@ -59,8 +59,8 @@ bool HealthHeart::init(vec2 position) {
         return false;
 
 
-    physics.scale.x = 0.4f;
-    physics.scale.y = 0.4f;
+    physics.scale.x = 0.25f;
+    physics.scale.y = 0.25f;
     this->motion.position.x = position.x;
     this->motion.position.y = position.y;
 

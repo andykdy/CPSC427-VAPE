@@ -112,8 +112,8 @@ void LevelState::update(GameEngine *game) {
 					m_player.lose_health(1.f);
 					auto heart_it = m_hearts.begin();
 					m_hearts.erase(heart_it);
+                    Mix_PlayChannel(-1, m_player_dead_sound, 0);
 					if (!m_player.is_alive()) {
-						Mix_PlayChannel(-1, m_player_dead_sound, 0);
 						m_space.set_salmon_dead();
 					}
 					m_turtles.erase(turtle_it);
@@ -363,7 +363,7 @@ void LevelState::init_hearts() {
     for(int i = 0; i < NUMBER_OF_LIVES; i++) {
         HealthHeart heart;
 
-        if(heart.init( {(200 + ((float)i * 150)), 0})) {
+        if(heart.init( {(70 + ((float)(NUMBER_OF_LIVES - i - 1) * 50)), 70})) {
             m_hearts.emplace_back(heart);
         } else {
             fprintf(stderr, "Failed to init heart");
