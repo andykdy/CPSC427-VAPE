@@ -25,6 +25,7 @@
 #include <random>
 
 #include <Engine/GameState.hpp>
+#include <Entities/Vamp.hpp>
 
 class LevelState : public GameState {
 public:
@@ -87,6 +88,12 @@ private:
     float m_next_turtle_spawn;
     float m_next_fish_spawn;
     float m_bullet_cooldown;
+
+    // Vamp mode
+    Vamp m_vamp;
+    bool m_vamp_mode;
+    float m_vamp_mode_timer;
+    unsigned int m_vamp_mode_charge;
 
     Mix_Music* m_background_music;
     Mix_Chunk* m_player_dead_sound;

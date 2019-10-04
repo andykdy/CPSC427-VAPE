@@ -50,7 +50,10 @@ public:
 	// Kills the salmon, changing its alive state and triggering on death events
 	void lose_health(float amount);
 
-	// Called when the salmon collides with a fish, starts lighting up the salmon
+	// Gain health after draining an enemy in vamp mode
+    void gain_health(float amount);
+
+    // Called when the salmon collides with a fish, starts lighting up the salmon
 	void light_up();
 
 	// Called when the salmon collides with an enemy, activate invulerability frames 

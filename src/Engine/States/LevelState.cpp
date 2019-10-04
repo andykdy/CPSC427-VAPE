@@ -19,6 +19,7 @@ namespace
     const size_t TURTLE_DELAY_MS = 500;
     const size_t FISH_DELAY_MS = 5000;
     const size_t BULLET_COOLDOWN_MS = 300;
+    const size_t VAMP_MODE_DURATION = 1500;
 }
 
 
@@ -126,6 +127,7 @@ void LevelState::update(GameEngine *game) {
 		}
     }
 
+
     // Checking Player - Fish collisions
     auto fish_it = m_fish.begin();
     while (fish_it != m_fish.end())
@@ -156,6 +158,8 @@ void LevelState::update(GameEngine *game) {
                 // TODO sound
                 Mix_PlayChannel(-1,m_player_explosion,0);
                 ++m_points;
+                m_vamp_mode_charge++;
+
                 break;
             } else {
                 ++turtle_it;
@@ -167,10 +171,26 @@ void LevelState::update(GameEngine *game) {
             ++bullet_it;
     }
 
+    // check for vamp/turtle collisions
+    if (m_vamp_mode) {
+        turtle_it = m_turtles.begin();
+        while (turtle_it != m_turtles.end()) {
+            if (m_vamp.collides_with(*turtle_it)) {
+                turtle_it = m_turtles.erase(turtle_it);
+                m_player.gain_health(1.f);
+
+                continue;
+            }
+
+            ++turtle_it;
+        }
+    }
+
     // Updating all entities, making the turtle and fish
     // faster based on current
     float elapsed_ms = game->getElapsed_ms();
     m_player.update(elapsed_ms, keyMap, mouse_position);
+    m_vamp.update(elapsed_ms, m_player.get_position());
     for (auto& turtle : m_turtles)
         turtle.update(elapsed_ms * m_current_speed);
     for (auto& fish : m_fish)
@@ -224,6 +244,33 @@ void LevelState::update(GameEngine *game) {
         ++bullet_it;
     }
 
+
+    // for debugging purposes
+    if (keyMap[GLFW_KEY_F]) {
+        m_vamp_mode_charge = 10;
+    }
+
+    if (m_vamp_mode_charge >= 10 && keyMap[GLFW_KEY_ENTER]) {
+        m_vamp_mode = true;
+        m_vamp_mode_timer = VAMP_MODE_DURATION;
+        m_vamp_mode_charge = 0;
+        m_current_speed = 0.5f;
+
+        m_vamp.init(m_player.get_position(), 0.785398f);
+    }
+
+    if (m_vamp_mode_timer > 0.f) {
+        m_vamp_mode_timer -= elapsed_ms * m_current_speed;
+        m_vamp.update(elapsed_ms, m_player.get_position());
+
+
+        if (m_vamp_mode_timer <= 0.f) {
+            m_current_speed = 1.f;
+            m_vamp_mode = false;
+            m_vamp.destroy();
+        }
+    }
+
     // Spawning new turtles
     m_next_turtle_spawn -= elapsed_ms * m_current_speed;
     if (m_turtles.size() <= MAX_TURTLES && m_next_turtle_spawn < 0.f)
@@ -257,7 +304,7 @@ void LevelState::update(GameEngine *game) {
 
     // Spawning bullets
     m_bullet_cooldown -= elapsed_ms * m_current_speed;
-    if (m_player.is_alive() && keyMap[GLFW_KEY_SPACE] && m_bullet_cooldown < 0.f) {
+    if (m_player.is_alive() && keyMap[GLFW_KEY_SPACE] && m_bullet_cooldown < 0.f && !m_vamp_mode) {
         if (!spawn_bullet())
             throw std::runtime_error("Failed to spawn bullet");
         Bullet& new_bullet = m_bullets.back();
@@ -269,6 +316,7 @@ void LevelState::update(GameEngine *game) {
     if (!m_player.is_alive() &&
         m_space.get_salmon_dead_time() > 5) {
         m_player.destroy();
+        m_vamp.destroy();
         m_player.init(screen, NUMBER_OF_LIVES);
         m_turtles.clear();
         m_fish.clear();
@@ -336,6 +384,11 @@ void LevelState::draw(GameEngine *game) {
     for(auto& heart : m_hearts)
         heart.draw(projection_2D);
     m_player.draw(projection_2D);
+    if (m_vamp_mode) {
+        m_vamp.draw(projection_2D);
+    }
+
+    //if (!(m_vamp == NULL))
 
     /////////////////////
     // Truely render to the screen

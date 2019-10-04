@@ -55,7 +55,7 @@ set(SOURCE_FILES
         src/Entities/bullet.cpp
         src/Entities/bullet.hpp
         src/Entities/HealthHeart.cpp
-        src/Entities/HealthHeart.hpp)
+        src/Entities/HealthHeart.hpp src/Entities/Vamp.cpp src/Entities/Vamp.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

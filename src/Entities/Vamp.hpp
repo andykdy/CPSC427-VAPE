@@ -2,8 +2,8 @@
 // Created by matte on 2019-10-04.
 //
 
-#ifndef VAPE_VAMP_H
-#define VAPE_VAMP_H
+#ifndef VAPE_VAMP_HPP
+#define VAPE_VAMP_HPP
 
 #include "common.hpp"
 #include "turtle.hpp"
@@ -11,12 +11,12 @@
 
 class Vamp : public Entity {
     // Shared between all bullets, no need to load one for each instance
-    static Texture bullet_texture;
+    static Texture vamp_texture;
 
 public:
     bool init(vec2 position, float rotation);
     void destroy();
-    void update(float ms);
+    void update(float ms,  vec2 player_position);
     void draw(const mat3& projection)override;
 
     // Returns the current bullet position
@@ -24,7 +24,6 @@ public:
 
     // Collision routines for turtles and fish
     bool collides_with(const Turtle& turtle);
-    bool collides_with(const Fish& fish);
 
     // Returns the bullet' bounding box for collision detection, called by collides_with()
     vec2 get_bounding_box()const;
@@ -36,4 +35,4 @@ private:
 };
 
 
-#endif //VAPE_VAMP_H
+#endif //VAPE_VAMP_HPP

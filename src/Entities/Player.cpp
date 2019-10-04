@@ -269,6 +269,11 @@ void Player::lose_health(float amount)
 	m_health -= amount;
 }
 
+void Player::gain_health(float amount)
+{
+    m_health += amount;
+}
+
 // Called when the salmon collides with a fish
 void Player::light_up()
 {
