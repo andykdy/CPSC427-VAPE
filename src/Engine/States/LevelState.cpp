@@ -35,7 +35,9 @@ void LevelState::init(GameEngine *game) {
     m_background_music = Mix_LoadMUS(audio_path("music.wav"));
     m_player_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav"));
     m_player_eat_sound = Mix_LoadWAV(audio_path("salmon_eat.wav"));
-    m_player_bullet_sound = Mix_LoadWAV(audio_path("player_bullet.wav"));
+    m_player_bullet_sound = Mix_LoadWAV(audio_path("pow.wav"));
+    m_player_explosion = Mix_LoadWAV(audio_path("explosion.wav"));
+
 
     if (m_background_music == nullptr || m_player_dead_sound == nullptr || m_player_eat_sound == nullptr
         || m_player_bullet_sound == nullptr)
@@ -74,6 +76,8 @@ void LevelState::terminate() {
         Mix_FreeChunk(m_player_eat_sound);
     if (m_player_bullet_sound != nullptr)
         Mix_FreeChunk(m_player_bullet_sound);
+    if (m_player_explosion != nullptr)
+        Mix_FreeChunk(m_player_explosion);
 
     m_player.destroy();
     for (auto& turtle : m_turtles)
@@ -148,6 +152,7 @@ void LevelState::update(GameEngine *game) {
                 eraseBullet = true;
                 turtle_it = m_turtles.erase(turtle_it);
                 // TODO sound
+                Mix_PlayChannel(-1,m_player_explosion,0);
                 ++m_points;
                 break;
             } else {
@@ -393,7 +398,7 @@ bool LevelState::spawn_bullet() {
     float rotation = m_player.get_rotation();
 
     Bullet bullet;
-    if (bullet.init(position, rotation + 1.5708)) {
+    if (bullet.init(position, rotation + 3.14)) {
         m_bullets.emplace_back(bullet);
         return true;
     }
