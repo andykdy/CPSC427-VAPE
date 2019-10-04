@@ -18,7 +18,7 @@
 #include "Entities/fish.hpp"
 #include "Entities/Space.hpp"
 #include "Entities/bullet.hpp"
-#include "Entities/HealthHeart.hpp"
+#include "Entities/UI/Health.hpp"
 
 // stlib
 #include <vector>
@@ -48,9 +48,9 @@ public:
     void on_mouse_move(GameEngine *game, GLFWwindow *window, double xpos, double ypos) override;
 
     void on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) override;
-
+    void LoadTexture(char *filename);
 private:
-    void init_hearts();
+    void init_health();
 
     // Generates a new turtle
     bool spawn_turtle();
@@ -74,14 +74,16 @@ private:
     unsigned int m_points;
 
     // Number of lives before death
-    const float NUMBER_OF_LIVES = 3;
+    const float INIT_HEALTH = 50;
+    const float DAMAGE_ENEMY = 5;
+    const float DAMAGE_BOSS = 15;
 
     // Game entities
     Player m_player;
     std::vector<Turtle> m_turtles;
     std::vector<Fish> m_fish;
     std::vector<Bullet> m_bullets;
-    std::vector<HealthHeart> m_hearts;
+    std::vector<Health> m_health;
 
     float m_current_speed;
     float m_next_turtle_spawn;

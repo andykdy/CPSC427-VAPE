@@ -17,7 +17,7 @@ int main(int argv, char** args) {
 		game.init();
 	}
 	catch(std::runtime_error &e){
-		printf(e.what());
+//		printf(e.what());
         // Time to read the error message
         std::cout << "Press any key to exit" << std::endl;
         std::cin.get();
