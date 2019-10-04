@@ -19,7 +19,11 @@ namespace
     const size_t MAX_FISH = 5;
     const size_t TURTLE_DELAY_MS = 500;
     const size_t FISH_DELAY_MS = 5000;
+    const size_t INIT_HEALTH = 50;
+    const size_t DAMAGE_ENEMY = 5;
+    const size_t DAMAGE_BOSS = 15;
     const size_t BOSS_TIME = 30;
+    const size_t VAMP_HEAL = 2;
 }
 
 
@@ -407,7 +411,7 @@ void LevelState::init_health() {
         if(health.init( {(45 + ((float)(INIT_HEALTH - i - 1) * 5)), 60})) {
             m_health.emplace_back(health);
         } else {
-            fprintf(stderr, "Failed to init health");
+            throw std::runtime_error("Failed to init health");
         }
     }
 }
@@ -421,6 +425,18 @@ void LevelState::lose_health() {
     Mix_PlayChannel(-1, m_player_dead_sound, 0);
     if (!m_player.is_alive()) {
         m_space.set_salmon_dead();
+    }
+}
+
+// Added in preparation for vamp mode
+void LevelState::add_health() {
+    // m_player.gain_health(VAMP_HEAL); Added by vamp branch
+    auto i = m_health.size();
+    Health health;
+    if(health.init( {(45 + ((float)(INIT_HEALTH - i - 1) * 5)), 60})) {
+        m_health.emplace_back(health);
+    } else {
+        throw std::runtime_error("Failed to add health");
     }
 }
 

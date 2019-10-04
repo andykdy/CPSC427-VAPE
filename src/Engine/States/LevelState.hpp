@@ -53,6 +53,7 @@ public:
 private:
     void init_health();
     void lose_health();
+    void add_health();
 
     // Generates a new turtle
     bool spawn_turtle();
@@ -71,11 +72,6 @@ private:
 
     // Number of fish eaten by the salmon, displayed in the window title
     unsigned int m_points;
-
-    // Number of lives before death
-    const float INIT_HEALTH = 50;
-    const float DAMAGE_ENEMY = 5;
-    const float DAMAGE_BOSS = 15;
 
     // Game entities
     Player m_player;
