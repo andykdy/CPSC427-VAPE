@@ -110,6 +110,8 @@ void LevelState::update(GameEngine *game) {
 				if (m_player.get_iframes() <= 0.f) {
 					m_player.set_iframes(500.f);
 					m_player.lose_health(1.f);
+					auto heart_it = m_hearts.begin();
+					m_hearts.erase(heart_it);
 					if (!m_player.is_alive()) {
 						Mix_PlayChannel(-1, m_player_dead_sound, 0);
 						m_space.set_salmon_dead();
