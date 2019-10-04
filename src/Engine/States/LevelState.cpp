@@ -19,7 +19,11 @@ namespace
     const size_t MAX_FISH = 5;
     const size_t TURTLE_DELAY_MS = 500;
     const size_t FISH_DELAY_MS = 5000;
+    const size_t INIT_HEALTH = 50;
+    const size_t DAMAGE_ENEMY = 5;
+    const size_t DAMAGE_BOSS = 15;
     const size_t BOSS_TIME = 30;
+    const size_t VAMP_HEAL = 2;
 }
 
 
@@ -65,10 +69,10 @@ void LevelState::init(GameEngine *game) {
     m_boss_mode = false;
     m_spawn_enemies = true;
 
-    m_player.init(screen, NUMBER_OF_LIVES);
+    m_player.init(screen, INIT_HEALTH);
     m_space.init();
 
-    init_hearts();
+    init_health();
 }
 
 void LevelState::terminate() {
@@ -90,11 +94,11 @@ void LevelState::terminate() {
         turtle.destroy();
     for (auto& fish : m_fish)
         fish.destroy();
-    for(auto& heart: m_hearts)
-        heart.destroy();
+    for(auto& health: m_health)
+        health.destroy();
     m_turtles.clear();
     m_fish.clear();
-    m_hearts.clear();
+    m_health.clear();
 }
 
 void LevelState::update(GameEngine *game) {
@@ -302,15 +306,15 @@ void LevelState::update(GameEngine *game) {
     if (!m_player.is_alive() &&
         m_space.get_salmon_dead_time() > 5) {
         m_player.destroy();
-        m_player.init(screen, NUMBER_OF_LIVES);
+        m_player.init(screen, INIT_HEALTH);
         m_boss.destroy();
         m_level_start = glfwGetTime();
         m_boss_mode = false;
         m_spawn_enemies = true;
         m_turtles.clear();
         m_fish.clear();
-        m_hearts.clear();
-        init_hearts();
+        m_health.clear();
+        init_health();
         Mix_PlayMusic(m_background_music, -1);
 
         m_space.reset_salmon_dead_time();
@@ -375,8 +379,8 @@ void LevelState::draw(GameEngine *game) {
     if (m_boss_mode) {
         m_boss.draw(projection_2D);
     }
-    for(auto& heart : m_hearts)
-        heart.draw(projection_2D);
+    for(auto& health : m_health)
+        health.draw(projection_2D);
 
     /////////////////////
     // Truely render to the screen
@@ -400,25 +404,39 @@ void LevelState::draw(GameEngine *game) {
     glfwSwapBuffers(m_window);
 }
 
-void LevelState::init_hearts() {
-    for(int i = 0; i < NUMBER_OF_LIVES; i++) {
-        HealthHeart heart;
+void LevelState::init_health() {
+    for(int i = 0; i < INIT_HEALTH; i++) {
+        Health health;
 
-        if(heart.init( {(70 + ((float)(NUMBER_OF_LIVES - i - 1) * 50)), 70})) {
-            m_hearts.emplace_back(heart);
+        if(health.init( {(45 + ((float)(INIT_HEALTH - i - 1) * 5)), 60})) {
+            m_health.emplace_back(health);
         } else {
-            fprintf(stderr, "Failed to init heart");
+            throw std::runtime_error("Failed to init health");
         }
     }
 }
 
 void LevelState::lose_health() {
-    m_player.lose_health(1.f);
-    auto heart_it = m_hearts.begin();
-    m_hearts.erase(heart_it);
+    m_player.lose_health(DAMAGE_ENEMY);
+    auto health_it = m_health.begin();
+    for (int i = 0; i < DAMAGE_ENEMY; i++) {
+        m_health.erase(health_it);
+    }
     Mix_PlayChannel(-1, m_player_dead_sound, 0);
     if (!m_player.is_alive()) {
         m_space.set_salmon_dead();
+    }
+}
+
+// Added in preparation for vamp mode
+void LevelState::add_health() {
+    // m_player.gain_health(VAMP_HEAL); Added by vamp branch
+    auto i = m_health.size();
+    Health health;
+    if(health.init( {(45 + ((float)(INIT_HEALTH - i - 1) * 5)), 60})) {
+        m_health.emplace_back(health);
+    } else {
+        throw std::runtime_error("Failed to add health");
     }
 }
 
@@ -458,14 +476,14 @@ void LevelState::on_key(GameEngine *game, GLFWwindow *wwindow, int key, int i, i
         glfwGetFramebufferSize(game->getM_window(), &w, &h);
         vec2 screen = { (float)w / game->getM_screen_scale(), (float)h / game->getM_screen_scale() };
         m_player.destroy();
-        m_player.init(screen, NUMBER_OF_LIVES);
+        m_player.init(screen, INIT_HEALTH);
         m_turtles.clear();
         m_fish.clear();
         m_space.reset_salmon_dead_time();
         m_space.reset_boss_dead_time();
         m_current_speed = 1.f;
 
-        init_hearts();
+        init_health();
     }
 
     // Control the current speed with `<` `>`

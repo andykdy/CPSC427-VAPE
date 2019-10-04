@@ -2,14 +2,14 @@
 // Created by Tanha Kabir on 2019-10-03.
 //
 
-#ifndef VAPE_HEALTHHEART_HPP
-#define VAPE_HEALTHHEART_HPP
+#ifndef VAPE_HEALTH_HPP
+#define VAPE_HEALTH_HPP
 
 #include "common.hpp"
 
 
-class HealthHeart: public Entity {
-    static Texture health_heart_texture;
+class Health: public Entity {
+    static Texture health_point_texture;
 
 public:
     bool init(vec2 position);
@@ -19,4 +19,4 @@ public:
 };
 
 
-#endif //VAPE_HEALTHHEART_HPP
+#endif //VAPE_HEALTH_HPP
