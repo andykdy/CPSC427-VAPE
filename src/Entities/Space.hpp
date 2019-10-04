@@ -20,7 +20,14 @@ public:
 	void reset_salmon_dead_time();
 	float get_salmon_dead_time() const;
 
+	// Boss dead time getters and setters
+	void set_boss_dead();
+	void reset_boss_dead_time();
+	float get_boss_dead_time() const;
+
 private:
 	// When salmon is alive, the time is set to -1
 	float m_dead_time;
+
+	float m_boss_dead_time;
 };
