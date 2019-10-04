@@ -59,8 +59,10 @@ bool HealthHeart::init(vec2 position) {
         return false;
 
 
-    m_scale.x = 0.4f;
-    m_scale.y = 0.4f;
+    physics.scale.x = 0.4f;
+    physics.scale.y = 0.4f;
+    this->motion.position.x = position.x;
+    this->motion.position.y = position.y;
 
     return true;
 }
@@ -69,8 +71,8 @@ void HealthHeart::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     transform.begin();
-    transform.translate(m_position);
-    transform.scale(m_scale);
+    transform.translate(motion.position);
+    transform.scale(physics.scale);
     transform.end();
 
     // Setting shaders
