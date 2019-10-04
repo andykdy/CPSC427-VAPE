@@ -265,7 +265,7 @@ void LevelState::update(GameEngine *game) {
             if (boss_bullet_it->collides_with(m_player))
             {
                 boss_bullet_it = m_boss.bullets.erase(boss_bullet_it);
-                if (m_player.get_iframes() <= 0.f) {
+                if (m_player.is_alive() && m_player.get_iframes() <= 0.f) {
                     m_player.set_iframes(500.f);
                     lose_health();
                 }
@@ -303,10 +303,15 @@ void LevelState::update(GameEngine *game) {
         m_space.get_salmon_dead_time() > 5) {
         m_player.destroy();
         m_player.init(screen, NUMBER_OF_LIVES);
+        m_boss.destroy();
+        m_level_start = glfwGetTime();
+        m_boss_mode = false;
+        m_spawn_enemies = true;
         m_turtles.clear();
         m_fish.clear();
         m_hearts.clear();
         init_hearts();
+        Mix_PlayMusic(m_background_music, -1);
 
         m_space.reset_salmon_dead_time();
         m_space.reset_boss_dead_time();
