@@ -41,19 +41,23 @@ set(SOURCE_FILES
     src/Engine/States/MainMenuState.cpp
     src/Engine/States/MainMenuState.hpp
 
-        src/Entities/fish.cpp
-        src/Entities/Player.cpp
-        src/Entities/turtle.cpp
-        src/Entities/Space.cpp
+    src/Entities/fish.cpp
+    src/Entities/Player.cpp
+    src/Entities/turtle.cpp
+    src/Entities/Space.cpp
 
-        src/project_path.hpp
+    src/project_path.hpp
     src/common.hpp
-        src/Entities/fish.hpp
-        src/Entities/Player.hpp
-        src/Entities/turtle.hpp
-        src/Entities/Space.hpp
-        src/Entities/bullet.cpp
-        src/Entities/bullet.hpp
+    src/Entities/fish.hpp
+    src/Entities/Player.hpp
+    src/Entities/turtle.hpp
+    src/Entities/Space.hpp
+    src/Entities/bullet.cpp
+    src/Entities/bullet.hpp
+    src/Entities/Bosses/Boss1.cpp
+    src/Entities/Bosses/Boss1.hpp
+    src/Entities/HealthHeart.cpp
+    src/Entities/HealthHeart.hpp
         src/Entities/UI/Health.cpp
         src/Entities/UI/Health.hpp)
 

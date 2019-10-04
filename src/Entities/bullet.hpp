@@ -10,6 +10,10 @@
 #include "turtle.hpp"
 #include "fish.hpp"
 
+// Forward declarations
+class Player;
+class Boss1;
+
 class Bullet : public Entity {
     // Shared between all bullets, no need to load one for each instance
     static Texture bullet_texture;
@@ -23,17 +27,16 @@ public:
     // Returns the current bullet position
     vec2 get_position()const;
 
-    // Collision routines for turtles and fish
+    // Collision routines for player, turtles and fish
+    bool collides_with(const Player& player);
     bool collides_with(const Turtle& turtle);
     bool collides_with(const Fish& fish);
+    bool collides_with(const Boss1& boss); //TODO either generic collides, or generic boss/enemy
 
     // Returns the bullet' bounding box for collision detection, called by collides_with()
     vec2 get_bounding_box()const;
 
 private:
-    vec2 m_position; // Window coordinates
-    vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
-    float m_rotation; // in radians
 };
 
 
