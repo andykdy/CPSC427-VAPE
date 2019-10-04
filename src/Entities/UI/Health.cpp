@@ -4,24 +4,24 @@
 
 #include <cmath>
 #include <algorithm>
-#include "HealthHeart.hpp"
+#include "Health.hpp"
 
-Texture HealthHeart::health_heart_texture;
+Texture Health::health_point_texture;
 
-bool HealthHeart::init(vec2 position) {
+bool Health::init(vec2 position) {
     // Load shared texture
-    if (!health_heart_texture.is_valid())
+    if (!health_point_texture.is_valid())
     {
-        if (!health_heart_texture.load_from_file(textures_path("health_heart.png")))
+        if (!health_point_texture.load_from_file(textures_path("health_point.png")))
         {
-            fprintf(stderr, "Failed to load health heart texture!");
+            fprintf(stderr, "Failed to load health point texture!");
             return false;
         }
     }
 
     // The position corresponds to the center of the texture
-    float wr = health_heart_texture.width * 0.5f;
-    float hr = health_heart_texture.height * 0.5f;
+    float wr = health_point_texture.width * 0.5f;
+    float hr = health_point_texture.height * 0.5f;
 
     TexturedVertex vertices[4];
     vertices[0].position = { -wr, +hr, -0.02f };
@@ -67,7 +67,7 @@ bool HealthHeart::init(vec2 position) {
     return true;
 }
 
-void HealthHeart::draw(const mat3 &projection) {
+void Health::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     transform.begin();
@@ -102,7 +102,7 @@ void HealthHeart::draw(const mat3 &projection) {
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, health_heart_texture.id);
+    glBindTexture(GL_TEXTURE_2D, health_point_texture.id);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
@@ -114,7 +114,7 @@ void HealthHeart::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void HealthHeart::destroy() {
+void Health::destroy() {
     glDeleteBuffers(1, &mesh.vbo);
     glDeleteBuffers(1, &mesh.ibo);
     glDeleteBuffers(1, &mesh.vao);

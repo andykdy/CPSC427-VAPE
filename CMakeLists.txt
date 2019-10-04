@@ -56,8 +56,8 @@ set(SOURCE_FILES
     src/Entities/bullet.hpp
     src/Entities/Bosses/Boss1.cpp
     src/Entities/Bosses/Boss1.hpp
-    src/Entities/HealthHeart.cpp
-    src/Entities/HealthHeart.hpp
+    src/Entities/UI/Health.cpp
+    src/Entities/UI/Health.hpp
     src/Entities/Vamp.cpp
     src/Entities/Vamp.hpp)
 
