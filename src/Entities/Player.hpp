@@ -9,6 +9,8 @@ class Fish;
 
 class Player : public Entity
 {
+	static Texture player_texture;
+	static Texture vamp_texture;
 public:
 	// Creates all the associated render resources and default transform
 	bool init(vec2 screen);

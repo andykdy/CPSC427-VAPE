@@ -85,6 +85,7 @@ private:
     Mix_Chunk* m_player_dead_sound;
     Mix_Chunk* m_player_eat_sound;
     Mix_Chunk* m_player_bullet_sound;
+    Mix_Chunk* m_player_explosion;
 
     // C++ rng
     std::default_random_engine m_rng;
