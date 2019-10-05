@@ -16,6 +16,11 @@ public:
     void update(float ms);
     void draw(const mat3& projection)override;
     void destroy();
+
+    void setHealth(int health);
+
+private:
+    int health;
 };
 
 
