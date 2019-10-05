@@ -18,12 +18,15 @@
 #include "Entities/fish.hpp"
 #include "Entities/Space.hpp"
 #include "Entities/bullet.hpp"
+#include "Entities/UI/Health.hpp"
 
 // stlib
 #include <vector>
 #include <random>
 
 #include <Engine/GameState.hpp>
+#include <Entities/Vamp.hpp>
+#include <Entities/Bosses/Boss1.hpp>
 
 class LevelState : public GameState {
 public:
@@ -47,17 +50,18 @@ public:
     void on_mouse_move(GameEngine *game, GLFWwindow *window, double xpos, double ypos) override;
 
     void on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) override;
-
+    void LoadTexture(char *filename);
 private:
+    void init_health();
+    void lose_health(int damage);
+    void add_health(int heal);
+
     // Generates a new turtle
     bool spawn_turtle();
 
     // Generates a new fish
     bool spawn_fish();
 
-    bool spawn_bullet();
-
-private:
     // Tracks keys being pressed
     std::map<int, bool> keyMap;
 
@@ -72,19 +76,31 @@ private:
 
     // Game entities
     Player m_player;
+    Boss1 m_boss;
     std::vector<Turtle> m_turtles;
     std::vector<Fish> m_fish;
-    std::vector<Bullet> m_bullets;
+    std::vector<Health> m_health;
 
     float m_current_speed;
+    float m_level_start;
     float m_next_turtle_spawn;
     float m_next_fish_spawn;
-    float m_bullet_cooldown;
+
+    bool m_spawn_enemies;
+    bool m_boss_mode;
+
+    // Vamp mode
+    Vamp m_vamp;
+    bool m_vamp_mode;
+    float m_vamp_mode_timer;
+    unsigned int m_vamp_mode_charge;
 
     Mix_Music* m_background_music;
+    Mix_Music* m_boss_music;
+    Mix_Music* m_victory_music;
     Mix_Chunk* m_player_dead_sound;
     Mix_Chunk* m_player_eat_sound;
-    Mix_Chunk* m_player_bullet_sound;
+    Mix_Chunk* m_player_explosion;
 
     // C++ rng
     std::default_random_engine m_rng;

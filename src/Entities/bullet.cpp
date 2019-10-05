@@ -5,10 +5,12 @@
 #include <cmath>
 #include <algorithm>
 #include "bullet.hpp"
+#include "Player.hpp"
+#include "Bosses/Boss1.hpp"
 
 Texture Bullet::bullet_texture;
 
-float BULLET_SPEED = 15;
+float BULLET_SPEED = 1250;
 
 bool Bullet::init(vec2 position, float rotation) {
     // Load shared texture
@@ -61,14 +63,14 @@ bool Bullet::init(vec2 position, float rotation) {
         return false;
 
 
-    m_scale.x = 0.4f;
-    m_scale.y = 0.4f;
+    physics.scale.x = 0.4f;
+    physics.scale.y = 0.4f;
 
-    m_rotation = rotation;
+    motion.radians = rotation;
 
-    // place bullet n away from center of salmon
-    m_position.x = position.x + 100*sin(m_rotation);
-    m_position.y = position.y + 100*cos(m_rotation);
+    // place bullet n away from center of entity
+    motion.position.x = position.x + 100*sin(motion.radians);
+    motion.position.y = position.y + 100*cos(motion.radians);
 
     return true;
 }
@@ -84,17 +86,18 @@ void Bullet::destroy() {
 }
 
 void Bullet::update(float ms) {
-    m_position.x += BULLET_SPEED*sin(m_rotation);
-    m_position.y += BULLET_SPEED*cos(m_rotation);
+    float step = BULLET_SPEED * (ms / 1000);
+    motion.position.x += step*sin(motion.radians);
+    motion.position.y += step*cos(motion.radians);
 }
 
 void Bullet::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     transform.begin();
-    transform.translate(m_position);
-    transform.rotate(m_rotation);
-    transform.scale(m_scale);
+    transform.translate(motion.position);
+    transform.rotate(motion.radians);
+    transform.scale(physics.scale);
     transform.end();
 
     // Setting shaders
@@ -138,16 +141,29 @@ void Bullet::draw(const mat3 &projection) {
 
 vec2 Bullet::get_position()const
 {
-    return m_position;
+    return motion.position;
 }
 
+// TODO make a collision component and use a single collides_with over Entity to reduce duplicate code
+bool Bullet::collides_with(const Player &player) {
+    float dx = motion.position.x - player.get_position().x;
+    float dy = motion.position.y - player.get_position().y;
+    float d_sq = dx * dx + dy * dy;
+    float other_r = std::max(player.get_bounding_box().x, player.get_bounding_box().y);
+    float my_r = std::max(physics.scale.x, physics.scale.y);
+    float r = std::max(other_r, my_r);
+    r *= 0.6f;
+    if (d_sq < r * r)
+        return true;
+    return false;
+}
 
 bool Bullet::collides_with(const Turtle &turtle) {
-    float dx = m_position.x - turtle.get_position().x;
-    float dy = m_position.y - turtle.get_position().y;
+    float dx = motion.position.x - turtle.get_position().x;
+    float dy = motion.position.y - turtle.get_position().y;
     float d_sq = dx * dx + dy * dy;
     float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
-    float my_r = std::max(m_scale.x, m_scale.y);
+    float my_r = std::max(physics.scale.x, physics.scale.y);
     float r = std::max(other_r, my_r);
     r *= 0.6f;
     if (d_sq < r * r)
@@ -156,11 +172,24 @@ bool Bullet::collides_with(const Turtle &turtle) {
 }
 
 bool Bullet::collides_with(const Fish &fish) {
-    float dx = m_position.x - fish.get_position().x;
-    float dy = m_position.y - fish.get_position().y;
+    float dx = motion.position.x - fish.get_position().x;
+    float dy = motion.position.y - fish.get_position().y;
     float d_sq = dx * dx + dy * dy;
     float other_r = std::max(fish.get_bounding_box().x, fish.get_bounding_box().y);
-    float my_r = std::max(m_scale.x, m_scale.y);
+    float my_r = std::max(physics.scale.x, physics.scale.y);
+    float r = std::max(other_r, my_r);
+    r *= 0.6f;
+    if (d_sq < r * r)
+        return true;
+    return false;
+}
+
+bool Bullet::collides_with(const Boss1 &boss) {
+    float dx = motion.position.x - boss.get_position().x;
+    float dy = motion.position.y - boss.get_position().y;
+    float d_sq = dx * dx + dy * dy;
+    float other_r = std::max(boss.get_bounding_box().x, boss.get_bounding_box().y);
+    float my_r = std::max(physics.scale.x, physics.scale.y);
     float r = std::max(other_r, my_r);
     r *= 0.6f;
     if (d_sq < r * r)
@@ -172,5 +201,5 @@ bool Bullet::collides_with(const Fish &fish) {
 vec2 Bullet::get_bounding_box()const
 {
     // fabs is to avoid negative scale due to the facing direction
-    return { std::fabs(m_scale.x) * bullet_texture.width, std::fabs(m_scale.y) * bullet_texture.height };
+    return { std::fabs(physics.scale.x) * bullet_texture.width, std::fabs(physics.scale.y) * bullet_texture.height };
 }

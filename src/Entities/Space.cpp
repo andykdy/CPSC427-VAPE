@@ -85,3 +85,15 @@ void Space::draw(const mat3& projection) {
 	glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
 	glDisableVertexAttribArray(0);
 }
+
+void Space::set_boss_dead() {
+	m_boss_dead_time = glfwGetTime();
+}
+
+void Space::reset_boss_dead_time() {
+	m_boss_dead_time = -1;
+}
+
+float Space::get_boss_dead_time() const {
+	return glfwGetTime() - m_boss_dead_time;
+}

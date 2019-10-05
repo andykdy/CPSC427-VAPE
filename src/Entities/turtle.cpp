@@ -56,12 +56,12 @@ bool Turtle::init()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	motion.radians = 0.f;
-	motion.speed = 200.f;
+	motion.radians = 3.14;
+	motion.speed = 180.f;
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
-	physics.scale = { -0.4f, 0.4f };
+	physics.scale = { -0.33f, 0.33f };
 
 	return true;
 }
@@ -82,6 +82,7 @@ void Turtle::update(float ms)
 {
 	float step = motion.speed * (ms / 1000);
 	motion.position.y += step;
+	motion.radians += step * 0.02;
 }
 
 void Turtle::draw(const mat3& projection)

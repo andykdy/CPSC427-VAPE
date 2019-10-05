@@ -1,5 +1,23 @@
 CHANGELOG:
 
+Oct 3rd 2019<Cody>
+- Add Boss1
+-> Add boss_mode and spawn_enemies flags to the level
+-> Switches to boss mode after 30 seconds (for now)
+-> Add new music for boss fight and victory
+-> Returns to menu after killing boss
+- Move bullet code into the player class
+- Some general cleanup
+
+Oct 3rd 2019 <Tanha>
+- Added hearts to represent 3 lives for health
+-> heart = new entity
+- Changed health system of the player to be set from the level
+
+Sept 30th 2019 <Andy Kim>
+- Implemented Invulerable frames after hit
+- Introduced rudamentary health system 
+- Changed is_alive(), kill() to align with new health system
 
 Sept 26th 2019 <Andy Kim>
 - Removed features from fish assignment
@@ -7,3 +25,4 @@ Sept 26th 2019 <Andy Kim>
 - Friction value increased
 - Changed game resolution
 	- 1200 -> 1000 
+

@@ -10,58 +10,68 @@
 #include <algorithm>
 #include <cmath>
 
-bool Player::init(vec2 screen)
+// Same as static in c, local to compilation unit
+namespace
 {
+	const size_t BULLET_COOLDOWN_MS = 300;
+}
+
+Texture Player::player_texture;
+Texture Player::vamp_texture;
+
+bool Player::init(vec2 screen, float health)
+{
+	// Load sound
+	m_player_bullet_sound = Mix_LoadWAV(audio_path("pow.wav"));
+	if ( m_player_bullet_sound == nullptr)
+	{
+		fprintf(stderr, "Failed to load sound player_bullet.wav\n %s\n %s\n %s\n make sure the data directory is present",
+				audio_path("player_bullet.wav"));
+		throw std::runtime_error("Failed to load sound player_bullet.wav");
+	}
+
 	m_vertices.clear();
 	m_indices.clear();
 
-	// Reads the salmon mesh from a file, which contains a list of vertices and indices
-	FILE* mesh_file = fopen(mesh_path("salmon.mesh"), "r");
-	if (mesh_file == nullptr)
-		return false;
-
-	// Reading vertices and colors
-	size_t num_vertices;
-	fscanf(mesh_file, "%zu\n", &num_vertices);
-	for (size_t i = 0; i < num_vertices; ++i)
+	// Load shared texture
+	if (!player_texture.is_valid())
 	{
-		float x, y, z;
-		float _u[3]; // unused
-		int r, g, b;
-		fscanf(mesh_file, "%f %f %f %f %f %f %d %d %d\n", &x, &y, &z, _u, _u+1, _u+2, &r, &g, &b);
-		Vertex vertex;
-		vertex.position = { x, y, -z }; 
-		vertex.color = { (float)r / 255, (float)g / 255, (float)b / 255 };
-		m_vertices.push_back(vertex);
+		if (!player_texture.load_from_file(textures_path("ship_normal.png")))
+		{
+			fprintf(stderr, "Failed to load the ship texture!");
+			return false;
+		}
 	}
 
-	// Reading associated indices
-	size_t num_indices;
-	fscanf(mesh_file, "%zu\n", &num_indices);
-	for (size_t i = 0; i < num_indices; ++i)
-	{
-		int idx[3];
-		fscanf(mesh_file, "%d %d %d\n", idx, idx + 1, idx + 2);
-		m_indices.push_back((uint16_t)idx[0]);
-		m_indices.push_back((uint16_t)idx[1]);
-		m_indices.push_back((uint16_t)idx[2]);
-	}
+	// The position corresponds to the center of the texture
+	float wr = player_texture.width * 0.5f;
+	float hr = player_texture.height * 0.5f;
 
-	// Done reading
-	fclose(mesh_file);
+	TexturedVertex vertices[4];
+	vertices[0].position = { -wr, +hr, -0.02f };
+	vertices[0].texcoord = { 0.f, 1.f };
+	vertices[1].position = { +wr, +hr, -0.02f };
+	vertices[1].texcoord = { 1.f, 1.f };
+	vertices[2].position = { +wr, -hr, -0.02f };
+	vertices[2].texcoord = { 1.f, 0.f };
+	vertices[3].position = { -wr, -hr, -0.02f };
+	vertices[3].texcoord = { 0.f, 0.f };
 
+	// Counterclockwise as it's the default opengl front winding direction
+	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
+	// Clearing errors
 	// Clearing errors
 	gl_flush_errors();
-
+	
 	// Vertex Buffer creation
 	glGenBuffers(1, &mesh.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * m_vertices.size(), m_vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
 
 	// Index Buffer creation
 	glGenBuffers(1, &mesh.ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * m_indices.size(), m_indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
 
 	// Vertex Array (Container for Vertex + Index buffer)
 	glGenVertexArrays(1, &mesh.vao);
@@ -69,18 +79,22 @@ bool Player::init(vec2 screen)
 		return false;
 
 	// Loading shaders
-	if (!effect.load_from_file(shader_path("salmon.vs.glsl"), shader_path("salmon.fs.glsl")))
+	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
-	
+
 	// Setting initial values
 	motion.position = { screen.x / 2, screen.y - 100 };
-	motion.radians = 1.5708;
+	motion.radians = 0.f;
 	motion.speed = 200.f;
 
-	physics.scale = { -35.f, 35.f };
+	physics.scale = { -0.40, 0.40 };
 
-	m_is_alive = true;
+
+	m_screen = screen;
 	m_light_up_countdown_ms = -1.f;
+	m_bullet_cooldown = -1.f;
+	m_health = health;
+	m_iframe = 0.f;
 
 	return true;
 }
@@ -88,6 +102,13 @@ bool Player::init(vec2 screen)
 // Releases all graphics resources
 void Player::destroy()
 {
+	if (m_player_bullet_sound != nullptr)
+		Mix_FreeChunk(m_player_bullet_sound);
+
+	for (auto& bullet : bullets)
+		bullet.destroy();
+	bullets.clear();
+
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
 	glDeleteBuffers(1, &mesh.vao);
@@ -100,10 +121,22 @@ void Player::destroy()
 // Called on each frame by World::update()
 void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 {
-	float step = motion.speed * (ms / 1000);
-	if (m_is_alive)
-	{
+	// Update player bullets
+	for (auto& bullet : bullets)
+		bullet.update(ms);
 
+	// Spawning player bullets
+	m_bullet_cooldown -= ms;
+	if (is_alive() && keyMap[GLFW_KEY_SPACE] && m_bullet_cooldown < 0.f) {
+		spawn_bullet();
+		m_bullet_cooldown = BULLET_COOLDOWN_MS;
+		Mix_PlayChannel(-1, m_player_bullet_sound, 0);
+	}
+
+	float step = motion.speed * (ms / 1000);
+	if (is_alive())
+	{
+		vec2 screenBuffer = { 20.0f,50.0f };
 		float accelX = 0.f;
 		float accelY = 0.f;
 
@@ -116,8 +149,9 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
         accelerate(accelX,accelY);
 
         // move based on velocity
-        motion.position.x += m_velocity.x;
-        motion.position.y += m_velocity.y;
+		// std::clamp is not available, so using min max clamping instead 
+        motion.position.x = std::min(std::max(motion.position.x + m_velocity.x, screenBuffer.x), m_screen.x - screenBuffer.x);
+        motion.position.y = std::min(std::max(motion.position.y + m_velocity.y, screenBuffer.y), m_screen.y - screenBuffer.y);
 
 
         // Decay velocity
@@ -141,16 +175,21 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 
 	if (m_light_up_countdown_ms > 0.f)
 		m_light_up_countdown_ms -= ms;
+	if (m_iframe > 0.f) {
+		m_iframe -= ms;
+	}
 }
 
 void Player::draw(const mat3& projection)
 {
+    // Draw player bullets
+    for (auto& bullet : bullets)
+        bullet.draw(projection);
+
 	transform.begin();
-
-	transform.translate({ motion.position.x, motion.position.y });
-    transform.scale(physics.scale);
-    transform.rotate(motion.radians);
-
+	transform.translate(motion.position);
+	transform.scale(physics.scale);
+	transform.rotate(motion.radians);
 	transform.end();
 
 	// Setting shaders
@@ -158,13 +197,12 @@ void Player::draw(const mat3& projection)
 
 	// Enabling alpha channel for textures
 	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 
-	// Getting uniform locations
+	// Getting uniform locations for glUniform* calls
 	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
 	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
 	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
-	GLint light_up_uloc = glGetUniformLocation(effect.program, "light_up");
 
 	// Setting vertices and indices
 	glBindVertexArray(mesh.vao);
@@ -173,35 +211,24 @@ void Player::draw(const mat3& projection)
 
 	// Input data location as in the vertex buffer
 	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	GLint in_color_loc = glGetAttribLocation(effect.program, "in_color");
+	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
 	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_color_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-	glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)sizeof(vec3));
+	glEnableVertexAttribArray(in_texcoord_loc);
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
+	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
+
+	// Enabling and binding texture to slot 0
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, player_texture.id);
 
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.out);
-
-	// !!! Player Color
 	float color[] = { 1.f, 1.f, 1.f };
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// HERE TO SET THE CORRECTLY LIGHT UP THE SALMON IF HE HAS EATEN RECENTLY
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	int light_up = (m_light_up_countdown_ms > 0 ? 1 : 0);
-	glUniform1iv(light_up_uloc, 1, &light_up);
-
-	// Get number of infices from buffer,
-	// we know our vbo contains both colour and position information, so...
-	GLint size = 0;
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-	GLsizei num_indices = size / sizeof(uint16_t);
-
 	// Drawing!
-	glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_SHORT, nullptr);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
 // Simple bounding box collision check
@@ -273,17 +300,51 @@ void Player::accelerate(float x, float y) {
 
 bool Player::is_alive() const
 {
-	return m_is_alive;
+	return m_health > 0;
 }
 
-// Called when the salmon collides with a turtle
-void Player::kill()
+// Called when the player collides with an enemy
+void Player::lose_health(float amount)
 {
-	m_is_alive = false;
+	m_health -= amount;
+}
+
+void Player::gain_health(float amount)
+{
+    m_health += amount;
 }
 
 // Called when the salmon collides with a fish
 void Player::light_up()
 {
 	m_light_up_countdown_ms = 1500.f;
+}
+
+void Player::spawn_bullet() {
+	Bullet bullet;
+	if (bullet.init(motion.position, motion.radians + 3.14)) {
+		bullets.emplace_back(bullet);
+	} else {
+		throw std::runtime_error("Failed to spawn bullet");
+	}
+}
+
+vec2 Player::get_bounding_box() const {
+    // fabs is to avoid negative scale due to the facing direction
+    return { std::fabs(physics.scale.x) * player_texture.width, std::fabs(physics.scale.y) * player_texture.height };
+}
+
+// Called when the player takes damage
+void Player::set_iframes(float magnitude)
+{
+	m_iframe = magnitude;
+}
+
+float Player::get_iframes()
+{
+	return m_iframe;
+}
+
+float Player::get_health() const {
+    return m_health;
 }

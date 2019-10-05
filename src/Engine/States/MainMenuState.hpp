@@ -32,6 +32,8 @@ public:
     void on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) override;
 
 private:
+	// Mouse position
+	vec2 mouse_position;
 
 };
 
