@@ -209,8 +209,8 @@ void LevelState::update(GameEngine *game) {
     // Updating all entities, making the turtle and fish
     // faster based on current
     float elapsed_ms = game->getElapsed_ms();
-    m_player.update(elapsed_ms, keyMap, mouse_position);
-    m_vamp.update(elapsed_ms, m_player.get_position());
+    m_player.update(elapsed_ms * m_current_speed, keyMap, mouse_position);
+    m_vamp.update(elapsed_ms * m_current_speed, m_player.get_position());
     for (auto& turtle : m_turtles)
         turtle.update(elapsed_ms * m_current_speed);
     for (auto& fish : m_fish)
@@ -341,7 +341,7 @@ void LevelState::update(GameEngine *game) {
             }
         }
 
-        m_boss.update(elapsed_ms);
+        m_boss.update(elapsed_ms * m_current_speed);
 
         // If boss dies, return to main menu
         if (m_boss.getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
@@ -462,7 +462,7 @@ void LevelState::init_health() {
     for(int i = 0; i < INIT_HEALTH; i++) {
         Health health;
 
-        if(health.init( {(45 + (i * 5)), 60})) {
+        if(health.init( {(45.f + (i * 5)), 60})) {
             m_health.emplace_back(health);
         } else {
             throw std::runtime_error("Failed to init health");
@@ -500,7 +500,7 @@ void LevelState::add_health(int heal) {
     int end = start + healVal;
     for (int i = start; i < end; i++) {
         Health health;
-        if (health.init({(45 + (i * 5)), 60})) {
+        if (health.init({(45.f + (i * 5)), 60})) {
             m_health.emplace_back(health);
         } else {
             throw std::runtime_error("Failed to add health");

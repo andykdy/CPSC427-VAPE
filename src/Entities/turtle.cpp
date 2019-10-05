@@ -82,7 +82,7 @@ void Turtle::update(float ms)
 {
 	float step = motion.speed * (ms / 1000);
 	motion.position.y += step;
-	motion.radians += 0.06;
+	motion.radians += step * 0.02;
 }
 
 void Turtle::draw(const mat3& projection)

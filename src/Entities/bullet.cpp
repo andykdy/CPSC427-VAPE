@@ -10,7 +10,7 @@
 
 Texture Bullet::bullet_texture;
 
-float BULLET_SPEED = 15;
+float BULLET_SPEED = 1250;
 
 bool Bullet::init(vec2 position, float rotation) {
     // Load shared texture
@@ -86,8 +86,9 @@ void Bullet::destroy() {
 }
 
 void Bullet::update(float ms) {
-    motion.position.x += BULLET_SPEED*sin(motion.radians);
-    motion.position.y += BULLET_SPEED*cos(motion.radians);
+    float step = BULLET_SPEED * (ms / 1000);
+    motion.position.x += step*sin(motion.radians);
+    motion.position.y += step*cos(motion.radians);
 }
 
 void Bullet::draw(const mat3 &projection) {

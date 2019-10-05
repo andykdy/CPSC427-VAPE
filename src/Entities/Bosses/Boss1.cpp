@@ -67,7 +67,7 @@ bool Boss1::init(GameEngine *game) {
         return false;
 
     motion.radians = 3.14;
-    motion.speed = 3.f;
+    motion.speed = 350.f;
 
     // Setting initial values, scale is negative to make it face the opposite way
     // 1.0 would be as big as the original texture.
@@ -117,7 +117,7 @@ void Boss1::state1Update(float ms) {
     float rBound = w - lBound;
     // Adjust x position by speed in direction dir
     int mod = (dir == Direction::right ? 1 : -1);
-    float newX = motion.position.x + mod * motion.speed;
+    float newX = motion.position.x + mod * (ms / 1000) * motion.speed;
     // If past a boundary, set position to within the boundary and swap direction
     if (newX >= rBound) {
         newX = rBound;
