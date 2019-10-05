@@ -73,9 +73,8 @@ void LevelState::init(GameEngine *game) {
     m_spawn_enemies = true;
 
     m_player.init(screen, INIT_HEALTH);
+    m_health.init({45, 60});
     m_space.init();
-
-    init_health();
 }
 
 void LevelState::terminate() {
@@ -97,11 +96,10 @@ void LevelState::terminate() {
         turtle.destroy();
     for (auto& fish : m_fish)
         fish.destroy();
-    for(auto& health: m_health)
-        health.destroy();
+    m_health.destroy();
     m_turtles.clear();
     m_fish.clear();
-    m_health.clear();
+    m_boss.destroy();
 }
 
 void LevelState::update(GameEngine *game) {
@@ -121,6 +119,8 @@ void LevelState::update(GameEngine *game) {
         m_boss.set_position({static_cast<float>(w/2), static_cast<float>(h/10)});
     }
 
+    m_health.setHealth((int) m_player.get_health());
+
     // Checking Player - Turtle collisions
 	auto turtle_it = m_turtles.begin();
 	while (turtle_it != m_turtles.end())
@@ -135,8 +135,7 @@ void LevelState::update(GameEngine *game) {
 				}
 			}
             break;
-		}
-		else
+		} else
 		{
 			turtle_it++;
 		}
@@ -353,22 +352,7 @@ void LevelState::update(GameEngine *game) {
     // If salmon is dead, restart the game after the fading animation
     if (!m_player.is_alive() &&
         m_space.get_salmon_dead_time() > 5) {
-        m_player.destroy();
-        m_vamp.destroy();
-        m_player.init(screen, INIT_HEALTH);
-        m_boss.destroy();
-        m_level_start = glfwGetTime();
-        m_boss_mode = false;
-        m_spawn_enemies = true;
-        m_turtles.clear();
-        m_fish.clear();
-        m_health.clear();
-        init_health();
-        Mix_PlayMusic(m_background_music, -1);
-
-        m_space.reset_salmon_dead_time();
-        m_space.reset_boss_dead_time();
-        m_current_speed = 1.f;
+       reset(screen);
     }
 }
 
@@ -432,8 +416,7 @@ void LevelState::draw(GameEngine *game) {
     if (m_boss_mode) {
         m_boss.draw(projection_2D);
     }
-    for(auto& health : m_health)
-        health.draw(projection_2D);
+    m_health.draw(projection_2D);
 
 
     /////////////////////
@@ -458,26 +441,8 @@ void LevelState::draw(GameEngine *game) {
     glfwSwapBuffers(m_window);
 }
 
-void LevelState::init_health() {
-    for(int i = 0; i < INIT_HEALTH; i++) {
-        Health health;
-
-        if(health.init( {(45.f + (i * 5)), 60})) {
-            m_health.emplace_back(health);
-        } else {
-            throw std::runtime_error("Failed to init health");
-        }
-    }
-}
-
 void LevelState::lose_health(int damage) {
     m_player.lose_health(damage);
-    auto health_it = m_health.end();
-    int size = m_health.size();
-    int end = std::min(size, damage);
-    for (int i = 0; i < end; i++) {
-        m_health.erase(health_it);
-    }
     Mix_PlayChannel(-1, m_player_dead_sound, 0);
     if (!m_player.is_alive()) {
         m_space.set_salmon_dead();
@@ -494,17 +459,6 @@ void LevelState::add_health(int heal) {
         healVal = (int) dif;
 
     m_player.gain_health(healVal);
-
-    int start = m_health.size();
-    int end = start + healVal;
-    for (int i = start; i < end; i++) {
-        Health health;
-        if (health.init({(45.f + (i * 5)), 60})) {
-            m_health.emplace_back(health);
-        } else {
-            throw std::runtime_error("Failed to add health");
-        }
-    }
 }
 
 // Creates a new turtle and if successfull adds it to the list of turtles
@@ -542,15 +496,7 @@ void LevelState::on_key(GameEngine *game, GLFWwindow *wwindow, int key, int i, i
         int w, h;
         glfwGetFramebufferSize(game->getM_window(), &w, &h);
         vec2 screen = { (float)w / game->getM_screen_scale(), (float)h / game->getM_screen_scale() };
-        m_player.destroy();
-        m_player.init(screen, INIT_HEALTH);
-        m_turtles.clear();
-        m_fish.clear();
-        m_space.reset_salmon_dead_time();
-        m_space.reset_boss_dead_time();
-        m_current_speed = 1.f;
-
-        init_health();
+        reset(screen);
     }
 
     // Control the current speed with `<` `>`
@@ -570,4 +516,21 @@ void LevelState::on_mouse_move(GameEngine *game, GLFWwindow *window, double xpos
 void LevelState::on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) {
     // Track which mouse buttons are being pressed or held
     (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[button] = true : keyMap[button] = false;
+}
+
+void LevelState::reset(vec2 screen) {
+    m_player.destroy();
+    m_vamp.destroy();
+    m_player.init(screen, INIT_HEALTH);
+    m_boss.destroy();
+    m_level_start = glfwGetTime();
+    m_boss_mode = false;
+    m_spawn_enemies = true;
+    m_turtles.clear();
+    m_fish.clear();
+    Mix_PlayMusic(m_background_music, -1);
+
+    m_space.reset_salmon_dead_time();
+    m_space.reset_boss_dead_time();
+    m_current_speed = 1.f;
 }

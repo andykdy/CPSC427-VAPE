@@ -52,9 +52,10 @@ public:
     void on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) override;
     void LoadTexture(char *filename);
 private:
-    void init_health();
     void lose_health(int damage);
     void add_health(int heal);
+
+    void reset(vec2 screen);
 
     // Generates a new turtle
     bool spawn_turtle();
@@ -77,9 +78,9 @@ private:
     // Game entities
     Player m_player;
     Boss1 m_boss;
+    Health m_health;
     std::vector<Turtle> m_turtles;
     std::vector<Fish> m_fish;
-    std::vector<Health> m_health;
 
     float m_current_speed;
     float m_level_start;
