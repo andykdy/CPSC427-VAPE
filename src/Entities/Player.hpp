@@ -52,7 +52,10 @@ public:
 	// Kills the salmon, changing its alive state and triggering on death events
 	void lose_health(float amount);
 
-	// Called when the salmon collides with a fish, starts lighting up the salmon
+	// Gain health after draining an enemy in vamp mode
+    void gain_health(float amount);
+
+    // Called when the salmon collides with a fish, starts lighting up the salmon
 	void light_up();
 
 	// Returns the bounding box for collision detection
@@ -64,6 +67,8 @@ public:
 	void set_iframes(float magnitude);
 
 	float get_iframes();
+
+    float get_health() const;
 
 private:
 	Mix_Chunk* m_player_bullet_sound;

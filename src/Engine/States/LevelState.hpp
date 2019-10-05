@@ -25,6 +25,7 @@
 #include <random>
 
 #include <Engine/GameState.hpp>
+#include <Entities/Vamp.hpp>
 #include <Entities/Bosses/Boss1.hpp>
 
 class LevelState : public GameState {
@@ -52,8 +53,8 @@ public:
     void LoadTexture(char *filename);
 private:
     void init_health();
-    void lose_health();
-    void add_health();
+    void lose_health(int damage);
+    void add_health(int heal);
 
     // Generates a new turtle
     bool spawn_turtle();
@@ -87,6 +88,12 @@ private:
 
     bool m_spawn_enemies;
     bool m_boss_mode;
+
+    // Vamp mode
+    Vamp m_vamp;
+    bool m_vamp_mode;
+    float m_vamp_mode_timer;
+    unsigned int m_vamp_mode_charge;
 
     Mix_Music* m_background_music;
     Mix_Music* m_boss_music;

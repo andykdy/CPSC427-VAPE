@@ -309,6 +309,11 @@ void Player::lose_health(float amount)
 	m_health -= amount;
 }
 
+void Player::gain_health(float amount)
+{
+    m_health += amount;
+}
+
 // Called when the salmon collides with a fish
 void Player::light_up()
 {
@@ -338,4 +343,8 @@ void Player::set_iframes(float magnitude)
 float Player::get_iframes()
 {
 	return m_iframe;
+}
+
+float Player::get_health() const {
+    return m_health;
 }
