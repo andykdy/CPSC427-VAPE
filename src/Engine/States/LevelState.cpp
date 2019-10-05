@@ -486,7 +486,6 @@ void LevelState::lose_health(int damage) {
 
 void LevelState::add_health(int heal) {
     float dif = MAX_HEALTH -  m_player.get_health();
-    fprintf(stderr, "%d, %f, %f \n",MAX_HEALTH, m_player.get_health(), dif);
 
     int healVal = 0;
     if (dif >= heal)
