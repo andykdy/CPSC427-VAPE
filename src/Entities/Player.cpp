@@ -344,3 +344,7 @@ float Player::get_iframes()
 {
 	return m_iframe;
 }
+
+float Player::get_health() const {
+    return m_health;
+}

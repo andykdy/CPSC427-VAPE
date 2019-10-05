@@ -8,6 +8,7 @@
 #include <string.h>
 #include <cassert>
 #include <sstream>
+#include <algorithm>
 
 #include "LevelState.hpp"
 #include "MainMenuState.hpp"
@@ -20,9 +21,10 @@ namespace
     const size_t TURTLE_DELAY_MS = 500;
     const size_t FISH_DELAY_MS = 5000;
     const size_t VAMP_MODE_DURATION = 1500;
+    const size_t MAX_HEALTH = 75;
     const size_t INIT_HEALTH = 50;
     const size_t DAMAGE_ENEMY = 5;
-    const size_t DAMAGE_BOSS = 15;
+    const size_t DAMAGE_BOSS = 5;
     const size_t BOSS_TIME = 30;
     const size_t VAMP_HEAL = 2;
 }
@@ -128,7 +130,7 @@ void LevelState::update(GameEngine *game) {
             if (m_player.is_alive()) {
 				if (m_player.get_iframes() <= 0.f) {
 					m_player.set_iframes(500.f);
-					lose_health();
+					lose_health(DAMAGE_ENEMY);
 					m_turtles.erase(turtle_it);
 				}
 			}
@@ -195,7 +197,7 @@ void LevelState::update(GameEngine *game) {
         while (turtle_it != m_turtles.end()) {
             if (m_vamp.collides_with(*turtle_it)) {
                 turtle_it = m_turtles.erase(turtle_it);
-                m_player.gain_health(1.f);
+                add_health(VAMP_HEAL);
 
                 continue;
             }
@@ -317,7 +319,7 @@ void LevelState::update(GameEngine *game) {
                 boss_bullet_it = m_boss.bullets.erase(boss_bullet_it);
                 if (m_player.is_alive() && m_player.get_iframes() <= 0.f) {
                     m_player.set_iframes(500.f);
-                    lose_health();
+                    lose_health(DAMAGE_BOSS);
                 }
                 break;
             } else {
@@ -460,7 +462,7 @@ void LevelState::init_health() {
     for(int i = 0; i < INIT_HEALTH; i++) {
         Health health;
 
-        if(health.init( {(45 + ((float)(INIT_HEALTH - i - 1) * 5)), 60})) {
+        if(health.init( {(45 + (i * 5)), 60})) {
             m_health.emplace_back(health);
         } else {
             throw std::runtime_error("Failed to init health");
@@ -468,10 +470,12 @@ void LevelState::init_health() {
     }
 }
 
-void LevelState::lose_health() {
-    m_player.lose_health(DAMAGE_ENEMY);
-    auto health_it = m_health.begin();
-    for (int i = 0; i < DAMAGE_ENEMY; i++) {
+void LevelState::lose_health(int damage) {
+    m_player.lose_health(damage);
+    auto health_it = m_health.end();
+    int size = m_health.size();
+    int end = std::min(size, damage);
+    for (int i = 0; i < end; i++) {
         m_health.erase(health_it);
     }
     Mix_PlayChannel(-1, m_player_dead_sound, 0);
@@ -480,15 +484,27 @@ void LevelState::lose_health() {
     }
 }
 
-// Added in preparation for vamp mode
-void LevelState::add_health() {
-    // m_player.gain_health(VAMP_HEAL); Added by vamp branch
-    auto i = m_health.size();
-    Health health;
-    if(health.init( {(45 + ((float)(INIT_HEALTH - i - 1) * 5)), 60})) {
-        m_health.emplace_back(health);
-    } else {
-        throw std::runtime_error("Failed to add health");
+void LevelState::add_health(int heal) {
+    float dif = MAX_HEALTH -  m_player.get_health();
+    fprintf(stderr, "%d, %f, %f \n",MAX_HEALTH, m_player.get_health(), dif);
+
+    int healVal = 0;
+    if (dif >= heal)
+        healVal = heal;
+    else if (dif > 0)
+        healVal = (int) dif;
+
+    m_player.gain_health(healVal);
+
+    int start = m_health.size();
+    int end = start + healVal;
+    for (int i = start; i < end; i++) {
+        Health health;
+        if (health.init({(45 + (i * 5)), 60})) {
+            m_health.emplace_back(health);
+        } else {
+            throw std::runtime_error("Failed to add health");
+        }
     }
 }
 

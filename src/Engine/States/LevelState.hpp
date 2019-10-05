@@ -53,8 +53,8 @@ public:
     void LoadTexture(char *filename);
 private:
     void init_health();
-    void lose_health();
-    void add_health();
+    void lose_health(int damage);
+    void add_health(int heal);
 
     // Generates a new turtle
     bool spawn_turtle();

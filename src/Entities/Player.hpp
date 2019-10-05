@@ -68,6 +68,8 @@ public:
 
 	float get_iframes();
 
+    float get_health() const;
+
 private:
 	Mix_Chunk* m_player_bullet_sound;
 
