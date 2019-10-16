@@ -206,3 +206,15 @@ GLuint GameEngine::getM_frame_buffer() const {
 const Texture &GameEngine::getM_screen_tex() const {
     return m_screen_tex;
 }
+
+float GameEngine::getM_current_speed() const {
+    return m_current_speed;
+}
+
+void GameEngine::setM_current_speed(float m_current_speed) {
+    GameEngine::m_current_speed = m_current_speed;
+}
+
+const Manager &GameEngine::getManager() const {
+    return manager;
+}

@@ -3,7 +3,7 @@
 #include "common.hpp"
 
 
-class Space : public Entity
+class Space : public EntityOld
 {
 public:
 	// Creates all the associated render resources and default transform

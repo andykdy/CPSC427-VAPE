@@ -9,7 +9,7 @@
 class Turtle;
 class Fish;
 
-class Player : public Entity
+class Player : public EntityOld
 {
 	static Texture player_texture;
 	static Texture vamp_texture;

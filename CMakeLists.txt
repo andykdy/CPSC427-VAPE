@@ -59,7 +59,7 @@ set(SOURCE_FILES
     src/Entities/UI/Health.cpp
     src/Entities/UI/Health.hpp
     src/Entities/Vamp.cpp
-    src/Entities/Vamp.hpp)
+    src/Entities/Vamp.hpp src/Engine/ECS/ECS.hpp src/Components/MotionComponent.hpp src/Components/PhysicsComponent.hpp src/Components/EffectComponent.hpp src/Components/SpriteComponent.hpp src/Components/TransformComponent.hpp src/Engine/ECS/Component.hpp src/Engine/ECS/Entity.h)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

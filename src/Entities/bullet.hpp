@@ -14,7 +14,7 @@
 class Player;
 class Boss1;
 
-class Bullet : public Entity {
+class Bullet : public EntityOld {
     // Shared between all bullets, no need to load one for each instance
     static Texture bullet_texture;
 

@@ -12,7 +12,7 @@
 
 enum class Direction {left, right};
 
-class Boss1 : public Entity {
+class Boss1 : public EntityOld {
     // Shared between all turtles, no need to load one for each instance
     static Texture boss1_texture;
 

@@ -8,7 +8,7 @@
 #include "common.hpp"
 
 
-class Health: public Entity {
+class Health: public EntityOld {
     static Texture health_point_texture;
 
 public:

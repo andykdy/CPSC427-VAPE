@@ -17,6 +17,7 @@
 
 #include <common.hpp>
 #include <map>
+#include "Engine/ECS/ECS.hpp"
 
 class GameState;
 
@@ -61,6 +62,12 @@ public:
 
     const Texture &getM_screen_tex() const;
 
+    float getM_current_speed() const;
+
+    void setM_current_speed(float m_current_speed);
+
+    const Manager &getManager() const;
+
 private:
     //! Window handle
     GLFWwindow* m_window;
@@ -76,11 +83,11 @@ private:
     GLuint m_frame_buffer;
     Texture m_screen_tex;
 
+    Manager manager;
+
     float m_current_speed;
 
     float elapsed_ms;
-
-private:
 
     bool running;
     GameState *state;
