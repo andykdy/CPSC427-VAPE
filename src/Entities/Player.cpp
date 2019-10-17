@@ -9,6 +9,11 @@
 #include <string>
 #include <algorithm>
 #include <cmath>
+#include <Components/TransformComponent.hpp>
+#include <Components/EffectComponent.hpp>
+#include <Components/MotionComponent.hpp>
+#include <Components/PhysicsComponent.hpp>
+#include <Components/SpriteComponent.hpp>
 
 // Same as static in c, local to compilation unit
 namespace
@@ -21,6 +26,12 @@ Texture Player::vamp_texture;
 
 bool Player::init(vec2 screen, float health)
 {
+	auto* sprite = addComponent<SpriteComponent>();
+	auto* effect = addComponent<EffectComponent>();
+	auto* physics = addComponent<PhysicsComponent>();
+	auto* motion = addComponent<MotionComponent>();
+	auto* transform = addComponent<TransformComponent>();
+
 	// Load sound
 	m_player_bullet_sound = Mix_LoadWAV(audio_path("pow.wav"));
 	if ( m_player_bullet_sound == nullptr)
@@ -43,51 +54,22 @@ bool Player::init(vec2 screen, float health)
 		}
 	}
 
-	// The position corresponds to the center of the texture
-	float wr = player_texture.width * 0.5f;
-	float hr = player_texture.height * 0.5f;
-
-	TexturedVertex vertices[4];
-	vertices[0].position = { -wr, +hr, -0.02f };
-	vertices[0].texcoord = { 0.f, 1.f };
-	vertices[1].position = { +wr, +hr, -0.02f };
-	vertices[1].texcoord = { 1.f, 1.f };
-	vertices[2].position = { +wr, -hr, -0.02f };
-	vertices[2].texcoord = { 1.f, 0.f };
-	vertices[3].position = { -wr, -hr, -0.02f };
-	vertices[3].texcoord = { 0.f, 0.f };
-
-	// Counterclockwise as it's the default opengl front winding direction
-	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
-	// Clearing errors
-	// Clearing errors
-	gl_flush_errors();
-	
-	// Vertex Buffer creation
-	glGenBuffers(1, &mesh.vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
-
-	// Index Buffer creation
-	glGenBuffers(1, &mesh.ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
-
-	// Vertex Array (Container for Vertex + Index buffer)
-	glGenVertexArrays(1, &mesh.vao);
 	if (gl_has_errors())
 		return false;
 
 	// Loading shaders
-	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
+	if (!effect->load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	// Setting initial values
-	motion.position = { screen.x / 2, screen.y - 100 };
-	motion.radians = 0.f;
-	motion.speed = 200.f;
+	if (!sprite->initTexture(&player_texture, 10, 450, 450))
+		throw std::runtime_error("Failed to initialize health sprite");
 
-	physics.scale = { -0.40, 0.40 };
+	// Setting initial values
+	motion->position = { screen.x / 2, screen.y - 100 };
+	motion->radians = 0.f;
+	motion->speed = 200.f;
+
+	physics->scale = { -0.40, 0.40 };
 
 
 	m_screen = screen;
@@ -109,18 +91,19 @@ void Player::destroy()
 		bullet.destroy();
 	bullets.clear();
 
-	glDeleteBuffers(1, &mesh.vbo);
-	glDeleteBuffers(1, &mesh.ibo);
-	glDeleteBuffers(1, &mesh.vao);
+	auto* effect = getComponent<EffectComponent>();
+	auto* sprite = getComponent<SpriteComponent>();
 
-	glDeleteShader(effect.vertex);
-	glDeleteShader(effect.fragment);
-	glDeleteShader(effect.program);
+	effect->release();
+	sprite->release();
+	ECS::Entity::destroy();
 }
 
 // Called on each frame by World::update()
 void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 {
+    auto* motion = getComponent<MotionComponent>();
+
 	// Update player bullets
 	for (auto& bullet : bullets)
 		bullet.update(ms);
@@ -133,7 +116,7 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 		Mix_PlayChannel(-1, m_player_bullet_sound, 0);
 	}
 
-	float step = motion.speed * (ms / 1000);
+	float step = motion->speed * (ms / 1000);
 	if (is_alive())
 	{
 		vec2 screenBuffer = { 20.0f,50.0f };
@@ -146,12 +129,12 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
         if (keyMap[GLFW_KEY_A]) accelX -= 1.f;
         if (keyMap[GLFW_KEY_D]) accelX += 1.f;
 
-        accelerate(accelX,accelY);
+        accelerate(accelX,accelY); // TODO move velocity, acceleration, decay into movement
 
         // move based on velocity
 		// std::clamp is not available, so using min max clamping instead 
-        motion.position.x = std::min(std::max(motion.position.x + m_velocity.x, screenBuffer.x), m_screen.x - screenBuffer.x);
-        motion.position.y = std::min(std::max(motion.position.y + m_velocity.y, screenBuffer.y), m_screen.y - screenBuffer.y);
+        motion->position.x = std::min(std::max(motion->position.x + m_velocity.x, screenBuffer.x), m_screen.x - screenBuffer.x);
+        motion->position.y = std::min(std::max(motion->position.y + m_velocity.y, screenBuffer.y), m_screen.y - screenBuffer.y);
 
 
         // Decay velocity
@@ -182,66 +165,41 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 
 void Player::draw(const mat3& projection)
 {
+    auto* transform = getComponent<TransformComponent>();
+    auto* effect = getComponent<EffectComponent>();
+    auto* motion = getComponent<MotionComponent>();
+    auto* physics = getComponent<PhysicsComponent>();
+    auto* sprite = getComponent<SpriteComponent>();
+
     // Draw player bullets
     for (auto& bullet : bullets)
         bullet.draw(projection);
 
-	transform.begin();
-	transform.translate(motion.position);
-	transform.scale(physics.scale);
-	transform.rotate(motion.radians);
-	transform.end();
 
-	// Setting shaders
-	glUseProgram(effect.program);
+    transform->begin();
+    transform->translate(motion->position);
+    transform->scale(physics->scale);
+    transform->rotate(motion->radians);
+    transform->end();
 
-	// Enabling alpha channel for textures
-	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_DEPTH_TEST);
-
-	// Getting uniform locations for glUniform* calls
-	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
-	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
-	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
-
-	// Setting vertices and indices
-	glBindVertexArray(mesh.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	// Input data location as in the vertex buffer
-	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
-
-	// Enabling and binding texture to slot 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, player_texture.id);
-
-	// Setting uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.out);
-	float color[] = { 1.f, 1.f, 1.f };
-	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
-
-	// Drawing!
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+    sprite->draw(projection, transform->out, effect->program);
 }
 
+// TODO collisionSystem
 // Simple bounding box collision check
 // This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
 // if the center point of either object is inside the other's bounding-box-circle. You don't
 // need to try to use this technique.
 bool Player::collides_with(const Turtle& turtle)
 {
-	float dx = motion.position.x - turtle.get_position().x;
-	float dy = motion.position.y - turtle.get_position().y;
+    auto* motion = getComponent<MotionComponent>();
+    auto* physics = getComponent<PhysicsComponent>();
+
+	float dx = motion->position.x - turtle.get_position().x;
+	float dy = motion->position.y - turtle.get_position().y;
 	float d_sq = dx * dx + dy * dy;
 	float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
-	float my_r = std::max(physics.scale.x, physics.scale.y);
+	float my_r = std::max(physics->scale.x, physics->scale.y);
 	float r = std::max(other_r, my_r);
 	r *= 0.6f;
 	if (d_sq < r * r)
@@ -251,11 +209,14 @@ bool Player::collides_with(const Turtle& turtle)
 
 bool Player::collides_with(const Fish& fish)
 {
-	float dx = motion.position.x - fish.get_position().x;
-	float dy = motion.position.y - fish.get_position().y;
+    auto* motion = getComponent<MotionComponent>();
+    auto* physics = getComponent<PhysicsComponent>();
+
+    float dx = motion->position.x - fish.get_position().x;
+	float dy = motion->position.y - fish.get_position().y;
 	float d_sq = dx * dx + dy * dy;
 	float other_r = std::max(fish.get_bounding_box().x, fish.get_bounding_box().y);
-	float my_r = std::max(physics.scale.x, physics.scale.y);
+	float my_r = std::max(physics->scale.x, physics->scale.y);
 	float r = std::max(other_r, my_r);
 	r *= 0.6f;
 	if (d_sq < r * r)
@@ -265,22 +226,27 @@ bool Player::collides_with(const Fish& fish)
 
 vec2 Player::get_position() const
 {
-	return motion.position;
+    auto* motion = getComponent<MotionComponent>();
+
+    return motion->position;
 }
 
 float Player::get_rotation() const {
-    return motion.radians;
+    auto* motion = getComponent<MotionComponent>();
+    return motion->radians;
 }
 
 void Player::move(vec2 off)
 {
-	motion.position.x += off.x; 
-	motion.position.y += off.y; 
+    auto* motion = getComponent<MotionComponent>();
+	motion->position.x += off.x;
+	motion->position.y += off.y;
 }
 
 void Player::set_rotation(float radians)
 {
-	motion.radians = radians;
+    auto* motion = getComponent<MotionComponent>();
+	motion->radians = radians;
 }
 
 void Player::accelerate(float x, float y) {
@@ -321,8 +287,9 @@ void Player::light_up()
 }
 
 void Player::spawn_bullet() {
+    auto* motion = getComponent<MotionComponent>();
 	Bullet bullet;
-	if (bullet.init(motion.position, motion.radians + 3.14)) {
+	if (bullet.init(motion->position, motion->radians + 3.14)) {
 		bullets.emplace_back(bullet);
 	} else {
 		throw std::runtime_error("Failed to spawn bullet");
@@ -330,8 +297,10 @@ void Player::spawn_bullet() {
 }
 
 vec2 Player::get_bounding_box() const {
+    auto* physics = getComponent<PhysicsComponent>();
+
     // fabs is to avoid negative scale due to the facing direction
-    return { std::fabs(physics.scale.x) * player_texture.width, std::fabs(physics.scale.y) * player_texture.height };
+    return { std::fabs(physics->scale.x) * player_texture.width, std::fabs(physics->scale.y) * player_texture.height };
 }
 
 // Called when the player takes damage

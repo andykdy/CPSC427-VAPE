@@ -59,7 +59,23 @@ set(SOURCE_FILES
     src/Entities/UI/Health.cpp
     src/Entities/UI/Health.hpp
     src/Entities/Vamp.cpp
-    src/Entities/Vamp.hpp src/Engine/ECS/ECS.hpp src/Components/MotionComponent.hpp src/Components/PhysicsComponent.hpp src/Components/EffectComponent.hpp src/Components/SpriteComponent.hpp src/Components/TransformComponent.hpp src/Engine/ECS/Component.hpp src/Engine/ECS/Entity.hpp src/Engine/ECS/EntityManager.hpp src/Engine/ECS/System.hpp src/Engine/ECS/SystemManager.hpp src/Components/MeshComponent.hpp src/Components/TextureComponent.hpp)
+    src/Entities/Vamp.hpp
+
+    src/Engine/ECS/ECS.hpp
+
+    src/Components/MotionComponent.hpp
+    src/Components/PhysicsComponent.hpp
+    src/Components/EffectComponent.hpp
+    src/Components/SpriteComponent.hpp
+    src/Components/TransformComponent.hpp
+    src/Engine/ECS/Component.hpp
+    src/Engine/ECS/Entity.hpp
+    src/Engine/ECS/EntityManager.hpp
+    src/Engine/ECS/System.hpp
+    src/Engine/ECS/SystemManager.hpp
+    src/Components/MeshComponent.hpp
+    src/Components/TextureComponent.hpp
+    src/Components/HealthComponent.hpp src/Systems/EnemySpawnerSystem.cpp src/Systems/EnemySpawnerSystem.hpp src/Components/BulletComponent.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

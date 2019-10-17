@@ -9,31 +9,10 @@
 #define VAPE_MOTIONCOMPONENT_HPP
 
 class MotionComponent : public ECS::Component {
-private:
-    vec2 position;
-    float radians;
-    float speed;
 public:
-    void init() {
-        position.x = 0;
-        position.y = 0;
-        radians = 0;
-        speed = 0;
-    }
-
-    const vec2 &getPosition() const { return position; };
-    const float x() const { return position.x; };
-    const float y() const { return position.y; };
-
-    void setPosition(float x, float y) { position.x = x; position.y = y; };
-
-    float getRadians() const { return radians; };
-
-    void setRadians(float radians) { MotionComponent::radians = radians; };
-
-    float getSpeed() const { return speed; }
-
-    void setSpeed(float speed) { MotionComponent::speed = speed; };
+    vec2 position = {0,0};
+    float radians = 0;
+    float speed = 0;
 };
 
 #endif //VAPE_MOTIONCOMPONENT_HPP

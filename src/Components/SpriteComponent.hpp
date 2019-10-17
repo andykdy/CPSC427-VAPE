@@ -13,6 +13,7 @@ private:
     Texture* texture;
     int totalSprites;
     int index;
+    double lastUpdate;
     GLuint vao;
     GLuint vertexDataBuffer;
     GLuint* indexBuffers;
@@ -25,6 +26,7 @@ public:
     bool initTexture(Texture* texture, int totalSprites, int spriteW, int spriteH) {
         this->texture = texture;
         index = 0;
+        lastUpdate = glfwGetTime();
         this->totalSprites = totalSprites;
 
         // Clearing errors
@@ -123,12 +125,17 @@ public:
         // Drawing!
         // glDrawElements(GL_QUADS, 4, GL_UNSIGNED_INT, nullptr);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+
+        if ((glfwGetTime() - lastUpdate) > (0.06)){// TODO game speed?
+            incFrame();
+        }
     }
 
     void incFrame() {
         int newIndex = index+1;
         if (newIndex >= totalSprites) newIndex = 0;
         index = newIndex;
+        lastUpdate = glfwGetTime();
     }
 
     void release() {

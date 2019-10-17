@@ -36,8 +36,8 @@ bool Health::init(vec2 position) {
     if (!sprite->initTexture(&health_point_texture))
         throw std::runtime_error("Failed to initialize health sprite");
 
-    physics->setScale(0.25f, 0.25f);
-    motion->setPosition(position.x, position.y);
+    physics->scale = { 0.25f, 0.25f };
+    motion->position = { position.x, position.y };
 
     return true;
 }
@@ -57,10 +57,10 @@ void Health::draw(const mat3 &projection) {
     for (int i = 0; i < health; i++) {
         transform->begin();
         vec2 offset = {i * 5.f, 0.f};
-        offset.x += motion->x();
-        offset.y += motion->y();
+        offset.x += motion->position.x;
+        offset.y += motion->position.y;
         transform->translate(offset);
-        transform->scale(physics->getScale());
+        transform->scale(physics->scale);
         transform->end();
 
         sprite->draw(projection, transform->out, effect->program);
