@@ -6,33 +6,20 @@
 #include <memory>
 #include <bitset>
 #include <algorithm>
+#include <common.hpp>
 
 #ifndef VAPE_ENTITY_H
 #define VAPE_ENTITY_H
 
 #include "Component.hpp"
 
-class Component;
-
-constexpr std::size_t maxComponents = 32;
-
-using ComponentId = std::size_t;
-using ComponentBitSet = std::bitset<maxComponents>;
-using ComponentArray = std::array<Component*, maxComponents>;
-
-// Returns a unique, incremeneted Id
-inline ComponentId getComponentTypeId() {
-    static ComponentId lastId = 0;
-    return lastId++;
-};
-
-// Returns a unique id for each type T of component;
-template <typename T> inline ComponentId getComponentTypeId() noexcept {
-    static ComponentId typeId = getComponentTypeId();
-    return typeId;
-}
-
 namespace ECS {
+    constexpr std::size_t maxComponents = 32;
+
+    using ComponentBitSet = std::bitset<maxComponents>;
+    using ComponentArray = std::array<Component*, maxComponents>;
+
+
     class Entity {
     private:
         bool active = true;
@@ -43,12 +30,8 @@ namespace ECS {
         ComponentBitSet componentBitSet; // Quick True/False lookup for if has component;
 
     public:
-        void update() {
-            for(auto& component : components) component->update();
-        };
-        void draw() {
-            for(auto& component : components) component->draw();
-        };
+        void update(float ms) {};
+        void draw(const mat3& projection) {};
 
         bool isActive() { return active; };
         void destroy() { active = false; };

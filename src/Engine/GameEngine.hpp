@@ -18,6 +18,7 @@
 #include <common.hpp>
 #include <map>
 #include "Engine/ECS/ECS.hpp"
+#include "ECS/ECS.hpp"
 
 class GameState;
 
@@ -66,7 +67,8 @@ public:
 
     void setM_current_speed(float m_current_speed);
 
-    const Manager &getManager() const;
+    const ECS::EntityManager &getEntityManager() const;
+    const ECS::SystemManager &getSystemManager() const;
 
 private:
     //! Window handle
@@ -83,7 +85,8 @@ private:
     GLuint m_frame_buffer;
     Texture m_screen_tex;
 
-    Manager manager;
+    ECS::EntityManager entityManager;
+    ECS::SystemManager systemManager;
 
     float m_current_speed;
 

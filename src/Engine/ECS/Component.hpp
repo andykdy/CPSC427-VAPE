@@ -5,20 +5,32 @@
 #ifndef VAPE_COMPONENT_H
 #define VAPE_COMPONENT_H
 
-#include "Entity.h"
+#include "Entity.hpp"
+
+class Entity;
 
 namespace ECS {
+    using ComponentId = std::size_t;
+
+    // Returns a unique, incremeneted Id
+    inline ComponentId getComponentTypeId() {
+        static ComponentId lastId = 0;
+        return lastId++;
+    };
+
+    // Returns a unique id for each type T of component;
+    template <typename T> inline ComponentId getComponentTypeId() noexcept {
+        static ComponentId typeId = getComponentTypeId();
+        return typeId;
+    }
+
     class Component {
     public:
         // Owner
         Entity* entity;
 
-        virtual void init() {}
-        virtual void update() {}
-        virtual void draw() {}
-
         // Deconstructor
-        virtual ~Component() {}
+        virtual ~Component() = default;
     };
 }
 
