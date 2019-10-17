@@ -2,6 +2,7 @@
 // Created by Cody on 10/16/2019.
 //
 
+#include <iostream>
 #include "MeshComponent.hpp"
 
 #ifndef VAPE_TEXTURECOMPONENT_HPP
@@ -50,7 +51,8 @@ public:
 
         // Vertex Array (Container for Vertex + Index buffer)
         glGenVertexArrays(1, &vao);
-        return gl_has_errors();
+
+        return !gl_has_errors();
     }
 
 

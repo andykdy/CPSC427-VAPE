@@ -14,7 +14,7 @@
 Texture Health::health_point_texture;
 
 bool Health::init(vec2 position) {
-    auto* tex = addComponent<TextureComponent>();
+    auto* sprite = addComponent<TextureComponent>();
     auto* effect = addComponent<EffectComponent>();
     auto* physics = addComponent<PhysicsComponent>();
     auto* motion = addComponent<MotionComponent>();
@@ -25,17 +25,16 @@ bool Health::init(vec2 position) {
     {
         if (!health_point_texture.load_from_file(textures_path("health_point.png")))
         {
-            fprintf(stderr, "Failed to load health point texture!");
-            return false;
+            throw std::runtime_error("Failed to load health texture");
         }
     }
 
-    tex->initTexture(&health_point_texture);
-
     // Loading shaders
     if (!effect->load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
-        return false;
+        throw std::runtime_error("Failed to load texture shaders");
 
+    if (!sprite->initTexture(&health_point_texture))
+        throw std::runtime_error("Failed to initialize health sprite");
 
     physics->setScale(0.25f, 0.25f);
     motion->setPosition(position.x, position.y);
@@ -51,7 +50,7 @@ void Health::draw(const mat3 &projection) {
     auto* effect = getComponent<EffectComponent>();
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
-    auto* tex = getComponent<TextureComponent>();
+    auto* sprite = getComponent<TextureComponent>();
 
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
@@ -64,16 +63,16 @@ void Health::draw(const mat3 &projection) {
         transform->scale(physics->getScale());
         transform->end();
 
-        tex->draw(projection, transform->out, effect->program);
+        sprite->draw(projection, transform->out, effect->program);
     }
 }
 
 void Health::destroy() {
     auto* effect = getComponent<EffectComponent>();
-    auto* tex = getComponent<TextureComponent>();
+    auto* sprite = getComponent<TextureComponent>();
 
     effect->release();
-    tex->release();
+    sprite->release();
     ECS::Entity::destroy();
 }
 
