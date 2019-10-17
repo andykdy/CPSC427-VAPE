@@ -7,8 +7,6 @@
 
 #include "Entity.hpp"
 
-class Entity;
-
 namespace ECS {
     using ComponentId = std::size_t;
 
@@ -24,10 +22,14 @@ namespace ECS {
         return typeId;
     }
 
+    class Entity;
+
     class Component {
     public:
         // Owner
         Entity* entity;
+
+        virtual void init() {};
 
         // Deconstructor
         virtual ~Component() = default;

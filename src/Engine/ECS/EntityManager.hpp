@@ -17,6 +17,7 @@ namespace ECS {
             for (auto & e : entities) {
                 e->update(ms);
             }
+            refresh();
         }
 
         void draw(const mat3& projection) {
@@ -33,12 +34,12 @@ namespace ECS {
             }), entities.end());
         }
 
-        Entity& addEntity() {
-            Entity* e = new Entity();
+        template <typename T, typename... TArgs> T& addEntity(TArgs&&... mArgs) {
+            T* e(new T(std::forward<TArgs>(mArgs)...));
             std::unique_ptr<Entity> uPtr{ e };
             entities.emplace_back(std::move(uPtr));
             return *e;
-        };
+        }
     };
 }
 

@@ -9,18 +9,9 @@
 #ifndef VAPE_TRANSFORMCOMPONENT_HPP
 #define VAPE_TRANSFORMCOMPONENT_HPP
 
-class TransformComponent : public Component {
-private:
-    mat3 out;
-
+class TransformComponent : public ECS::Component {
 public:
-    void init() override {
-
-    }
-
-    void update() override {
-
-    }
+    mat3 out;
 
     void begin()
     {
@@ -51,7 +42,6 @@ public:
     {
         //
     }
-
 };
 
 #endif //VAPE_TRANSFORMCOMPONENT_HPP

@@ -30,17 +30,17 @@ namespace ECS {
         ComponentBitSet componentBitSet; // Quick True/False lookup for if has component;
 
     public:
-        void update(float ms) {};
-        void draw(const mat3& projection) {};
+        virtual void update(float ms) {};
+        virtual void draw(const mat3& projection) {};
 
         bool isActive() { return active; };
-        void destroy() { active = false; };
+        virtual void destroy() { active = false; };
 
         template <typename T> bool hasComponent() const {
             return componentBitSet[getComponentTypeId<T>];
         }
 
-        template <typename T, typename... TArgs> T& addComponent(TArgs&&... mArgs) {
+        template <typename T, typename... TArgs> T* addComponent(TArgs&&... mArgs) {
             T* component(new T(std::forward<TArgs>(mArgs)...));
             component->entity = this;
             std::unique_ptr<Component> uPtr{ component };
@@ -50,12 +50,13 @@ namespace ECS {
             componentBitSet[getComponentTypeId<T>()] = true;
 
             component->init();
-            return *component;
+
+            return component;
         };
 
-        template<typename T> T& getComponent() const {
+        template<typename T> T* getComponent() const {
             auto ptr(componentArray[getComponentTypeId<T>()]);
-            return *static_cast<T*>(ptr);
+            return static_cast<T*>(ptr);
         }
         // entity.getComponent<PositionCopmonent>().setPosition(...);
     };

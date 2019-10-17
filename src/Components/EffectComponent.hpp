@@ -35,20 +35,13 @@ namespace
     }
 }
 
-class EffectComponent : public Component {
+class EffectComponent : public ECS::Component {
 private:
+
+public:
     GLuint vertex;
     GLuint fragment;
     GLuint program;
-
-public:
-    void init() override {
-
-    }
-
-    void update() override {
-
-    }
 
     void release()
     {

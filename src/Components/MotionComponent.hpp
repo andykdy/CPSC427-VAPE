@@ -8,21 +8,17 @@
 #ifndef VAPE_MOTIONCOMPONENT_HPP
 #define VAPE_MOTIONCOMPONENT_HPP
 
-class MotionComponent : public Component {
+class MotionComponent : public ECS::Component {
 private:
     vec2 position;
     float radians;
     float speed;
 public:
-    void init() override {
+    void init() {
         position.x = 0;
         position.y = 0;
         radians = 0;
         speed = 0;
-    }
-
-    void update() override {
-
     }
 
     const vec2 &getPosition() const { return position; };
