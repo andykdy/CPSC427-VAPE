@@ -38,40 +38,40 @@ public:
         indexBuffers = new GLuint[ totalSprites ];
         glGenBuffers(totalSprites, indexBuffers);
 
-        uint16_t indices[ 4 ] = { 0, 0, 0, 0 };
+        // uint16_t indices[ 4 ] = { 0, 0, 0, 0 };
+        uint16_t indices[ 6 ] = { 0, 0, 0, 0, 0, 0 };
         float wr = spriteW * 0.5f;
         float hr = spriteH * 0.5f;
         for (int i = 0; i < totalSprites; ++i ) {
             // Assume only horizontal spritesheets for now
             int xcurs = i*spriteW;
-            int clipL = xcurs / texture->width;
-            int clipR = (xcurs+spriteW) / texture->width;
+            float clipL = (float)xcurs / texture->width;
+            float clipR = (float)(xcurs+spriteW) / texture->width;
 
-            // Set indices
+            int n = i * 4;
+
+            vertexData[n].position = { -wr, +hr, -0.02f };
+            vertexData[n].texcoord = { clipL, 1.f };
+
+            vertexData[n+1].position = { +wr, +hr, -0.02f };
+            vertexData[n+1].texcoord = { clipR, 1.f };
+
+            vertexData[n+2].position = { +wr, -hr, -0.02f };
+            vertexData[n+2].texcoord = { clipR, 0.f };
+
+            vertexData[n+3].position = { -wr, -hr, -0.02f };
+            vertexData[n+3].texcoord = { clipL, 0.f };
+
             indices[ 0 ] = static_cast<uint16_t>(i * 4 + 0);
-            indices[ 1 ] = static_cast<uint16_t>(i * 4 + 1);
-            indices[ 2 ] = static_cast<uint16_t>(i * 4 + 2);
-            indices[ 3 ] = static_cast<uint16_t>(i * 4 + 3);
-
-            // Top Left
-            vertexData[ indices[ 0 ] ].position = { -wr, -hr, -0.02f };
-            vertexData[ indices[ 0 ] ].texcoord = { (float)clipL, 0.f };
-
-            // Top Right
-            vertexData[ indices[ 1 ] ].position = { +wr, -hr, -0.02f };
-            vertexData[ indices[ 1 ] ].texcoord = { (float)clipR, 0.f };
-
-            // Bottom Right
-            vertexData[ indices[ 2 ] ].position = { +wr, +hr, -0.02f };
-            vertexData[ indices[ 2 ] ].texcoord = { (float)clipR, 1.f };
-
-            // Bottom Left
-            vertexData[ indices[ 3 ] ].position = { -wr, -hr, -0.02f };
-            vertexData[ indices[ 3 ] ].texcoord = { (float)clipL, 1.f };
+            indices[ 1 ] = static_cast<uint16_t>(i * 4 + 3);
+            indices[ 2 ] = static_cast<uint16_t>(i * 4 + 1);
+            indices[ 3 ] = static_cast<uint16_t>(i * 4 + 1);
+            indices[ 4 ] = static_cast<uint16_t>(i * 4 + 3);
+            indices[ 5 ] = static_cast<uint16_t>(i * 4 + 2);
 
             // Bind sprite index buffer data
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffers[ i ]);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 4, indices, GL_STATIC_DRAW);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
         }
         // Bind vertex data
         glBindBuffer(GL_ARRAY_BUFFER, vertexDataBuffer);
@@ -121,7 +121,14 @@ public:
         glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
         // Drawing!
-        glDrawElements( GL_QUADS, 4, GL_UNSIGNED_INT, nullptr );
+        // glDrawElements(GL_QUADS, 4, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+    }
+
+    void incFrame() {
+        int newIndex = index+1;
+        if (newIndex >= totalSprites) newIndex = 0;
+        index = newIndex;
     }
 
     void release() {

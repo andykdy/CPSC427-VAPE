@@ -8,13 +8,13 @@
 #include <Components/PhysicsComponent.hpp>
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
-#include <Components/TextureComponent.hpp>
+#include <Components/SpriteComponent.hpp>
 #include "Health.hpp"
 
 Texture Health::health_point_texture;
 
 bool Health::init(vec2 position) {
-    auto* sprite = addComponent<TextureComponent>();
+    auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
     auto* physics = addComponent<PhysicsComponent>();
     auto* motion = addComponent<MotionComponent>();
@@ -50,7 +50,7 @@ void Health::draw(const mat3 &projection) {
     auto* effect = getComponent<EffectComponent>();
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
-    auto* sprite = getComponent<TextureComponent>();
+    auto* sprite = getComponent<SpriteComponent>();
 
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
@@ -69,7 +69,7 @@ void Health::draw(const mat3 &projection) {
 
 void Health::destroy() {
     auto* effect = getComponent<EffectComponent>();
-    auto* sprite = getComponent<TextureComponent>();
+    auto* sprite = getComponent<SpriteComponent>();
 
     effect->release();
     sprite->release();
