@@ -543,6 +543,7 @@ void LevelState::on_mouse_button(GameEngine *game, GLFWwindow *window, int butto
 void LevelState::reset(vec2 screen) {
     m_player.destroy();
     m_vamp.destroy();
+    m_vamp_charge.destroy();
     m_player.init(screen, INIT_HEALTH);
     m_boss.destroy();
     m_level_start = glfwGetTime();
