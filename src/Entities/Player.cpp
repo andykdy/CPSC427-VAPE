@@ -19,6 +19,8 @@
 namespace
 {
 	const size_t BULLET_COOLDOWN_MS = 300;
+	const size_t spriteWH = 450;
+	const size_t spriteFrames = 10;
 }
 
 Texture Player::player_texture;
@@ -54,14 +56,11 @@ bool Player::init(vec2 screen, float health)
 		}
 	}
 
-	if (gl_has_errors())
-		return false;
-
 	// Loading shaders
 	if (!effect->load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	if (!sprite->initTexture(&player_texture, 10, 450, 450))
+	if (!sprite->initTexture(&player_texture, spriteFrames, spriteWH, spriteWH))
 		throw std::runtime_error("Failed to initialize health sprite");
 
 	// Setting initial values
@@ -77,6 +76,9 @@ bool Player::init(vec2 screen, float health)
 	m_bullet_cooldown = -1.f;
 	m_health = health;
 	m_iframe = 0.f;
+
+	if (gl_has_errors())
+		return false;
 
 	return true;
 }
@@ -300,7 +302,7 @@ vec2 Player::get_bounding_box() const {
     auto* physics = getComponent<PhysicsComponent>();
 
     // fabs is to avoid negative scale due to the facing direction
-    return { std::fabs(physics->scale.x) * player_texture.width, std::fabs(physics->scale.y) * player_texture.height };
+    return { std::fabs(physics->scale.x) * spriteWH, std::fabs(physics->scale.y) * spriteWH };
 }
 
 // Called when the player takes damage
