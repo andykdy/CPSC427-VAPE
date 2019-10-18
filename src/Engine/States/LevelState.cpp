@@ -346,6 +346,7 @@ void LevelState::update(GameEngine *game) {
         if (m_boss.getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
         {
             game->changeState(new MainMenuState());
+			return;
         }
     }
 
