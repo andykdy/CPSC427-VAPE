@@ -3,7 +3,7 @@
 #include "common.hpp"
 
 // Player enemy
-class Turtle : public Entity
+class Turtle : public EntityOld
 {
 	// Shared between all turtles, no need to load one for each instance
 	static Texture turtle_texture;

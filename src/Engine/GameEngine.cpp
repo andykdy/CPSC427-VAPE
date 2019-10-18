@@ -36,7 +36,6 @@ namespace
  * Initialize the game engine, setting up GLFW
  */
 void GameEngine::init() {
-
     //-------------------------------------------------------------------------
     // GLFW / OGL Initialization
     // Core Opengl 3.
@@ -149,6 +148,8 @@ void GameEngine::changeState(GameState *state) {
  * Runs the state's update function
  */
 void GameEngine::update(float ms) {
+    entityManager.update(ms);
+    systemManager.update(ms);
     this->elapsed_ms = ms;
     state->update(this);
 
@@ -205,4 +206,19 @@ GLuint GameEngine::getM_frame_buffer() const {
 
 const Texture &GameEngine::getM_screen_tex() const {
     return m_screen_tex;
+}
+
+float GameEngine::getM_current_speed() const {
+    return m_current_speed;
+}
+
+void GameEngine::setM_current_speed(float m_current_speed) {
+    GameEngine::m_current_speed = m_current_speed;
+}
+
+const ECS::EntityManager &GameEngine::getEntityManager() const {
+    return entityManager;
+}
+const ECS::SystemManager &GameEngine::getSystemManager() const {
+    return systemManager;
 }

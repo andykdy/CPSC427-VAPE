@@ -9,7 +9,7 @@
 #include "turtle.hpp"
 #include "fish.hpp"
 
-class Vamp : public Entity {
+class Vamp : public EntityOld {
     // Shared between all bullets, no need to load one for each instance
     static Texture vamp_texture;
 
