@@ -7,6 +7,7 @@
 #include <bitset>
 #include <algorithm>
 #include <common.hpp>
+#include <array>
 
 #ifndef VAPE_ENTITY_H
 #define VAPE_ENTITY_H
