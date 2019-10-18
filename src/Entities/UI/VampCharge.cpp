@@ -5,22 +5,22 @@
 #include "VampCharge.hpp"
 
 
-Texture VampCharge::health_point_texture;
+Texture VampCharge::vamp_charge_texture;
 
 bool VampCharge::init(vec2 position) {
     // Load shared texture
-    if (!health_point_texture.is_valid())
+    if (!vamp_charge_texture.is_valid())
     {
-        if (!health_point_texture.load_from_file(textures_path("health_point.png")))
+        if (!vamp_charge_texture.load_from_file(textures_path("vamp_charge.png")))
         {
-            fprintf(stderr, "Failed to load health point texture!");
+            fprintf(stderr, "Failed to load vamp_charge texture!");
             return false;
         }
     }
 
     // The position corresponds to the center of the texture
-    float wr = health_point_texture.width * 0.5f;
-    float hr = health_point_texture.height * 0.5f;
+    float wr = vamp_charge_texture.width * 1.0f;
+    float hr = vamp_charge_texture.height * 1.0f;
 
     TexturedVertex vertices[4];
     vertices[0].position = { -wr, +hr, -0.02f };
@@ -48,7 +48,7 @@ bool VampCharge::init(vec2 position) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
 
-    // Vertex Array (Container for Vertex + Index buffer)
+    // Vertex Array (Container for Vertexd + Index buffer)
     glGenVertexArrays(1, &mesh.vao);
     if (gl_has_errors())
         return false;
@@ -112,7 +112,7 @@ void VampCharge::draw(const mat3 &projection) {
 
         // Enabling and binding texture to slot 0
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, health_point_texture.id);
+        glBindTexture(GL_TEXTURE_2D, vamp_charge_texture.id);
 
         // Setting uniform values to the currently bound program
         glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);

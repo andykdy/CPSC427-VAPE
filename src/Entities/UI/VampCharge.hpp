@@ -10,7 +10,7 @@
 
 class VampCharge: public Entity {
 
-    static Texture health_point_texture;
+    static Texture vamp_charge_texture;
 
     public:
         bool init(vec2 position);

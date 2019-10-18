@@ -46,7 +46,7 @@ void LevelState::init(GameEngine *game) {
     m_player_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav"));
     m_player_eat_sound = Mix_LoadWAV(audio_path("salmon_eat.wav"));
     m_player_explosion = Mix_LoadWAV(audio_path("explosion.wav"));
-    m_player_charged = Mix_LoadWAV(audio_path("salmon_eat.wav"));
+    m_player_charged = Mix_LoadWAV(audio_path("vamp_charge.wav"));
 
 
     if (m_background_music == nullptr || m_boss_music == nullptr || m_victory_music == nullptr ||
