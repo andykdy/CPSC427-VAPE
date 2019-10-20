@@ -34,22 +34,22 @@ public:
     LevelState();
 
     //! Initializes the state
-    void init(GameEngine *game) override;
+    void init() override;
 
     //! Cleans up the state
-    void terminate(GameEngine *game) override;
+    void terminate() override;
 
     //! Updates the state of the level
-    void update(GameEngine *game) override;
+    void update() override;
 
     //! Renders the state
-    void draw(GameEngine *game) override;
+    void draw() override;
 
-    void on_key(GameEngine *game, GLFWwindow *wwindow, int key, int i, int action, int mod) override;
+    void on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) override;
 
-    void on_mouse_move(GameEngine *game, GLFWwindow *window, double xpos, double ypos) override;
+    void on_mouse_move(GLFWwindow *window, double xpos, double ypos) override;
 
-    void on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) override;
+    void on_mouse_button(GLFWwindow *window, int button, int action, int mods) override;
 
 private:
     void lose_health(int damage);
@@ -58,7 +58,7 @@ private:
     void reset(vec2 screen);
 
     // Generates a new turtle
-    bool spawn_turtle(GameEngine*game);
+    bool spawn_turtle();
 
     // Generates a new fish
     bool spawn_fish();

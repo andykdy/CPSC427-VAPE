@@ -17,19 +17,19 @@
 class MainMenuState : public GameState{
     static Texture bg_texture;
 public:
-    void init(GameEngine *game) override;
+    void init() override;
 
-    void terminate(GameEngine *game) override;
+    void terminate() override;
 
-    void update(GameEngine *game) override;
+    void update() override;
 
-    void draw(GameEngine *game) override;
+    void draw() override;
 
-    void on_key(GameEngine *game, GLFWwindow *wwindow, int key, int i, int action, int mod) override;
+    void on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) override;
 
-    void on_mouse_move(GameEngine *game, GLFWwindow *window, double xpos, double ypos) override;
+    void on_mouse_move(GLFWwindow *window, double xpos, double ypos) override;
 
-    void on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) override;
+    void on_mouse_button(GLFWwindow *window, int button, int action, int mods) override;
 
 private:
 	// Mouse position

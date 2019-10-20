@@ -8,7 +8,7 @@
 
 Texture MainMenuState::bg_texture;
 
-void MainMenuState::init(GameEngine *game) {
+void MainMenuState::init() {
     if (!bg_texture.is_valid())
     {
         if (!bg_texture.load_from_file(textures_path("mainmenu_bg.png")))
@@ -18,21 +18,21 @@ void MainMenuState::init(GameEngine *game) {
     }
 }
 
-void MainMenuState::terminate(GameEngine *game) {
+void MainMenuState::terminate() {
 
 }
 
-void MainMenuState::update(GameEngine *game) {
+void MainMenuState::update() {
 
 }
 
-void MainMenuState::draw(GameEngine *game) {
+void MainMenuState::draw() {
     // Clearing error buffer
     gl_flush_errors();
 
     // Getting size of window
     int w, h;
-    GLFWwindow* m_window = game->getM_window();
+    GLFWwindow* m_window = GameEngine::getInstance().getM_window();
     glfwGetFramebufferSize(m_window, &w, &h);
 
     // Updating window title with points
@@ -42,7 +42,7 @@ void MainMenuState::draw(GameEngine *game) {
 
     /////////////////////////////////////
     // First render to the custom framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, game->getM_frame_buffer());
+    glBindFramebuffer(GL_FRAMEBUFFER, GameEngine::getInstance().getM_frame_buffer());
 
     // Clearing backbuffer
     glViewport(0, 0, w, h);
@@ -76,7 +76,7 @@ void MainMenuState::draw(GameEngine *game) {
 
     // Bind our texture in Texture Unit 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, game->getM_screen_tex().id);
+    glBindTexture(GL_TEXTURE_2D, GameEngine::getInstance().getM_screen_tex().id);
 
 
     //////////////////
@@ -85,18 +85,18 @@ void MainMenuState::draw(GameEngine *game) {
 
 }
 
-void MainMenuState::on_key(GameEngine *game, GLFWwindow *wwindow, int key, int i, int action, int mod) {
+void MainMenuState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
 }
 
-void MainMenuState::on_mouse_move(GameEngine *game, GLFWwindow *window, double xpos, double ypos) {
+void MainMenuState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
 	mouse_position.x = xpos;
 	mouse_position.y = ypos;
 }
 
-void MainMenuState::on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) {
+void MainMenuState::on_mouse_button(GLFWwindow *window, int button, int action, int mods) {
 	if (mouse_position.x >= 200 && mouse_position.x <= 600 && mouse_position.y >= 600 && mouse_position.y <= 700) {
 		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-			game->changeState(new LevelState());
+			GameEngine::getInstance().changeState(new LevelState());
 		}
 	}
 }

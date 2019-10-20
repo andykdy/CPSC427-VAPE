@@ -39,7 +39,7 @@ m_next_fish_spawn(0.f)
     m_rng = std::default_random_engine(std::random_device()());
 }
 
-void LevelState::init(GameEngine *game) {
+void LevelState::init() {
     m_background_music = Mix_LoadMUS(audio_path("music.wav"));
     m_boss_music = Mix_LoadMUS(audio_path("music_boss1.wav"));
     m_victory_music = Mix_LoadMUS(audio_path("music_victory.wav"));
@@ -64,22 +64,22 @@ void LevelState::init(GameEngine *game) {
 
     // Get screen size
     int w, h;
-    glfwGetFramebufferSize(game->getM_window(), &w, &h);
-    vec2 screen = { (float)w / game->getM_screen_scale(), (float)h / game->getM_screen_scale() };
+    glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
+    vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
     m_current_speed = 1.f;
     m_level_start = glfwGetTime();
     m_boss_mode = false;
     m_spawn_enemies = true;
 
-    m_player = &game->getEntityManager()->addEntity<Player>();
+    m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
     m_player->init(screen, INIT_HEALTH);
-    m_health = &game->getEntityManager()->addEntity<Health>();
+    m_health = &GameEngine::getInstance().getEntityManager()->addEntity<Health>();
     m_health->init({45, 60});
     m_space.init();
 }
 
-void LevelState::terminate(GameEngine *game) {
+void LevelState::terminate() {
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
     if (m_boss_music != nullptr)
@@ -104,10 +104,10 @@ void LevelState::terminate(GameEngine *game) {
     m_boss.destroy();
 }
 
-void LevelState::update(GameEngine *game) {
+void LevelState::update() {
     int w, h;
-    glfwGetFramebufferSize(game->getM_window(), &w, &h);
-    vec2 screen = { (float)w / game->getM_screen_scale(), (float)h / game->getM_screen_scale() };
+    glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
+    vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
     // To prepare for the boss, stop spawning enemies and change the music
     if (glfwGetTime() - m_level_start >= BOSS_TIME - 4 && m_spawn_enemies) {
@@ -117,7 +117,7 @@ void LevelState::update(GameEngine *game) {
     // Spawn the boss
     if (glfwGetTime() - m_level_start >= BOSS_TIME && !m_boss_mode) {
         m_boss_mode = true;
-        m_boss.init(game);
+        m_boss.init();
         m_boss.set_position({static_cast<float>(w/2), static_cast<float>(h/10)});
     }
 
@@ -135,7 +135,7 @@ void LevelState::update(GameEngine *game) {
 					lose_health(DAMAGE_ENEMY);
 					ECS::EntityId id = (*turtle_it)->getId();
 					m_turtles.erase(turtle_it);
-                    game->getEntityManager()->removeEntity(id);
+                    GameEngine::getInstance().getEntityManager()->removeEntity(id);
 				}
 			}
             break;
@@ -174,7 +174,7 @@ void LevelState::update(GameEngine *game) {
                 eraseBullet = true;
                 ECS::EntityId id = (*turtle_it)->getId();
                 m_turtles.erase(turtle_it);
-                game->getEntityManager()->removeEntity(id);
+                GameEngine::getInstance().getEntityManager()->removeEntity(id);
                 // TODO sound
                 Mix_PlayChannel(-1,m_player_explosion,0);
                 ++m_points;
@@ -213,7 +213,7 @@ void LevelState::update(GameEngine *game) {
 
     // Updating all entities, making the turtle and fish
     // faster based on current
-    float elapsed_ms = game->getElapsed_ms();
+    float elapsed_ms = GameEngine::getInstance().getElapsed_ms();
     m_player->update(elapsed_ms * m_current_speed, keyMap, mouse_position);
     m_vamp.update(elapsed_ms * m_current_speed, m_player->get_position());
     for (auto& turtle : m_turtles)
@@ -279,7 +279,7 @@ void LevelState::update(GameEngine *game) {
     m_next_turtle_spawn -= elapsed_ms * m_current_speed;
     if (m_spawn_enemies && m_turtles.size() <= MAX_TURTLES && m_next_turtle_spawn < 0.f)
     {
-        if (!spawn_turtle(game))
+        if (!spawn_turtle())
             throw std::runtime_error("Failed spawn turtle");
 
         Turtle* new_turtle = m_turtles.back();
@@ -351,7 +351,7 @@ void LevelState::update(GameEngine *game) {
         // If boss dies, return to main menu
         if (m_boss.getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
         {
-            game->changeState(new MainMenuState());
+            GameEngine::getInstance().changeState(new MainMenuState());
         }
     }
 
@@ -362,13 +362,13 @@ void LevelState::update(GameEngine *game) {
     }
 }
 
-void LevelState::draw(GameEngine *game) {
+void LevelState::draw() {
     // Clearing error buffer
     gl_flush_errors();
 
     // Getting size of window
     int w, h;
-    GLFWwindow* m_window = game->getM_window();
+    GLFWwindow* m_window = GameEngine::getInstance().getM_window();
     glfwGetFramebufferSize(m_window, &w, &h);
 
     // Updating window title with points
@@ -378,7 +378,7 @@ void LevelState::draw(GameEngine *game) {
 
     /////////////////////////////////////
     // First render to the custom framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, game->getM_frame_buffer());
+    glBindFramebuffer(GL_FRAMEBUFFER, GameEngine::getInstance().getM_frame_buffer());
 
     // Clearing backbuffer
     glViewport(0, 0, w, h);
@@ -392,8 +392,8 @@ void LevelState::draw(GameEngine *game) {
     // PS: 1.f / w in [1][1] is correct.. do you know why ? (:
     float left = 0.f;// *-0.5;
     float top = 0.f;// (float)h * -0.5;
-    float right = (float)w / game->getM_screen_scale();// *0.5;
-    float bottom = (float)h / game->getM_screen_scale();// *0.5;
+    float right = (float)w / GameEngine::getInstance().getM_screen_scale();// *0.5;
+    float bottom = (float)h / GameEngine::getInstance().getM_screen_scale();// *0.5;
 
     float sx = 2.f / (right - left);
     float sy = 2.f / (top - bottom);
@@ -438,7 +438,7 @@ void LevelState::draw(GameEngine *game) {
 
     // Bind our texture in Texture Unit 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, game->getM_screen_tex().id);
+    glBindTexture(GL_TEXTURE_2D, GameEngine::getInstance().getM_screen_tex().id);
 
     m_space.draw(projection_2D);
 
@@ -468,8 +468,8 @@ void LevelState::add_health(int heal) {
 }
 
 // Creates a new turtle and if successfull adds it to the list of turtles
-bool LevelState::spawn_turtle(GameEngine *game) {
-    Turtle* turtle = &game->getEntityManager()->addEntity<Turtle>();
+bool LevelState::spawn_turtle() {
+    Turtle* turtle = &GameEngine::getInstance().getEntityManager()->addEntity<Turtle>();
     if (turtle->init())
     {
         m_turtles.emplace_back(turtle);
@@ -491,7 +491,7 @@ bool LevelState::spawn_fish() {
     return false;
 }
 
-void LevelState::on_key(GameEngine *game, GLFWwindow *wwindow, int key, int i, int action, int mod) {
+void LevelState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
     // Track which keys are being pressed or held
     (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[key] = true : keyMap[key] = false;
 
@@ -500,8 +500,8 @@ void LevelState::on_key(GameEngine *game, GLFWwindow *wwindow, int key, int i, i
     {
         // Get screen size
         int w, h;
-        glfwGetFramebufferSize(game->getM_window(), &w, &h);
-        vec2 screen = { (float)w / game->getM_screen_scale(), (float)h / game->getM_screen_scale() };
+        glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
+        vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
         reset(screen);
     }
 
@@ -514,12 +514,12 @@ void LevelState::on_key(GameEngine *game, GLFWwindow *wwindow, int key, int i, i
     m_current_speed = fmax(0.f, m_current_speed);
 }
 
-void LevelState::on_mouse_move(GameEngine *game, GLFWwindow *window, double xpos, double ypos) {
+void LevelState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
     mouse_position.x = xpos;
     mouse_position.y = ypos;
 }
 
-void LevelState::on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) {
+void LevelState::on_mouse_button(GLFWwindow *window, int button, int action, int mods) {
     // Track which mouse buttons are being pressed or held
     (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[button] = true : keyMap[button] = false;
 }

@@ -14,9 +14,7 @@ namespace
 
 Texture Boss1::boss1_texture;
 
-bool Boss1::init(GameEngine *game) {
-    this->game = game;
-
+bool Boss1::init() {
     // Load shared texture
     if (!boss1_texture.is_valid())
     {
@@ -111,7 +109,7 @@ void Boss1::update(float ms) {
 
 void Boss1::state1Update(float ms) {
     int w, h;
-    glfwGetFramebufferSize(game->getM_window(), &w, &h);
+    glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
     // Set left and right boundaries such that ship doesn't leave the screen
     float lBound = boss1_texture.width * 0.5f;
     float rBound = w - lBound;
