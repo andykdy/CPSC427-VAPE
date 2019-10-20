@@ -18,7 +18,7 @@ void MainMenuState::init(GameEngine *game) {
     }
 }
 
-void MainMenuState::terminate() {
+void MainMenuState::terminate(GameEngine *game) {
 
 }
 

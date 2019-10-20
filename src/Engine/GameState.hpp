@@ -19,7 +19,7 @@ public:
     virtual void init(GameEngine *game) = 0;
 
     //! Cleans up the state
-    virtual void terminate() = 0;
+    virtual void terminate(GameEngine *game) = 0;
 
     //! Updates the state
     virtual void update(GameEngine *game) = 0;

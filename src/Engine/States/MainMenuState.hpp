@@ -19,7 +19,7 @@ class MainMenuState : public GameState{
 public:
     void init(GameEngine *game) override;
 
-    void terminate() override;
+    void terminate(GameEngine *game) override;
 
     void update(GameEngine *game) override;
 

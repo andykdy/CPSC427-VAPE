@@ -1,15 +1,18 @@
 #pragma once
 
+#include <Engine/ECS/Entity.hpp>
 #include "common.hpp"
 
 // Player enemy
-class Turtle : public EntityOld
+class Turtle : public ECS::Entity
 {
 	// Shared between all turtles, no need to load one for each instance
 	static Texture turtle_texture;
 
 public:
-	// Creates all the associated render resources and default transform
+	Turtle(ECS::EntityId id);
+
+// Creates all the associated render resources and default transform
 	bool init();
 
 	// Releases all the associated resources
@@ -17,7 +20,7 @@ public:
 
 	// Update turtle due to current
 	// ms represents the number of milliseconds elapsed from the previous update() call
-	void update(float ms);
+	void update(float ms) override;
 
 	// Renders the salmon
 	// projection is the 2D orthographic projection matrix

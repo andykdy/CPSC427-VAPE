@@ -113,7 +113,7 @@ void GameEngine::terminate() {
 
     // Clean up the current state
     if (state != nullptr){
-        state->terminate();
+        state->terminate(this);
     }
     delete(state);
     state = nullptr;
@@ -137,7 +137,7 @@ void GameEngine::terminate() {
  */
 void GameEngine::changeState(GameState *state) {
     if (this->state != nullptr) {
-        this->state->terminate();
+        this->state->terminate(this);
         delete (this->state);
     }
     this->state = state;
@@ -148,8 +148,8 @@ void GameEngine::changeState(GameState *state) {
  * Runs the state's update function
  */
 void GameEngine::update(float ms) {
-    entityManager.update(ms);
-    systemManager.update(ms);
+    //entityManager.update(ms);
+    //systemManager.update(ms);
     this->elapsed_ms = ms;
     state->update(this);
 
@@ -162,6 +162,8 @@ void GameEngine::update(float ms) {
  * Runs the state's render function
  */
 void GameEngine::draw() {
+    //entityManager.draw(...);
+    //systemManager.draw(...);
     state->draw(this);
 }
 
@@ -216,9 +218,9 @@ void GameEngine::setM_current_speed(float m_current_speed) {
     GameEngine::m_current_speed = m_current_speed;
 }
 
-const ECS::EntityManager &GameEngine::getEntityManager() const {
-    return entityManager;
+ECS::EntityManager *GameEngine::getEntityManager() {
+    return &entityManager;
 }
-const ECS::SystemManager &GameEngine::getSystemManager() const {
-    return systemManager;
+ECS::SystemManager *GameEngine::getSystemManager() {
+    return &systemManager;
 }

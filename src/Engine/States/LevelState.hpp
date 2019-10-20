@@ -37,7 +37,7 @@ public:
     void init(GameEngine *game) override;
 
     //! Cleans up the state
-    void terminate() override;
+    void terminate(GameEngine *game) override;
 
     //! Updates the state of the level
     void update(GameEngine *game) override;
@@ -58,7 +58,7 @@ private:
     void reset(vec2 screen);
 
     // Generates a new turtle
-    bool spawn_turtle();
+    bool spawn_turtle(GameEngine*game);
 
     // Generates a new fish
     bool spawn_fish();
@@ -76,10 +76,10 @@ private:
     unsigned int m_points;
 
     // Game entities
-    Player m_player;
+    Player* m_player;
     Boss1 m_boss;
-    Health m_health;
-    std::vector<Turtle> m_turtles;
+    Health* m_health;
+    std::vector<Turtle*> m_turtles;
     std::vector<Fish> m_fish;
 
     float m_current_speed;

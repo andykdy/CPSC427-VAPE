@@ -79,3 +79,5 @@ void Health::destroy() {
 void Health::setHealth(int health) {
     Health::health = health;
 }
+
+Health::Health(ECS::EntityId id) : Entity(id) {}

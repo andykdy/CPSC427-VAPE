@@ -319,3 +319,5 @@ float Player::get_iframes()
 float Player::get_health() const {
     return m_health;
 }
+
+Player::Player(ECS::EntityId id) : Entity(id) {}

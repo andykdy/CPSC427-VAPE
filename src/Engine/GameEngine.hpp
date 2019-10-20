@@ -67,8 +67,8 @@ public:
 
     void setM_current_speed(float m_current_speed);
 
-    const ECS::EntityManager &getEntityManager() const;
-    const ECS::SystemManager &getSystemManager() const;
+    ECS::EntityManager *getEntityManager();
+    ECS::SystemManager *getSystemManager();
 
 private:
     //! Window handle
