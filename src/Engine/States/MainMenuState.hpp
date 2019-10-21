@@ -13,6 +13,7 @@
 
 
 #include <Engine/GameState.hpp>
+#include <Entities/MainMenu.hpp>
 
 class MainMenuState : public GameState{
     static Texture bg_texture;
@@ -32,6 +33,7 @@ public:
     void on_mouse_button(GLFWwindow *window, int button, int action, int mods) override;
 
 private:
+	MainMenu menu;
 	// Mouse position
 	vec2 mouse_position;
 
