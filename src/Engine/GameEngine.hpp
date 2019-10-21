@@ -99,7 +99,7 @@ private:
     ECS::EntityManager entityManager;
     ECS::SystemManager systemManager;
 
-    float m_current_speed{};
+    float m_current_speed = 1.f;
 
     float elapsed_ms{};
 

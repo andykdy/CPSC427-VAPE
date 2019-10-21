@@ -74,7 +74,6 @@ void LevelState::init() {
     vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
     m_vamp_mode = false;
-    m_current_speed = 1.f;
     m_level_time = 0;
     m_boss_mode = false;
 
@@ -132,14 +131,13 @@ void LevelState::terminate() {
     GameEngine::getInstance().getEntityManager()->removeEntity(id);
 }
 
-void LevelState::update() {
+void LevelState::update(float ms) {
     //std::cout << "update" << std::endl;
     int w, h;
     glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
     vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
-    float elapsed_ms = GameEngine::getInstance().getElapsed_ms();
-    m_level_time += elapsed_ms * m_current_speed;
+    m_level_time += ms;
 
     // To prepare for the boss, stop spawning enemies and change the music
     if (m_level_time >= BOSS_TIME - 2000 && !m_boss_mode) {
@@ -249,11 +247,11 @@ void LevelState::update() {
 
     // Updating all entities, making the turtle and fish
     // faster based on current
-    m_player->update(elapsed_ms * m_current_speed, keyMap, mouse_position);
+    m_player->update(ms, keyMap, mouse_position);
     for (auto& turtle : *m_turtles)
-        turtle->update(elapsed_ms * m_current_speed);
+        turtle->update(ms);
     for (auto& fish : m_fish)
-        fish.update(elapsed_ms * m_current_speed);
+        fish.update(ms);
 
     // Removing out of screen turtles
     turtle_it = m_turtles->begin();
@@ -293,26 +291,26 @@ void LevelState::update() {
         m_vamp_mode = true;
         m_vamp_mode_timer = VAMP_MODE_DURATION;
         m_vamp_mode_charge = 0;
-        m_current_speed = 0.5f;
+        GameEngine::getInstance().setM_current_speed(0.5f);
         m_vamp_charge->setVampCharge(0);
 
         m_vamp.init(m_player->get_position());
     }
 
     if (m_vamp_mode_timer > 0.f) {
-        m_vamp_mode_timer -= elapsed_ms * m_current_speed;
-        m_vamp.update(elapsed_ms, m_player->get_position());
+        m_vamp_mode_timer -= ms;
+        m_vamp.update(ms, m_player->get_position());
 
 
         if (m_vamp_mode_timer <= 0.f) {
-            m_current_speed = 1.f;
+            GameEngine::getInstance().setM_current_speed(1.f);
             m_vamp_mode = false;
             m_vamp.destroy();
         }
     }
 
     // Spawning new turtles
-    m_next_turtle_spawn -= elapsed_ms * m_current_speed;
+    m_next_turtle_spawn -= ms;
     /*
     if (m_spawn_enemies && m_turtles->size() <= MAX_TURTLES && m_next_turtle_spawn < 0.f)
     {
@@ -384,7 +382,7 @@ void LevelState::update() {
             }
         }
 
-        m_boss.update(elapsed_ms * m_current_speed);
+        m_boss.update(ms);
 
         // If boss dies, return to main menu
         if (m_boss.getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
@@ -557,12 +555,14 @@ void LevelState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod
     }
 
     // Control the current speed with `<` `>`
+    /*
     if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) &&  key == GLFW_KEY_COMMA)
         m_current_speed -= 0.1f;
     if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
         m_current_speed += 0.1f;
 
     m_current_speed = fmax(0.f, m_current_speed);
+     */
 }
 
 void LevelState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
@@ -590,7 +590,7 @@ void LevelState::reset(vec2 screen) {
 
     m_space.reset_salmon_dead_time();
     m_space.reset_boss_dead_time();
-    m_current_speed = 1.f;
+    GameEngine::getInstance().setM_current_speed(1.f);
 
     GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>()->reset();
 }

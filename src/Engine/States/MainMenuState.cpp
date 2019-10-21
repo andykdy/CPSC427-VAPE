@@ -23,7 +23,7 @@ void MainMenuState::terminate() {
 
 }
 
-void MainMenuState::update() {
+void MainMenuState::update(float ms) {
 
 }
 

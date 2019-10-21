@@ -65,7 +65,7 @@ void TutorialState::init() {
 	glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
 	vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
-	m_current_speed = 1.f;
+	GameEngine::getInstance().setM_current_speed(1.f);
 
 	m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
 	m_player->init(screen, INIT_HEALTH);
@@ -111,7 +111,7 @@ void TutorialState::terminate() {
 	m_dialogue.destroy();
 }
 
-void TutorialState::update() {
+void TutorialState::update(float ms) {
 	int w, h;
 	glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
 	vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
@@ -213,11 +213,10 @@ void TutorialState::update() {
 
 	// Updating all entities, making the turtle and fish
 	// faster based on current
-	float elapsed_ms = GameEngine::getInstance().getElapsed_ms();
-	m_player->update(elapsed_ms * m_current_speed, keyMap, mouse_position);
+	m_player->update(ms, keyMap, mouse_position);
 	for (auto& turtle : m_turtles) {
 		if (turtle->get_position().y > 400.f) turtle->set_velocity({0.f,0.f});
-		turtle->update(elapsed_ms * m_current_speed);
+		turtle->update(ms);
 	}
 
 	// for debugging purposes
@@ -229,18 +228,18 @@ void TutorialState::update() {
 		m_vamp_mode = true;
 		m_vamp_mode_timer = VAMP_MODE_DURATION;
 		m_vamp_mode_charge = 0;
-		m_current_speed = 0.5f;
+		GameEngine::getInstance().setM_current_speed(0.5f);
 
 		m_vamp.init(m_player->get_position());
 	}
 
 	if (m_vamp_mode_timer > 0.f) {
-		m_vamp_mode_timer -= elapsed_ms * m_current_speed;
-		m_vamp.update(elapsed_ms, m_player->get_position());
+		m_vamp_mode_timer -= ms;
+		m_vamp.update(ms, m_player->get_position());
 
 
 		if (m_vamp_mode_timer <= 0.f) {
-			m_current_speed = 1.f;
+			GameEngine::getInstance().setM_current_speed(1.f);
 			m_vamp_mode = false;
 			m_vamp.destroy();
 		}
@@ -410,7 +409,7 @@ void TutorialState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
 		}
 	}
 
-	m_current_speed = fmax(0.f, m_current_speed);
+	// m_current_speed = fmax(0.f, m_current_speed);
 }
 
 void TutorialState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
@@ -447,5 +446,5 @@ void TutorialState::reset(vec2 screen) {
 
 	m_space.reset_salmon_dead_time();
 	m_space.reset_boss_dead_time();
-	m_current_speed = 1.f;
+	GameEngine::getInstance().setM_current_speed(1.f);
 }

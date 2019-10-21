@@ -21,7 +21,7 @@ public:
 
     void terminate() override;
 
-    void update() override;
+    void update(float ms) override;
 
     void draw() override;
 

@@ -22,7 +22,7 @@ public:
     virtual void terminate() = 0;
 
     //! Updates the state
-    virtual void update() = 0;
+    virtual void update(float ms) = 0;
 
     //! Renders the state
     virtual void draw() = 0;

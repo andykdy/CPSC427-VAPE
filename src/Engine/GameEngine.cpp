@@ -149,9 +149,9 @@ void GameEngine::changeState(GameState *state) {
  */
 void GameEngine::update(float ms) {
     //entityManager.update(ms);
-    systemManager.update(ms);
+    systemManager.update(ms * m_current_speed);
     this->elapsed_ms = ms;
-    state->update();
+    state->update(ms * m_current_speed);
 
     if (glfwWindowShouldClose(m_window)) {
         this->running = false;
