@@ -39,7 +39,7 @@ bool Turtle::init()
 	if (gl_has_errors())
 		return false;
 
-	motion->radians = static_cast<float>(rand() * 2 * 3.14);
+	motion->radians = (rand() % 4) * 3.14f / 4;
 	motion->velocity = {0.f, 180.f};
 
 	// Setting initial values, scale is negative to make it face the opposite way
