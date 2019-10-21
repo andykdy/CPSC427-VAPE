@@ -6,12 +6,14 @@
 
 Texture Dialogue::current_texture;
 
-bool Dialogue::init()
+bool Dialogue::init(char* path)
 {
+	std::string path_prefix = textures_path();
+	path_prefix.append(path);
 	// Load shared texture
 	if (!current_texture.is_valid())
 	{
-		if (!current_texture.load_from_file(textures_path("TutorialText.png")))
+		if (!current_texture.load_from_file(path_prefix.c_str()))
 		{
 			fprintf(stderr, "Failed to load dialogue!");
 			return false;
@@ -75,6 +77,7 @@ void Dialogue::destroy()
 	glDeleteShader(effect.vertex);
 	glDeleteShader(effect.fragment);
 	glDeleteShader(effect.program);
+	current_texture.invalidate();
 }
 
 void Dialogue::update(float ms)
@@ -83,9 +86,6 @@ void Dialogue::update(float ms)
 
 void Dialogue::draw(const mat3& projection)
 {
-	if (!m_active) {
-		return;
-	}
 	// Transformation code, see Rendering and Transformation in the template specification for more info
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
 	transform.begin();
@@ -130,6 +130,10 @@ void Dialogue::draw(const mat3& projection)
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
 	// Drawing!
+
+	if (!m_active) {
+		return;
+	}
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
@@ -147,8 +151,12 @@ bool Dialogue::isActive() {
 	return m_active;
 }
 
-void Dialogue::toggle() {
-	m_active = !m_active;
+void Dialogue::deactivate() {
+	m_active = false;
+}
+
+void Dialogue::activate() {
+	m_active = true;
 }
 
 void Dialogue::next() {

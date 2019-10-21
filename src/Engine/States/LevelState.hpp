@@ -18,6 +18,7 @@
 #include "Entities/fish.hpp"
 #include "Entities/Space.hpp"
 #include "Entities/bullet.hpp"
+#include "Entities/Dialogue.hpp"
 #include "Entities/UI/Health.hpp"
 
 // stlib
@@ -86,6 +87,7 @@ private:
     // UI
     Health* m_health;
     VampCharge* m_vamp_charge;
+	Dialogue m_dialogue;
 
     // To remove
     std::vector<Fish> m_fish;
@@ -95,7 +97,6 @@ private:
     float m_next_turtle_spawn;
     float m_next_fish_spawn;
 
-    bool m_spawn_enemies;
     bool m_boss_mode;
 
     // Vamp mode

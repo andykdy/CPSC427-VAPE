@@ -79,7 +79,7 @@ void TutorialState::init() {
 	GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
 
 	m_space.init();
-	m_dialogue.init();
+	m_dialogue.init("TutorialText.png");
 	m_current_cmp = initial;
 	m_vamp_mode = false;
 	m_mvmt_checklist[0] = false;
@@ -108,6 +108,7 @@ void TutorialState::terminate() {
 	m_health->destroy();
 	m_vamp_charge->destroy();
 	m_turtles.clear();
+	m_dialogue.destroy();
 }
 
 void TutorialState::update() {

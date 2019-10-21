@@ -36,7 +36,6 @@ enum Component {
 };
 
 class TutorialState : public GameState {
-	static Texture dlg_texture;
 public:
 	//! Constructor, taking in gameplay options
 	TutorialState();

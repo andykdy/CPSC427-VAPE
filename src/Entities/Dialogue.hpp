@@ -8,7 +8,7 @@ class Dialogue : public EntityOld
 
 public:
 	// Creates all the associated render resources and default transform
-	bool init();
+	bool init(char* path);
 
 	// Releases all the associated resources
 	void destroy();
@@ -25,6 +25,9 @@ public:
 
 	// Toggle the dialogue 
 	void toggle();
+
+	void deactivate();
+	void activate();
 
 	// Move to next dialogue option
 	void next();

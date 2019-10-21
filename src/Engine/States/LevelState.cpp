@@ -28,7 +28,7 @@ namespace
     const size_t INIT_HEALTH = 50;
     const size_t DAMAGE_ENEMY = 5;
     const size_t DAMAGE_BOSS = 5;
-    const size_t BOSS_TIME = 60000;
+	const size_t BOSS_TIME = 55000;
     const size_t VAMP_HEAL = 2;
 }
 
@@ -77,7 +77,6 @@ void LevelState::init() {
     m_current_speed = 1.f;
     m_level_time = 0;
     m_boss_mode = false;
-    m_spawn_enemies = true;
 
     m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
     m_player->init(screen, INIT_HEALTH);
@@ -86,6 +85,8 @@ void LevelState::init() {
     m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
     m_vamp_charge->init({w/2.f, h-h/12.f});
     m_vamp_mode_charge = 0;
+	m_dialogue.init("Boss1Dialogue.png");
+	m_dialogue.deactivate();
     m_space.init();
 
     //GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
@@ -123,6 +124,7 @@ void LevelState::terminate() {
     m_turtles->clear();
     m_fish.clear();
     m_boss.destroy();
+	m_dialogue.destroy();
 
     ECS::EntityId id = m_player->getId();
     GameEngine::getInstance().getEntityManager()->removeEntity(id);
@@ -140,12 +142,13 @@ void LevelState::update() {
     m_level_time += elapsed_ms * m_current_speed;
 
     // To prepare for the boss, stop spawning enemies and change the music
-    if (m_level_time >= BOSS_TIME - 4 && m_spawn_enemies) {
-        m_spawn_enemies = false;
+    if (m_level_time >= BOSS_TIME - 2000 && !m_boss_mode) {
         Mix_PlayMusic(m_boss_music, -1);
+		m_dialogue.activate();
     }
     // Spawn the boss
     if (m_level_time >= BOSS_TIME && !m_boss_mode) {
+		m_dialogue.deactivate();
         m_boss_mode = true;
         m_boss.init();
         m_boss.set_position({static_cast<float>(w/2), static_cast<float>(h/10)});
@@ -478,6 +481,7 @@ void LevelState::draw() {
     }
     m_health->draw(projection_2D);
     m_vamp_charge->draw(projection_2D);
+	m_dialogue.draw(projection_2D);
 
     //////////////////
     // Presenting
@@ -581,7 +585,6 @@ void LevelState::reset(vec2 screen) {
     m_boss.destroy();
     m_level_time = 0;
     m_boss_mode = false;
-    m_spawn_enemies = true;
     m_turtles->clear();
     m_fish.clear();
     Mix_PlayMusic(m_background_music, -1);

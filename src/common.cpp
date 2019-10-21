@@ -164,6 +164,10 @@ bool Texture::is_valid()const
 	return id != 0;
 }
 
+void Texture::invalidate() {
+	id = 0;
+}
+
 namespace
 {
 	bool gl_compile_shader(GLuint shader)
