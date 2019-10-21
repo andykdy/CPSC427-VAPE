@@ -60,6 +60,7 @@ bool MainMenu::init() {
     // 1.0 would be as big as the original texture.
     physics.scale = { 1.0f, 1.0f };
     motion.position = { wr, hr };
+    motion.radians = 0.f;
 
     return true;
 }
