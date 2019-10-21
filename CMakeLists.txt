@@ -75,7 +75,7 @@ set(SOURCE_FILES
     src/Engine/ECS/SystemManager.hpp
     src/Components/MeshComponent.hpp
     src/Components/TextureComponent.hpp
-    src/Components/HealthComponent.hpp src/Systems/EnemySpawnerSystem.cpp src/Systems/EnemySpawnerSystem.hpp src/Components/BulletComponent.hpp)
+    src/Components/HealthComponent.hpp src/Systems/EnemySpawnerSystem.cpp src/Systems/EnemySpawnerSystem.hpp src/Components/BulletComponent.hpp src/Systems/MotionSystem.cpp src/Systems/MotionSystem.hpp src/Components/BoundaryComponent.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

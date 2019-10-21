@@ -43,7 +43,6 @@ namespace ECS {
             systemArray[getSystemTypeId<T>()] = system;
             systemBitSet[getSystemTypeId<T>()] = true;
 
-            system->init();
             return *system;
         }
 

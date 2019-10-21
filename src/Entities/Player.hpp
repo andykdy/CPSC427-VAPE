@@ -46,9 +46,6 @@ public:
 	// Set salmon rotation in radians
 	void set_rotation(float radians);
 
-	// Change salmon velocity
-	void accelerate(float x, float y);
-
 	// True if the salmon is alive
 	bool is_alive()const;
 
@@ -79,8 +76,6 @@ private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up
 	float m_iframe; // Used to indicate how long the player should be invulnerable for
 	float m_health;
-	vec2 m_velocity; // Velocity
-	vec2 m_screen; // Screen space
 
   	std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;

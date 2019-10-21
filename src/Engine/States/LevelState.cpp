@@ -9,6 +9,7 @@
 #include <cassert>
 #include <sstream>
 #include <algorithm>
+#include <Systems/MotionSystem.hpp>
 
 #include "LevelState.hpp"
 #include "MainMenuState.hpp"
@@ -77,6 +78,8 @@ void LevelState::init() {
     m_health = &GameEngine::getInstance().getEntityManager()->addEntity<Health>();
     m_health->init({45, 60});
     m_space.init();
+
+    GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
 }
 
 void LevelState::terminate() {

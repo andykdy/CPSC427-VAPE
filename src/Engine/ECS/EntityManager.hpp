@@ -47,6 +47,10 @@ namespace ECS {
         void removeEntity(EntityId id) {
             entities.erase(id);
         }
+
+        std::unordered_map<EntityId, std::unique_ptr<Entity>> * getEntities() {
+            return &entities;
+        }
     };
 }
 

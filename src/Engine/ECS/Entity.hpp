@@ -50,7 +50,7 @@ namespace ECS {
         }
 
         template <typename T> bool hasComponent() const {
-            return componentBitSet[getComponentTypeId<T>];
+            return componentBitSet[getComponentTypeId<T>()];
         }
 
         template <typename T, typename... TArgs> T* addComponent(TArgs&&... mArgs) {

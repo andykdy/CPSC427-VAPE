@@ -40,7 +40,7 @@ bool Turtle::init()
 		return false;
 
 	motion->radians = 3.14;
-	motion->speed = 180.f;
+	motion->velocity = {0.f, 180.f};
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
@@ -64,8 +64,7 @@ void Turtle::update(float ms)
 {
 	auto* motion = getComponent<MotionComponent>();
 
-	float step = motion->speed * (ms / 1000);
-	motion->position.y += step;
+	float step = 180.f * (ms / 1000);
 	motion->radians += step * 0.02;
 }
 

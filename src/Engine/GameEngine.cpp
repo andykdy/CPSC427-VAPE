@@ -149,7 +149,7 @@ void GameEngine::changeState(GameState *state) {
  */
 void GameEngine::update(float ms) {
     //entityManager.update(ms);
-    //systemManager.update(ms);
+    systemManager.update(ms);
     this->elapsed_ms = ms;
     state->update();
 
