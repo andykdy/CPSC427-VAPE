@@ -213,6 +213,8 @@ void TutorialState::update(float ms) {
 		m_dialogue.next();
 	}
 
+    m_space.update(ms);
+
 	// Updating all entities, making the turtle and fish
 	// faster based on current
 	m_player->update(ms, keyMap, mouse_position);

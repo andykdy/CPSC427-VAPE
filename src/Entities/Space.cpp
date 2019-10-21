@@ -60,6 +60,7 @@ bool Space::init() {
     // 1.0 would be as big as the original texture.
     physics.scale = { 1.0f, 1.0f };
     motion.radians = 0.f;
+    m_bg_time = 0.f;
 
 	return true;
 }
@@ -124,7 +125,7 @@ void Space::draw(const mat3& projection) {
     GLuint time_uloc = glGetUniformLocation(effect.program, "time");
     GLuint dead_timer_uloc = glGetUniformLocation(effect.program, "dead_timer");
     glUniform1i(screen_text_uloc, 0);
-    glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
+    glUniform1f(time_uloc, m_bg_time / 75.f);
     glUniform1f(dead_timer_uloc, (m_dead_time > 0) ? (float)((glfwGetTime() - m_dead_time) * 10.0f) : -1);
 
     // Input data location as in the vertex buffer
@@ -160,4 +161,8 @@ void Space::reset_boss_dead_time() {
 
 float Space::get_boss_dead_time() const {
 	return glfwGetTime() - m_boss_dead_time;
+}
+
+void Space::update(float ms) {
+    m_bg_time += ms;
 }
