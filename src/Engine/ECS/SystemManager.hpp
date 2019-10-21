@@ -36,7 +36,7 @@ namespace ECS {
         }
 
         template <typename T> bool hasSystem() const {
-            return systemBitSet[getComponentTypeId<T>()];
+            return systemBitSet[getSystemTypeId<T>()];
         }
 
         template<typename T> T* getSystem() {
@@ -47,7 +47,6 @@ namespace ECS {
         }
 
         template <typename T, typename... TArgs> T* addSystem(TArgs&&... mArgs) {
-
             if (!hasSystem<T>()){
                 T *system(new T(std::forward<TArgs>(mArgs)...));
                 std::unique_ptr<System> uPtr{system};

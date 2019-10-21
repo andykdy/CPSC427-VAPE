@@ -35,6 +35,7 @@ private:
 	// Mouse position
 	vec2 mouse_position;
 
+	Mix_Music* m_background_music;
 };
 
 

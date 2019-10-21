@@ -89,7 +89,7 @@ void LevelState::init() {
 	m_dialogue.deactivate();
     m_space.init();
 
-    //GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
+    GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
     EnemySpawnerSystem* spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
     m_turtles = spawn->getEnemies();
     //std::cout << "initEnd" << std::endl;
@@ -290,6 +290,10 @@ void LevelState::update(float ms) {
     }
     if (keyMap[GLFW_KEY_G]) {
         add_health(MAX_HEALTH);
+    }
+
+    if (keyMap[GLFW_KEY_ESCAPE]) {
+        GameEngine::getInstance().changeState(new MainMenuState());
     }
 
     if (m_vamp_mode_charge >= 15 && keyMap[GLFW_KEY_ENTER]) {

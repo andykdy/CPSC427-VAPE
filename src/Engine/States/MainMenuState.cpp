@@ -17,10 +17,16 @@ void MainMenuState::init() {
             throw std::runtime_error("Failed to load background texture!");
         }
     }
+
+    m_background_music = Mix_LoadMUS(audio_path("mainmenu.wav"));
+
+    // Playing background music indefinitely
+    Mix_PlayMusic(m_background_music, -1);
 }
 
 void MainMenuState::terminate() {
-
+    if (m_background_music != nullptr)
+        Mix_FreeMusic(m_background_music);
 }
 
 void MainMenuState::update(float ms) {
