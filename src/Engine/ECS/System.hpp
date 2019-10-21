@@ -23,7 +23,9 @@ namespace ECS {
     }
 
     class System {
+        friend class SystemManager;
     private:
+        SystemId id;
         bool active = true;
     public:
         virtual void update(float ms) {}

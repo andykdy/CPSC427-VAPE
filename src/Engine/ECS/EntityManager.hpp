@@ -21,8 +21,12 @@ namespace ECS {
 
     public:
         void update(float ms) {
-            for (auto & e : entities) {
-                e.second->update(ms);
+            auto it = entities.begin();
+            while (it != entities.end()) {
+                if (!it->second->isActive())
+                    it = entities.erase(it);
+                else
+                    it++;
             }
         }
 
@@ -44,12 +48,18 @@ namespace ECS {
             return entities[id];
         }
 
+        /*
         void removeEntity(EntityId id) {
             entities.erase(id);
         }
+         */
 
         std::unordered_map<EntityId, std::unique_ptr<Entity>> * getEntities() {
             return &entities;
+        }
+
+        void reset() {
+            entities.clear();
         }
     };
 }

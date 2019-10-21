@@ -45,6 +45,7 @@ namespace ECS {
 
         bool isActive() { return active; };
         virtual void destroy() { active = false; };
+        void setActive() { active = true; };
 
         EntityId getId() {
             return id;

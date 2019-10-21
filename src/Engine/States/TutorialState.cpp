@@ -128,9 +128,8 @@ void TutorialState::update(float ms) {
 				if (m_player->get_iframes() <= 0.f) {
 					m_player->set_iframes(500.f);
 					lose_health(DAMAGE_ENEMY);
-					ECS::EntityId id = (*turtle_it)->getId();
+					(*turtle_it)->destroy();
 					m_turtles.erase(turtle_it);
-					GameEngine::getInstance().getEntityManager()->removeEntity(id);
 				}
 			}
 			break;
@@ -169,9 +168,8 @@ void TutorialState::update(float ms) {
 			if (bullet_it->collides_with(**turtle_it))
 			{
 				eraseBullet = true;
-				ECS::EntityId id = (*turtle_it)->getId();
-				turtle_it = m_turtles.erase(turtle_it);
-				GameEngine::getInstance().getEntityManager()->removeEntity(id);
+				(*turtle_it)->destroy();
+				m_turtles.erase(turtle_it);
 				Mix_PlayChannel(-1, m_player_explosion, 0);
 				++m_points;
 				add_vamp_charge();
@@ -197,6 +195,7 @@ void TutorialState::update(float ms) {
 		turtle_it = m_turtles.begin();
 		while (turtle_it != m_turtles.end()) {
 			if (m_vamp.collides_with(**turtle_it)) {
+				(*turtle_it)->destroy();
 				turtle_it = m_turtles.erase(turtle_it);
 				add_health(VAMP_HEAL);
 				m_vamp_quota--;

@@ -39,6 +39,8 @@ bool Health::init(vec2 position) {
     physics->scale = { 0.25f, 0.25f };
     motion->position = { position.x, position.y };
 
+    ECS::Entity::setActive();
+
     return true;
 }
 

@@ -83,6 +83,8 @@ bool Player::init(vec2 screen, int hp)
 	health->m_health = hp;
 	m_iframe = 0.f;
 
+	ECS::Entity::setActive();
+
 	return !gl_has_errors();
 
 }
