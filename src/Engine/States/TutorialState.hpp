@@ -25,6 +25,7 @@
 
 #include <Engine/GameState.hpp>
 #include <Entities/Vamp.hpp>
+#include <Entities/UI/VampCharge.hpp>
 
 enum Component {
 	initial,
@@ -59,6 +60,8 @@ public:
 	void on_mouse_button(GLFWwindow *window, int button, int action, int mods) override;
 
 private:
+	void add_vamp_charge();
+
 	void lose_health(int damage);
 	void add_health(int heal);
 
@@ -82,6 +85,7 @@ private:
 	// Game entities
 	Player* m_player;
 	Health* m_health;
+	VampCharge m_vamp_charge;
 	std::vector<Turtle*> m_turtles;
 	Dialogue m_dialogue;
 
@@ -104,6 +108,7 @@ private:
 	Mix_Chunk* m_player_dead_sound;
 	Mix_Chunk* m_player_eat_sound;
 	Mix_Chunk* m_player_explosion;
+	Mix_Chunk* m_player_charged;
 
 	// C++ rng
 	std::default_random_engine m_rng;

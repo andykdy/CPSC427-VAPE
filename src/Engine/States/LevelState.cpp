@@ -146,6 +146,7 @@ void LevelState::update() {
     }
 
     m_health->setHealth(m_player->get_health());
+    m_vamp_charge.setVampCharge(m_vamp_mode_charge);
 
     // Checking Player - Turtle collisions
 	auto turtle_it = m_turtles->begin();
@@ -500,7 +501,6 @@ void LevelState::add_health(int heal) {
 void LevelState::add_vamp_charge() {
     if (m_vamp_mode_charge < 15) {
         m_vamp_mode_charge++;
-        m_vamp_charge.setVampCharge(m_vamp_mode_charge);
         
         if (m_vamp_mode_charge == 15) {
             // TODO - replace with more appropriate sound
@@ -508,11 +508,6 @@ void LevelState::add_vamp_charge() {
         }
     }
 }
-
-// TODO - decide to either remove or add this
-//void LevelState::lose_vamp_charge() {
-//    m_vamp_charge.setVampCharge(0);
-//}
 
 // Creates a new turtle and if successfull adds it to the list of turtles
 bool LevelState::spawn_turtle() {

@@ -44,6 +44,7 @@ void TutorialState::init() {
 	m_player_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav"));
 	m_player_eat_sound = Mix_LoadWAV(audio_path("salmon_eat.wav"));
 	m_player_explosion = Mix_LoadWAV(audio_path("explosion.wav"));
+	m_player_charged = Mix_LoadWAV(audio_path("vamp_charge.wav"));
 
 	if (m_background_music == nullptr || m_player_dead_sound == nullptr || m_player_eat_sound == nullptr)
 	{
@@ -70,6 +71,8 @@ void TutorialState::init() {
 	m_player->init(screen, INIT_HEALTH);
 	m_health = &GameEngine::getInstance().getEntityManager()->addEntity<Health>();
 	m_health->init({45, 60});
+
+	m_vamp_charge.init({w/2.f, h-h/12.f});
 
 	GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
 
@@ -101,6 +104,7 @@ void TutorialState::terminate() {
 	for (auto& turtle : m_turtles)
 		turtle->destroy();
 	m_health->destroy();
+	m_vamp_charge.destroy();
 	m_turtles.clear();
 }
 
@@ -109,6 +113,7 @@ void TutorialState::update() {
 	glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
 	vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 	m_health->setHealth(m_player->get_health());
+	m_vamp_charge.setVampCharge(m_vamp_mode_charge);
 
 	// Checking Player - Turtle collisions
 	auto turtle_it = m_turtles.begin();
@@ -166,11 +171,11 @@ void TutorialState::update() {
 				GameEngine::getInstance().getEntityManager()->removeEntity(id);
 				Mix_PlayChannel(-1, m_player_explosion, 0);
 				++m_points;
-				m_vamp_mode_charge++;
+				add_vamp_charge();
 				if (m_current_cmp == shooting) {
 					m_dialogue.next();
 					m_current_cmp = vamp;
-					m_vamp_mode_charge = 10;
+					m_vamp_mode_charge = 15;
 				}
 				break;
 			}
@@ -215,16 +220,16 @@ void TutorialState::update() {
 
 	// for debugging purposes
 	if (keyMap[GLFW_KEY_F]) {
-		m_vamp_mode_charge = 10;
+		m_vamp_mode_charge = 15;
 	}
 
-	if (m_vamp_mode_charge >= 10 && keyMap[GLFW_KEY_ENTER]) {
+	if (m_vamp_mode_charge >= 15 && keyMap[GLFW_KEY_ENTER]) {
 		m_vamp_mode = true;
 		m_vamp_mode_timer = VAMP_MODE_DURATION;
 		m_vamp_mode_charge = 0;
 		m_current_speed = 0.5f;
 
-		m_vamp.init(m_player->get_position(), 0.785398f);
+		m_vamp.init(m_player->get_position());
 	}
 
 	if (m_vamp_mode_timer > 0.f) {
@@ -307,6 +312,7 @@ void TutorialState::draw() {
 	}
 	m_player->draw(projection_2D);
 	m_health->draw(projection_2D);
+	m_vamp_charge.draw(projection_2D);
 
 
 	/////////////////////
@@ -352,6 +358,18 @@ void TutorialState::add_health(int heal) {
 
 	m_player->gain_health(healVal);
 }
+
+void TutorialState::add_vamp_charge() {
+	if (m_vamp_mode_charge < 15) {
+		m_vamp_mode_charge++;
+
+		if (m_vamp_mode_charge == 15) {
+			// TODO - replace with more appropriate sound
+			Mix_PlayChannel(-1, m_player_charged, 0);
+		}
+	}
+}
+
 
 // Creates a new turtle and if successfull adds it to the list of turtles
 bool TutorialState::spawn_turtle() {
@@ -414,6 +432,7 @@ void TutorialState::on_mouse_button(GLFWwindow *window, int button, int action, 
 void TutorialState::reset(vec2 screen) {
 	m_player->destroy();
 	m_vamp.destroy();
+	m_vamp_charge.destroy();
 	m_player->init(screen, INIT_HEALTH);
 	m_turtles.clear();
 	Mix_PlayMusic(m_background_music, -1);
