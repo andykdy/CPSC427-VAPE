@@ -27,6 +27,7 @@
 #include <Engine/GameState.hpp>
 #include <Entities/Vamp.hpp>
 #include <Entities/Bosses/Boss1.hpp>
+#include <Entities/UI/VampCharge.hpp>
 
 class LevelState : public GameState {
 public:
@@ -55,6 +56,8 @@ private:
     void lose_health(int damage);
     void add_health(int heal);
 
+    void add_vamp_charge();
+
     void reset(vec2 screen);
 
     // Generates a new turtle
@@ -78,8 +81,13 @@ private:
     // Game entities
     Player m_player;
     Boss1 m_boss;
-    Health m_health;
     std::vector<Turtle> m_turtles;
+
+    // UI
+    Health m_health;
+    VampCharge m_vamp_charge;
+
+    // To remove
     std::vector<Fish> m_fish;
 
     float m_current_speed;
@@ -96,12 +104,15 @@ private:
     float m_vamp_mode_timer;
     unsigned int m_vamp_mode_charge;
 
+
+
     Mix_Music* m_background_music;
     Mix_Music* m_boss_music;
     Mix_Music* m_victory_music;
     Mix_Chunk* m_player_dead_sound;
     Mix_Chunk* m_player_eat_sound;
     Mix_Chunk* m_player_explosion;
+    Mix_Chunk* m_player_charged;
 
     // C++ rng
     std::default_random_engine m_rng;

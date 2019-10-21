@@ -1,5 +1,5 @@
 //
-// Created by Cody on 9/2/2019.
+// Created by matte on 9/2/2019.
 //
 
 #include <cmath>
@@ -9,11 +9,11 @@
 Texture Vamp::vamp_texture;
 
 
-bool Vamp::init(vec2 position, float rotation) {
+bool Vamp::init(vec2 position) {
     // Load shared texture
     if (!vamp_texture.is_valid())
     {
-        if (!vamp_texture.load_from_file(textures_path("vamp.png")))
+        if (!vamp_texture.load_from_file(textures_path("vamp_mode.png")))
         {
             fprintf(stderr, "Failed to load vamp texture!");
             return false;
@@ -60,10 +60,11 @@ bool Vamp::init(vec2 position, float rotation) {
         return false;
 
 
-    m_scale.x = 1.3f;
-    m_scale.y = 1.3f;
+    m_scale.x = 0.5f;
+    m_scale.y = 0.5f;
 
-    m_rotation = rotation;
+    m_rotation = 3.14f;
+    motion.speed = 180.f;
 
     m_position.x = position.x;
     m_position.y = position.y;
@@ -82,8 +83,10 @@ void Vamp::destroy() {
 }
 
 void Vamp::update(float ms, vec2 player_position) {
+    float step = motion.speed * (ms / 1000);
     m_position.x = player_position.x;
     m_position.y = player_position.y;
+    motion.radians += step * 0.015;
 }
 
 void Vamp::draw(const mat3 &projection) {
@@ -91,7 +94,7 @@ void Vamp::draw(const mat3 &projection) {
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     transform.begin();
     transform.translate(m_position);
-    transform.rotate(m_rotation);
+    transform.rotate(motion.radians);
     transform.scale(m_scale);
     transform.end();
 
@@ -144,7 +147,7 @@ bool Vamp::collides_with(const Turtle &turtle) {
     float dy = m_position.y - turtle.get_position().y;
     float d_sq = dx * dx + dy * dy;
     float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
-    float my_r = std::max(vamp_texture.width * m_scale.x,  vamp_texture.height * m_scale.y);
+    float my_r = std::max(vamp_texture.width * m_scale.x * 0.8f,  vamp_texture.height * m_scale.y * 0.8f);
     float r = std::max(other_r, my_r);
     r *= 0.6f;
     if (d_sq < r * r)
