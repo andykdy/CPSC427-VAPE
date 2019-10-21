@@ -39,7 +39,7 @@ bool Turtle::init()
 	if (gl_has_errors())
 		return false;
 
-	motion->radians = 3.14;
+	motion->radians = static_cast<float>(rand() * 2 * 3.14);
 	motion->velocity = {0.f, 180.f};
 
 	// Setting initial values, scale is negative to make it face the opposite way
@@ -107,3 +107,9 @@ vec2 Turtle::get_bounding_box() const
 }
 
 Turtle::Turtle(ECS::EntityId id) : Entity(id) {}
+
+void Turtle::set_velocity(vec2 velocity) {
+	auto* motion = getComponent<MotionComponent>();
+	motion->velocity.x = velocity.x;
+	motion->velocity.y = velocity.y;
+}

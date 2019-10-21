@@ -34,4 +34,6 @@ public:
 
 	// Returns the turtle' bounding box for collision detection, called by collides_with()
 	vec2 get_bounding_box() const;
+
+	void set_velocity(vec2 velocity);
 };

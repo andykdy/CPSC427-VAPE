@@ -234,8 +234,9 @@ void LevelState::update() {
     while (turtle_it != m_turtles->end())
     {
         float h = (*turtle_it)->get_bounding_box().y / 2;
-        if ((*turtle_it)->get_position().y - h > screen.y)
-        {
+        float w = (*turtle_it)->get_bounding_box().x / 2;
+        if (std::abs((*turtle_it)->get_position().y) + h > screen.y + 400
+                || std::abs((*turtle_it)->get_position().x) + w > screen.x + 400) {
             turtle_it = m_turtles->erase(turtle_it);
             continue;
         }
