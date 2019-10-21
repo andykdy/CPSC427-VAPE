@@ -59,7 +59,9 @@ set(SOURCE_FILES
     src/Entities/UI/Health.cpp
     src/Entities/UI/Health.hpp
     src/Entities/Vamp.cpp
-    src/Entities/Vamp.hpp src/Entities/UI/VampCharge.cpp src/Entities/UI/VampCharge.hpp)
+    src/Entities/Vamp.hpp
+    src/Entities/UI/VampCharge.cpp
+    src/Entities/UI/VampCharge.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
