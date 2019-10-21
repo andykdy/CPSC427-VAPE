@@ -31,4 +31,5 @@ public:
 
 private: 
 	bool m_active;
+	int m_index;
 };

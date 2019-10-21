@@ -2,9 +2,9 @@
 #include "Dialogue.hpp"
 
 #include <cmath>
+#include <string>
 
 Texture Dialogue::current_texture;
-enum Mode { Tutorial, boss };
 
 bool Dialogue::init()
 {
@@ -61,7 +61,7 @@ bool Dialogue::init()
 	motion.radians = 0;
 	physics.scale = { 0.55f, 0.55f };
 	m_active = true;
-
+	m_index = 1;
 	return true;
 }
 
@@ -152,8 +152,17 @@ void Dialogue::toggle() {
 }
 
 void Dialogue::next() {
-	if (!current_texture.load_from_file(textures_path("TutorialText2.png")))
+	std::string path = textures_path();
+	std::string str_index = std::to_string(m_index);
+	path.append("TutorialText");
+	path.append(str_index);
+	path.append(".png");
+	if (!current_texture.load_from_file(path.c_str()))
 	{
 		fprintf(stderr, "Failed to load dialogue!");
 	}
+	else {
+		m_index++;
+	}
+
 }

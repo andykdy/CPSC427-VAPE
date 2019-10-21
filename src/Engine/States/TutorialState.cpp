@@ -12,6 +12,7 @@
 
 #include "TutorialState.hpp"
 #include "MainMenuState.hpp"
+#include "LevelState.hpp"
 
 // Same as static in c, local to compilation unit
 namespace
@@ -23,6 +24,7 @@ namespace
 	const size_t DAMAGE_BOSS = 5;
 	const size_t BOSS_TIME = 30;
 	const size_t VAMP_HEAL = 2;
+	const size_t VAMP_KILLS_NEEDED = 3;
 }
 
 enum Component {
@@ -80,6 +82,7 @@ void TutorialState::init(GameEngine *game) {
 	m_mvmt_checklist[1] = false;
 	m_mvmt_checklist[2] = false;
 	m_mvmt_checklist[3] = false;
+	m_vamp_quota = VAMP_KILLS_NEEDED;
 
 }
 
@@ -126,7 +129,8 @@ void TutorialState::update(GameEngine *game) {
 			turtle_it++;
 		}
 	}
-	if (m_turtles.size() < 1 && m_current_cmp == shooting)
+	float turtle_limit = m_current_cmp == shooting ? 1 : m_current_cmp == vamp ? m_vamp_quota : 0;
+	if (m_turtles.size() < turtle_limit)
 	{
 		if (!spawn_turtle())
 			throw std::runtime_error("Failed spawn turtle");
@@ -134,8 +138,13 @@ void TutorialState::update(GameEngine *game) {
 		Turtle& new_turtle = m_turtles.back();
 
 		// Setting random initial position
-		new_turtle.set_position({ 400.f,400.f });
-		new_turtle.set_speed(0.f);
+		if (m_current_cmp == vamp) {
+			new_turtle.set_position({ 50 + m_dist(m_rng) * (screen.x - 100),  200 + m_dist(m_rng) * (screen.y - 600) });
+			new_turtle.set_speed(0.f);
+		}
+		else {
+			new_turtle.set_position({ 400.f,0.f });
+		}
 	}
 
 	// Checking Player Bullet - Enemy collisions
@@ -153,7 +162,11 @@ void TutorialState::update(GameEngine *game) {
 				Mix_PlayChannel(-1, m_player_explosion, 0);
 				++m_points;
 				m_vamp_mode_charge++;
-				m_current_cmp = vamp;
+				if (m_current_cmp == shooting) {
+					m_dialogue.next();
+					m_current_cmp = vamp;
+					m_vamp_mode_charge = 10;
+				}
 				break;
 			}
 			else {
@@ -173,12 +186,16 @@ void TutorialState::update(GameEngine *game) {
 			if (m_vamp.collides_with(*turtle_it)) {
 				turtle_it = m_turtles.erase(turtle_it);
 				add_health(VAMP_HEAL);
-
+				m_vamp_quota--;
 				continue;
 			}
 
 			++turtle_it;
 		}
+	}
+	if (m_vamp_quota == 0 && m_current_cmp == vamp) {
+		m_current_cmp = clear;
+		m_dialogue.next();
 	}
 
 	// Updating all entities, making the turtle and fish
@@ -186,21 +203,9 @@ void TutorialState::update(GameEngine *game) {
 	float elapsed_ms = game->getElapsed_ms();
 	m_player.update(elapsed_ms * m_current_speed, keyMap, mouse_position);
 	m_vamp.update(elapsed_ms * m_current_speed, m_player.get_position());
-	for (auto& turtle : m_turtles)
+	for (auto& turtle : m_turtles) {
+		if (turtle.get_position().y > 400.f) turtle.set_speed(0.f);
 		turtle.update(elapsed_ms * m_current_speed);
-
-	// Removing out of screen turtles
-	turtle_it = m_turtles.begin();
-	while (turtle_it != m_turtles.end())
-	{
-		float h = turtle_it->get_bounding_box().y / 2;
-		if (turtle_it->get_position().y - h > screen.y)
-		{
-			turtle_it = m_turtles.erase(turtle_it);
-			continue;
-		}
-
-		++turtle_it;
 	}
 
 	// for debugging purposes
@@ -368,14 +373,15 @@ void TutorialState::on_key(GameEngine *game, GLFWwindow *wwindow, int key, int i
 		vec2 screen = { (float)w / game->getM_screen_scale(), (float)h / game->getM_screen_scale() };
 		reset(screen);
 	}
-
-	if (keyMap[GLFW_KEY_W]) m_mvmt_checklist[0] = true;
-	if (keyMap[GLFW_KEY_S]) m_mvmt_checklist[1] = true;
-	if (keyMap[GLFW_KEY_A]) m_mvmt_checklist[2] = true;
-	if (keyMap[GLFW_KEY_D]) m_mvmt_checklist[3] = true;
-	if (m_mvmt_checklist[0] && m_mvmt_checklist[1] && m_mvmt_checklist[2] && m_mvmt_checklist[3]) {
-		m_current_cmp = shooting;
-		m_dialogue.next();
+	if (m_current_cmp == movement) {
+		if (keyMap[GLFW_KEY_W]) m_mvmt_checklist[0] = true;
+		if (keyMap[GLFW_KEY_S]) m_mvmt_checklist[1] = true;
+		if (keyMap[GLFW_KEY_A]) m_mvmt_checklist[2] = true;
+		if (keyMap[GLFW_KEY_D]) m_mvmt_checklist[3] = true;
+		if (m_mvmt_checklist[0] && m_mvmt_checklist[1] && m_mvmt_checklist[2] && m_mvmt_checklist[3]) {
+			m_current_cmp = shooting;
+			m_dialogue.next();
+		}
 	}
 
 	m_current_speed = fmax(0.f, m_current_speed);
@@ -389,10 +395,15 @@ void TutorialState::on_mouse_move(GameEngine *game, GLFWwindow *window, double x
 void TutorialState::on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) {
 	// Track which mouse buttons are being pressed or held
 	(action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[button] = true : keyMap[button] = false;
-	if (m_current_cmp == initial && keyMap[button]) {
-		m_current_cmp = movement;
-		m_dialogue.next();
-	} 
+	if (keyMap[button]) {
+		if (m_current_cmp == initial) {
+			m_current_cmp = movement;
+			m_dialogue.next();
+		}
+		if (m_current_cmp == clear) {
+			game->changeState(new LevelState());
+		}
+	}
 }
 
 void TutorialState::reset(vec2 screen) {

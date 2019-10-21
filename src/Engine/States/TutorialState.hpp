@@ -89,6 +89,8 @@ private:
 
 	Component m_current_cmp;
 	bool m_mvmt_checklist[4];
+	float m_vamp_quota;
+
 
 	// Vamp mode
 	Vamp m_vamp;
