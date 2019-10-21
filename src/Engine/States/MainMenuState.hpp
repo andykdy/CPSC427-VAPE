@@ -24,7 +24,7 @@ public:
     void update(GameEngine *game) override;
 
     void draw(GameEngine *game) override;
-
+	 
     void on_key(GameEngine *game, GLFWwindow *wwindow, int key, int i, int action, int mod) override;
 
     void on_mouse_move(GameEngine *game, GLFWwindow *window, double xpos, double ypos) override;

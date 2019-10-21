@@ -1,25 +1,26 @@
 // Header
-#include "turtle.hpp"
+#include "Dialogue.hpp"
 
 #include <cmath>
 
-Texture Turtle::turtle_texture;
+Texture Dialogue::current_texture;
+enum Mode { Tutorial, boss };
 
-bool Turtle::init()
+bool Dialogue::init()
 {
 	// Load shared texture
-	if (!turtle_texture.is_valid())
+	if (!current_texture.is_valid())
 	{
-		if (!turtle_texture.load_from_file(textures_path("turtle.png")))
+		if (!current_texture.load_from_file(textures_path("TutorialText.png")))
 		{
-			fprintf(stderr, "Failed to load turtle texture!");
+			fprintf(stderr, "Failed to load dialogue!");
 			return false;
 		}
 	}
 
 	// The position corresponds to the center of the texture
-	float wr = turtle_texture.width * 0.5f;
-	float hr = turtle_texture.height * 0.5f;
+	float wr = current_texture.width * 0.5f;
+	float hr = current_texture.height * 0.5f;
 
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.02f };
@@ -36,7 +37,7 @@ bool Turtle::init()
 
 	// Clearing errors
 	gl_flush_errors();
-	
+
 	// Vertex Buffer creation
 	glGenBuffers(1, &mesh.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
@@ -56,18 +57,16 @@ bool Turtle::init()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	motion.radians = 3.14;
-	motion.speed = 180.f;
-
-	// Setting initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture.
-	physics.scale = { -0.33f, 0.33f };
+	motion.position = { 550.f,100.f };
+	motion.radians = 0;
+	physics.scale = { 0.55f, 0.55f };
+	m_active = true;
 
 	return true;
 }
 
 // Releases all graphics resources
-void Turtle::destroy()
+void Dialogue::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
@@ -78,15 +77,15 @@ void Turtle::destroy()
 	glDeleteShader(effect.program);
 }
 
-void Turtle::update(float ms)
+void Dialogue::update(float ms)
 {
-	float step = motion.speed * (ms / 1000);
-	motion.position.y += step;
-	motion.radians += step * 0.02;
 }
 
-void Turtle::draw(const mat3& projection)
+void Dialogue::draw(const mat3& projection)
 {
+	if (!m_active) {
+		return;
+	}
 	// Transformation code, see Rendering and Transformation in the template specification for more info
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
 	transform.begin();
@@ -122,7 +121,7 @@ void Turtle::draw(const mat3& projection)
 
 	// Enabling and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, turtle_texture.id);
+	glBindTexture(GL_TEXTURE_2D, current_texture.id);
 
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.out);
@@ -134,23 +133,27 @@ void Turtle::draw(const mat3& projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 Turtle::get_position()const
+vec2 Dialogue::get_position()const
 {
 	return motion.position;
 }
 
-void Turtle::set_position(vec2 position)
+void Dialogue::set_position(vec2 position)
 {
 	motion.position = position;
 }
 
-void Turtle::set_speed(float magnitude) {
-	motion.speed = 0.f;
+bool Dialogue::isActive() {
+	return m_active;
 }
 
-vec2 Turtle::get_bounding_box() const
-{
-	// Returns the local bounding coordinates scaled by the current size of the turtle 
-	// fabs is to avoid negative scale due to the facing direction.
-	return { std::fabs(physics.scale.x) * turtle_texture.width, std::fabs(physics.scale.y) * turtle_texture.height };
+void Dialogue::toggle() {
+	m_active = !m_active;
+}
+
+void Dialogue::next() {
+	if (!current_texture.load_from_file(textures_path("TutorialText2.png")))
+	{
+		fprintf(stderr, "Failed to load dialogue!");
+	}
 }

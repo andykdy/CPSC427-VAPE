@@ -5,6 +5,7 @@
 #include <sstream>
 #include "MainMenuState.hpp"
 #include "LevelState.hpp"
+#include "TutorialState.hpp"
 
 Texture MainMenuState::bg_texture;
 
@@ -96,7 +97,7 @@ void MainMenuState::on_mouse_move(GameEngine *game, GLFWwindow *window, double x
 void MainMenuState::on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) {
 	if (mouse_position.x >= 200 && mouse_position.x <= 600 && mouse_position.y >= 600 && mouse_position.y <= 700) {
 		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-			game->changeState(new LevelState());
+			game->changeState(new TutorialState());
 		}
 	}
 }
