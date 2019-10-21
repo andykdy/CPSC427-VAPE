@@ -33,7 +33,8 @@ public:
         gl_flush_errors();
 
         // Allocate Vertex Data Buffer
-        TexturedVertex vertexData [ totalSprites * 4 ];
+//		TexturedVertex vertexData[totalSprites * 4];
+        TexturedVertex *vertexData = new TexturedVertex [ totalSprites * 4 ];
         glGenBuffers(1, &vertexDataBuffer);
 
         // Allocate Index Buffers

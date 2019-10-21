@@ -13,7 +13,7 @@ void EnemySpawnerSystem::update(float ms) {
         if (it->first <= time) {
             Levels::Wave wave = it->second;
             for (auto &wavit : wave) {
-                std::cout << "spawned" << std::endl;
+                // std::cout << "spawned" << std::endl;
                 Turtle* t = wavit.fn(GameEngine::getInstance().getEntityManager(), wavit.pos, wavit.vel, wavit.dir);
                 enemies.emplace_back(t);
             }

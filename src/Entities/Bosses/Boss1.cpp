@@ -10,6 +10,7 @@
 namespace
 {
     const size_t BULLET_COOLDOWN_MS = 100;
+    const size_t INIT_HEALTH = 100;
 }
 
 Texture Boss1::boss1_texture;
@@ -71,7 +72,7 @@ bool Boss1::init() {
     // 1.0 would be as big as the original texture.
     physics.scale = { -0.4f, 0.4f };
 
-    health = 100;
+    health = INIT_HEALTH;
     m_is_alive = true;
 
     int randomVal = rand() % 2;

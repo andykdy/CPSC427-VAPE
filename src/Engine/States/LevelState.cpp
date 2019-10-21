@@ -69,6 +69,7 @@ void LevelState::init() {
     glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
     vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
+    m_vamp_mode = false;
     m_current_speed = 1.f;
     m_level_time = 0;
     m_boss_mode = false;
@@ -80,12 +81,13 @@ void LevelState::init() {
     m_health->init({45, 60});
     m_space.init();
 
-    GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
+    //GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
     EnemySpawnerSystem* spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
     m_turtles = spawn->getEnemies();
 }
 
 void LevelState::terminate() {
+    // TODO system cleanup
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
     if (m_boss_music != nullptr)
@@ -100,14 +102,23 @@ void LevelState::terminate() {
         Mix_FreeChunk(m_player_explosion);
 
     m_player->destroy();
-    for (auto& turtle : *m_turtles)
+    for (auto& turtle : *m_turtles){
+        ECS::EntityId id = turtle->getId();
         turtle->destroy();
+        GameEngine::getInstance().getEntityManager()->removeEntity(id);
+    }
+
     for (auto& fish : m_fish)
         fish.destroy();
     m_health->destroy();
     m_turtles->clear();
     m_fish.clear();
     m_boss.destroy();
+
+    ECS::EntityId id = m_player->getId();
+    GameEngine::getInstance().getEntityManager()->removeEntity(id);
+    id = m_health->getId();
+    GameEngine::getInstance().getEntityManager()->removeEntity(id);
 }
 
 void LevelState::update() {
@@ -210,7 +221,9 @@ void LevelState::update() {
         turtle_it = m_turtles->begin();
         while (turtle_it != m_turtles->end()) {
             if (m_vamp.collides_with(**turtle_it)) {
+                ECS::EntityId id = (*turtle_it)->getId();
                 turtle_it = m_turtles->erase(turtle_it);
+                GameEngine::getInstance().getEntityManager()->removeEntity(id);
                 add_health(VAMP_HEAL);
 
                 continue;
@@ -363,6 +376,7 @@ void LevelState::update() {
         if (m_boss.getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
         {
             GameEngine::getInstance().changeState(new MainMenuState());
+			return;
         }
     }
 
@@ -535,6 +549,7 @@ void LevelState::on_mouse_button(GLFWwindow *window, int button, int action, int
 }
 
 void LevelState::reset(vec2 screen) {
+    m_vamp_mode = false;
     m_player->destroy();
     m_vamp.destroy();
     m_player->init(screen, INIT_HEALTH);
