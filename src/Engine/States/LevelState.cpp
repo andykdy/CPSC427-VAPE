@@ -404,20 +404,6 @@ void LevelState::draw(GameEngine *game) {
     // The shaders coloured.vs.glsl and coloured.fs.glsl should be helpful.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    // Drawing entities
-    for (auto& turtle : m_turtles)
-        turtle.draw(projection_2D);
-    for (auto& fish : m_fish)
-        fish.draw(projection_2D);
-    if (m_vamp_mode) {
-        m_vamp.draw(projection_2D);
-    }
-	m_player.draw(projection_2D);
-    if (m_boss_mode) {
-        m_boss.draw(projection_2D);
-    }
-    m_health.draw(projection_2D);
-
 
     /////////////////////
     // Truely render to the screen
@@ -436,7 +422,22 @@ void LevelState::draw(GameEngine *game) {
 
     m_space.draw(projection_2D);
 
+    // Drawing entities
+    for (auto& turtle : m_turtles)
+        turtle.draw(projection_2D);
+    for (auto& fish : m_fish)
+        fish.draw(projection_2D);
+    if (m_vamp_mode) {
+        m_vamp.draw(projection_2D);
+    }
+    m_player.draw(projection_2D);
+    if (m_boss_mode) {
+        m_boss.draw(projection_2D);
+    }
+    m_health.draw(projection_2D);
+
     //////////////////
+
     // Presenting
     glfwSwapBuffers(m_window);
 }
