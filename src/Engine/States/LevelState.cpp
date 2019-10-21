@@ -210,7 +210,6 @@ void LevelState::update(GameEngine *game) {
     // Updating all entities, making the turtle and fish
     // faster based on current
     float elapsed_ms = game->getElapsed_ms();
-    m_space.update(elapsed_ms * m_current_speed);
     m_player.update(elapsed_ms * m_current_speed, keyMap, mouse_position);
     m_vamp.update(elapsed_ms * m_current_speed, m_player.get_position());
     for (auto& turtle : m_turtles)
