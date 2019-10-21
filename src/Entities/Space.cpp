@@ -125,6 +125,15 @@ void Space::draw(const mat3& projection) {
     glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
 
+    // Set screen_texture sampling to texture unit 0
+    // Set clock
+    GLuint screen_text_uloc = glGetUniformLocation(effect.program, "screen_texture");
+    GLuint time_uloc = glGetUniformLocation(effect.program, "time");
+    GLuint dead_timer_uloc = glGetUniformLocation(effect.program, "dead_timer");
+    glUniform1i(screen_text_uloc, 0);
+    glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
+    glUniform1f(dead_timer_uloc, (m_dead_time > 0) ? (float)((glfwGetTime() - m_dead_time) * 10.0f) : -1);
+
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
     GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
