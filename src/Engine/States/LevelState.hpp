@@ -8,8 +8,8 @@
  * Created on: 9/17/2019
  */
 
-#ifndef VAPE_LEVEL_HPP
-#define VAPE_LEVEL_HPP
+#ifndef VAPE_LEVELSTATE_HPP
+#define VAPE_LEVELSTATE_HPP
 
 // internal
 #include "common.hpp"
@@ -109,4 +109,4 @@ private:
 };
 
 
-#endif //VAPE_LEVEL_HPP
+#endif //VAPE_LEVELSTATE_HPP

@@ -18,7 +18,7 @@ public:
     Player(ECS::EntityId id);
 
 // Creates all the associated render resources and default transform
-	bool init(vec2 screen, float health);
+	bool init(vec2 screen, int hp);
 
 	// Releases all associated resources
 	void destroy();
@@ -68,14 +68,13 @@ public:
 
 	float get_iframes();
 
-    float get_health() const;
+	int get_health() const;
 
 private:
 	Mix_Chunk* m_player_bullet_sound;
 
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up
 	float m_iframe; // Used to indicate how long the player should be invulnerable for
-	float m_health;
 
   	std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;

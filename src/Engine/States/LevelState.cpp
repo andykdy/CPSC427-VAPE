@@ -10,6 +10,7 @@
 #include <sstream>
 #include <algorithm>
 #include <Systems/MotionSystem.hpp>
+#include <Systems/EnemySpawnerSystem.hpp>
 
 #include "LevelState.hpp"
 #include "MainMenuState.hpp"
@@ -80,6 +81,7 @@ void LevelState::init() {
     m_space.init();
 
     GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
+    GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
 }
 
 void LevelState::terminate() {
@@ -124,7 +126,7 @@ void LevelState::update() {
         m_boss.set_position({static_cast<float>(w/2), static_cast<float>(h/10)});
     }
 
-    m_health->setHealth((int) m_player->get_health());
+    m_health->setHealth(m_player->get_health());
 
     // Checking Player - Turtle collisions
 	auto turtle_it = m_turtles.begin();
@@ -417,11 +419,10 @@ void LevelState::draw() {
         turtle->draw(projection_2D);
     for (auto& fish : m_fish)
         fish.draw(projection_2D);
-    m_player->draw(projection_2D);
-    m_player->draw(projection_2D);
     if (m_vamp_mode) {
         m_vamp.draw(projection_2D);
     }
+    m_player->draw(projection_2D);
     if (m_boss_mode) {
         m_boss.draw(projection_2D);
     }

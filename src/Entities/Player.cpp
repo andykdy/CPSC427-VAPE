@@ -15,6 +15,7 @@
 #include <Components/PhysicsComponent.hpp>
 #include <Components/SpriteComponent.hpp>
 #include <Components/BoundaryComponent.hpp>
+#include <Components/HealthComponent.hpp>
 
 // Same as static in c, local to compilation unit
 namespace
@@ -28,13 +29,14 @@ namespace
 Texture Player::player_texture;
 Texture Player::vamp_texture;
 
-bool Player::init(vec2 screen, float health)
+bool Player::init(vec2 screen, int hp)
 {
 	auto* sprite = addComponent<SpriteComponent>();
 	auto* effect = addComponent<EffectComponent>();
 	auto* physics = addComponent<PhysicsComponent>();
 	auto* motion = addComponent<MotionComponent>();
 	auto* transform = addComponent<TransformComponent>();
+	auto* health = addComponent<HealthComponent>();
 
 	addComponent<BoundaryComponent>(screenBuffer.x, screen.x - screenBuffer.x,
 									screenBuffer.y, screen.y - screenBuffer.y);
@@ -78,13 +80,11 @@ bool Player::init(vec2 screen, float health)
 
 	m_light_up_countdown_ms = -1.f;
 	m_bullet_cooldown = -1.f;
-	m_health = health;
+	health->m_health = hp;
 	m_iframe = 0.f;
 
-	if (gl_has_errors())
-		return false;
+	return !gl_has_errors();
 
-	return true;
 }
 
 // Releases all graphics resources
@@ -238,18 +238,18 @@ void Player::set_rotation(float radians)
 
 bool Player::is_alive() const
 {
-	return m_health > 0;
+	return getComponent<HealthComponent>()->is_alive();
 }
 
 // Called when the player collides with an enemy
 void Player::lose_health(float amount)
 {
-	m_health -= amount;
+	getComponent<HealthComponent>()->lose_health(amount);
 }
 
 void Player::gain_health(float amount)
 {
-    m_health += amount;
+	getComponent<HealthComponent>()->gain_health(amount);
 }
 
 // Called when the salmon collides with a fish
@@ -286,8 +286,8 @@ float Player::get_iframes()
 	return m_iframe;
 }
 
-float Player::get_health() const {
-    return m_health;
+int Player::get_health() const {
+	return getComponent<HealthComponent>()->get_health();
 }
 
 Player::Player(ECS::EntityId id) : Entity(id) {}
