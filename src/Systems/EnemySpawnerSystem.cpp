@@ -27,3 +27,8 @@ void EnemySpawnerSystem::update(float ms) {
 std::vector<Turtle *> *EnemySpawnerSystem::getEnemies() {
     return &enemies;
 }
+
+void EnemySpawnerSystem::reset() {
+    level = Levels::level1; // TODO
+    time = 0;
+}

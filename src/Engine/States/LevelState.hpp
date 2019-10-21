@@ -83,7 +83,7 @@ private:
     std::vector<Fish> m_fish;
 
     float m_current_speed;
-    float m_level_start;
+    float m_level_time;
     float m_next_turtle_spawn;
     float m_next_fish_spawn;
 

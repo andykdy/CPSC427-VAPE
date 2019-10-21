@@ -27,7 +27,7 @@ namespace
     const size_t INIT_HEALTH = 50;
     const size_t DAMAGE_ENEMY = 5;
     const size_t DAMAGE_BOSS = 5;
-    const size_t BOSS_TIME = 30;
+    const size_t BOSS_TIME = 60000;
     const size_t VAMP_HEAL = 2;
 }
 
@@ -70,7 +70,7 @@ void LevelState::init() {
     vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
     m_current_speed = 1.f;
-    m_level_start = glfwGetTime();
+    m_level_time = 0;
     m_boss_mode = false;
     m_spawn_enemies = true;
 
@@ -115,13 +115,16 @@ void LevelState::update() {
     glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
     vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
+    float elapsed_ms = GameEngine::getInstance().getElapsed_ms();
+    m_level_time += elapsed_ms * m_current_speed;
+
     // To prepare for the boss, stop spawning enemies and change the music
-    if (glfwGetTime() - m_level_start >= BOSS_TIME - 4 && m_spawn_enemies) {
+    if (m_level_time >= BOSS_TIME - 4 && m_spawn_enemies) {
         m_spawn_enemies = false;
         Mix_PlayMusic(m_boss_music, -1);
     }
     // Spawn the boss
-    if (glfwGetTime() - m_level_start >= BOSS_TIME && !m_boss_mode) {
+    if (m_level_time >= BOSS_TIME && !m_boss_mode) {
         m_boss_mode = true;
         m_boss.init();
         m_boss.set_position({static_cast<float>(w/2), static_cast<float>(h/10)});
@@ -219,7 +222,6 @@ void LevelState::update() {
 
     // Updating all entities, making the turtle and fish
     // faster based on current
-    float elapsed_ms = GameEngine::getInstance().getElapsed_ms();
     m_player->update(elapsed_ms * m_current_speed, keyMap, mouse_position);
     m_vamp.update(elapsed_ms * m_current_speed, m_player->get_position());
     for (auto& turtle : *m_turtles)
@@ -536,7 +538,7 @@ void LevelState::reset(vec2 screen) {
     m_vamp.destroy();
     m_player->init(screen, INIT_HEALTH);
     m_boss.destroy();
-    m_level_start = glfwGetTime();
+    m_level_time = 0;
     m_boss_mode = false;
     m_spawn_enemies = true;
     m_turtles->clear();
@@ -546,4 +548,6 @@ void LevelState::reset(vec2 screen) {
     m_space.reset_salmon_dead_time();
     m_space.reset_boss_dead_time();
     m_current_speed = 1.f;
+
+    GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>()->reset();
 }

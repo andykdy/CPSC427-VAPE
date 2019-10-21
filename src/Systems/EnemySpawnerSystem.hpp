@@ -17,6 +17,7 @@ private:
 public:
     void update(float ms) override;
     std::vector<Turtle*> *getEnemies();
+    void reset();
 };
 
 

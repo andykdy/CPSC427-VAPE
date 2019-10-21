@@ -140,6 +140,7 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 	{
 		// If dead we make it face upwards and sink deep down
 		set_rotation(3.1415f);
+		motion->maxVelocity = 0;
 		move({ 0.f, 200 * (ms / 1000) });
 	}
 
