@@ -26,7 +26,13 @@
 #include <Engine/GameState.hpp>
 #include <Entities/Vamp.hpp>
 
-enum Component;
+enum Component {
+	initial,
+	movement,
+	shooting,
+	vamp,
+	clear
+};
 
 class TutorialState : public GameState {
 	static Texture dlg_texture;

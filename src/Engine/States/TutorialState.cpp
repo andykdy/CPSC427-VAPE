@@ -27,13 +27,6 @@ namespace
 	const size_t VAMP_KILLS_NEEDED = 3;
 }
 
-enum Component {
-	initial,
-	movement, 
-	shooting,
-	vamp,
-	clear
-};
 
 TutorialState::TutorialState() :
 	m_points(0),
