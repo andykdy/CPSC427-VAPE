@@ -5,6 +5,7 @@
 
 class Space : public EntityOld
 {
+    static Texture bg_texture;
 public:
 	// Creates all the associated render resources and default transform
 	bool init();

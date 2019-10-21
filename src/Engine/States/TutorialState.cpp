@@ -306,16 +306,6 @@ void TutorialState::draw() {
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
-	// Drawing entities
-	for (auto& turtle : m_turtles)
-		turtle->draw(projection_2D);
-	if (m_vamp_mode) {
-		m_vamp.draw(projection_2D);
-	}
-	m_player->draw(projection_2D);
-	m_health->draw(projection_2D);
-	m_vamp_charge->draw(projection_2D);
-
 
 	/////////////////////
 	// Truely render to the screen
@@ -333,6 +323,17 @@ void TutorialState::draw() {
 	glBindTexture(GL_TEXTURE_2D, GameEngine::getInstance().getM_screen_tex().id);
 
 	m_space.draw(projection_2D);
+
+	// Drawing entities
+	for (auto& turtle : m_turtles)
+		turtle->draw(projection_2D);
+	if (m_vamp_mode) {
+		m_vamp.draw(projection_2D);
+	}
+	m_player->draw(projection_2D);
+	m_health->draw(projection_2D);
+	m_vamp_charge->draw(projection_2D);
+
 	m_dialogue.draw(projection_2D);
 
 
