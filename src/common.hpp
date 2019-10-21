@@ -79,7 +79,7 @@ struct Texture
 
 // An entity boils down to a collection of components,
 // organized by their in-game context (mesh, effect, motion, etc...)
-struct Entity {
+struct EntityOld {
 	// projection contains the orthographic projection matrix. As every Entity::draw()
 	// renders itself it needs it to correctly bind it to its shader.
 	virtual void draw(const mat3& projection) = 0;
@@ -105,11 +105,10 @@ protected:
 		void release(); // release shaders and program
 	} effect;
 
-	// All data relevant to the motion of the salmon.
 	struct Motion {
-		vec2 position;
-		float radians;
-		float speed;
+	    vec2 position;
+	    float radians;
+	    float speed;
 	} motion;
 
 	// Scale is used in the bounding box calculations, 

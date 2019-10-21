@@ -9,7 +9,7 @@
 #include "turtle.hpp"
 #include "fish.hpp"
 
-class Vamp : public Entity {
+class Vamp : public EntityOld {
     static Texture vamp_texture;
 
 public:

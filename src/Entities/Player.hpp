@@ -5,11 +5,12 @@
 #include "bullet.hpp"
 #include <vector>
 #include <SDL_mixer.h>
+#include <Engine/ECS/Entity.hpp>
 
 class Turtle;
 class Fish;
 
-class Player : public Entity
+class Player : public ECS::Entity
 {
 	static Texture player_texture;
 	static Texture vamp_texture;

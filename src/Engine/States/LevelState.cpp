@@ -350,6 +350,7 @@ void LevelState::update(GameEngine *game) {
         if (m_boss.getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
         {
             game->changeState(new MainMenuState());
+			return;
         }
     }
 
@@ -412,11 +413,10 @@ void LevelState::draw(GameEngine *game) {
         turtle.draw(projection_2D);
     for (auto& fish : m_fish)
         fish.draw(projection_2D);
-    m_player.draw(projection_2D);
-    m_player.draw(projection_2D);
     if (m_vamp_mode) {
         m_vamp.draw(projection_2D);
     }
+	m_player.draw(projection_2D);
     if (m_boss_mode) {
         m_boss.draw(projection_2D);
     }

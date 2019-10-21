@@ -3,7 +3,7 @@
 #include "common.hpp"
 
 // Player food
-class Fish : public Entity
+class Fish : public EntityOld
 {
 	// Shared between all fish, no need to load one for each instance
 	static Texture fish_texture;

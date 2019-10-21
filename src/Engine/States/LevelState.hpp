@@ -51,7 +51,7 @@ public:
     void on_mouse_move(GameEngine *game, GLFWwindow *window, double xpos, double ypos) override;
 
     void on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) override;
-    void LoadTexture(char *filename);
+
 private:
     void lose_health(int damage);
     void add_health(int heal);

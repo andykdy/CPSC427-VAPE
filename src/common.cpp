@@ -187,7 +187,7 @@ namespace
 	}
 }
 
-bool Entity::Effect::load_from_file(const char* vs_path, const char* fs_path) 
+bool EntityOld::Effect::load_from_file(const char* vs_path, const char* fs_path)
 {
 	gl_flush_errors();
 
@@ -259,25 +259,25 @@ bool Entity::Effect::load_from_file(const char* vs_path, const char* fs_path)
 	return true;
 }
 
-void Entity::Effect::release()
+void EntityOld::Effect::release()
 {
 	glDeleteProgram(program);
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
 }
 
-void Entity::Transform::begin()
+void EntityOld::Transform::begin()
 {
 	out = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };
 }
 
-void Entity::Transform::scale(vec2 scale)
+void EntityOld::Transform::scale(vec2 scale)
 {
 	mat3 S = { { scale.x, 0.f, 0.f },{ 0.f, scale.y, 0.f },{ 0.f, 0.f, 1.f } };
 	out = mul(out, S);
 }
 
-void Entity::Transform::rotate(float radians)
+void EntityOld::Transform::rotate(float radians)
 {
 	float c = cosf(radians);
 	float s = sinf(radians);
@@ -285,13 +285,13 @@ void Entity::Transform::rotate(float radians)
 	out = mul(out, R);
 }
 
-void Entity::Transform::translate(vec2 offset)
+void EntityOld::Transform::translate(vec2 offset)
 {
 	mat3 T = { { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ offset.x, offset.y, 1.f } };
 	out = mul(out, T);
 }
 
-void Entity::Transform::end()
+void EntityOld::Transform::end()
 {
 	//
 }
