@@ -63,7 +63,7 @@ bool Vamp::init(vec2 position) {
     m_scale.x = 0.5f;
     m_scale.y = 0.5f;
 
-    m_rotation = 3.14f;
+    motion.radians = 3.14f;
     motion.speed = 180.f;
 
     m_position.x = position.x;
