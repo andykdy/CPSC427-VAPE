@@ -8,7 +8,7 @@ class Dialogue : public EntityOld
 
 public:
 	// Creates all the associated render resources and default transform
-	bool init(char* path);
+	bool init(const char *path);
 
 	// Releases all the associated resources
 	void destroy();

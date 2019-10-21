@@ -96,6 +96,7 @@ private:
     float m_next_turtle_spawn;
     float m_next_fish_spawn;
 
+    bool m_boss_pre;
     bool m_boss_mode;
 
     // Vamp mode

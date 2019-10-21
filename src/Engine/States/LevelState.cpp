@@ -28,7 +28,7 @@ namespace
     const size_t INIT_HEALTH = 50;
     const size_t DAMAGE_ENEMY = 5;
     const size_t DAMAGE_BOSS = 5;
-	const size_t BOSS_TIME = 55000;
+	const size_t BOSS_TIME = 70000;
     const size_t VAMP_HEAL = 2;
 }
 
@@ -76,6 +76,7 @@ void LevelState::init() {
     m_vamp_mode = false;
     m_level_time = 0;
     m_boss_mode = false;
+    m_boss_pre = false;
 
     m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
     m_player->init(screen, INIT_HEALTH);
@@ -140,9 +141,10 @@ void LevelState::update(float ms) {
     m_level_time += ms;
 
     // To prepare for the boss, stop spawning enemies and change the music
-    if (m_level_time >= BOSS_TIME - 2000 && !m_boss_mode) {
+    if (m_level_time >= BOSS_TIME - 5000 && !m_boss_pre) {
         Mix_PlayMusic(m_boss_music, -1);
 		m_dialogue.activate();
+        m_boss_pre = true;
     }
     // Spawn the boss
     if (m_level_time >= BOSS_TIME && !m_boss_mode) {
@@ -285,6 +287,9 @@ void LevelState::update(float ms) {
     // for debugging purposes
     if (keyMap[GLFW_KEY_F]) {
         m_vamp_mode_charge = 15;
+    }
+    if (keyMap[GLFW_KEY_G]) {
+        add_health(MAX_HEALTH);
     }
 
     if (m_vamp_mode_charge >= 15 && keyMap[GLFW_KEY_ENTER]) {
@@ -584,6 +589,7 @@ void LevelState::reset(vec2 screen) {
     m_boss.destroy();
     m_level_time = 0;
     m_boss_mode = false;
+    m_boss_pre = false;
     m_turtles->clear();
     m_fish.clear();
     Mix_PlayMusic(m_background_music, -1);

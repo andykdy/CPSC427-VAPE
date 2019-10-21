@@ -6,7 +6,7 @@
 
 Texture Dialogue::current_texture;
 
-bool Dialogue::init(char* path)
+bool Dialogue::init(const char *path)
 {
 	std::string path_prefix = textures_path();
 	path_prefix.append(path);
