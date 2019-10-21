@@ -249,17 +249,17 @@ void LevelState::update(GameEngine *game) {
 
     // for debugging purposes
     if (keyMap[GLFW_KEY_F]) {
-        m_vamp_mode_charge = 10;
+        m_vamp_mode_charge = 15;
     }
 
-    if (m_vamp_mode_charge >= 10 && keyMap[GLFW_KEY_ENTER]) {
+    if (m_vamp_mode_charge >= 15 && keyMap[GLFW_KEY_ENTER]) {
         m_vamp_mode = true;
         m_vamp_mode_timer = VAMP_MODE_DURATION;
         m_vamp_mode_charge = 0;
         m_current_speed = 0.5f;
         m_vamp_charge.setVampCharge(0);
 
-        m_vamp.init(m_player.get_position(), 0.785398f);
+        m_vamp.init(m_player.get_position());
     }
 
     if (m_vamp_mode_timer > 0.f) {

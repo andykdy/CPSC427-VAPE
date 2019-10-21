@@ -5,15 +5,15 @@
 #ifndef VAPE_VAMP_HPP
 #define VAPE_VAMP_HPP
 
-#include <vector>
 #include "common.hpp"
 #include "turtle.hpp"
 #include "fish.hpp"
 
 class Vamp : public Entity {
+    static Texture vamp_texture;
 
 public:
-    bool init(vec2 position, float rotation);
+    bool init(vec2 position);
     void destroy();
     void update(float ms,  vec2 player_position);
     void draw(const mat3& projection)override;
@@ -21,7 +21,7 @@ public:
     // Returns the current vamp position (centered)
     vec2 get_position()const;
 
-    // Collision routines for turtles
+    // Collision routines for turtles and fish
     bool collides_with(const Turtle& turtle);
 
     // Returns the vamp mode's bounding box for collision detection, called by collides_with()
@@ -31,8 +31,6 @@ private:
     vec2 m_position; // Window coordinates
     vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
     float m_rotation; // in radians
-    std::vector<Vertex> m_vertices;
-    std::vector<uint16_t> m_indices;
 };
 
 
