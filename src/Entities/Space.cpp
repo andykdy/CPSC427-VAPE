@@ -59,7 +59,7 @@ bool Space::init() {
     // Setting initial values, scale is negative to make it face the opposite way
     // 1.0 would be as big as the original texture.
     physics.scale = { 1.0f, 1.0f };
-    motion.speed = 100.f;
+    motion.speed = 50.f;
     motion.radians = 0.f;
 
 	return true;
@@ -97,11 +97,9 @@ void Space::update(float ms)
 {
     float step = motion.speed * (ms / 1000);
     motion.position.y += step;
-    motion.radians += step * 0.02;
 }
 
 void Space::draw(const mat3& projection) {
-    fprintf(stderr, "update draw %g \n", motion.position.y);
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     transform.begin();

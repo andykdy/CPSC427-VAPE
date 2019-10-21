@@ -76,7 +76,7 @@ void LevelState::init(GameEngine *game) {
     m_health.init({45, 60});
     m_space.init();
 
-    m_space.set_position({0, 0});
+    m_space.set_position({screen.x/2, 0});
 }
 
 void LevelState::terminate() {
