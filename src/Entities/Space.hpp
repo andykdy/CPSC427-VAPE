@@ -13,6 +13,11 @@ public:
 	// Releases all associated resources
 	void destroy();
 
+    void set_position(vec2 position);
+
+    // ms represents the number of milliseconds elapsed from the previous update() call
+    void update(float ms);
+
 	// Renders the water
 	void draw(const mat3& projection)override;
 
