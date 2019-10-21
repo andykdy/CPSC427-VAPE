@@ -89,6 +89,8 @@ void LevelState::init() {
 	m_dialogue.deactivate();
     m_space.init();
 
+    m_space.set_position({screen.x/2, 0});
+
     GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
     EnemySpawnerSystem* spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
     spawn->reset();

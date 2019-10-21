@@ -78,6 +78,8 @@ void TutorialState::init() {
 
 	GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
 
+    m_space.set_position({screen.x/2, 0});
+
 	m_space.init();
 	m_dialogue.init("TutorialText.png");
 	m_current_cmp = initial;

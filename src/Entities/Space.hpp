@@ -13,6 +13,8 @@ public:
 	// Releases all associated resources
 	void destroy();
 
+    void set_position(vec2 position);
+
 	// Renders the water
 	void draw(const mat3& projection)override;
 
