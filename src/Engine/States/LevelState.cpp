@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <Systems/MotionSystem.hpp>
 #include <Systems/EnemySpawnerSystem.hpp>
+#include <iostream>
 
 #include "LevelState.hpp"
 #include "MainMenuState.hpp"
@@ -42,6 +43,7 @@ m_next_fish_spawn(0.f)
 }
 
 void LevelState::init() {
+    //std::cout << "init" << std::endl;
     m_background_music = Mix_LoadMUS(audio_path("music.wav"));
     m_boss_music = Mix_LoadMUS(audio_path("music_boss1.wav"));
     m_victory_music = Mix_LoadMUS(audio_path("music_victory.wav"));
@@ -81,12 +83,15 @@ void LevelState::init() {
     m_player->init(screen, INIT_HEALTH);
     m_health = &GameEngine::getInstance().getEntityManager()->addEntity<Health>();
     m_health->init({45, 60});
-    m_vamp_charge.init({w/2.f, h-h/12.f});
+    m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
+    m_vamp_charge->init({w/2.f, h-h/12.f});
+    m_vamp_mode_charge = 0;
     m_space.init();
 
     //GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
     EnemySpawnerSystem* spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
     m_turtles = spawn->getEnemies();
+    //std::cout << "initEnd" << std::endl;
 }
 
 void LevelState::terminate() {
@@ -114,7 +119,7 @@ void LevelState::terminate() {
     for (auto& fish : m_fish)
         fish.destroy();
     m_health->destroy();
-    m_vamp_charge.destroy();
+    m_vamp_charge->destroy();
     m_turtles->clear();
     m_fish.clear();
     m_boss.destroy();
@@ -126,6 +131,7 @@ void LevelState::terminate() {
 }
 
 void LevelState::update() {
+    //std::cout << "update" << std::endl;
     int w, h;
     glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
     vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
@@ -146,7 +152,7 @@ void LevelState::update() {
     }
 
     m_health->setHealth(m_player->get_health());
-    m_vamp_charge.setVampCharge(m_vamp_mode_charge);
+    m_vamp_charge->setVampCharge(m_vamp_mode_charge);
 
     // Checking Player - Turtle collisions
 	auto turtle_it = m_turtles->begin();
@@ -286,7 +292,7 @@ void LevelState::update() {
         m_vamp_mode_timer = VAMP_MODE_DURATION;
         m_vamp_mode_charge = 0;
         m_current_speed = 0.5f;
-        m_vamp_charge.setVampCharge(0);
+        m_vamp_charge->setVampCharge(0);
 
         m_vamp.init(m_player->get_position());
     }
@@ -391,6 +397,7 @@ void LevelState::update() {
         m_space.get_salmon_dead_time() > 5) {
        reset(screen);
     }
+    //std::cout << "updateend" << std::endl;
 }
 
 void LevelState::draw() {
@@ -453,7 +460,7 @@ void LevelState::draw() {
         m_boss.draw(projection_2D);
     }
     m_health->draw(projection_2D);
-    m_vamp_charge.draw(projection_2D);
+    m_vamp_charge->draw(projection_2D);
 
 
     /////////////////////
@@ -570,7 +577,7 @@ void LevelState::reset(vec2 screen) {
     m_vamp_mode = false;
     m_player->destroy();
     m_vamp.destroy();
-    m_vamp_charge.destroy();
+    m_vamp_charge->destroy();
     m_player->init(screen, INIT_HEALTH);
     m_boss.destroy();
     m_level_time = 0;

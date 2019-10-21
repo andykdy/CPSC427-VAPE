@@ -72,7 +72,9 @@ void TutorialState::init() {
 	m_health = &GameEngine::getInstance().getEntityManager()->addEntity<Health>();
 	m_health->init({45, 60});
 
-	m_vamp_charge.init({w/2.f, h-h/12.f});
+	m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
+	m_vamp_charge->init({w/2.f, h-h/12.f});
+	m_vamp_mode_charge = 0;
 
 	GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
 
@@ -104,7 +106,7 @@ void TutorialState::terminate() {
 	for (auto& turtle : m_turtles)
 		turtle->destroy();
 	m_health->destroy();
-	m_vamp_charge.destroy();
+	m_vamp_charge->destroy();
 	m_turtles.clear();
 }
 
@@ -113,7 +115,7 @@ void TutorialState::update() {
 	glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
 	vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 	m_health->setHealth(m_player->get_health());
-	m_vamp_charge.setVampCharge(m_vamp_mode_charge);
+	m_vamp_charge->setVampCharge(m_vamp_mode_charge);
 
 	// Checking Player - Turtle collisions
 	auto turtle_it = m_turtles.begin();
@@ -312,7 +314,7 @@ void TutorialState::draw() {
 	}
 	m_player->draw(projection_2D);
 	m_health->draw(projection_2D);
-	m_vamp_charge.draw(projection_2D);
+	m_vamp_charge->draw(projection_2D);
 
 
 	/////////////////////
@@ -432,7 +434,7 @@ void TutorialState::on_mouse_button(GLFWwindow *window, int button, int action, 
 void TutorialState::reset(vec2 screen) {
 	m_player->destroy();
 	m_vamp.destroy();
-	m_vamp_charge.destroy();
+	m_vamp_charge->destroy();
 	m_player->init(screen, INIT_HEALTH);
 	m_turtles.clear();
 	Mix_PlayMusic(m_background_music, -1);

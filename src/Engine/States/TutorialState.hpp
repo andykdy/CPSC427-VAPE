@@ -85,7 +85,7 @@ private:
 	// Game entities
 	Player* m_player;
 	Health* m_health;
-	VampCharge m_vamp_charge;
+	VampCharge* m_vamp_charge;
 	std::vector<Turtle*> m_turtles;
 	Dialogue m_dialogue;
 

@@ -85,7 +85,7 @@ private:
 
     // UI
     Health* m_health;
-    VampCharge m_vamp_charge;
+    VampCharge* m_vamp_charge;
 
     // To remove
     std::vector<Fish> m_fish;
