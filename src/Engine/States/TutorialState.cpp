@@ -215,7 +215,6 @@ void TutorialState::update() {
 	// faster based on current
 	float elapsed_ms = GameEngine::getInstance().getElapsed_ms();
 	m_player->update(elapsed_ms * m_current_speed, keyMap, mouse_position);
-	m_vamp.update(elapsed_ms * m_current_speed, m_player->get_position());
 	for (auto& turtle : m_turtles) {
 		if (turtle->get_position().y > 400.f) turtle->set_velocity({0.f,0.f});
 		turtle->update(elapsed_ms * m_current_speed);
