@@ -35,7 +35,7 @@ namespace ECS {
             }), systems.end());
         }
 
-        template <typename T, typename... TArgs> T& addSystem(TArgs&&... mArgs) {
+        template <typename T, typename... TArgs> T* addSystem(TArgs&&... mArgs) {
             T *system(new T(std::forward<TArgs>(mArgs)...));
             std::unique_ptr<System> uPtr{system};
             systems.emplace_back((std::move(uPtr)));
@@ -43,7 +43,7 @@ namespace ECS {
             systemArray[getSystemTypeId<T>()] = system;
             systemBitSet[getSystemTypeId<T>()] = true;
 
-            return *system;
+            return system;
         }
 
         template<typename T> T* getSystem() const {

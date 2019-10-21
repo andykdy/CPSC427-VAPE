@@ -13,9 +13,10 @@ class EnemySpawnerSystem : public ECS::System {
 private:
     int time = 0;
     std::vector<Turtle*> enemies;
-    Levels::Timeline level;
+    Levels::Timeline level = Levels::level1; // TODO
 public:
     void update(float ms) override;
+    std::vector<Turtle*> *getEnemies();
 };
 
 

@@ -79,7 +79,7 @@ private:
     Player* m_player;
     Boss1 m_boss;
     Health* m_health;
-    std::vector<Turtle*> m_turtles;
+    std::vector<Turtle*> *m_turtles;
     std::vector<Fish> m_fish;
 
     float m_current_speed;

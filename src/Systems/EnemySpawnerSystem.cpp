@@ -3,11 +3,27 @@
 //
 
 #include <Engine/GameEngine.hpp>
+#include <iostream>
 #include "EnemySpawnerSystem.hpp"
 
 void EnemySpawnerSystem::update(float ms) {
     time += ms; // TODO game speed
-    for (auto & e : *GameEngine::getInstance().getEntityManager()->getEntities()) {
-
+    auto it = level.begin();
+    while (it != level.end()) {
+        if (it->first <= time) {
+            Levels::Wave wave = it->second;
+            for (auto &wavit : wave) {
+                std::cout << "spawned" << std::endl;
+                Turtle* t = wavit.fn(GameEngine::getInstance().getEntityManager(), wavit.pos, wavit.dir);
+                enemies.emplace_back(t);
+            }
+            it = level.erase(it);
+        } else {
+            it++;
+        }
     }
+}
+
+std::vector<Turtle *> *EnemySpawnerSystem::getEnemies() {
+    return &enemies;
 }
