@@ -580,6 +580,7 @@ void LevelState::on_mouse_button(GLFWwindow *window, int button, int action, int
 void LevelState::reset(vec2 screen) {
     int w, h;
     glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
+
     m_vamp_mode = false;
     m_player->destroy();
     m_health->destroy();
@@ -588,6 +589,7 @@ void LevelState::reset(vec2 screen) {
     m_player->init(screen, INIT_HEALTH);
     m_health->init({45, 60});
     m_vamp_charge->init({w/2.f, h-h/12.f});
+    m_vamp_mode_charge = 0;
     m_boss.destroy();
     m_level_time = 0;
     m_boss_mode = false;
