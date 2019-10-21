@@ -73,7 +73,7 @@ void TutorialState::init() {
 	m_health->init({45, 60});
 
 	m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
-	m_vamp_charge->init({w/2.f, h-h/12.f});
+    m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
 	m_vamp_mode_charge = 0;
 
 	GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
@@ -436,6 +436,8 @@ void TutorialState::reset(vec2 screen) {
 	m_vamp.destroy();
 	m_vamp_charge->destroy();
 	m_player->init(screen, INIT_HEALTH);
+    m_health->init({45, 60});
+    m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
 	m_turtles.clear();
 	Mix_PlayMusic(m_background_music, -1);
 	m_mvmt_checklist[0] = false;

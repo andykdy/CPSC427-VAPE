@@ -63,9 +63,9 @@ void VampCharge::draw(const mat3 &projection) {
     int num = 4*charge;
     for (int i = 0; i < num; i++) {
         transform->begin();
-        vec2 offset = {i/2.f * 5.f, 0.f};
+        vec2 offset = {(float)i/2.f * 5.f, 0.f};
         if (i%2 == 0) {
-            offset = {i/2.f * - 5.f, 0.f};
+            offset = {(float)i/2.f * - 5.f, 0.f};
         }
         offset.x += motion->position.x;
         offset.y += motion->position.y;
