@@ -10,22 +10,21 @@
 #include "fish.hpp"
 
 class Vamp : public EntityOld {
-    // Shared between all bullets, no need to load one for each instance
     static Texture vamp_texture;
 
 public:
-    bool init(vec2 position, float rotation);
+    bool init(vec2 position);
     void destroy();
     void update(float ms,  vec2 player_position);
     void draw(const mat3& projection)override;
 
-    // Returns the current bullet position
+    // Returns the current vamp position (centered)
     vec2 get_position()const;
 
     // Collision routines for turtles and fish
     bool collides_with(const Turtle& turtle);
 
-    // Returns the bullet' bounding box for collision detection, called by collides_with()
+    // Returns the vamp mode's bounding box for collision detection, called by collides_with()
     vec2 get_bounding_box()const;
 
 private:
