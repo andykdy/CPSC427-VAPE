@@ -20,7 +20,7 @@ We were too busy to run user studies for the skeletal game, so that was ignored.
 # Week: October 18
 
 ## Basic Art assets
-Was already semi-complete. New background assets were created and added, as well as a new main menu.
+Was already semi-complete. New background assets were created and added, as well as a new main menu. Infinitely scrolling background added.
 
 ## Basic Sprite assets
 Was already mostly complete from skeletal. Sprite sheet for the player was added, as well as new vamp mode.
