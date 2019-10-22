@@ -18,7 +18,7 @@ class Boss1 : public EntityOld {
 
 public:
     // Creates all the associated render resources and default transform
-    bool init(GameEngine *game);
+    bool init();
 
     // Releases all the associated resources
     void destroy();
@@ -50,7 +50,6 @@ public:
     void kill();
 
 private:
-    GameEngine *game;
     int health;
     Direction dir; // Direction right or left
     bool m_is_alive;

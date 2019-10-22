@@ -15,30 +15,43 @@
 #include "Component.hpp"
 
 namespace ECS {
+    using EntityId = std::size_t;
+
     constexpr std::size_t maxComponents = 32;
 
     using ComponentBitSet = std::bitset<maxComponents>;
     using ComponentArray = std::array<Component*, maxComponents>;
+    using ComponentPtrArray = std::array<std::unique_ptr<Component>, maxComponents>;
 
 
     class Entity {
+    friend class EntityManager;
     private:
+        EntityId id;
         bool active = true;
 
         std::vector<std::unique_ptr<Component>> components; // Component pointers
 
-        ComponentArray componentArray; // Components indexed by typeId
+        ComponentArray componentArray{}; // Components indexed by typeId
         ComponentBitSet componentBitSet; // Quick True/False lookup for if has component;
 
     public:
+        explicit Entity(EntityId id) :
+                id(id)
+        {}
+
         virtual void update(float ms) {};
         virtual void draw(const mat3& projection) {};
 
         bool isActive() { return active; };
         virtual void destroy() { active = false; };
 
+        EntityId getId() {
+            return id;
+        }
+
         template <typename T> bool hasComponent() const {
-            return componentBitSet[getComponentTypeId<T>];
+            return componentBitSet[getComponentTypeId<T>()];
         }
 
         template <typename T, typename... TArgs> T* addComponent(TArgs&&... mArgs) {
@@ -59,7 +72,6 @@ namespace ECS {
             auto ptr(componentArray[getComponentTypeId<T>()]);
             return static_cast<T*>(ptr);
         }
-        // entity.getComponent<PositionCopmonent>().setPosition(...);
     };
 }
 

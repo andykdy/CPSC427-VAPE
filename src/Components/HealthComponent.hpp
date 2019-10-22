@@ -8,16 +8,13 @@
 #include <Engine/ECS/Component.hpp>
 
 class HealthComponent : public ECS::Component {
-private:
-    int m_health;
 public:
-    // Kills the salmon, changing its alive state and triggering on death events
+    int m_health = 0;
     int lose_health(float amount) {
         m_health -= amount;
         return m_health;
     }
 
-    // Gain health after draining an enemy in vamp mode
     int gain_health(float amount) {
         m_health += amount;
         return m_health;

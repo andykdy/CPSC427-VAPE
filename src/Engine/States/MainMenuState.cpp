@@ -5,10 +5,11 @@
 #include <sstream>
 #include "MainMenuState.hpp"
 #include "LevelState.hpp"
+#include "TutorialState.hpp"
 
 Texture MainMenuState::bg_texture;
 
-void MainMenuState::init(GameEngine *game) {
+void MainMenuState::init() {
     if (!bg_texture.is_valid())
     {
         if (!bg_texture.load_from_file(textures_path("mainmenu_bg.png")))
@@ -16,23 +17,32 @@ void MainMenuState::init(GameEngine *game) {
             throw std::runtime_error("Failed to load background texture!");
         }
     }
+
+    m_background_music = Mix_LoadMUS(audio_path("mainmenu.wav"));
+
+    // Playing background music indefinitely
+    Mix_PlayMusic(m_background_music, -1);
+
+    menu.init();
 }
 
 void MainMenuState::terminate() {
+    if (m_background_music != nullptr)
+        Mix_FreeMusic(m_background_music);
+    menu.destroy();
+}
+
+void MainMenuState::update(float ms) {
 
 }
 
-void MainMenuState::update(GameEngine *game) {
-
-}
-
-void MainMenuState::draw(GameEngine *game) {
+void MainMenuState::draw() {
     // Clearing error buffer
     gl_flush_errors();
 
     // Getting size of window
     int w, h;
-    GLFWwindow* m_window = game->getM_window();
+    GLFWwindow* m_window = GameEngine::getInstance().getM_window();
     glfwGetFramebufferSize(m_window, &w, &h);
 
     // Updating window title with points
@@ -40,9 +50,9 @@ void MainMenuState::draw(GameEngine *game) {
     title_ss << "V.A.P.E";
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
-    /////////////////////////////////////
+    ////////////////////////////////////
     // First render to the custom framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, game->getM_frame_buffer());
+    glBindFramebuffer(GL_FRAMEBUFFER, GameEngine::getInstance().getM_frame_buffer());
 
     // Clearing backbuffer
     glViewport(0, 0, w, h);
@@ -51,6 +61,19 @@ void MainMenuState::draw(GameEngine *game) {
     glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
     glClearDepth(1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Fake projection matrix, scales with respect to window coordinates
+    // PS: 1.f / w in [1][1] is correct.. do you know why ? (:
+    float left = 0.f;// *-0.5;
+    float top = 0.f;// (float)h * -0.5;
+    float right = (float)w / GameEngine::getInstance().getM_screen_scale();// *0.5;
+    float bottom = (float)h / GameEngine::getInstance().getM_screen_scale();// *0.5;
+
+    float sx = 2.f / (right - left);
+    float sy = 2.f / (top - bottom);
+    float tx = -(right + left) / (right - left);
+    float ty = -(top + bottom) / (top - bottom);
+    mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
     /////////////////////
     // Truely render to the screen
@@ -63,21 +86,11 @@ void MainMenuState::draw(GameEngine *game) {
     glClearDepth(1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // TODO This is supposed to draw the background, but it seems a bit buggy at least on my computer - Cody
-    GLuint fboId = 0;
-    glGenFramebuffers(1, &fboId);
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, fboId);
-    glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                           GL_TEXTURE_2D, bg_texture.id, 0);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);  // if not already bound
-    glBlitFramebuffer(0, 0, w, h, 0, h, w, 0,
-                      GL_COLOR_BUFFER_BIT, GL_NEAREST);
-    //
-
     // Bind our texture in Texture Unit 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, game->getM_screen_tex().id);
+    glBindTexture(GL_TEXTURE_2D, GameEngine::getInstance().getM_screen_tex().id);
 
+    menu.draw(projection_2D);
 
     //////////////////
     // Presenting
@@ -85,18 +98,18 @@ void MainMenuState::draw(GameEngine *game) {
 
 }
 
-void MainMenuState::on_key(GameEngine *game, GLFWwindow *wwindow, int key, int i, int action, int mod) {
+void MainMenuState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
 }
 
-void MainMenuState::on_mouse_move(GameEngine *game, GLFWwindow *window, double xpos, double ypos) {
+void MainMenuState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
 	mouse_position.x = xpos;
 	mouse_position.y = ypos;
 }
 
-void MainMenuState::on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) {
+void MainMenuState::on_mouse_button(GLFWwindow *window, int button, int action, int mods) {
 	if (mouse_position.x >= 200 && mouse_position.x <= 600 && mouse_position.y >= 600 && mouse_position.y <= 700) {
 		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-			game->changeState(new LevelState());
+			GameEngine::getInstance().changeState(new TutorialState());
 		}
 	}
 }

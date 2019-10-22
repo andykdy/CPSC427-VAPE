@@ -8,8 +8,8 @@
  * Created on: 9/17/2019
  */
 
-#ifndef VAPE_LEVEL_HPP
-#define VAPE_LEVEL_HPP
+#ifndef VAPE_LEVELSTATE_HPP
+#define VAPE_LEVELSTATE_HPP
 
 // internal
 #include "common.hpp"
@@ -18,6 +18,7 @@
 #include "Entities/fish.hpp"
 #include "Entities/Space.hpp"
 #include "Entities/bullet.hpp"
+#include "Entities/Dialogue.hpp"
 #include "Entities/UI/Health.hpp"
 
 // stlib
@@ -35,22 +36,22 @@ public:
     LevelState();
 
     //! Initializes the state
-    void init(GameEngine *game) override;
+    void init() override;
 
     //! Cleans up the state
     void terminate() override;
 
     //! Updates the state of the level
-    void update(GameEngine *game) override;
+    void update(float ms) override;
 
     //! Renders the state
-    void draw(GameEngine *game) override;
+    void draw() override;
 
-    void on_key(GameEngine *game, GLFWwindow *wwindow, int key, int i, int action, int mod) override;
+    void on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) override;
 
-    void on_mouse_move(GameEngine *game, GLFWwindow *window, double xpos, double ypos) override;
+    void on_mouse_move(GLFWwindow *window, double xpos, double ypos) override;
 
-    void on_mouse_button(GameEngine *game, GLFWwindow *window, int button, int action, int mods) override;
+    void on_mouse_button(GLFWwindow *window, int button, int action, int mods) override;
 
 private:
     void lose_health(int damage);
@@ -79,23 +80,23 @@ private:
     unsigned int m_points;
 
     // Game entities
-    Player m_player;
+    Player* m_player;
     Boss1 m_boss;
-    std::vector<Turtle> m_turtles;
+    std::vector<Turtle*> *m_turtles;
 
     // UI
-    Health m_health;
-    VampCharge m_vamp_charge;
+    Health* m_health;
+    VampCharge* m_vamp_charge;
+	Dialogue m_dialogue;
 
     // To remove
     std::vector<Fish> m_fish;
 
-    float m_current_speed;
-    float m_level_start;
+    float m_level_time;
     float m_next_turtle_spawn;
     float m_next_fish_spawn;
 
-    bool m_spawn_enemies;
+    bool m_boss_pre;
     bool m_boss_mode;
 
     // Vamp mode
@@ -120,4 +121,4 @@ private:
 };
 
 
-#endif //VAPE_LEVEL_HPP
+#endif //VAPE_LEVELSTATE_HPP

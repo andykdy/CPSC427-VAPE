@@ -14,6 +14,8 @@
 #include <Components/MotionComponent.hpp>
 #include <Components/PhysicsComponent.hpp>
 #include <Components/SpriteComponent.hpp>
+#include <Components/BoundaryComponent.hpp>
+#include <Components/HealthComponent.hpp>
 
 // Same as static in c, local to compilation unit
 namespace
@@ -21,18 +23,23 @@ namespace
 	const size_t BULLET_COOLDOWN_MS = 300;
 	const size_t spriteWH = 450;
 	const size_t spriteFrames = 10;
+	const vec2 screenBuffer = { 20, 50 };
 }
 
 Texture Player::player_texture;
 Texture Player::vamp_texture;
 
-bool Player::init(vec2 screen, float health)
+bool Player::init(vec2 screen, int hp)
 {
 	auto* sprite = addComponent<SpriteComponent>();
 	auto* effect = addComponent<EffectComponent>();
 	auto* physics = addComponent<PhysicsComponent>();
 	auto* motion = addComponent<MotionComponent>();
 	auto* transform = addComponent<TransformComponent>();
+	auto* health = addComponent<HealthComponent>();
+
+	addComponent<BoundaryComponent>(screenBuffer.x, screen.x - screenBuffer.x,
+									screenBuffer.y, screen.y - screenBuffer.y);
 
 	// Load sound
 	m_player_bullet_sound = Mix_LoadWAV(audio_path("pow.wav"));
@@ -66,21 +73,18 @@ bool Player::init(vec2 screen, float health)
 	// Setting initial values
 	motion->position = { screen.x / 2, screen.y - 100 };
 	motion->radians = 0.f;
-	motion->speed = 200.f;
-
+	motion->maxVelocity = 400.f;
+	motion->friction = 0.1;
 	physics->scale = { -0.40, 0.40 };
 
 
-	m_screen = screen;
 	m_light_up_countdown_ms = -1.f;
 	m_bullet_cooldown = -1.f;
-	m_health = health;
+	health->m_health = hp;
 	m_iframe = 0.f;
 
-	if (gl_has_errors())
-		return false;
+	return !gl_has_errors();
 
-	return true;
 }
 
 // Releases all graphics resources
@@ -118,44 +122,26 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 		Mix_PlayChannel(-1, m_player_bullet_sound, 0);
 	}
 
-	float step = motion->speed * (ms / 1000);
 	if (is_alive())
 	{
-		vec2 screenBuffer = { 20.0f,50.0f };
 		float accelX = 0.f;
 		float accelY = 0.f;
 
+		float n = 100;
         // Arrow key movement;
-        if (keyMap[GLFW_KEY_W]) accelY -= 1.f;
-        if (keyMap[GLFW_KEY_S]) accelY += 1.f;
-        if (keyMap[GLFW_KEY_A]) accelX -= 1.f;
-        if (keyMap[GLFW_KEY_D]) accelX += 1.f;
+        if (keyMap[GLFW_KEY_W]) accelY -= n;
+        if (keyMap[GLFW_KEY_S]) accelY += n;
+        if (keyMap[GLFW_KEY_A]) accelX -= n;
+        if (keyMap[GLFW_KEY_D]) accelX += n;
 
-        accelerate(accelX,accelY); // TODO move velocity, acceleration, decay into movement
-
-        // move based on velocity
-		// std::clamp is not available, so using min max clamping instead 
-        motion->position.x = std::min(std::max(motion->position.x + m_velocity.x, screenBuffer.x), m_screen.x - screenBuffer.x);
-        motion->position.y = std::min(std::max(motion->position.y + m_velocity.y, screenBuffer.y), m_screen.y - screenBuffer.y);
-
-
-        // Decay velocity
-        float friction = 0.10;
-        if (m_velocity.x > 0.f)
-            m_velocity.x -= friction* m_velocity.x;
-        else if (m_velocity.x < 0.f)
-            m_velocity.x += -friction* m_velocity.x;
-
-        if (m_velocity.y > 0.f)
-            m_velocity.y -= friction*m_velocity.y;
-        else if (m_velocity.y < 0.f)
-            m_velocity.y += -friction*m_velocity.y;
+        motion->acceleration = {accelX, accelY};
 	}
 	else
 	{
 		// If dead we make it face upwards and sink deep down
 		set_rotation(3.1415f);
-		move({ 0.f, step });
+		motion->maxVelocity = 0;
+		move({ 0.f, 200 * (ms / 1000) });
 	}
 
 	if (m_light_up_countdown_ms > 0.f)
@@ -251,35 +237,20 @@ void Player::set_rotation(float radians)
 	motion->radians = radians;
 }
 
-void Player::accelerate(float x, float y) {
-    float max = 4.f;
-
-    float newX = m_velocity.x + x;
-    if (newX > max) newX = max;
-    if (newX < -max) newX = -max;
-
-    float newY = m_velocity.y + y;
-    if (newY > max) newY = max;
-    if (newY < -max) newY = -max;
-
-    m_velocity.x = newX;
-    m_velocity.y = newY;
-}
-
 bool Player::is_alive() const
 {
-	return m_health > 0;
+	return getComponent<HealthComponent>()->is_alive();
 }
 
 // Called when the player collides with an enemy
 void Player::lose_health(float amount)
 {
-	m_health -= amount;
+	getComponent<HealthComponent>()->lose_health(amount);
 }
 
 void Player::gain_health(float amount)
 {
-    m_health += amount;
+	getComponent<HealthComponent>()->gain_health(amount);
 }
 
 // Called when the salmon collides with a fish
@@ -316,6 +287,8 @@ float Player::get_iframes()
 	return m_iframe;
 }
 
-float Player::get_health() const {
-    return m_health;
+int Player::get_health() const {
+	return getComponent<HealthComponent>()->get_health();
 }
+
+Player::Player(ECS::EntityId id) : Entity(id) {}

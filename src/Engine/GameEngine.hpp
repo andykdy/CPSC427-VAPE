@@ -24,6 +24,15 @@ class GameState;
 
 class GameEngine {
 public:
+    // Singleton
+    static GameEngine& getInstance() {
+        static GameEngine INSTANCE;
+        return INSTANCE;
+    }
+    GameEngine(GameEngine const&) = delete;
+    void operator=(GameEngine const&) = delete;
+    //
+
     //! Initializes the GameEngine
     void init();
 
@@ -67,33 +76,35 @@ public:
 
     void setM_current_speed(float m_current_speed);
 
-    const ECS::EntityManager &getEntityManager() const;
-    const ECS::SystemManager &getSystemManager() const;
+    ECS::EntityManager *getEntityManager();
+    ECS::SystemManager *getSystemManager();
 
 private:
+    GameEngine() = default; // private constructor
+
     //! Window handle
-    GLFWwindow* m_window;
+    GLFWwindow* m_window{};
 
     //! Screen to pixel coordinates scale factor
-    float m_screen_scale;
+    float m_screen_scale{};
 
     //! The current loaded audio track
-    Mix_Music * music;
+    Mix_Music * music{};
 
     // Screen texture
     // The draw loop first renders to this texture, then it is used for the water shader
-    GLuint m_frame_buffer;
+    GLuint m_frame_buffer{};
     Texture m_screen_tex;
 
     ECS::EntityManager entityManager;
     ECS::SystemManager systemManager;
 
-    float m_current_speed;
+    float m_current_speed = 1.f;
 
-    float elapsed_ms;
+    float elapsed_ms{};
 
-    bool running;
-    GameState *state;
+    bool running{};
+    GameState *state{};
 };
 
 

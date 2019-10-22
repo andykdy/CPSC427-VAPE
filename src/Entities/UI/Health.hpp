@@ -12,6 +12,8 @@ class Health: public ECS::Entity {
     static Texture health_point_texture;
 
 public:
+    Health(ECS::EntityId id);
+
     bool init(vec2 position);
     void update(float ms) override;
     void draw(const mat3& projection) override;

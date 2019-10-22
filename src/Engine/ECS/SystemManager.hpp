@@ -8,21 +8,10 @@
 namespace ECS {
     constexpr std::size_t maxSystems = 32;
 
-    using SystemId = std::size_t;
     using SystemBitSet = std::bitset<maxSystems>;
     using SystemArray = std::array<System*, maxSystems>;
 
-    // Returns a unique, incremeneted Id
-    inline SystemId getSystemId() {
-        static SystemId lastId = 0;
-        return lastId++;
-    };
 
-    // Returns a unique id for each type T of component;
-    template <typename T> inline SystemId getSystemId() noexcept {
-        static SystemId typeId = getSystemId();
-        return typeId;
-    }
 
     class SystemManager {
     private:
@@ -46,16 +35,28 @@ namespace ECS {
             }), systems.end());
         }
 
-        template <typename T, typename... TArgs> T& addSystem(TArgs&&... mArgs) {
-            T *system(new T(std::forward<TArgs>(mArgs)...));
-            std::unique_ptr<System> uPtr{system};
-            systems.emplace_back((std::move(uPtr)));
+        template <typename T> bool hasSystem() const {
+            return systemBitSet[getSystemTypeId<T>()];
+        }
 
-            systemArray[getComponentTypeId<T>()] = system;
-            systemBitSet[getComponentTypeId<T>()] = true;
+        template<typename T> T* getSystem() {
+            if (hasSystem<T>()) {
+                auto ptr(systemArray[getSystemTypeId<T>()]);
+                return static_cast<T *>(ptr);
+            } else return addSystem<T>();
+        }
 
-            system->init();
-            return *system;
+        template <typename T, typename... TArgs> T* addSystem(TArgs&&... mArgs) {
+            if (!hasSystem<T>()){
+                T *system(new T(std::forward<TArgs>(mArgs)...));
+                std::unique_ptr<System> uPtr{system};
+                systems.emplace_back((std::move(uPtr)));
+
+                systemArray[getSystemTypeId<T>()] = system;
+                systemBitSet[getSystemTypeId<T>()] = true;
+
+                return system;
+            } else return getSystem<T>();
         }
     };
 }

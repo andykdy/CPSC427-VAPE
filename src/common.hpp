@@ -75,6 +75,7 @@ struct Texture
 	bool load_from_file(const char* path);
 	bool is_valid()const; // True if texture is valid
 	bool create_from_screen(GLFWwindow const * const window); // Screen texture
+	void invalidate(); // sets id of texture to 0
 };
 
 // An entity boils down to a collection of components,

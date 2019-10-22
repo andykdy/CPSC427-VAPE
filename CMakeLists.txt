@@ -40,11 +40,15 @@ set(SOURCE_FILES
     src/Engine/States/LevelState.hpp
     src/Engine/States/MainMenuState.cpp
     src/Engine/States/MainMenuState.hpp
+    src/Engine/States/TutorialState.cpp
+    src/Engine/States/TutorialState.hpp
 
     src/Entities/fish.cpp
     src/Entities/Player.cpp
     src/Entities/turtle.cpp
     src/Entities/Space.cpp
+    src/Entities/Dialogue.cpp
+    src/Entities/Dialogue.hpp
 
     src/project_path.hpp
     src/common.hpp
@@ -80,7 +84,12 @@ set(SOURCE_FILES
     src/Components/HealthComponent.hpp
     src/Systems/EnemySpawnerSystem.cpp
     src/Systems/EnemySpawnerSystem.hpp
-    src/Components/BulletComponent.hpp)
+    src/Components/BulletComponent.hpp
+    src/Systems/MotionSystem.cpp
+    src/Systems/MotionSystem.hpp
+    src/Components/BoundaryComponent.hpp
+    src/Components/EnemyComponent.hpp
+    src/Levels/Level.hpp src/Entities/MainMenu.cpp src/Entities/MainMenu.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
