@@ -36,7 +36,6 @@ namespace
  * Initialize the game engine, setting up GLFW
  */
 void GameEngine::init() {
-
     //-------------------------------------------------------------------------
     // GLFW / OGL Initialization
     // Core Opengl 3.
@@ -142,15 +141,17 @@ void GameEngine::changeState(GameState *state) {
         delete (this->state);
     }
     this->state = state;
-    state->init(this);
+    state->init();
 }
 
 /*!
  * Runs the state's update function
  */
 void GameEngine::update(float ms) {
+    //entityManager.update(ms);
+    systemManager.update(ms * m_current_speed);
     this->elapsed_ms = ms;
-    state->update(this);
+    state->update(ms * m_current_speed);
 
     if (glfwWindowShouldClose(m_window)) {
         this->running = false;
@@ -161,28 +162,30 @@ void GameEngine::update(float ms) {
  * Runs the state's render function
  */
 void GameEngine::draw() {
-    state->draw(this);
+    //entityManager.draw(...);
+    //systemManager.draw(...);
+    state->draw();
 }
 
 /*!
  * Runs the state's key handler
  */
 void GameEngine::on_key(GLFWwindow *window, int key, int i, int action, int mod) {
-    state->on_key(this, window, key, i, action, mod);
+    state->on_key(window, key, i, action, mod);
 }
 
 /*!
  * Runs the state's mouse movement handler
  */
 void GameEngine::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
-    state->on_mouse_move(this, window, xpos, ypos);
+    state->on_mouse_move(window, xpos, ypos);
 }
 
 /*!
  * Runs the state's mouse button handler
  */
 void GameEngine::on_mouse_button(GLFWwindow *window, int button, int action, int mods) {
-    state->on_mouse_button(this, window, button, action, mods);
+    state->on_mouse_button(window, button, action, mods);
 }
 
 
@@ -205,4 +208,19 @@ GLuint GameEngine::getM_frame_buffer() const {
 
 const Texture &GameEngine::getM_screen_tex() const {
     return m_screen_tex;
+}
+
+float GameEngine::getM_current_speed() const {
+    return m_current_speed;
+}
+
+void GameEngine::setM_current_speed(float m_current_speed) {
+    GameEngine::m_current_speed = m_current_speed;
+}
+
+ECS::EntityManager *GameEngine::getEntityManager() {
+    return &entityManager;
+}
+ECS::SystemManager *GameEngine::getSystemManager() {
+    return &systemManager;
 }

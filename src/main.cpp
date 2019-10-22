@@ -12,7 +12,7 @@
 using Clock = std::chrono::high_resolution_clock;
 
 int main(int argv, char** args) {
-	GameEngine game{};
+	GameEngine& game = GameEngine::getInstance();
 	try {
 		game.init();
 	}

@@ -10,13 +10,12 @@
 namespace
 {
     const size_t BULLET_COOLDOWN_MS = 100;
+    const size_t INIT_HEALTH = 100;
 }
 
 Texture Boss1::boss1_texture;
 
-bool Boss1::init(GameEngine *game) {
-    this->game = game;
-
+bool Boss1::init() {
     // Load shared texture
     if (!boss1_texture.is_valid())
     {
@@ -66,6 +65,7 @@ bool Boss1::init(GameEngine *game) {
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
 
+    motion.position = {0.f, 0.f };
     motion.radians = 3.14;
     motion.speed = 350.f;
 
@@ -73,7 +73,7 @@ bool Boss1::init(GameEngine *game) {
     // 1.0 would be as big as the original texture.
     physics.scale = { -0.4f, 0.4f };
 
-    health = 100;
+    health = INIT_HEALTH;
     m_is_alive = true;
 
     int randomVal = rand() % 2;
@@ -111,13 +111,14 @@ void Boss1::update(float ms) {
 
 void Boss1::state1Update(float ms) {
     int w, h;
-    glfwGetFramebufferSize(game->getM_window(), &w, &h);
+    glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
+    vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
     // Set left and right boundaries such that ship doesn't leave the screen
-    float lBound = boss1_texture.width * 0.5f;
-    float rBound = w - lBound;
+    float lBound = (float)boss1_texture.width * 0.5f;
+    float rBound = (float)screen.x - lBound;
     // Adjust x position by speed in direction dir
     int mod = (dir == Direction::right ? 1 : -1);
-    float newX = motion.position.x + mod * (ms / 1000) * motion.speed;
+    float newX = motion.position.x + (float)mod * (ms / 1000) * motion.speed;
     // If past a boundary, set position to within the boundary and swap direction
     if (newX >= rBound) {
         newX = rBound;

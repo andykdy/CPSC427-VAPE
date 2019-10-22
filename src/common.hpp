@@ -75,11 +75,12 @@ struct Texture
 	bool load_from_file(const char* path);
 	bool is_valid()const; // True if texture is valid
 	bool create_from_screen(GLFWwindow const * const window); // Screen texture
+	void invalidate(); // sets id of texture to 0
 };
 
 // An entity boils down to a collection of components,
 // organized by their in-game context (mesh, effect, motion, etc...)
-struct Entity {
+struct EntityOld {
 	// projection contains the orthographic projection matrix. As every Entity::draw()
 	// renders itself it needs it to correctly bind it to its shader.
 	virtual void draw(const mat3& projection) = 0;
@@ -105,11 +106,10 @@ protected:
 		void release(); // release shaders and program
 	} effect;
 
-	// All data relevant to the motion of the salmon.
 	struct Motion {
-		vec2 position;
-		float radians;
-		float speed;
+	    vec2 position;
+	    float radians;
+	    float speed;
 	} motion;
 
 	// Scale is used in the bounding box calculations, 

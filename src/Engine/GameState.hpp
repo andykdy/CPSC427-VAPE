@@ -16,24 +16,24 @@
 class GameState {
 public:
     //! Initializes the state
-    virtual void init(GameEngine *game) = 0;
+    virtual void init() = 0;
 
     //! Cleans up the state
     virtual void terminate() = 0;
 
     //! Updates the state
-    virtual void update(GameEngine *game) = 0;
+    virtual void update(float ms) = 0;
 
     //! Renders the state
-    virtual void draw(GameEngine *game) = 0;
+    virtual void draw() = 0;
 
     //! Default destructor
     virtual ~GameState() = default;
 
     //! INPUT CALLBACK FUNCTIONS
-    virtual void on_key(GameEngine *game, GLFWwindow*, int key, int, int action, int mod) = 0;
-    virtual void on_mouse_move(GameEngine *game, GLFWwindow* window, double xpos, double ypos) = 0;
-    virtual void on_mouse_button (GameEngine *game, GLFWwindow* window, int button, int action, int mods) = 0;
+    virtual void on_key(GLFWwindow*, int key, int, int action, int mod) = 0;
+    virtual void on_mouse_move(GLFWwindow* window, double xpos, double ypos) = 0;
+    virtual void on_mouse_button (GLFWwindow* window, int button, int action, int mods) = 0;
 };
 
 

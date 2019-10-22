@@ -1,13 +1,19 @@
 #version 330
 
-layout(location = 0) in vec4 in_position;
+// Input attributes
+in vec3 in_position;
+in vec2 in_texcoord;
 
+// Passed to fragment shader
 out vec2 uv;
+
+// Application data
+uniform mat3 transform;
+uniform mat3 projection;
 
 void main()
 {
-    gl_Position = in_position;
-
-    // Convert to the [0, 1] range of UV coordinate
-    uv = (in_position.xy + vec2(1.05, 1.05)) / 2.1;
+    uv = in_texcoord;
+    vec3 pos = projection * transform * vec3(in_position.xy, 1.0);
+    gl_Position = vec4(pos.xy, in_position.z, 1.0);
 }
