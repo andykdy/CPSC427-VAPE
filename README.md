@@ -22,7 +22,6 @@ The game consists of the main menu a tutorial, and one level.
 Upon entering the tutorial, you will be walked through each of the controls and basic gameplay.
 Upon entering the first level the game will spawn waves of basic enemies for about a minute, before spawning the boss.
 If you die, the level will restart. Once the boss is defeated, you will be returned to the main menu.
-	
 
 
 # Music Credits:
