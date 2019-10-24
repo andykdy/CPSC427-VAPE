@@ -9,8 +9,11 @@
 - Sam Parhimchik 41037152
 - Tanha Kabir 10850155
 
-## Skeletal Game Notes
+## Releases
+- [Skeletal Game](https://github.students.cs.ubc.ca/CPSC427/vape_nation/releases/tag/skeletal-game)
+- [Mimimal Playability](https://github.students.cs.ubc.ca/CPSC427/vape_nation/releases/tag/minimal-playability)
 
+# Controls
 >- W, A, S, D  -> Movement
 >- Spacebar -> Shoot
 >- Enter ->  Vamp Mode
