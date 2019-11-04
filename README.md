@@ -4,13 +4,16 @@
 
 - Andrea Park 45168151
 - Andy (Dong Young) Kim 16785157
-- Cody Newman 35833145
+- Cody Newman 35833145 - Most of my commits were under Cody Newman
 - Matteo Alps-Mocellin 32909146
 - Sam Parhimchik 41037152
 - Tanha Kabir 10850155
 
-## Skeletal Game Notes
+## Releases
+- [Skeletal Game](https://github.students.cs.ubc.ca/CPSC427/vape_nation/releases/tag/skeletal-game)
+- [Mimimal Playability](https://github.students.cs.ubc.ca/CPSC427/vape_nation/releases/tag/minimal-playability)
 
+# Controls
 >- W, A, S, D  -> Movement
 >- Spacebar -> Shoot
 >- Enter ->  Vamp Mode
@@ -22,7 +25,6 @@ The game consists of the main menu a tutorial, and one level.
 Upon entering the tutorial, you will be walked through each of the controls and basic gameplay.
 Upon entering the first level the game will spawn waves of basic enemies for about a minute, before spawning the boss.
 If you die, the level will restart. Once the boss is defeated, you will be returned to the main menu.
-	
 
 
 # Music Credits:

@@ -89,7 +89,7 @@ set(SOURCE_FILES
     src/Systems/MotionSystem.hpp
     src/Components/BoundaryComponent.hpp
     src/Components/EnemyComponent.hpp
-    src/Levels/Level.hpp src/Entities/MainMenu.cpp src/Entities/MainMenu.hpp)
+    src/Levels/Level.hpp src/Entities/MainMenu.cpp src/Entities/MainMenu.hpp src/Entities/Explosion.cpp src/Entities/Explosion.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
