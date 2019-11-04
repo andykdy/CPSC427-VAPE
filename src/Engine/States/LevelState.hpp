@@ -20,6 +20,7 @@
 #include "Entities/bullet.hpp"
 #include "Entities/Dialogue.hpp"
 #include "Entities/UI/Health.hpp"
+#include "Entities/Explosion.hpp"
 
 // stlib
 #include <vector>
@@ -104,6 +105,7 @@ private:
     bool m_vamp_mode;
     float m_vamp_mode_timer;
     unsigned int m_vamp_mode_charge;
+    Explosion m_explosion;
 
 
 

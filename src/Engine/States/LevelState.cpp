@@ -88,6 +88,7 @@ void LevelState::init() {
 	m_dialogue.init("Boss1Dialogue.png");
 	m_dialogue.deactivate();
     m_space.init();
+    m_explosion.init();
 
     m_space.set_position({screen.x/2, 0});
 
@@ -128,6 +129,7 @@ void LevelState::terminate() {
     m_fish.clear();
     m_boss.destroy();
 	m_dialogue.destroy();
+	m_explosion.destroy();
 
     ECS::EntityId id = m_player->getId();
     GameEngine::getInstance().getEntityManager()->removeEntity(id);
@@ -210,10 +212,12 @@ void LevelState::update(float ms) {
             {
                 eraseBullet = true;
                 ECS::EntityId id = (*turtle_it)->getId();
+                m_explosion.spawn((*turtle_it)->get_position());
                 m_turtles->erase(turtle_it);
                 GameEngine::getInstance().getEntityManager()->removeEntity(id);
-                // TODO sound
                 Mix_PlayChannel(-1,m_player_explosion,0);
+                // expl
+
                 ++m_points;
                 add_vamp_charge();
 
@@ -251,6 +255,7 @@ void LevelState::update(float ms) {
     }
 
     m_space.update(ms);
+    m_explosion.update(ms);
 
     // Updating all entities, making the turtle and fish
     // faster based on current
@@ -493,6 +498,7 @@ void LevelState::draw() {
     m_health->draw(projection_2D);
     m_vamp_charge->draw(projection_2D);
 	m_dialogue.draw(projection_2D);
+	m_explosion.draw(projection_2D);
 
     //////////////////
     // Presenting
@@ -593,6 +599,7 @@ void LevelState::reset(vec2 screen) {
     m_vamp_mode = false;
     m_player->destroy();
     m_vamp.destroy();
+    m_explosion.destroy();
     m_vamp_charge->destroy();
     m_player->init(screen, INIT_HEALTH);
     m_health->init({45, 60});
@@ -604,6 +611,7 @@ void LevelState::reset(vec2 screen) {
     m_boss_pre = false;
     m_turtles->clear();
     m_fish.clear();
+    m_explosion.init();
     Mix_PlayMusic(m_background_music, -1);
 
     m_space.reset_salmon_dead_time();
