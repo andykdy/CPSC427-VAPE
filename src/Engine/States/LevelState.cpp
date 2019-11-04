@@ -173,6 +173,7 @@ void LevelState::update(float ms) {
 					m_player->set_iframes(500.f);
 					lose_health(DAMAGE_ENEMY);
 					ECS::EntityId id = (*turtle_it)->getId();
+                    Mix_PlayChannel(-1, m_player_explosion, 0);
 					m_turtles->erase(turtle_it);
                     GameEngine::getInstance().getEntityManager()->removeEntity(id);
 				}
@@ -191,6 +192,7 @@ void LevelState::update(float ms) {
     {
         if (m_player->is_alive() && m_player->collides_with(*fish_it))
         {
+
             fish_it = m_fish.erase(fish_it);
             m_player->light_up();
             Mix_PlayChannel(-1, m_player_eat_sound, 0);
@@ -243,6 +245,8 @@ void LevelState::update(float ms) {
         while (turtle_it != m_turtles->end()) {
             if (m_vamp.collides_with(**turtle_it)) {
                 ECS::EntityId id = (*turtle_it)->getId();
+                m_explosion.spawn((*turtle_it)->get_position());
+                Mix_PlayChannel(-1, m_player_explosion, 0);
                 turtle_it = m_turtles->erase(turtle_it);
                 GameEngine::getInstance().getEntityManager()->removeEntity(id);
                 add_health(VAMP_HEAL);
