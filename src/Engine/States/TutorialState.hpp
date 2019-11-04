@@ -26,6 +26,7 @@
 #include <Engine/GameState.hpp>
 #include <Entities/Vamp.hpp>
 #include <Entities/UI/VampCharge.hpp>
+#include <Entities/Explosion.hpp>
 
 enum Component {
 	initial,
@@ -101,6 +102,7 @@ private:
 	bool m_vamp_mode;
 	float m_vamp_mode_timer;
 	unsigned int m_vamp_mode_charge;
+    Explosion m_explosion;
 
 	Mix_Music* m_background_music;
 	Mix_Chunk* m_player_dead_sound;

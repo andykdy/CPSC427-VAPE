@@ -100,7 +100,7 @@ void Explosion::spawn(vec2 position)
         float radius = 0.8f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(2.2f)));
         float xvel = -1.f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(2)));
         float yvel = -1.f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(2)));
-        float mult = static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(10)));
+        float mult = 3 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(10)));
         p.velocity = normalize({xvel,yvel});
         p.velocity = {p.velocity.x * mult, p.velocity.y * mult};
         p.radius = radius;
