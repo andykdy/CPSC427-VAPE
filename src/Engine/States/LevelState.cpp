@@ -119,12 +119,9 @@ void LevelState::terminate() {
         turtle->destroy();
     }
 
-    for (auto& fish : m_fish)
-        fish.destroy();
     m_health->destroy();
     m_vamp_charge->destroy();
     m_turtles->clear();
-    m_fish.clear();
     m_boss.destroy();
 	m_dialogue.destroy();
 	m_explosion.destroy();
@@ -167,7 +164,7 @@ void LevelState::update(float ms) {
 					lose_health(DAMAGE_ENEMY);
                     Mix_PlayChannel(-1, m_player_explosion, 0);
 					(*turtle_it)->destroy();
-					m_turtles->erase(turtle_it);
+                    turtle_it = m_turtles->erase(turtle_it);
 				}
 			}
             break;
@@ -175,23 +172,6 @@ void LevelState::update(float ms) {
 		{
 			turtle_it++;
 		}
-    }
-
-
-    // Checking Player - Fish collisions
-    auto fish_it = m_fish.begin();
-    while (fish_it != m_fish.end())
-    {
-        if (m_player->is_alive() && m_player->collides_with(*fish_it))
-        {
-
-            fish_it = m_fish.erase(fish_it);
-            m_player->light_up();
-            Mix_PlayChannel(-1, m_player_eat_sound, 0);
-            ++m_points;
-        }
-        else
-            ++fish_it;
     }
 
     // Checking Player Bullet - Enemy collisions
@@ -207,7 +187,7 @@ void LevelState::update(float ms) {
                 eraseBullet = true;
                 m_explosion.spawn((*turtle_it)->get_position());
                 (*turtle_it)->destroy();
-                m_turtles->erase(turtle_it);
+                turtle_it = m_turtles->erase(turtle_it);
                 Mix_PlayChannel(-1,m_player_explosion,0);
                 // expl
 
@@ -256,8 +236,6 @@ void LevelState::update(float ms) {
     m_player->update(ms, keyMap, mouse_position);
     for (auto& turtle : *m_turtles)
         turtle->update(ms);
-    for (auto& fish : m_fish)
-        fish.update(ms);
 
     // Removing out of screen turtles
     turtle_it = m_turtles->begin();
@@ -273,20 +251,6 @@ void LevelState::update(float ms) {
         } else {
             ++turtle_it;
         }
-    }
-
-    // Removing out of screen fish
-    fish_it = m_fish.begin();
-    while (fish_it != m_fish.end())
-    {
-        float w = fish_it->get_bounding_box().x / 2;
-        if (fish_it->get_position().x + w < 0.f)
-        {
-            fish_it = m_fish.erase(fish_it);
-            continue;
-        }
-
-        ++fish_it;
     }
 
     // for debugging purposes
@@ -454,14 +418,6 @@ void LevelState::draw() {
     float ty = -(top + bottom) / (top - bottom);
     mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // DRAW DEBUG INFO HERE
-    // DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 2
-    // You will want to create your own data structures for passing in
-    // relevant information to your debug draw call.
-    // The shaders coloured.vs.glsl and coloured.fs.glsl should be helpful.
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
     /////////////////////
     // Truely render to the screen
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -479,11 +435,10 @@ void LevelState::draw() {
 
     m_space.draw(projection_2D);
 
+
     // Drawing entities
     for (auto& turtle : *m_turtles)
         turtle->draw(projection_2D);
-    for (auto& fish : m_fish)
-        fish.draw(projection_2D);
     if (m_vamp_mode) {
         m_vamp.draw(projection_2D);
     }
@@ -493,8 +448,9 @@ void LevelState::draw() {
     }
     m_health->draw(projection_2D);
     m_vamp_charge->draw(projection_2D);
-	m_dialogue.draw(projection_2D);
-	m_explosion.draw(projection_2D);
+    m_dialogue.draw(projection_2D);
+    m_explosion.draw(projection_2D);
+
 
     //////////////////
     // Presenting
@@ -541,18 +497,6 @@ bool LevelState::spawn_turtle() {
         return true;
     }
     fprintf(stderr, "Failed to spawn turtle");
-    return false;
-}
-
-// Creates a new fish and if successfull adds it to the list of fish
-bool LevelState::spawn_fish() {
-    Fish fish;
-    if (fish.init())
-    {
-        m_fish.emplace_back(fish);
-        return true;
-    }
-    fprintf(stderr, "Failed to spawn fish");
     return false;
 }
 
@@ -606,8 +550,10 @@ void LevelState::reset(vec2 screen) {
     m_level_time = 0;
     m_boss_mode = false;
     m_boss_pre = false;
+    for (auto turtle : *m_turtles) {
+        turtle->destroy();
+    }
     m_turtles->clear();
-    m_fish.clear();
     m_explosion.init();
     Mix_PlayMusic(m_background_music, -1);
 
