@@ -83,8 +83,6 @@ bool Player::init(vec2 screen, int hp)
 	health->m_health = hp;
 	m_iframe = 0.f;
 
-	ECS::Entity::setActive();
-
 	return !gl_has_errors();
 
 }
@@ -293,4 +291,3 @@ int Player::get_health() const {
 	return getComponent<HealthComponent>()->get_health();
 }
 
-Player::Player(ECS::EntityId id) : Entity(id) {}

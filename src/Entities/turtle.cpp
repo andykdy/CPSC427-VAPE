@@ -106,8 +106,6 @@ vec2 Turtle::get_bounding_box() const
 	return { std::fabs(physics->scale.x) * turtle_texture.width, std::fabs(physics->scale.y) * turtle_texture.height };
 }
 
-Turtle::Turtle(ECS::EntityId id) : Entity(id) {}
-
 void Turtle::set_velocity(vec2 velocity) {
 	auto* motion = getComponent<MotionComponent>();
 	motion->velocity.x = velocity.x;

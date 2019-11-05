@@ -132,7 +132,7 @@ void Boss1::state1Update(float ms) {
     // shoot
     m_bullet_cooldown -= ms;
     if (m_bullet_cooldown < 0.f) {
-        int randomVal = rand() % 20;
+        int randomVal = rand() % 100;
         if (randomVal < 2) {
             m_bullet_cooldown = BULLET_COOLDOWN_MS;
             spawnBullet();

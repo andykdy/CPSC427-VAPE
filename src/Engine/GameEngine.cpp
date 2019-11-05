@@ -131,6 +131,8 @@ void GameEngine::changeState(GameState *state) {
         this->state->terminate();
         delete (this->state);
     }
+    entityManager.clear();
+    systemManager.clear();
     this->state = state;
     state->init();
 }

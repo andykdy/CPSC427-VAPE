@@ -93,9 +93,9 @@ void LevelState::init() {
     m_space.set_position({screen.x/2, 0});
 
     GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
-    EnemySpawnerSystem* spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
-    spawn->reset();
-    m_turtles = spawn->getEnemies();
+    EnemySpawnerSystem& spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
+    spawn.reset();
+    m_turtles = spawn.getEnemies(); // TODO, probably just get rid of m_turtles, pull from spawn system when needed
     //std::cout << "initEnd" << std::endl;
 }
 
@@ -115,7 +115,7 @@ void LevelState::terminate() {
         Mix_FreeChunk(m_player_explosion);
 
     m_player->destroy();
-    for (auto& turtle : *m_turtles){
+    for (auto& turtle : *m_turtles){ // TODO do in enemyspawnersystem
         turtle->destroy();
     }
 
@@ -417,7 +417,7 @@ void LevelState::draw() {
     m_space.draw(projection_2D);
 
     // Drawing entities
-    for (auto& turtle : *m_turtles)
+    for (auto& turtle : (*m_turtles))
         turtle->draw(projection_2D);
     if (m_vamp_mode) {
         m_vamp.draw(projection_2D);
@@ -468,18 +468,6 @@ void LevelState::add_vamp_charge() {
     }
 }
 
-// Creates a new turtle and if successfull adds it to the list of turtles
-bool LevelState::spawn_turtle() {
-    Turtle* turtle = &GameEngine::getInstance().getEntityManager()->addEntity<Turtle>();
-    if (turtle->init())
-    {
-        m_turtles->emplace_back(turtle);
-        return true;
-    }
-    fprintf(stderr, "Failed to spawn turtle");
-    return false;
-}
-
 void LevelState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
     // Track which keys are being pressed or held
     (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[key] = true : keyMap[key] = false;
@@ -493,16 +481,6 @@ void LevelState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod
         vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
         reset(screen);
     }
-
-    // Control the current speed with `<` `>`
-    /*
-    if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) &&  key == GLFW_KEY_COMMA)
-        m_current_speed -= 0.1f;
-    if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
-        m_current_speed += 0.1f;
-
-    m_current_speed = fmax(0.f, m_current_speed);
-     */
 }
 
 void LevelState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
@@ -541,5 +519,5 @@ void LevelState::reset(vec2 screen) {
     m_space.reset_boss_dead_time();
     GameEngine::getInstance().setM_current_speed(1.f);
 
-    GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>()->reset();
+    GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>().reset();
 }

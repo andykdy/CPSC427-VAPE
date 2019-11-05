@@ -28,13 +28,12 @@ namespace ECS {
         SystemId id;
         bool active = true;
     public:
+        SystemId getId() const { return id; }
+
         virtual void update(float ms) {}
 
         bool isActive() { return active; };
         void destroy() { active = false; };
-
-        // Deconstructor
-        virtual ~System() {}
     };
 }
 

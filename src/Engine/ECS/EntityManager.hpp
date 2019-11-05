@@ -9,58 +9,32 @@
 #include "Entity.hpp"
 
 namespace ECS {
-    template<typename T, typename... Args>
-    std::unique_ptr<T> make_unique(Args&&... args) {
-        return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-    }
-
     class EntityManager {
     private:
         EntityId idCounter;
         std::unordered_map<EntityId, std::unique_ptr<Entity>> entities;
 
     public:
-        void update(float ms) {
-            auto it = entities.begin();
-            while (it != entities.end()) {
-                if (!it->second->isActive())
-                    it = entities.erase(it);
-                else
-                    it++;
-            }
-        }
+        void update(float ms);
+        void draw(const mat3& projection);
 
-        void draw(const mat3& projection) {
-            for (auto & e : entities) e.second->draw(projection);
-        }
-
-        template <typename T, typename... TArgs> T& addEntity() {
-            auto id = idCounter;
-            ++idCounter;
-
-            T* e(new T(id));
+        template <typename T, typename... TArgs> T& addEntity(TArgs&&... mArgs) {
+            T* e(new T(std::forward<TArgs>(mArgs)...));
+            auto id = idCounter++;
+            e->id = id;
             std::unique_ptr<Entity> uPtr{ e };
             entities.emplace(id, std::move(uPtr));
             return *e;
-        }
+        };
 
-        template <typename T> T& getEntity(EntityId id) {
-            return entities[id];
-        }
+        template <typename T> T& getEntity(EntityId id) { return *(entities[id]); }
 
-        /*
-        void removeEntity(EntityId id) {
-            entities.erase(id);
-        }
-         */
+        void removeEntity(EntityId id) { entities.erase(id); }
 
-        std::unordered_map<EntityId, std::unique_ptr<Entity>> * getEntities() {
-            return &entities;
-        }
+        // TODO getter to just get ones with specific components?
+        std::unordered_map<EntityId, std::unique_ptr<Entity>> * getEntities() { return &entities; }
 
-        void reset() {
-            entities.clear();
-        }
+        void clear() { entities.clear(); }
     };
 }
 

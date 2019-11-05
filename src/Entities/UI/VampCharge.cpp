@@ -44,8 +44,6 @@ bool VampCharge::init(vec2 position) {
     motion->position = { position.x, position.y };
     charge = 0;
 
-    ECS::Entity::setActive();
-
     return !gl_has_errors();
 }
 
@@ -91,5 +89,3 @@ void VampCharge::destroy() {
 void VampCharge::setVampCharge(int charge) {
     VampCharge::charge = charge;
 }
-
-VampCharge::VampCharge(ECS::EntityId id) : Entity(id) {}

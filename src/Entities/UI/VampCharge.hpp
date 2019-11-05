@@ -12,8 +12,6 @@
 class VampCharge: public ECS::Entity {
     static Texture vamp_charge_texture;
 public:
-    VampCharge(ECS::EntityId id);
-
     bool init(vec2 position);
     void update(float ms) override;
     void draw(const mat3& projection)override;
