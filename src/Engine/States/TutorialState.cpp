@@ -290,10 +290,6 @@ void TutorialState::draw() {
 	title_ss << "Points: " << m_points;
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
-	/////////////////////////////////////
-	// First render to the custom framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, GameEngine::getInstance().getM_frame_buffer());
-
 	// Clearing backbuffer
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
@@ -314,22 +310,6 @@ void TutorialState::draw() {
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
-
-
-	/////////////////////
-	// Truely render to the screen
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// Clearing backbuffer
-	glViewport(0, 0, w, h);
-	glDepthRange(0, 10);
-	glClearColor(0, 0, 0, 1.0);
-	glClearDepth(1.f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// Bind our texture in Texture Unit 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, GameEngine::getInstance().getM_screen_tex().id);
 
 	m_space.draw(projection_2D);
 
