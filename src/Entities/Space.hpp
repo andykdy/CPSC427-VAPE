@@ -13,6 +13,10 @@ public:
 	// Releases all associated resources
 	void destroy();
 
+	void update(float ms);
+
+    void set_position(vec2 position);
+
 	// Renders the water
 	void draw(const mat3& projection)override;
 
@@ -29,6 +33,8 @@ public:
 private:
 	// When salmon is alive, the time is set to -1
 	float m_dead_time;
+
+	float m_bg_time;
 
 	float m_boss_dead_time;
 };

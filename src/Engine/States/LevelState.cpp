@@ -83,11 +83,14 @@ void LevelState::init() {
     m_health = &GameEngine::getInstance().getEntityManager()->addEntity<Health>();
     m_health->init({45, 60});
     m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
-    m_vamp_charge->init({w/2.f, h-h/12.f});
+    m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
     m_vamp_mode_charge = 0;
 	m_dialogue.init("Boss1Dialogue.png");
 	m_dialogue.deactivate();
     m_space.init();
+    m_explosion.init();
+
+    m_space.set_position({screen.x/2, 0});
 
     GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
     EnemySpawnerSystem* spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
@@ -124,6 +127,7 @@ void LevelState::terminate() {
     m_fish.clear();
     m_boss.destroy();
 	m_dialogue.destroy();
+	m_explosion.destroy();
 }
 
 void LevelState::update(float ms) {
@@ -161,6 +165,7 @@ void LevelState::update(float ms) {
 				if (m_player->get_iframes() <= 0.f) {
 					m_player->set_iframes(500.f);
 					lose_health(DAMAGE_ENEMY);
+                    Mix_PlayChannel(-1, m_player_explosion, 0);
 					(*turtle_it)->destroy();
 					m_turtles->erase(turtle_it);
 				}
@@ -179,6 +184,7 @@ void LevelState::update(float ms) {
     {
         if (m_player->is_alive() && m_player->collides_with(*fish_it))
         {
+
             fish_it = m_fish.erase(fish_it);
             m_player->light_up();
             Mix_PlayChannel(-1, m_player_eat_sound, 0);
@@ -199,10 +205,12 @@ void LevelState::update(float ms) {
             if (bullet_it->collides_with(**turtle_it))
             {
                 eraseBullet = true;
+                m_explosion.spawn((*turtle_it)->get_position());
                 (*turtle_it)->destroy();
                 m_turtles->erase(turtle_it);
-                // TODO sound
                 Mix_PlayChannel(-1,m_player_explosion,0);
+                // expl
+
                 ++m_points;
                 add_vamp_charge();
 
@@ -227,6 +235,8 @@ void LevelState::update(float ms) {
         turtle_it = m_turtles->begin();
         while (turtle_it != m_turtles->end()) {
             if (m_vamp.collides_with(**turtle_it)) {
+                m_explosion.spawn((*turtle_it)->get_position());
+                Mix_PlayChannel(-1, m_player_explosion, 0);
                 (*turtle_it)->destroy();
                 turtle_it = m_turtles->erase(turtle_it);
                 add_health(VAMP_HEAL);
@@ -237,6 +247,9 @@ void LevelState::update(float ms) {
             ++turtle_it;
         }
     }
+
+    m_space.update(ms);
+    m_explosion.update(ms);
 
     // Updating all entities, making the turtle and fish
     // faster based on current
@@ -481,6 +494,7 @@ void LevelState::draw() {
     m_health->draw(projection_2D);
     m_vamp_charge->draw(projection_2D);
 	m_dialogue.draw(projection_2D);
+	m_explosion.draw(projection_2D);
 
     //////////////////
     // Presenting
@@ -578,17 +592,15 @@ void LevelState::on_mouse_button(GLFWwindow *window, int button, int action, int
 }
 
 void LevelState::reset(vec2 screen) {
-    int w, h;
-    glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
-
     m_vamp_mode = false;
     m_player->destroy();
     m_health->destroy();
     m_vamp.destroy();
+    m_explosion.destroy();
     m_vamp_charge->destroy();
     m_player->init(screen, INIT_HEALTH);
     m_health->init({45, 60});
-    m_vamp_charge->init({w/2.f, h-h/12.f});
+    m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
     m_vamp_mode_charge = 0;
     m_boss.destroy();
     m_level_time = 0;
@@ -596,6 +608,7 @@ void LevelState::reset(vec2 screen) {
     m_boss_pre = false;
     m_turtles->clear();
     m_fish.clear();
+    m_explosion.init();
     Mix_PlayMusic(m_background_music, -1);
 
     m_space.reset_salmon_dead_time();

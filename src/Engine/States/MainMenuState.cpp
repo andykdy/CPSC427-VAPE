@@ -22,11 +22,14 @@ void MainMenuState::init() {
 
     // Playing background music indefinitely
     Mix_PlayMusic(m_background_music, -1);
+
+    menu.init();
 }
 
 void MainMenuState::terminate() {
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
+    menu.destroy();
 }
 
 void MainMenuState::update(float ms) {
@@ -47,7 +50,7 @@ void MainMenuState::draw() {
     title_ss << "V.A.P.E";
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
-    /////////////////////////////////////
+    ////////////////////////////////////
     // First render to the custom framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, GameEngine::getInstance().getM_frame_buffer());
 
@@ -58,6 +61,19 @@ void MainMenuState::draw() {
     glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
     glClearDepth(1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Fake projection matrix, scales with respect to window coordinates
+    // PS: 1.f / w in [1][1] is correct.. do you know why ? (:
+    float left = 0.f;// *-0.5;
+    float top = 0.f;// (float)h * -0.5;
+    float right = (float)w / GameEngine::getInstance().getM_screen_scale();// *0.5;
+    float bottom = (float)h / GameEngine::getInstance().getM_screen_scale();// *0.5;
+
+    float sx = 2.f / (right - left);
+    float sy = 2.f / (top - bottom);
+    float tx = -(right + left) / (right - left);
+    float ty = -(top + bottom) / (top - bottom);
+    mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
     /////////////////////
     // Truely render to the screen
@@ -70,21 +86,11 @@ void MainMenuState::draw() {
     glClearDepth(1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // TODO This is supposed to draw the background, but it seems a bit buggy at least on my computer - Cody
-    GLuint fboId = 0;
-    glGenFramebuffers(1, &fboId);
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, fboId);
-    glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                           GL_TEXTURE_2D, bg_texture.id, 0);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);  // if not already bound
-    glBlitFramebuffer(0, 0, w, h, 0, h, w, 0,
-                      GL_COLOR_BUFFER_BIT, GL_NEAREST);
-    //
-
     // Bind our texture in Texture Unit 0
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, GameEngine::getInstance().getM_screen_tex().id);
 
+    menu.draw(projection_2D);
 
     //////////////////
     // Presenting

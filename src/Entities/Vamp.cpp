@@ -58,8 +58,7 @@ bool Vamp::init(vec2 position) {
     // Loading shaders
     if (!effect.load_from_file(shader_path("vamp.vs.glsl"), shader_path("vamp.fs.glsl")))
         return false;
-
-
+    
     m_scale.x = 0.5f;
     m_scale.y = 0.5f;
 

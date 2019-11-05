@@ -73,10 +73,12 @@ void TutorialState::init() {
 	m_health->init({45, 60});
 
 	m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
-	m_vamp_charge->init({w/2.f, h-h/12.f});
+    m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
 	m_vamp_mode_charge = 0;
 
 	GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
+
+    m_space.set_position({screen.x/2, 0});
 
 	m_space.init();
 	m_dialogue.init("TutorialText.png");
@@ -87,6 +89,7 @@ void TutorialState::init() {
 	m_mvmt_checklist[2] = false;
 	m_mvmt_checklist[3] = false;
 	m_vamp_quota = VAMP_KILLS_NEEDED;
+	m_explosion.init();
 
 }
 
@@ -109,6 +112,7 @@ void TutorialState::terminate() {
 	m_vamp_charge->destroy();
 	m_turtles.clear();
 	m_dialogue.destroy();
+	m_explosion.destroy();
 }
 
 void TutorialState::update(float ms) {
@@ -128,6 +132,8 @@ void TutorialState::update(float ms) {
 				if (m_player->get_iframes() <= 0.f) {
 					m_player->set_iframes(500.f);
 					lose_health(DAMAGE_ENEMY);
+                    m_explosion.spawn(m_player->get_position());
+                    Mix_PlayChannel(-1, m_player_explosion, 0);
 					(*turtle_it)->destroy();
 					m_turtles.erase(turtle_it);
 				}
@@ -168,8 +174,9 @@ void TutorialState::update(float ms) {
 			if (bullet_it->collides_with(**turtle_it))
 			{
 				eraseBullet = true;
+                m_explosion.spawn((*turtle_it)->get_position());
 				(*turtle_it)->destroy();
-				m_turtles.erase(turtle_it);
+				turtle_it = m_turtles.erase(turtle_it);
 				Mix_PlayChannel(-1, m_player_explosion, 0);
 				++m_points;
 				add_vamp_charge();
@@ -195,6 +202,8 @@ void TutorialState::update(float ms) {
 		turtle_it = m_turtles.begin();
 		while (turtle_it != m_turtles.end()) {
 			if (m_vamp.collides_with(**turtle_it)) {
+                m_explosion.spawn((*turtle_it)->get_position());
+                Mix_PlayChannel(-1, m_player_explosion, 0);
 				(*turtle_it)->destroy();
 				turtle_it = m_turtles.erase(turtle_it);
 				add_health(VAMP_HEAL);
@@ -210,6 +219,8 @@ void TutorialState::update(float ms) {
 		m_dialogue.next();
 	}
 
+    m_space.update(ms);
+    m_explosion.update(ms);
 	// Updating all entities, making the turtle and fish
 	// faster based on current
 	m_player->update(ms, keyMap, mouse_position);
@@ -334,7 +345,7 @@ void TutorialState::draw() {
 
 	m_dialogue.draw(projection_2D);
 
-
+    m_explosion.draw(projection_2D);
 	//////////////////
 	// Presenting
 	glfwSwapBuffers(m_window);
@@ -435,6 +446,8 @@ void TutorialState::reset(vec2 screen) {
 	m_vamp.destroy();
 	m_vamp_charge->destroy();
 	m_player->init(screen, INIT_HEALTH);
+    m_health->init({45, 60});
+    m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
 	m_turtles.clear();
 	Mix_PlayMusic(m_background_music, -1);
 	m_mvmt_checklist[0] = false;
@@ -443,6 +456,7 @@ void TutorialState::reset(vec2 screen) {
 	m_mvmt_checklist[3] = false;
 	m_current_cmp = initial;
 
+	m_explosion.init();
 	m_space.reset_salmon_dead_time();
 	m_space.reset_boss_dead_time();
 	GameEngine::getInstance().setM_current_speed(1.f);
