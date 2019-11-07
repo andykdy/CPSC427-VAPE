@@ -7,8 +7,8 @@
 
 
 #include "common.hpp"
-#include "turtle.hpp"
-#include "fish.hpp"
+#include "../turtle.hpp"
+#include "../fish.hpp"
 
 // Forward declarations
 class Player;

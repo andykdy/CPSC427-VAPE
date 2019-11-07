@@ -133,7 +133,7 @@ void Boss1::state1Update(float ms) {
     m_bullet_cooldown -= ms;
     if (m_bullet_cooldown < 0.f) {
         int randomVal = rand() % 100;
-        if (randomVal < 2) {
+        if (randomVal < 2) {// TODO untie from framerate. Chance depends on framerate
             m_bullet_cooldown = BULLET_COOLDOWN_MS;
             spawnBullet();
             // TODO play sound

@@ -5,8 +5,8 @@
 #include <cmath>
 #include <algorithm>
 #include "bullet.hpp"
-#include "Player.hpp"
-#include "Bosses/Boss1.hpp"
+#include "Entities/Player.hpp"
+#include "Entities/Bosses/Boss1.hpp"
 
 Texture Bullet::bullet_texture;
 

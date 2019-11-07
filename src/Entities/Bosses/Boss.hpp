@@ -7,7 +7,7 @@
 
 #include <common.hpp>
 #include <Engine/ECS/Entity.hpp>
-#include <Entities/bullet.hpp>
+#include <Entities/Projectiles and Damaging/bullet.hpp>
 
 class Boss : public ECS::Entity { // TODO refactor to new entity
     // Shared between all turtles, no need to load one for each instance

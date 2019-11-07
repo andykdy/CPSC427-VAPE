@@ -56,9 +56,9 @@ set(SOURCE_FILES
     src/Entities/Player.hpp
     src/Entities/turtle.hpp
     src/Entities/Space.hpp
-    src/Entities/bullet.cpp
-    src/Entities/bullet.hpp
-    src/Entities/Bosses/Boss1.cpp
+    "src/Entities/Projectiles and Damaging/bullet.cpp"
+        "src/Entities/Projectiles and Damaging/bullet.hpp"
+        src/Entities/Bosses/Boss1.cpp
     src/Entities/Bosses/Boss1.hpp
     src/Entities/UI/Health.cpp
     src/Entities/UI/Health.hpp
@@ -83,15 +83,14 @@ set(SOURCE_FILES
     src/Components/HealthComponent.hpp
     src/Systems/EnemySpawnerSystem.cpp
     src/Systems/EnemySpawnerSystem.hpp
-    src/Components/BulletComponent.hpp
-    src/Systems/MotionSystem.cpp
+        src/Systems/MotionSystem.cpp
     src/Systems/MotionSystem.hpp
     src/Components/BoundaryComponent.hpp
     src/Components/EnemyComponent.hpp
 
     src/Levels/Level.hpp
     src/Entities/MainMenu.cpp src/Entities/MainMenu.hpp
-    src/Entities/Explosion.cpp src/Entities/Explosion.hpp src/Entities/Bosses/Boss.hpp)
+    src/Entities/Explosion.cpp src/Entities/Explosion.hpp src/Entities/Bosses/Boss.hpp src/Components/CollisionComponent.hpp src/Systems/CollisionSystem.cpp src/Systems/CollisionSystem.hpp "src/Entities/Projectiles and Damaging/laser.cpp" "src/Entities/Projectiles and Damaging/laser.hpp" src/Entities/Bosses/Boss2.cpp src/Entities/Bosses/Boss2.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

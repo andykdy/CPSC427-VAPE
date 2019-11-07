@@ -2,7 +2,7 @@
 
 #include <map>
 #include "common.hpp"
-#include "bullet.hpp"
+#include "Entities/Projectiles and Damaging/bullet.hpp"
 #include <vector>
 #include <SDL_mixer.h>
 #include <Engine/ECS/Entity.hpp>

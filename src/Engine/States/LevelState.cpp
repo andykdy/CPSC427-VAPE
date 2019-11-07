@@ -12,6 +12,7 @@
 #include <Systems/MotionSystem.hpp>
 #include <Systems/EnemySpawnerSystem.hpp>
 #include <iostream>
+#include <Systems/CollisionSystem.hpp>
 
 #include "LevelState.hpp"
 #include "MainMenuState.hpp"
@@ -93,6 +94,7 @@ void LevelState::init() {
     m_space.set_position({screen.x/2, 0});
 
     GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
+    GameEngine::getInstance().getSystemManager()->addSystem<CollisionSystem>();
     EnemySpawnerSystem& spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
     spawn.reset();
     m_turtles = spawn.getEnemies(); // TODO, probably just get rid of m_turtles, pull from spawn system when needed

@@ -6,7 +6,7 @@
 #define VAPE_BOSS1_HPP
 
 #include <Engine/GameEngine.hpp>
-#include <Entities/bullet.hpp>
+#include <Entities/Projectiles and Damaging/bullet.hpp>
 #include <vector>
 #include "common.hpp"
 

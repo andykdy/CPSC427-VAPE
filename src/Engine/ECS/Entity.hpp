@@ -40,6 +40,7 @@ namespace ECS {
         virtual void update(float ms) {};
         virtual void draw(const mat3& projection) {};
         virtual void destroy() { active = false; };
+        virtual void collideWith(const char* typeName, const Entity& other) {};
 
         bool isActive() const { return active; };
 
