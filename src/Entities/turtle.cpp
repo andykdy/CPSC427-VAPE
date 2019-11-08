@@ -55,8 +55,8 @@ void Turtle::destroy()
 	auto* effect = getComponent<EffectComponent>();
 	auto* sprite = getComponent<SpriteComponent>();
 
-	//effect->release();
-	//sprite->release();
+	effect->release();
+	sprite->release();
 	ECS::Entity::destroy();
 }
 

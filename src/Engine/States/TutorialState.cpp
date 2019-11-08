@@ -135,7 +135,7 @@ void TutorialState::update(float ms) {
                     m_explosion.spawn(m_player->get_position());
                     Mix_PlayChannel(-1, m_player_explosion, 0);
 					(*turtle_it)->destroy();
-					m_turtles.erase(turtle_it);
+					turtle_it = m_turtles.erase(turtle_it);
 				}
 			}
 			break;
@@ -163,9 +163,11 @@ void TutorialState::update(float ms) {
 		}
 	}
 
+	auto& playerBullets = m_player->bullets;
+
 	// Checking Player Bullet - Enemy collisions
-	auto bullet_it = m_player->bullets.begin();
-	while (bullet_it != m_player->bullets.end())
+	auto bullet_it = playerBullets.begin();
+	while (bullet_it != playerBullets.end())
 	{
 		bool eraseBullet = false;
 		auto turtle_it = m_turtles.begin();
@@ -193,7 +195,7 @@ void TutorialState::update(float ms) {
 		}
 		if (eraseBullet) {
             (*bullet_it)->destroy();
-            bullet_it = m_player->bullets.erase(bullet_it);
+            bullet_it = playerBullets.erase(bullet_it);
         }else
 			++bullet_it;
 	}
@@ -258,13 +260,13 @@ void TutorialState::update(float ms) {
 
 	// Removing out of screen bullets
 	// TODO move into player code? do same thing for boss/enemy bullets?
-	bullet_it = m_player->bullets.begin();
-	while (bullet_it != m_player->bullets.end()) {
+	bullet_it = playerBullets.begin();
+	while (bullet_it != playerBullets.end()) {
 		float h = (*bullet_it)->get_bounding_box().y / 2;
 		if ((*bullet_it)->get_position().y + h < 0.f)
 		{
             (*bullet_it)->destroy();
-			bullet_it = m_player->bullets.erase(bullet_it);
+			bullet_it = playerBullets.erase(bullet_it);
 			continue;
 		}
 
@@ -289,7 +291,7 @@ void TutorialState::draw() {
 
 	// Updating window title with points
 	std::stringstream title_ss;
-	title_ss << "Points: " << m_points;
+	title_ss  << "FPS: " << 1.f / (GameEngine::getInstance().getElapsed_ms()/1000) << "		" << "Points: " << m_points;
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
 	// Clearing backbuffer
@@ -430,6 +432,8 @@ void TutorialState::reset(vec2 screen) {
 	m_player->init(screen, INIT_HEALTH);
     m_health->init({45, 60});
     m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
+    for (auto& turtle : m_turtles)
+    	turtle->destroy();
 	m_turtles.clear();
 	Mix_PlayMusic(m_background_music, -1);
 	m_mvmt_checklist[0] = false;

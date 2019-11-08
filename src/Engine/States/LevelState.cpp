@@ -177,8 +177,9 @@ void LevelState::update(float ms) {
     }
 
     // Checking Player Bullet - Enemy collisions
-    auto bullet_it = m_player->bullets.begin();
-    while (bullet_it != m_player->bullets.end())
+    auto& playerBullets = m_player->bullets;
+    auto bullet_it = playerBullets.begin();
+    while (bullet_it != playerBullets.end())
     {
         bool eraseBullet = false;
         auto turtle_it = m_turtles->begin();
@@ -208,7 +209,7 @@ void LevelState::update(float ms) {
         }
         if (eraseBullet) {
             (*bullet_it)->destroy();
-            bullet_it = m_player->bullets.erase(bullet_it);
+            bullet_it = playerBullets.erase(bullet_it);
         } else
             ++bullet_it;
     }
@@ -311,13 +312,13 @@ void LevelState::update(float ms) {
 
     // Removing out of screen bullets
     // TODO move into player code? do same thing for boss/enemy bullets?
-    bullet_it = m_player->bullets.begin();
-    while(bullet_it != m_player->bullets.end()) {
+    bullet_it = playerBullets.begin();
+    while(bullet_it != playerBullets.end()) {
         float h = (*bullet_it)->get_bounding_box().y / 2;
         if ((*bullet_it)->get_position().y + h < 0.f)
         {
             (*bullet_it)->destroy();
-            bullet_it = m_player->bullets.erase(bullet_it);
+            bullet_it = playerBullets.erase(bullet_it);
             continue;
         }
 
@@ -335,13 +336,15 @@ void LevelState::update(float ms) {
             m_space.set_boss_dead();
         }
 
+        auto& bossBullets = m_boss.bullets;
+
         // Checking Enemy Bullet - Player collisions
-        auto boss_bullet_it = m_boss.bullets.begin();
-        while (boss_bullet_it != m_boss.bullets.end()) {
+        auto boss_bullet_it = bossBullets.begin();
+        while (boss_bullet_it != bossBullets.end()) {
             if ((*boss_bullet_it)->collides_with(*m_player))
             {
                 (*boss_bullet_it)->destroy();
-                boss_bullet_it = m_boss.bullets.erase(boss_bullet_it);
+                boss_bullet_it = bossBullets.erase(boss_bullet_it);
                 if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
                     m_player->set_iframes(500.f);
                     lose_health(DAMAGE_BOSS);
@@ -354,13 +357,13 @@ void LevelState::update(float ms) {
 
         // Removing out of screen bullets
         // TODO move into boss class?
-        boss_bullet_it = m_boss.bullets.begin();
-        while(boss_bullet_it != m_boss.bullets.end()) {
+        boss_bullet_it = bossBullets.begin();
+        while(boss_bullet_it != bossBullets.end()) {
             float h = (*boss_bullet_it)->get_bounding_box().y / 2;
             if ((*boss_bullet_it)->get_position().y - h > screen.y)
             {
                 (*boss_bullet_it)->destroy();
-                boss_bullet_it = m_boss.bullets.erase(boss_bullet_it);
+                boss_bullet_it = bossBullets.erase(boss_bullet_it);
                 continue;
             } else {
                 ++boss_bullet_it;

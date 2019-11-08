@@ -18,6 +18,7 @@ Texture Bullet::bullet_texture;
 float BULLET_SPEED = 1250;
 
 bool Bullet::init(vec2 position, float rotation) {
+    gl_flush_errors();
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
     auto* physics = addComponent<PhysicsComponent>();
@@ -40,6 +41,9 @@ bool Bullet::init(vec2 position, float rotation) {
 
     if (!sprite->initTexture(&bullet_texture))
         throw std::runtime_error("Failed to initialize bullet sprite");
+
+    if (gl_has_errors())
+        return false;
 
     physics->scale = {0.4f, 0.4f};
 

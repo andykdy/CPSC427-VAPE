@@ -140,12 +140,21 @@ public:
     }
 
     void release() {
-        glDeleteBuffers(1, &vertexDataBuffer);
+        if (vertexDataBuffer != 0){
+            glDeleteBuffers(1, &vertexDataBuffer);
+            vertexDataBuffer = 0;
+        }
+
         if( indexBuffers != nullptr ) {
             glDeleteBuffers(totalSprites, indexBuffers);
             delete[] indexBuffers;
+            indexBuffers = nullptr;
         }
-        glDeleteBuffers(1, &vao);
+
+        if (vao != 0){
+            glDeleteVertexArrays(1, &vao);
+            vao = 0;
+        }
     }
 };
 
