@@ -90,7 +90,7 @@ set(SOURCE_FILES
 
     src/Levels/Level.hpp
     src/Entities/MainMenu.cpp src/Entities/MainMenu.hpp
-    src/Entities/Explosion.cpp src/Entities/Explosion.hpp src/Entities/Bosses/Boss.hpp src/Components/CollisionComponent.hpp src/Systems/CollisionSystem.cpp src/Systems/CollisionSystem.hpp "src/Entities/Projectiles and Damaging/laser.cpp" "src/Entities/Projectiles and Damaging/laser.hpp" src/Entities/Bosses/Boss2.cpp src/Entities/Bosses/Boss2.hpp)
+    src/Entities/Explosion.cpp src/Entities/Explosion.hpp src/Entities/Bosses/Boss.hpp src/Components/CollisionComponent.hpp src/Systems/CollisionSystem.cpp src/Systems/CollisionSystem.hpp "src/Entities/Projectiles and Damaging/Laser.cpp" "src/Entities/Projectiles and Damaging/Laser.hpp" src/Entities/Bosses/Boss2.cpp src/Entities/Bosses/Boss2.hpp "src/Entities/Projectiles and Damaging/Projectile.hpp")
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

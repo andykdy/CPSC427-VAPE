@@ -7,6 +7,8 @@
 
 
 #include "common.hpp"
+#include "../../Engine/ECS/ECS.hpp"
+#include "Projectile.hpp"
 #include "../turtle.hpp"
 #include "../fish.hpp"
 
@@ -14,18 +16,18 @@
 class Player;
 class Boss1;
 
-class Bullet : public EntityOld {
+class Bullet : public Projectile {
     // Shared between all bullets, no need to load one for each instance
     static Texture bullet_texture;
 
 public:
-    bool init(vec2 position, float rotation);
-    void destroy();
-    void update(float ms);
-    void draw(const mat3& projection)override;
+    bool init(vec2 position, float rotation) override;
+    void destroy() override;
+    void update(float ms) override;
+    void draw(const mat3& projection) override;
 
     // Returns the current bullet position
-    vec2 get_position()const;
+    vec2 get_position()const override;
 
     // Collision routines for player, turtles and fish
     bool collides_with(const Player& player);

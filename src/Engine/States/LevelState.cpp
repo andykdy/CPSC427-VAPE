@@ -184,7 +184,7 @@ void LevelState::update(float ms) {
         auto turtle_it = m_turtles->begin();
         while (turtle_it != m_turtles->end())
         {
-            if (bullet_it->collides_with(**turtle_it))
+            if ((*bullet_it)->collides_with(**turtle_it))
             {
                 eraseBullet = true;
                 m_explosion.spawn((*turtle_it)->get_position());
@@ -201,14 +201,15 @@ void LevelState::update(float ms) {
                 ++turtle_it;
             }
         }
-        if (m_boss_mode && bullet_it->collides_with(m_boss)) {
+        if (m_boss_mode && (*bullet_it)->collides_with(m_boss)) {
             eraseBullet = true;
             // TODO sound
             m_boss.addDamage(2);
         }
-        if (eraseBullet)
+        if (eraseBullet) {
+            (*bullet_it)->destroy();
             bullet_it = m_player->bullets.erase(bullet_it);
-        else
+        } else
             ++bullet_it;
     }
 
@@ -312,9 +313,10 @@ void LevelState::update(float ms) {
     // TODO move into player code? do same thing for boss/enemy bullets?
     bullet_it = m_player->bullets.begin();
     while(bullet_it != m_player->bullets.end()) {
-        float h = bullet_it->get_bounding_box().y / 2;
-        if (bullet_it->get_position().y + h < 0.f)
+        float h = (*bullet_it)->get_bounding_box().y / 2;
+        if ((*bullet_it)->get_position().y + h < 0.f)
         {
+            (*bullet_it)->destroy();
             bullet_it = m_player->bullets.erase(bullet_it);
             continue;
         }
@@ -336,8 +338,9 @@ void LevelState::update(float ms) {
         // Checking Enemy Bullet - Player collisions
         auto boss_bullet_it = m_boss.bullets.begin();
         while (boss_bullet_it != m_boss.bullets.end()) {
-            if (boss_bullet_it->collides_with(*m_player))
+            if ((*boss_bullet_it)->collides_with(*m_player))
             {
+                (*boss_bullet_it)->destroy();
                 boss_bullet_it = m_boss.bullets.erase(boss_bullet_it);
                 if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
                     m_player->set_iframes(500.f);
@@ -351,15 +354,16 @@ void LevelState::update(float ms) {
 
         // Removing out of screen bullets
         // TODO move into boss class?
-        auto bullet_it = m_boss.bullets.begin();
-        while(bullet_it != m_boss.bullets.end()) {
-            float h = bullet_it->get_bounding_box().y / 2;
-            if (bullet_it->get_position().y - h > screen.y)
+        boss_bullet_it = m_boss.bullets.begin();
+        while(boss_bullet_it != m_boss.bullets.end()) {
+            float h = (*boss_bullet_it)->get_bounding_box().y / 2;
+            if ((*boss_bullet_it)->get_position().y - h > screen.y)
             {
-                bullet_it = m_boss.bullets.erase(bullet_it);
+                (*boss_bullet_it)->destroy();
+                boss_bullet_it = m_boss.bullets.erase(boss_bullet_it);
                 continue;
             } else {
-                ++bullet_it;
+                ++boss_bullet_it;
             }
         }
 

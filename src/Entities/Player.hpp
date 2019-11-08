@@ -59,7 +59,7 @@ public:
 	// Returns the bounding box for collision detection
 	vec2 get_bounding_box() const;
 
-	std::vector<Bullet> bullets;
+	std::vector<Bullet*> bullets;
 
 	// Called when the salmon collides with an enemy, activate invulerability frames 
 	void set_iframes(float magnitude);

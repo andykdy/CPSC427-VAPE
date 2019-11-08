@@ -171,7 +171,7 @@ void TutorialState::update(float ms) {
 		auto turtle_it = m_turtles.begin();
 		while (turtle_it != m_turtles.end())
 		{
-			if (bullet_it->collides_with(**turtle_it))
+			if ((*bullet_it)->collides_with(**turtle_it))
 			{
 				eraseBullet = true;
                 m_explosion.spawn((*turtle_it)->get_position());
@@ -191,9 +191,10 @@ void TutorialState::update(float ms) {
 				++turtle_it;
 			}
 		}
-		if (eraseBullet)
-			bullet_it = m_player->bullets.erase(bullet_it);
-		else
+		if (eraseBullet) {
+            (*bullet_it)->destroy();
+            bullet_it = m_player->bullets.erase(bullet_it);
+        }else
 			++bullet_it;
 	}
 
@@ -259,9 +260,10 @@ void TutorialState::update(float ms) {
 	// TODO move into player code? do same thing for boss/enemy bullets?
 	bullet_it = m_player->bullets.begin();
 	while (bullet_it != m_player->bullets.end()) {
-		float h = bullet_it->get_bounding_box().y / 2;
-		if (bullet_it->get_position().y + h < 0.f)
+		float h = (*bullet_it)->get_bounding_box().y / 2;
+		if ((*bullet_it)->get_position().y + h < 0.f)
 		{
+            (*bullet_it)->destroy();
 			bullet_it = m_player->bullets.erase(bullet_it);
 			continue;
 		}

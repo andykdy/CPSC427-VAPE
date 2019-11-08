@@ -83,8 +83,8 @@ bool Boss1::init() {
 }
 
 void Boss1::destroy() {
-    for (auto& bullet : bullets)
-        bullet.destroy();
+    for (auto bullet : bullets)
+        bullet->destroy();
     bullets.clear();
 
     glDeleteBuffers(1, &mesh.vbo);
@@ -98,8 +98,8 @@ void Boss1::destroy() {
 
 void Boss1::update(float ms) {
     // Update bullets
-    for (auto& bullet : bullets)
-        bullet.update(ms);
+    for (auto bullet : bullets)
+        bullet->update(ms);
 
     // Simple health based states, only two states for this first boss
     if (health > 50) state1Update(ms);
@@ -153,8 +153,8 @@ void Boss1::state2Update(float ms) {
 
 void Boss1::draw(const mat3 &projection) {
     // Draw boss' bullets
-    for (auto& bullet : bullets)
-        bullet.draw(projection);
+    for (auto bullet : bullets)
+        bullet->draw(projection);
 
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
@@ -218,8 +218,8 @@ vec2 Boss1::get_bounding_box() const {
 }
 
 void Boss1::spawnBullet() {
-    Bullet bullet;
-    if (bullet.init(motion.position, motion.radians+ 3.14)) {
+    Bullet* bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
+    if (bullet->init(motion.position, motion.radians+ 3.14)) {
         bullets.emplace_back(bullet);
     } else {
         throw std::runtime_error("Failed to spawn bullet");

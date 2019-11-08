@@ -6,7 +6,7 @@
 #define VAPE_LASER_HPP
 
 
-class laser {
+class Laser {
 
 };
 

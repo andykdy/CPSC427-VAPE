@@ -40,7 +40,7 @@ public:
     // Returns the Boss' bounding box for collision detection, called by collides_with()
     vec2 get_bounding_box() const;
 
-    std::vector<Bullet> bullets;
+    std::vector<Bullet*> bullets;
 
     int getHealth() const;
 
