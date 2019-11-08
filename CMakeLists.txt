@@ -67,8 +67,6 @@ set(SOURCE_FILES
     src/Entities/UI/VampCharge.cpp
     src/Entities/UI/VampCharge.hpp
 
-    src/Engine/ECS/ECS.hpp
-
     src/Components/MotionComponent.hpp
     src/Components/PhysicsComponent.hpp
     src/Components/EffectComponent.hpp
@@ -76,9 +74,10 @@ set(SOURCE_FILES
     src/Components/TransformComponent.hpp
     src/Engine/ECS/Component.hpp
     src/Engine/ECS/Entity.hpp
-    src/Engine/ECS/EntityManager.hpp
+    src/Engine/ECS/EntityManager.cpp src/Engine/ECS/EntityManager.hpp
     src/Engine/ECS/System.hpp
-    src/Engine/ECS/SystemManager.hpp
+    src/Engine/ECS/SystemManager.cpp src/Engine/ECS/SystemManager.hpp
+    src/Engine/ECS/ECS.hpp
     src/Components/MeshComponent.hpp
     src/Components/TextureComponent.hpp
     src/Components/HealthComponent.hpp
@@ -89,7 +88,10 @@ set(SOURCE_FILES
     src/Systems/MotionSystem.hpp
     src/Components/BoundaryComponent.hpp
     src/Components/EnemyComponent.hpp
-    src/Levels/Level.hpp src/Entities/MainMenu.cpp src/Entities/MainMenu.hpp src/Entities/Explosion.cpp src/Entities/Explosion.hpp)
+
+    src/Levels/Level.hpp
+    src/Entities/MainMenu.cpp src/Entities/MainMenu.hpp
+    src/Entities/Explosion.cpp src/Entities/Explosion.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

@@ -65,9 +65,6 @@ private:
     // Generates a new turtle
     bool spawn_turtle();
 
-    // Generates a new fish
-    bool spawn_fish();
-
     // Tracks keys being pressed
     std::map<int, bool> keyMap;
 
@@ -89,9 +86,6 @@ private:
     Health* m_health;
     VampCharge* m_vamp_charge;
 	Dialogue m_dialogue;
-
-    // To remove
-    std::vector<Fish> m_fish;
 
     float m_level_time;
     float m_next_turtle_spawn;

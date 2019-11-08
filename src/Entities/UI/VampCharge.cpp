@@ -89,5 +89,3 @@ void VampCharge::destroy() {
 void VampCharge::setVampCharge(int charge) {
     VampCharge::charge = charge;
 }
-
-VampCharge::VampCharge(ECS::EntityId id) : Entity(id) {}

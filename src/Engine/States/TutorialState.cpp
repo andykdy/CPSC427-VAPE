@@ -134,9 +134,8 @@ void TutorialState::update(float ms) {
 					lose_health(DAMAGE_ENEMY);
                     m_explosion.spawn(m_player->get_position());
                     Mix_PlayChannel(-1, m_player_explosion, 0);
-					ECS::EntityId id = (*turtle_it)->getId();
-					m_turtles.erase(turtle_it);
-					GameEngine::getInstance().getEntityManager()->removeEntity(id);
+					(*turtle_it)->destroy();
+					turtle_it = m_turtles.erase(turtle_it);
 				}
 			}
 			break;
@@ -176,9 +175,8 @@ void TutorialState::update(float ms) {
 			{
 				eraseBullet = true;
                 m_explosion.spawn((*turtle_it)->get_position());
-				ECS::EntityId id = (*turtle_it)->getId();
+				(*turtle_it)->destroy();
 				turtle_it = m_turtles.erase(turtle_it);
-				GameEngine::getInstance().getEntityManager()->removeEntity(id);
 				Mix_PlayChannel(-1, m_player_explosion, 0);
 				++m_points;
 				add_vamp_charge();
@@ -206,6 +204,7 @@ void TutorialState::update(float ms) {
 			if (m_vamp.collides_with(**turtle_it)) {
                 m_explosion.spawn((*turtle_it)->get_position());
                 Mix_PlayChannel(-1, m_player_explosion, 0);
+				(*turtle_it)->destroy();
 				turtle_it = m_turtles.erase(turtle_it);
 				add_health(VAMP_HEAL);
 				m_vamp_quota--;
@@ -291,10 +290,6 @@ void TutorialState::draw() {
 	title_ss << "Points: " << m_points;
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
-	/////////////////////////////////////
-	// First render to the custom framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, GameEngine::getInstance().getM_frame_buffer());
-
 	// Clearing backbuffer
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
@@ -315,22 +310,6 @@ void TutorialState::draw() {
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
-
-
-	/////////////////////
-	// Truely render to the screen
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// Clearing backbuffer
-	glViewport(0, 0, w, h);
-	glDepthRange(0, 10);
-	glClearColor(0, 0, 0, 1.0);
-	glClearDepth(1.f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// Bind our texture in Texture Unit 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, GameEngine::getInstance().getM_screen_tex().id);
 
 	m_space.draw(projection_2D);
 
@@ -449,6 +428,8 @@ void TutorialState::reset(vec2 screen) {
 	m_player->init(screen, INIT_HEALTH);
     m_health->init({45, 60});
     m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
+    for (auto& turtle : m_turtles)
+        turtle->destroy();
 	m_turtles.clear();
 	Mix_PlayMusic(m_background_music, -1);
 	m_mvmt_checklist[0] = false;

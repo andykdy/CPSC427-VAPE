@@ -15,13 +15,11 @@ class Player : public ECS::Entity
 	static Texture player_texture;
 	static Texture vamp_texture;
 public:
-    Player(ECS::EntityId id);
-
 // Creates all the associated render resources and default transform
 	bool init(vec2 screen, int hp);
 
 	// Releases all associated resources
-	void destroy();
+	void destroy() override;
 	
 	// Update salmon position based on direction
 	// ms represents the number of milliseconds elapsed from the previous update() call

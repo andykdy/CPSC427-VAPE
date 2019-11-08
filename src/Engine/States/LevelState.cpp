@@ -93,9 +93,9 @@ void LevelState::init() {
     m_space.set_position({screen.x/2, 0});
 
     GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
-    EnemySpawnerSystem* spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
-    spawn->reset();
-    m_turtles = spawn->getEnemies();
+    EnemySpawnerSystem& spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
+    spawn.reset();
+    m_turtles = spawn.getEnemies(); // TODO, probably just get rid of m_turtles, pull from spawn system when needed
     //std::cout << "initEnd" << std::endl;
 }
 
@@ -115,26 +115,16 @@ void LevelState::terminate() {
         Mix_FreeChunk(m_player_explosion);
 
     m_player->destroy();
-    for (auto& turtle : *m_turtles){
-        ECS::EntityId id = turtle->getId();
+    for (auto& turtle : *m_turtles){ // TODO do in enemyspawnersystem
         turtle->destroy();
-        GameEngine::getInstance().getEntityManager()->removeEntity(id);
     }
 
-    for (auto& fish : m_fish)
-        fish.destroy();
     m_health->destroy();
     m_vamp_charge->destroy();
     m_turtles->clear();
-    m_fish.clear();
     m_boss.destroy();
 	m_dialogue.destroy();
 	m_explosion.destroy();
-
-    ECS::EntityId id = m_player->getId();
-    GameEngine::getInstance().getEntityManager()->removeEntity(id);
-    id = m_health->getId();
-    GameEngine::getInstance().getEntityManager()->removeEntity(id);
 }
 
 void LevelState::update(float ms) {
@@ -172,10 +162,9 @@ void LevelState::update(float ms) {
 				if (m_player->get_iframes() <= 0.f) {
 					m_player->set_iframes(500.f);
 					lose_health(DAMAGE_ENEMY);
-					ECS::EntityId id = (*turtle_it)->getId();
                     Mix_PlayChannel(-1, m_player_explosion, 0);
-					m_turtles->erase(turtle_it);
-                    GameEngine::getInstance().getEntityManager()->removeEntity(id);
+					(*turtle_it)->destroy();
+                    turtle_it = m_turtles->erase(turtle_it);
 				}
 			}
             break;
@@ -183,23 +172,6 @@ void LevelState::update(float ms) {
 		{
 			turtle_it++;
 		}
-    }
-
-
-    // Checking Player - Fish collisions
-    auto fish_it = m_fish.begin();
-    while (fish_it != m_fish.end())
-    {
-        if (m_player->is_alive() && m_player->collides_with(*fish_it))
-        {
-
-            fish_it = m_fish.erase(fish_it);
-            m_player->light_up();
-            Mix_PlayChannel(-1, m_player_eat_sound, 0);
-            ++m_points;
-        }
-        else
-            ++fish_it;
     }
 
     // Checking Player Bullet - Enemy collisions
@@ -213,10 +185,9 @@ void LevelState::update(float ms) {
             if (bullet_it->collides_with(**turtle_it))
             {
                 eraseBullet = true;
-                ECS::EntityId id = (*turtle_it)->getId();
                 m_explosion.spawn((*turtle_it)->get_position());
-                m_turtles->erase(turtle_it);
-                GameEngine::getInstance().getEntityManager()->removeEntity(id);
+                (*turtle_it)->destroy();
+                turtle_it = m_turtles->erase(turtle_it);
                 Mix_PlayChannel(-1,m_player_explosion,0);
                 // expl
 
@@ -244,11 +215,10 @@ void LevelState::update(float ms) {
         turtle_it = m_turtles->begin();
         while (turtle_it != m_turtles->end()) {
             if (m_vamp.collides_with(**turtle_it)) {
-                ECS::EntityId id = (*turtle_it)->getId();
                 m_explosion.spawn((*turtle_it)->get_position());
                 Mix_PlayChannel(-1, m_player_explosion, 0);
+                (*turtle_it)->destroy();
                 turtle_it = m_turtles->erase(turtle_it);
-                GameEngine::getInstance().getEntityManager()->removeEntity(id);
                 add_health(VAMP_HEAL);
 
                 continue;
@@ -266,8 +236,6 @@ void LevelState::update(float ms) {
     m_player->update(ms, keyMap, mouse_position);
     for (auto& turtle : *m_turtles)
         turtle->update(ms);
-    for (auto& fish : m_fish)
-        fish.update(ms);
 
     // Removing out of screen turtles
     turtle_it = m_turtles->begin();
@@ -277,25 +245,12 @@ void LevelState::update(float ms) {
         float w = (*turtle_it)->get_bounding_box().x / 2;
         if (std::abs((*turtle_it)->get_position().y) + h > screen.y + 400
                 || std::abs((*turtle_it)->get_position().x) + w > screen.x + 400) {
+            (*turtle_it)->destroy();
             turtle_it = m_turtles->erase(turtle_it);
             continue;
+        } else {
+            ++turtle_it;
         }
-
-        ++turtle_it;
-    }
-
-    // Removing out of screen fish
-    fish_it = m_fish.begin();
-    while (fish_it != m_fish.end())
-    {
-        float w = fish_it->get_bounding_box().x / 2;
-        if (fish_it->get_position().x + w < 0.f)
-        {
-            fish_it = m_fish.erase(fish_it);
-            continue;
-        }
-
-        ++fish_it;
     }
 
     // for debugging purposes
@@ -308,6 +263,7 @@ void LevelState::update(float ms) {
 
     if (keyMap[GLFW_KEY_ESCAPE]) {
         GameEngine::getInstance().changeState(new MainMenuState());
+        return;
     }
 
     if (m_vamp_mode_charge >= 15 && keyMap[GLFW_KEY_ENTER]) {
@@ -437,10 +393,6 @@ void LevelState::draw() {
     title_ss << "Points: " << m_points;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
-    /////////////////////////////////////
-    // First render to the custom framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, GameEngine::getInstance().getM_frame_buffer());
-
     // Clearing backbuffer
     glViewport(0, 0, w, h);
     glDepthRange(0.00001, 10);
@@ -462,36 +414,11 @@ void LevelState::draw() {
     float ty = -(top + bottom) / (top - bottom);
     mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // DRAW DEBUG INFO HERE
-    // DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 2
-    // You will want to create your own data structures for passing in
-    // relevant information to your debug draw call.
-    // The shaders coloured.vs.glsl and coloured.fs.glsl should be helpful.
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-    /////////////////////
-    // Truely render to the screen
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    // Clearing backbuffer
-    glViewport(0, 0, w, h);
-    glDepthRange(0, 10);
-    glClearColor(0, 0, 0, 1.0);
-    glClearDepth(1.f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // Bind our texture in Texture Unit 0
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, GameEngine::getInstance().getM_screen_tex().id);
-
     m_space.draw(projection_2D);
 
     // Drawing entities
-    for (auto& turtle : *m_turtles)
+    for (auto& turtle : (*m_turtles))
         turtle->draw(projection_2D);
-    for (auto& fish : m_fish)
-        fish.draw(projection_2D);
     if (m_vamp_mode) {
         m_vamp.draw(projection_2D);
     }
@@ -501,8 +428,9 @@ void LevelState::draw() {
     }
     m_health->draw(projection_2D);
     m_vamp_charge->draw(projection_2D);
-	m_dialogue.draw(projection_2D);
-	m_explosion.draw(projection_2D);
+    m_dialogue.draw(projection_2D);
+    m_explosion.draw(projection_2D);
+
 
     //////////////////
     // Presenting
@@ -540,30 +468,6 @@ void LevelState::add_vamp_charge() {
     }
 }
 
-// Creates a new turtle and if successfull adds it to the list of turtles
-bool LevelState::spawn_turtle() {
-    Turtle* turtle = &GameEngine::getInstance().getEntityManager()->addEntity<Turtle>();
-    if (turtle->init())
-    {
-        m_turtles->emplace_back(turtle);
-        return true;
-    }
-    fprintf(stderr, "Failed to spawn turtle");
-    return false;
-}
-
-// Creates a new fish and if successfull adds it to the list of fish
-bool LevelState::spawn_fish() {
-    Fish fish;
-    if (fish.init())
-    {
-        m_fish.emplace_back(fish);
-        return true;
-    }
-    fprintf(stderr, "Failed to spawn fish");
-    return false;
-}
-
 void LevelState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
     // Track which keys are being pressed or held
     (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[key] = true : keyMap[key] = false;
@@ -577,16 +481,6 @@ void LevelState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod
         vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
         reset(screen);
     }
-
-    // Control the current speed with `<` `>`
-    /*
-    if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) &&  key == GLFW_KEY_COMMA)
-        m_current_speed -= 0.1f;
-    if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
-        m_current_speed += 0.1f;
-
-    m_current_speed = fmax(0.f, m_current_speed);
-     */
 }
 
 void LevelState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
@@ -602,6 +496,7 @@ void LevelState::on_mouse_button(GLFWwindow *window, int button, int action, int
 void LevelState::reset(vec2 screen) {
     m_vamp_mode = false;
     m_player->destroy();
+    m_health->destroy();
     m_vamp.destroy();
     m_explosion.destroy();
     m_vamp_charge->destroy();
@@ -613,8 +508,10 @@ void LevelState::reset(vec2 screen) {
     m_level_time = 0;
     m_boss_mode = false;
     m_boss_pre = false;
+    for (auto turtle : *m_turtles) {
+        turtle->destroy();
+    }
     m_turtles->clear();
-    m_fish.clear();
     m_explosion.init();
     Mix_PlayMusic(m_background_music, -1);
 
@@ -622,5 +519,5 @@ void LevelState::reset(vec2 screen) {
     m_space.reset_boss_dead_time();
     GameEngine::getInstance().setM_current_speed(1.f);
 
-    GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>()->reset();
+    GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>().reset();
 }
