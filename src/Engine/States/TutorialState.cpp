@@ -135,7 +135,7 @@ void TutorialState::update(float ms) {
                     m_explosion.spawn(m_player->get_position());
                     Mix_PlayChannel(-1, m_player_explosion, 0);
 					(*turtle_it)->destroy();
-					m_turtles.erase(turtle_it);
+					turtle_it = m_turtles.erase(turtle_it);
 				}
 			}
 			break;
@@ -428,6 +428,8 @@ void TutorialState::reset(vec2 screen) {
 	m_player->init(screen, INIT_HEALTH);
     m_health->init({45, 60});
     m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
+    for (auto& turtle : m_turtles)
+        turtle->destroy();
 	m_turtles.clear();
 	Mix_PlayMusic(m_background_music, -1);
 	m_mvmt_checklist[0] = false;
