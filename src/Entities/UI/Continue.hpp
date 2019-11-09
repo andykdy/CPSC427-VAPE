@@ -2,13 +2,13 @@
 
 #include "common.hpp"
 
-class Dialogue : public EntityOld
+class Continue : public EntityOld
 {
 	static Texture current_texture;
 
 public:
 	// Creates all the associated render resources and default transform
-	bool init(const char *path);
+	bool init();
 
 	// Releases all the associated resources
 	void destroy();
@@ -23,16 +23,9 @@ public:
 
 	bool isActive();
 
-	// Toggle the dialogue 
-	void toggle();
+	void set_activity(bool set);
 
-	void deactivate();
-	void activate();
-
-	// Move to next dialogue option
-	void next();
-
-private: 
-	bool m_active;
-	int m_index;
+private:
+	bool m_is_active;
+	float m_blinker;
 };
