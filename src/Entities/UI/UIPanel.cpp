@@ -12,8 +12,6 @@ bool UIPanel::init(vec2 screen, float height) {
     auto* effect = addComponent<EffectComponent>();
     auto* mesh = addComponent<MeshComponent>();
 
-
-
     // Clearing errors
     gl_flush_errors();
 
@@ -58,7 +56,7 @@ bool UIPanel::init(vec2 screen, float height) {
     m_screen = screen;
 
     // Loading shaders
-    return effect->load_from_file(shader_path("colored.vs.glsl"), shader_path("colored.fs.glsl"));
+    return effect->load_from_file(shader_path("coloured.vs.glsl"), shader_path("coloured.fs.glsl"));
 
 }
 

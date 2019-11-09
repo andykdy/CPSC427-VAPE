@@ -20,7 +20,10 @@ namespace
 
 Texture Boss1::boss1_texture;
 
-bool Boss1::init() {
+bool Boss1::init(vec2 screen) {
+    m_healthbar = &GameEngine::getInstance().getEntityManager()->addEntity<BossHealth>();
+    m_healthbar->init(screen, INIT_HEALTH);
+
     gl_flush_errors();
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
@@ -79,6 +82,8 @@ bool Boss1::init() {
 }
 
 void Boss1::destroy() {
+    m_healthbar->destroy();
+
     for (auto bullet : projectiles)
         bullet->destroy();
     projectiles.clear();
@@ -92,6 +97,8 @@ void Boss1::destroy() {
 }
 
 void Boss1::update(float ms) {
+    m_healthbar->setHealth(health);
+
     // Update bullets
     for (auto bullet : projectiles)
         bullet->update(ms);
@@ -166,6 +173,8 @@ void Boss1::draw(const mat3 &projection) {
     transform->end();
 
     sprite->draw(projection, transform->out, effect->program);
+
+    m_healthbar->draw(projection);
 }
 
 vec2 Boss1::get_position() const {

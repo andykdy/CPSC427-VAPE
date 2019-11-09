@@ -93,7 +93,7 @@ void LevelState::init() {
     m_space.init();
     m_explosion.init();
     m_boss = &GameEngine::getInstance().getEntityManager()->addEntity<Boss1>();
-    m_boss->init();
+    m_boss->init(screen);
 
     m_space.set_position({screen.x/2, 0});
 
