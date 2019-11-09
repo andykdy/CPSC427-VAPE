@@ -47,8 +47,6 @@ set(SOURCE_FILES
     src/Entities/Player.cpp
     src/Entities/turtle.cpp
     src/Entities/Space.cpp
-    src/Entities/Dialogue.cpp
-    src/Entities/Dialogue.hpp
 
     src/project_path.hpp
     src/common.hpp
