@@ -124,7 +124,8 @@ void LevelState::terminate() {
     m_health->destroy();
     m_vamp_charge->destroy();
     m_turtles->clear();
-    m_boss->destroy();
+    if (m_boss != nullptr)
+        m_boss->destroy();
 	m_dialogue.destroy();
 	m_explosion.destroy();
 }
@@ -399,7 +400,7 @@ void LevelState::draw() {
 
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss << "Points: " << m_points;
+    title_ss  << "FPS: " << 1.f / (GameEngine::getInstance().getElapsed_ms()/1000) << "		" << "Points: " << m_points;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
     // Clearing backbuffer
