@@ -18,7 +18,7 @@
 #include "Entities/fish.hpp"
 #include "Entities/Space.hpp"
 #include "Entities/Projectiles and Damaging/bullet.hpp"
-#include "Entities/Dialogue.hpp"
+#include "Entities/UI/Dialogue.hpp"
 #include "Entities/UI/Health.hpp"
 #include "Entities/Explosion.hpp"
 

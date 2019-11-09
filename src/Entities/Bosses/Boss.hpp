@@ -7,7 +7,7 @@
 
 #include <common.hpp>
 #include <Engine/ECS/Entity.hpp>
-#include <Entities/Projectiles and Damaging/Bullet.hpp>
+#include "../Projectiles and Damaging/bullet.hpp"
 
 class Projectile;
 

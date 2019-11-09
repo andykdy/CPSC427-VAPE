@@ -19,7 +19,7 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-	const size_t VAMP_MODE_DURATION = 1500;
+	const size_t VAMP_MODE_DURATION = 2000;
 	const size_t MAX_HEALTH = 75;
 	const size_t INIT_HEALTH = 50;
 	const size_t DAMAGE_ENEMY = 5;
@@ -82,6 +82,7 @@ void TutorialState::init() {
 
 	m_space.init();
 	m_dialogue.init("TutorialText.png");
+	m_continue_UI.init();
 	m_current_cmp = initial;
 	m_vamp_mode = false;
 	m_mvmt_checklist[0] = false;
@@ -113,6 +114,7 @@ void TutorialState::terminate() {
 	m_turtles.clear();
 	m_dialogue.destroy();
 	m_explosion.destroy();
+	m_continue_UI.destroy();
 }
 
 void TutorialState::update(float ms) {
@@ -145,7 +147,7 @@ void TutorialState::update(float ms) {
 			turtle_it++;
 		}
 	}
-	float turtle_limit = m_current_cmp == shooting ? 1 : m_current_cmp == vamp ? m_vamp_quota : 0;
+	float turtle_limit = m_current_cmp == shooting ? 1 : m_current_cmp == vamp_1 || m_current_cmp == vamp_2 ? m_vamp_quota : 0;
 	if (m_turtles.size() < turtle_limit)
 	{
 		if (!spawn_turtle())
@@ -154,7 +156,7 @@ void TutorialState::update(float ms) {
 		Turtle* new_turtle = m_turtles.back();
 
 		// Setting random initial position
-		if (m_current_cmp == vamp) {
+		if (m_current_cmp == vamp_1 || m_current_cmp == vamp_2) {
 			new_turtle->set_position({ 50 + m_dist(m_rng) * (screen.x - 100),  200 + m_dist(m_rng) * (screen.y - 600) });
 			new_turtle->set_velocity({0.f, 0.f});
 		}
@@ -184,8 +186,8 @@ void TutorialState::update(float ms) {
 				add_vamp_charge();
 				if (m_current_cmp == shooting) {
 					m_dialogue.next();
-					m_current_cmp = vamp;
-					m_vamp_mode_charge = 15;
+					m_current_cmp = vamp_1;
+					m_vamp_mode_charge = 12;
 				}
 				break;
 			}
@@ -213,13 +215,13 @@ void TutorialState::update(float ms) {
 				m_vamp_quota--;
 				continue;
 			}
-
 			++turtle_it;
 		}
 	}
-	if (m_vamp_quota == 0 && m_current_cmp == vamp && !m_vamp_mode) {
+	if (m_vamp_quota == 0 && m_current_cmp == vamp_2 && !m_vamp_mode) {
 		m_current_cmp = clear;
 		m_dialogue.next();
+		m_continue_UI.set_activity(true);
 	}
 
     m_space.update(ms);
@@ -235,6 +237,18 @@ void TutorialState::update(float ms) {
 	// for debugging purposes
 	if (keyMap[GLFW_KEY_F]) {
 		m_vamp_mode_charge = 15;
+	}
+	if (m_current_cmp == vamp_2) {
+		m_vamp_mode_charge = 15;
+	}
+	if (keyMap[GLFW_KEY_ESCAPE]) {
+		GameEngine::getInstance().changeState(new MainMenuState());
+		return;
+	}
+
+	if (m_vamp_mode_charge == 15 && m_current_cmp == vamp_1) {
+		m_current_cmp = vamp_2;
+ 		m_dialogue.next();
 	}
 
 	if (m_vamp_mode_charge >= 15 && keyMap[GLFW_KEY_ENTER]) {
@@ -316,7 +330,6 @@ void TutorialState::draw() {
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
 	m_space.draw(projection_2D);
-
 	// Drawing entities
 	for (auto& turtle : m_turtles)
 		turtle->draw(projection_2D);
@@ -326,9 +339,10 @@ void TutorialState::draw() {
 	m_player->draw(projection_2D);
 	m_health->draw(projection_2D);
 	m_vamp_charge->draw(projection_2D);
-
+	if (m_continue_UI.isActive()) {
+		m_continue_UI.draw(projection_2D);
+	}
 	m_dialogue.draw(projection_2D);
-
     m_explosion.draw(projection_2D);
 	//////////////////
 	// Presenting
@@ -402,6 +416,16 @@ void TutorialState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
 			m_dialogue.next();
 		}
 	}
+	if (keyMap[GLFW_KEY_LEFT_SHIFT] || keyMap[GLFW_KEY_RIGHT_SHIFT]) {
+		if (m_current_cmp == initial) {
+			m_current_cmp = movement;
+			m_dialogue.next();
+			m_continue_UI.set_activity(false);
+		}
+		if (m_current_cmp == clear) {
+			GameEngine::getInstance().changeState(new LevelState());
+		}
+	}
 
 	// m_current_speed = fmax(0.f, m_current_speed);
 }
@@ -414,15 +438,6 @@ void TutorialState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) 
 void TutorialState::on_mouse_button(GLFWwindow *window, int button, int action, int mods) {
 	// Track which mouse buttons are being pressed or held
 	(action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[button] = true : keyMap[button] = false;
-	if (keyMap[button]) {
-		if (m_current_cmp == initial) {
-			m_current_cmp = movement;
-			m_dialogue.next();
-		}
-		if (m_current_cmp == clear) {
-			GameEngine::getInstance().changeState(new LevelState());
-		}
-	}
 }
 
 void TutorialState::reset(vec2 screen) {

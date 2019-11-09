@@ -47,8 +47,6 @@ set(SOURCE_FILES
     src/Entities/Player.cpp
     src/Entities/turtle.cpp
     src/Entities/Space.cpp
-    src/Entities/Dialogue.cpp
-    src/Entities/Dialogue.hpp
 
     src/project_path.hpp
     src/common.hpp
@@ -62,6 +60,10 @@ set(SOURCE_FILES
     src/Entities/Bosses/Boss1.hpp
     src/Entities/UI/Health.cpp
     src/Entities/UI/Health.hpp
+    src/Entities/UI/Dialogue.cpp
+    src/Entities/UI/Dialogue.hpp
+    src/Entities/UI/Continue.cpp
+    src/Entities/UI/Continue.hpp
     src/Entities/Vamp.cpp
     src/Entities/Vamp.hpp
     src/Entities/UI/VampCharge.cpp
