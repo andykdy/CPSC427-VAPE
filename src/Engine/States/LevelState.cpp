@@ -90,6 +90,8 @@ void LevelState::init() {
 	m_dialogue.deactivate();
     m_space.init();
     m_explosion.init();
+    m_boss = &GameEngine::getInstance().getEntityManager()->addEntity<Boss1>();
+    m_boss->init();
 
     m_space.set_position({screen.x/2, 0});
 
@@ -148,8 +150,6 @@ void LevelState::update(float ms) {
     if (m_level_time >= BOSS_TIME && !m_boss_mode) {
 		m_dialogue.deactivate();
         m_boss_mode = true;
-        m_boss = &GameEngine::getInstance().getEntityManager()->addEntity<Boss1>();
-        m_boss->init();
         m_boss->set_position({static_cast<float>(w/2), static_cast<float>(h/10)});
     }
 
