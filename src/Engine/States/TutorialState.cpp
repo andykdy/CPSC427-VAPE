@@ -233,6 +233,10 @@ void TutorialState::update(float ms) {
 	if (keyMap[GLFW_KEY_F]) {
 		m_vamp_mode_charge = 15;
 	}
+	if (keyMap[GLFW_KEY_ESCAPE]) {
+		GameEngine::getInstance().changeState(new MainMenuState());
+		return;
+	}
 
 	if (m_vamp_mode_charge >= 15 && keyMap[GLFW_KEY_ENTER]) {
 		m_vamp_mode = true;
