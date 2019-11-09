@@ -7,17 +7,8 @@
 #include "LevelState.hpp"
 #include "TutorialState.hpp"
 
-Texture MainMenuState::bg_texture;
 
 void MainMenuState::init() {
-    if (!bg_texture.is_valid())
-    {
-        if (!bg_texture.load_from_file(textures_path("mainmenu_bg.png")))
-        {
-            throw std::runtime_error("Failed to load background texture!");
-        }
-    }
-
     m_background_music = Mix_LoadMUS(audio_path("mainmenu.wav"));
 
     // Playing background music indefinitely
@@ -90,8 +81,12 @@ void MainMenuState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) 
 void MainMenuState::on_mouse_button(GLFWwindow *window, int button, int action, int mods) {
 	if (mouse_position.x >= 200 && mouse_position.x <= 600 && mouse_position.y >= 600 && mouse_position.y <= 700) {
 		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-		    // GameEngine::getInstance().getEntityManager()->reset();
 			GameEngine::getInstance().changeState(new TutorialState());
+		}
+	}
+	if (mouse_position.x >= 280 && mouse_position.x <= 520 && mouse_position.y >= 740 && mouse_position.y <= 830) {
+		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+			GameEngine::getInstance().quit();
 		}
 	}
 }
