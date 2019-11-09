@@ -17,7 +17,8 @@
 #include "Entities/Space.hpp"
 #include "Entities/Projectiles and Damaging/bullet.hpp"
 #include "Entities/UI/Health.hpp"
-#include "Entities/Dialogue.hpp"
+#include "Entities/UI/Dialogue.hpp"
+#include "Entities/UI/Continue.hpp"
 
 // stlib
 #include <vector>
@@ -33,7 +34,8 @@ enum Component {
 	initial,
 	movement,
 	shooting,
-	vamp,
+	vamp_1,
+	vamp_2,
 	clear
 };
 
@@ -89,6 +91,7 @@ private:
 	VampCharge* m_vamp_charge;
 	std::vector<Turtle*> m_turtles;
 	Dialogue m_dialogue;
+	Continue m_continue_UI;
 	UIPanel* m_uiPanel;
 
 	float m_next_turtle_spawn;

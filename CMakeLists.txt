@@ -57,8 +57,7 @@ set(SOURCE_FILES
     src/Entities/Player.cpp
     src/Entities/turtle.cpp
     src/Entities/Space.cpp
-    src/Entities/Dialogue.cpp
-    src/Entities/Dialogue.hpp
+
     src/Entities/fish.hpp
     src/Entities/Player.hpp
     src/Entities/turtle.hpp
@@ -70,6 +69,10 @@ set(SOURCE_FILES
 
     src/Entities/UI/Health.cpp
     src/Entities/UI/Health.hpp
+    src/Entities/UI/Dialogue.cpp
+    src/Entities/UI/Dialogue.hpp
+    src/Entities/UI/Continue.cpp
+    src/Entities/UI/Continue.hpp
     src/Entities/UI/VampCharge.cpp
     src/Entities/UI/VampCharge.hpp
     src/Entities/UI/UIPanel.cpp src/Entities/UI/UIPanel.hpp
