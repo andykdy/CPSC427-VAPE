@@ -40,7 +40,7 @@ bool Player::init(vec2 screen, int hp)
 	auto* health = addComponent<HealthComponent>();
 
 	addComponent<BoundaryComponent>(screenBuffer.x, screen.x - screenBuffer.x,
-									screenBuffer.y, screen.y - screenBuffer.y);
+									screenBuffer.y, screen.y*0.9f - screenBuffer.y);
 
 	// Load sound
 	m_player_bullet_sound = Mix_LoadWAV(audio_path("pow.wav"));

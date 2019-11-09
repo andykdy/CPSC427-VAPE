@@ -69,8 +69,10 @@ void TutorialState::init() {
 
 	m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
 	m_player->init(screen, INIT_HEALTH);
+	m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
+	m_uiPanel->init(screen, screen.y * 0.1f);
 	m_health = &GameEngine::getInstance().getEntityManager()->addEntity<Health>();
-	m_health->init({45, 60});
+	m_health->init({45, screen.y-50});
 
 	m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
     m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
@@ -108,6 +110,7 @@ void TutorialState::terminate() {
 	m_vamp.destroy();
 	for (auto& turtle : m_turtles)
 		turtle->destroy();
+	m_uiPanel->destroy();
 	m_health->destroy();
 	m_vamp_charge->destroy();
 	m_turtles.clear();
@@ -324,6 +327,7 @@ void TutorialState::draw() {
 		m_vamp.draw(projection_2D);
 	}
 	m_player->draw(projection_2D);
+	m_uiPanel->draw(projection_2D);
 	m_health->draw(projection_2D);
 	m_vamp_charge->draw(projection_2D);
 
@@ -427,10 +431,13 @@ void TutorialState::on_mouse_button(GLFWwindow *window, int button, int action, 
 
 void TutorialState::reset(vec2 screen) {
 	m_player->destroy();
+	m_uiPanel->destroy();
+	m_health->destroy();
 	m_vamp.destroy();
 	m_vamp_charge->destroy();
 	m_player->init(screen, INIT_HEALTH);
-    m_health->init({45, 60});
+	m_uiPanel->init(screen, screen.y*0.1f);
+    m_health->init({45, screen.y-60});
     m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
     for (auto& turtle : m_turtles)
     	turtle->destroy();
