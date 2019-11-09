@@ -165,15 +165,17 @@ void TutorialState::update(float ms) {
 		}
 	}
 
+	auto& playerBullets = m_player->bullets;
+
 	// Checking Player Bullet - Enemy collisions
-	auto bullet_it = m_player->bullets.begin();
-	while (bullet_it != m_player->bullets.end())
+	auto bullet_it = playerBullets.begin();
+	while (bullet_it != playerBullets.end())
 	{
 		bool eraseBullet = false;
 		auto turtle_it = m_turtles.begin();
 		while (turtle_it != m_turtles.end())
 		{
-			if (bullet_it->collides_with(**turtle_it))
+			if ((*bullet_it)->collides_with(**turtle_it))
 			{
 				eraseBullet = true;
                 m_explosion.spawn((*turtle_it)->get_position());
@@ -193,9 +195,10 @@ void TutorialState::update(float ms) {
 				++turtle_it;
 			}
 		}
-		if (eraseBullet)
-			bullet_it = m_player->bullets.erase(bullet_it);
-		else
+		if (eraseBullet) {
+            (*bullet_it)->destroy();
+            bullet_it = playerBullets.erase(bullet_it);
+        }else
 			++bullet_it;
 	}
 
@@ -271,12 +274,13 @@ void TutorialState::update(float ms) {
 
 	// Removing out of screen bullets
 	// TODO move into player code? do same thing for boss/enemy bullets?
-	bullet_it = m_player->bullets.begin();
-	while (bullet_it != m_player->bullets.end()) {
-		float h = bullet_it->get_bounding_box().y / 2;
-		if (bullet_it->get_position().y + h < 0.f)
+	bullet_it = playerBullets.begin();
+	while (bullet_it != playerBullets.end()) {
+		float h = (*bullet_it)->get_bounding_box().y / 2;
+		if ((*bullet_it)->get_position().y + h < 0.f)
 		{
-			bullet_it = m_player->bullets.erase(bullet_it);
+            (*bullet_it)->destroy();
+			bullet_it = playerBullets.erase(bullet_it);
 			continue;
 		}
 
@@ -301,7 +305,7 @@ void TutorialState::draw() {
 
 	// Updating window title with points
 	std::stringstream title_ss;
-	title_ss << "Points: " << m_points;
+	title_ss  << "FPS: " << 1.f / (GameEngine::getInstance().getElapsed_ms()/1000) << "		" << "Points: " << m_points;
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
 	// Clearing backbuffer
@@ -444,7 +448,7 @@ void TutorialState::reset(vec2 screen) {
     m_health->init({45, 60});
     m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
     for (auto& turtle : m_turtles)
-        turtle->destroy();
+    	turtle->destroy();
 	m_turtles.clear();
 	Mix_PlayMusic(m_background_music, -1);
 	m_mvmt_checklist[0] = false;

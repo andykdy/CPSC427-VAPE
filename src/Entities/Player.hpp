@@ -2,13 +2,14 @@
 
 #include <map>
 #include "common.hpp"
-#include "bullet.hpp"
+#include "Entities/Projectiles and Damaging/bullet.hpp"
 #include <vector>
 #include <SDL_mixer.h>
 #include <Engine/ECS/Entity.hpp>
 
 class Turtle;
 class Fish;
+class Bullet;
 
 class Player : public ECS::Entity
 {
@@ -59,7 +60,7 @@ public:
 	// Returns the bounding box for collision detection
 	vec2 get_bounding_box() const;
 
-	std::vector<Bullet> bullets;
+	std::vector<Bullet*> bullets;
 
 	// Called when the salmon collides with an enemy, activate invulerability frames 
 	void set_iframes(float magnitude);

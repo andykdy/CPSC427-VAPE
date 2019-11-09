@@ -45,9 +45,18 @@ public:
 
     void release()
     {
-        glDeleteProgram(program);
-        glDeleteShader(vertex);
-        glDeleteShader(fragment);
+        if (program != 0) {
+            glDeleteProgram(program);
+            program = 0;
+        }
+        if (vertex != 0) {
+            glDeleteShader(vertex);
+            vertex = 0;
+        }
+        if (fragment != 0) {
+            glDeleteShader(fragment);
+            fragment = 0;
+        }
     }
 
     bool load_from_file(const char* vs_path, const char* fs_path)

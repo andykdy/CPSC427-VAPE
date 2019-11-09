@@ -16,6 +16,7 @@
 #include <Components/SpriteComponent.hpp>
 #include <Components/BoundaryComponent.hpp>
 #include <Components/HealthComponent.hpp>
+#include <Engine/GameEngine.hpp>
 
 // Same as static in c, local to compilation unit
 namespace
@@ -68,7 +69,7 @@ bool Player::init(vec2 screen, int hp)
 		return false;
 
 	if (!sprite->initTexture(&player_texture, spriteFrames, spriteWH, spriteWH))
-		throw std::runtime_error("Failed to initialize health sprite");
+		throw std::runtime_error("Failed to initialize player sprite");
 
 	// Setting initial values
 	motion->position = { screen.x / 2, screen.y - 100 };
@@ -93,8 +94,8 @@ void Player::destroy()
 	if (m_player_bullet_sound != nullptr)
 		Mix_FreeChunk(m_player_bullet_sound);
 
-	for (auto& bullet : bullets)
-		bullet.destroy();
+	for (auto bullet : bullets)
+		bullet->destroy();
 	bullets.clear();
 
 	auto* effect = getComponent<EffectComponent>();
@@ -112,7 +113,7 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 
 	// Update player bullets
 	for (auto& bullet : bullets)
-		bullet.update(ms);
+		bullet->update(ms);
 
 	// Spawning player bullets
 	m_bullet_cooldown -= ms;
@@ -160,8 +161,8 @@ void Player::draw(const mat3& projection)
     auto* sprite = getComponent<SpriteComponent>();
 
     // Draw player bullets
-    for (auto& bullet : bullets)
-        bullet.draw(projection);
+    for (auto bullet : bullets)
+        bullet->draw(projection);
 
 
     transform->begin();
@@ -261,8 +262,8 @@ void Player::light_up()
 
 void Player::spawn_bullet() {
     auto* motion = getComponent<MotionComponent>();
-	Bullet bullet;
-	if (bullet.init(motion->position, motion->radians + 3.14)) {
+	Bullet* bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
+	if (bullet->init(motion->position, motion->radians + 3.14)) {
 		bullets.emplace_back(bullet);
 	} else {
 		throw std::runtime_error("Failed to spawn bullet");

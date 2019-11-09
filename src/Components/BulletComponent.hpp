@@ -1,8 +1,0 @@
-//
-// Created by Cody on 10/17/2019.
-//
-
-#ifndef VAPE_BULLETCOMPONENT_HPP
-#define VAPE_BULLETCOMPONENT_HPP
-
-#endif //VAPE_BULLETCOMPONENT_HPP
