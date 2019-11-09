@@ -7,7 +7,9 @@
 
 #include <common.hpp>
 #include <Engine/ECS/Entity.hpp>
-#include <Entities/Projectiles and Damaging/bullet.hpp>
+#include <Entities/Projectiles and Damaging/Bullet.hpp>
+
+class Projectile;
 
 class Boss : public ECS::Entity { // TODO refactor to new entity
     // Shared between all turtles, no need to load one for each instance
@@ -39,13 +41,14 @@ public:
     // Returns the Boss' bounding box for collision detection, called by collides_with()
     virtual vec2 get_bounding_box() const = 0;
 
-    // TODO bullets / damaging objects superclass so that level can loop through them and check for collisions with player? or make new component/system
+    std::vector<Projectile*> projectiles;
 
     inline int getHealth() const { return health; };
 
     inline void addDamage(int damage) { health -= damage; };
 
     inline bool is_alive() {return m_is_alive;};
+
     inline void kill() { m_is_alive = false; };
 };
 

@@ -9,6 +9,7 @@
 
 class Turtle;
 class Fish;
+class Bullet;
 
 class Player : public ECS::Entity
 {

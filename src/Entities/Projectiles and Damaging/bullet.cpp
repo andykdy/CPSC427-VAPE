@@ -143,7 +143,7 @@ bool Bullet::collides_with(const Fish &fish) {
     return false;
 }
 
-bool Bullet::collides_with(const Boss1 &boss) {
+bool Bullet::collides_with(const Boss &boss) {
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
 
@@ -165,4 +165,9 @@ vec2 Bullet::get_bounding_box()const
     auto* physics = getComponent<PhysicsComponent>();
     // fabs is to avoid negative scale due to the facing direction
     return { std::fabs(physics->scale.x) * bullet_texture.width, std::fabs(physics->scale.y) * bullet_texture.height };
+}
+
+bool Bullet::isOffScreen(const vec2 &screen) {
+    float h = get_bounding_box().y / 2;
+    return (get_position().y - h > screen.y);
 }

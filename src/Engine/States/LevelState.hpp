@@ -62,9 +62,6 @@ private:
 
     void reset(vec2 screen);
 
-    // Generates a new turtle
-    bool spawn_turtle();
-
     // Tracks keys being pressed
     std::map<int, bool> keyMap;
 
@@ -79,7 +76,7 @@ private:
 
     // Game entities
     Player* m_player;
-    Boss1 m_boss;
+    Boss* m_boss;
     std::vector<Turtle*> *m_turtles;
 
     // UI
