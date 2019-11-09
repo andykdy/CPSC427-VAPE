@@ -291,4 +291,3 @@ int Player::get_health() const {
 	return getComponent<HealthComponent>()->get_health();
 }
 
-Player::Player(ECS::EntityId id) : Entity(id) {}

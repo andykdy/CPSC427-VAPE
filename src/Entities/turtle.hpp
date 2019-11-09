@@ -8,15 +8,13 @@ class Turtle : public ECS::Entity
 {
 	// Shared between all turtles, no need to load one for each instance
 	static Texture turtle_texture;
-
 public:
-	Turtle(ECS::EntityId id);
 
 // Creates all the associated render resources and default transform
 	bool init();
 
 	// Releases all the associated resources
-	void destroy();
+	void destroy() override;
 
 	// Update turtle due to current
 	// ms represents the number of milliseconds elapsed from the previous update() call

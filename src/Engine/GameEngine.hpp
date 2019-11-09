@@ -68,10 +68,6 @@ public:
 
     float getElapsed_ms() const;
 
-    GLuint getM_frame_buffer() const;
-
-    const Texture &getM_screen_tex() const;
-
     float getM_current_speed() const;
 
     void setM_current_speed(float m_current_speed);
@@ -90,11 +86,6 @@ private:
 
     //! The current loaded audio track
     Mix_Music * music{};
-
-    // Screen texture
-    // The draw loop first renders to this texture, then it is used for the water shader
-    GLuint m_frame_buffer{};
-    Texture m_screen_tex;
 
     ECS::EntityManager entityManager;
     ECS::SystemManager systemManager;

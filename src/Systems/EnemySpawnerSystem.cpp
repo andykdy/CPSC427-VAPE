@@ -31,5 +31,6 @@ std::vector<Turtle *> *EnemySpawnerSystem::getEnemies() {
 void EnemySpawnerSystem::reset() {
     level = Levels::level1; // TODO
     time = 0;
+    // TODO cleanup enemies
     enemies.clear();
 }
