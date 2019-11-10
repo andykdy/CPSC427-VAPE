@@ -2,15 +2,10 @@
 // Created by Cody on 9/2/2019.
 //
 
-#ifndef INC_436D_BULLET_H
-#define INC_436D_BULLET_H
+#ifndef VAPE_BULLET_HPP
+#define VAPE_BULLET_HPP
 
-
-#include "common.hpp"
-#include "../../Engine/ECS/ECS.hpp"
 #include "Projectile.hpp"
-#include "../turtle.hpp"
-#include "../fish.hpp"
 
 class Bullet : public Projectile {
     // Shared between all bullets, no need to load one for each instance
@@ -39,5 +34,4 @@ public:
 private:
 };
 
-
-#endif //INC_436D_BULLET_H
+#endif //VAPE_BULLET_HPP

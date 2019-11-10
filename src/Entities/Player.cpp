@@ -9,6 +9,7 @@
 #include <string>
 #include <algorithm>
 #include <cmath>
+
 #include <Components/TransformComponent.hpp>
 #include <Components/EffectComponent.hpp>
 #include <Components/MotionComponent.hpp>
@@ -17,6 +18,7 @@
 #include <Components/BoundaryComponent.hpp>
 #include <Components/HealthComponent.hpp>
 #include <Engine/GameEngine.hpp>
+#include "Entities/Projectiles and Damaging/bullet.hpp"
 
 // Same as static in c, local to compilation unit
 namespace
