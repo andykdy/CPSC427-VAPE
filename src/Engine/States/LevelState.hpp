@@ -80,7 +80,6 @@ private:
     Player* m_player;
     Boss* m_boss;
     std::vector<ECS::Entity*> *m_turtles;
-	std::vector<Prototype*>* m_prototypes;
 
     // UI
     UIPanel* m_uiPanel;
