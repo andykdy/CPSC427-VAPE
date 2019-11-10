@@ -115,6 +115,8 @@ bool Texture::load_from_file(const char* path)
 		return false;
 	
 	stbi_uc* data = stbi_load(path, &width, &height, NULL, 4);
+	if(stbi_failure_reason())
+		std::cout << stbi_failure_reason() << std::endl;
 	if (data == NULL)
 		return false;
 

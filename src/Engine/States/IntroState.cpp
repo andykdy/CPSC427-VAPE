@@ -1,35 +1,46 @@
 //
-// Created by Cody on 9/17/2019.
+// Created by Cody on 11/10/2019.
 //
 
 #include <sstream>
-#include <Levels/Levels.hpp>
-#include "MainMenuState.hpp"
-#include "LevelState.hpp"
-#include "TutorialState.hpp"
 #include "IntroState.hpp"
 
+void IntroState::init() {
+    m_background_music = Mix_LoadMUS(audio_path("intro.wav"));
 
-void MainMenuState::init() {
-    m_background_music = Mix_LoadMUS(audio_path("mainmenu.wav"));
+
+    if (m_background_music == nullptr)
+    {
+        fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
+                audio_path("intro.wav"));
+        throw std::runtime_error("Failed to load sounds");
+    }
 
     // Playing background music indefinitely
     Mix_PlayMusic(m_background_music, -1);
 
-    menu.init();
+    fprintf(stderr, "Loaded music\n");
+
+    // Get screen size
+    int w, h;
+    glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
+    vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
+
+    m_intro = &GameEngine::getInstance().getEntityManager()->addEntity<Intro>();
+    if (!m_intro->init(screen)) {
+        throw std::runtime_error("Failed to load intro");
+    }
 }
 
-void MainMenuState::terminate() {
+void IntroState::terminate() {
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
-    menu.destroy();
+    m_intro->destroy();
 }
 
-void MainMenuState::update(float ms) {
+void IntroState::update(float ms) {}
 
-}
-
-void MainMenuState::draw() {
+void IntroState::draw() {
     // Clearing error buffer
     gl_flush_errors();
 
@@ -64,39 +75,9 @@ void MainMenuState::draw() {
     float ty = -(top + bottom) / (top - bottom);
     mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
-    menu.draw(projection_2D);
+    m_intro->draw(projection_2D);
 
     //////////////////
     // Presenting
     glfwSwapBuffers(m_window);
-
-}
-
-void MainMenuState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
-    if (action == GLFW_RELEASE && key == GLFW_KEY_1)
-    {
-        GameEngine::getInstance().changeState(new LevelState(Levels::level1, 0));
-    }
-    if (action == GLFW_RELEASE && key == GLFW_KEY_2)
-    {
-        GameEngine::getInstance().changeState(new LevelState(Levels::level2, 0));
-    }
-}
-
-void MainMenuState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
-	mouse_position.x = xpos;
-	mouse_position.y = ypos;
-}
-
-void MainMenuState::on_mouse_button(GLFWwindow *window, int button, int action, int mods) {
-	if (mouse_position.x >= 200 && mouse_position.x <= 600 && mouse_position.y >= 600 && mouse_position.y <= 700) {
-		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-			GameEngine::getInstance().changeState(new IntroState());
-		}
-	}
-	if (mouse_position.x >= 280 && mouse_position.x <= 520 && mouse_position.y >= 740 && mouse_position.y <= 830) {
-		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-			GameEngine::getInstance().quit();
-		}
-	}
 }
