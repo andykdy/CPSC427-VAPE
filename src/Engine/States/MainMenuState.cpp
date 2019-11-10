@@ -3,6 +3,7 @@
 //
 
 #include <sstream>
+#include <Levels/Levels.hpp>
 #include "MainMenuState.hpp"
 #include "LevelState.hpp"
 #include "TutorialState.hpp"
@@ -71,6 +72,14 @@ void MainMenuState::draw() {
 }
 
 void MainMenuState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
+    if (action == GLFW_RELEASE && key == GLFW_KEY_1)
+    {
+        GameEngine::getInstance().changeState(new LevelState(Levels::level1, 0));
+    }
+    if (action == GLFW_RELEASE && key == GLFW_KEY_2)
+    {
+        GameEngine::getInstance().changeState(new LevelState(Levels::level2, 0));
+    }
 }
 
 void MainMenuState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {

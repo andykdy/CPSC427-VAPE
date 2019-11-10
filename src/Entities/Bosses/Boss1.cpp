@@ -51,18 +51,6 @@ bool Boss1::init(vec2 screen) {
     if (gl_has_errors())
         return false;
 
-
-
-    // Load shared texture
-    if (!boss1_texture.is_valid())
-    {
-        if (!boss1_texture.load_from_file(textures_path("boss1.png")))
-        {
-            fprintf(stderr, "Failed to load Boss1 texture!");
-            return false;
-        }
-    }
-
     motion->position = {0.f, 0.f };
     motion->radians = 3.14;
     m_speed = 350.f;

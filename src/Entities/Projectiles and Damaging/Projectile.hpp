@@ -12,7 +12,7 @@
 
 // Forward declarations
 class Player;
-class Boss1;
+class Boss;
 class Turtle;
 
 class Projectile : public ECS::Entity {
