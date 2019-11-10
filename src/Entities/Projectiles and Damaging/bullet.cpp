@@ -111,7 +111,7 @@ bool Bullet::collides_with(const Player &player) {
     return false;
 }
 
-bool Bullet::collides_with(const Turtle &turtle) {
+bool Bullet::collides_with(const Entity &turtle) {
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
 

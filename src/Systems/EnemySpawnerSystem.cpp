@@ -24,7 +24,7 @@ void EnemySpawnerSystem::update(float ms) {
     }
 }
 
-std::vector<Turtle *> *EnemySpawnerSystem::getEnemies() {
+std::vector<ECS::Entity *> *EnemySpawnerSystem::getEnemies() {
     return &enemies;
 }
 

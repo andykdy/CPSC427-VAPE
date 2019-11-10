@@ -56,6 +56,8 @@ namespace ECS {
         virtual void draw(const mat3& projection) {};
         virtual void destroy() { active = false; };
         virtual void collideWith(const char* typeName, const Entity& other) {};
+		virtual vec2 get_position()const { return  { 0.f,0.f }; };
+		virtual vec2 get_bounding_box()const { return  { 0.f,0.f }; };
 
         bool isActive() const { return active; };
 

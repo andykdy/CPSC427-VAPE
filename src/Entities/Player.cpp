@@ -179,7 +179,7 @@ void Player::draw(const mat3& projection)
 // This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
 // if the center point of either object is inside the other's bounding-box-circle. You don't
 // need to try to use this technique.
-bool Player::collides_with(const Turtle& turtle)
+bool Player::collides_with(const Entity& turtle)
 {
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
