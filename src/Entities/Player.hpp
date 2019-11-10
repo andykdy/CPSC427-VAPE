@@ -54,9 +54,6 @@ public:
 	// Gain health after draining an enemy in vamp mode
     void gain_health(float amount);
 
-    // Called when the salmon collides with a fish, starts lighting up the salmon
-	void light_up();
-
 	// Returns the bounding box for collision detection
 	vec2 get_bounding_box() const;
 

@@ -36,9 +36,7 @@ namespace
 
 LevelState::LevelState(Levels::Level level, unsigned int points) :
 m_level(level),
-m_points(points),
-m_next_turtle_spawn(0.f),
-m_next_fish_spawn(0.f)
+m_points(points)
 {
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
@@ -392,7 +390,7 @@ void LevelState::update(float ms) {
     // If salmon is dead, restart the game after the fading animation
     if (!m_player->is_alive() &&
         m_space.get_salmon_dead_time() > 5) {
-       reset(screen);
+       reset();
     }
     //std::cout << "updateend" << std::endl;
 }
@@ -408,7 +406,7 @@ void LevelState::draw() {
 
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss  << "FPS: " << 1.f / (GameEngine::getInstance().getElapsed_ms()/1000) << "		" << "Points: " << m_points;
+    title_ss << "Points: " << m_points;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
     // Clearing backbuffer
@@ -494,11 +492,7 @@ void LevelState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod
     // Resetting game
     if (action == GLFW_RELEASE && key == GLFW_KEY_R)
     {
-        // Get screen size
-        int w, h;
-        glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
-        vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
-        reset(screen);
+        reset();
     }
 }
 
@@ -512,33 +506,6 @@ void LevelState::on_mouse_button(GLFWwindow *window, int button, int action, int
     (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[button] = true : keyMap[button] = false;
 }
 
-void LevelState::reset(vec2 screen) {
-    m_vamp_mode = false;
-    m_player->destroy();
-    m_uiPanel->destroy();
-    m_health->destroy();
-    m_vamp.destroy();
-    m_explosion.destroy();
-    m_vamp_charge->destroy();
-    m_player->init(screen, INIT_HEALTH);
-    m_uiPanel->init(screen, screen.y*0.1f);
-    m_health->init({45, screen.y-50});
-    m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
-    m_vamp_mode_charge = 0;
-    m_boss->destroy();
-    m_level_time = 0;
-    m_boss_mode = false;
-    m_boss_pre = false;
-    for (auto turtle : *m_turtles) {
-        turtle->destroy();
-    }
-    m_turtles->clear();
-    m_explosion.init();
-    Mix_PlayMusic(m_background_music, -1);
-
-    m_space.reset_salmon_dead_time();
-    m_space.reset_boss_dead_time();
-    GameEngine::getInstance().setM_current_speed(1.f);
-
-    GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>().reset(m_level.timeline);
+void LevelState::reset() {
+    GameEngine::getInstance().changeState(new LevelState(m_level, 0));
 }
