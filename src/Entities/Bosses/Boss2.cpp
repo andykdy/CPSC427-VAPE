@@ -131,6 +131,19 @@ vec2 Boss2::get_bounding_box() const {
     return { std::fabs(physics->scale.x) * SPRITE_W, std::fabs(physics->scale.y) * SPRITE_H };
 }
 
+void Boss2::addDamage(int damage) {
+    // TODO damage indication
+    Boss::addDamage(damage);
+}
+
+bool Boss2::collidesWith(const Vamp& vamp) {
+    return checkCollision(vamp.get_position(), vamp.get_bounding_box());
+}
+
+bool Boss2::collidesWith(const Player &player) {
+    return checkCollision(player.get_position(), player.get_bounding_box());
+}
+
 bool Boss2::checkCollision(vec2 pos, vec2 box) const {
     // TODO replace with complex collision checking
     auto* motion = getComponent<MotionComponent>();

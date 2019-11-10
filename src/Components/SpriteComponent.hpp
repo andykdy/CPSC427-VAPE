@@ -87,7 +87,7 @@ public:
     }
 
 
-    void draw(mat3 projection, mat3 transform, GLuint program) {
+    void draw(mat3 projection, mat3 transform, GLuint program, vec3 colorvec = {1,1,1}) {
         // Setting shaders
         glUseProgram(program);
 
@@ -119,7 +119,7 @@ public:
 
         // Setting uniform values to the currently bound program
         glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
-        float color[] = { 1.f, 1.f, 1.f };
+        float color[] = { colorvec.x, colorvec.y, colorvec.z };
         glUniform3fv(color_uloc, 1, color);
         glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 

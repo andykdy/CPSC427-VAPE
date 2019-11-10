@@ -171,7 +171,11 @@ void Player::draw(const mat3& projection)
     transform->rotate(motion->radians);
     transform->end();
 
-    sprite->draw(projection, transform->out, effect->program);
+	float mod = 1;
+	if (m_iframe > 0)
+		mod = 1/m_iframe;
+
+	sprite->draw(projection, transform->out, effect->program, {1.f, mod * 1.f,mod * 1.f});
 }
 
 // TODO collisionSystem
@@ -252,12 +256,6 @@ void Player::lose_health(float amount)
 void Player::gain_health(float amount)
 {
 	getComponent<HealthComponent>()->gain_health(amount);
-}
-
-// Called when the salmon collides with a fish
-void Player::light_up()
-{
-	m_light_up_countdown_ms = 1500.f;
 }
 
 void Player::spawn_bullet() {

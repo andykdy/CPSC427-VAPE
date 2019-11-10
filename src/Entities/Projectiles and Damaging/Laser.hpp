@@ -5,7 +5,7 @@
 #ifndef VAPE_LASER_HPP
 #define VAPE_LASER_HPP
 
-
+/*
 #include "Projectile.hpp"
 
 class Laser : public Projectile {
@@ -47,6 +47,7 @@ public:
 
     bool isOffScreen(const vec2 &screen) override { return false; };
 };
+ */
 
 
 #endif //VAPE_LASER_HPP
