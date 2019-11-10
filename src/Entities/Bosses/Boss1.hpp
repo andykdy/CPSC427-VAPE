@@ -41,6 +41,8 @@ public:
     // Returns the Boss' bounding box for collision detection, called by collides_with()
     vec2 get_bounding_box() const override;
 
+    bool checkCollision(vec2 pos, vec2 box) const override;
+
 private:
     float m_speed;
     Direction dir; // Direction right or left

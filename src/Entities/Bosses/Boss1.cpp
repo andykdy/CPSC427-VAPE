@@ -191,3 +191,21 @@ void Boss1::spawnBullet() {
         throw std::runtime_error("Failed to spawn bullet");
     }
 }
+
+bool Boss1::checkCollision(vec2 pos, vec2 box) const {
+    auto* motion = getComponent<MotionComponent>();
+    auto* physics = getComponent<PhysicsComponent>();
+
+    vec2 bbox = this->get_bounding_box();
+
+    float dx = motion->position.x - pos.x;
+    float dy = motion->position.y - pos.y;
+    float d_sq = dx * dx + dy * dy;
+    float other_r = std::max(box.x, box.y);
+    float my_r = std::max(bbox.x, bbox.y);
+    float r = std::max(other_r, my_r);
+    r *= 0.6f;
+    if (d_sq < r * r)
+        return true;
+    return false;
+}
