@@ -20,7 +20,7 @@ public:
     void setHealth(int health);
 
 private:
-    int health;
+    int health = 1;
 };
 
 

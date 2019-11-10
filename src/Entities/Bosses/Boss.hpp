@@ -8,6 +8,7 @@
 #include <common.hpp>
 #include <Engine/ECS/Entity.hpp>
 #include "../Projectiles and Damaging/bullet.hpp"
+#include "../UI/BossHealth.hpp"
 
 class Projectile;
 
@@ -15,11 +16,12 @@ class Boss : public ECS::Entity { // TODO refactor to new entity
     // Shared between all turtles, no need to load one for each instance
     static Texture boss_texture;
 protected:
+    BossHealth* m_healthbar;
     int health = 1;
     bool m_is_alive = true;
 public:
     // Creates all the associated render resources and default transform
-    virtual bool init() = 0;
+    virtual bool init(vec2 screen) = 0;
 
     // Releases all the associated resources
     void destroy() override = 0;

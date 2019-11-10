@@ -32,10 +32,13 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CU
 
 set(SOURCE_FILES
     src/main.cpp
-    src/common.cpp
+    src/project_path.hpp
+    src/common.cpp src/common.hpp
+
     src/Engine/GameEngine.cpp
     src/Engine/GameEngine.hpp
     src/Engine/GameState.hpp
+
     src/Engine/States/LevelState.cpp
     src/Engine/States/LevelState.hpp
     src/Engine/States/MainMenuState.cpp
@@ -43,56 +46,68 @@ set(SOURCE_FILES
     src/Engine/States/TutorialState.cpp
     src/Engine/States/TutorialState.hpp
 
-    src/Entities/fish.cpp
-    src/Entities/Player.cpp
-    src/Entities/turtle.cpp
-    src/Entities/Space.cpp
-
-    src/project_path.hpp
-    src/common.hpp
-    src/Entities/fish.hpp
-    src/Entities/Player.hpp
-    src/Entities/turtle.hpp
-    src/Entities/Space.hpp
-    "src/Entities/Projectiles and Damaging/bullet.cpp"
-        "src/Entities/Projectiles and Damaging/bullet.hpp"
-        src/Entities/Bosses/Boss1.cpp
-    src/Entities/Bosses/Boss1.hpp
-    src/Entities/UI/Health.cpp
-    src/Entities/UI/Health.hpp
-    src/Entities/UI/Dialogue.cpp
-    src/Entities/UI/Dialogue.hpp
-    src/Entities/UI/Continue.cpp
-    src/Entities/UI/Continue.hpp
-    src/Entities/Vamp.cpp
-    src/Entities/Vamp.hpp
-    src/Entities/UI/VampCharge.cpp
-    src/Entities/UI/VampCharge.hpp
-
-    src/Components/MotionComponent.hpp
-    src/Components/PhysicsComponent.hpp
-    src/Components/EffectComponent.hpp
-    src/Components/SpriteComponent.hpp
-    src/Components/TransformComponent.hpp
     src/Engine/ECS/Component.hpp
     src/Engine/ECS/Entity.hpp
     src/Engine/ECS/EntityManager.cpp src/Engine/ECS/EntityManager.hpp
     src/Engine/ECS/System.hpp
     src/Engine/ECS/SystemManager.cpp src/Engine/ECS/SystemManager.hpp
     src/Engine/ECS/ECS.hpp
+
+    src/Entities/fish.cpp
+    src/Entities/Player.cpp
+    src/Entities/turtle.cpp
+    src/Entities/Space.cpp
+
+    src/Entities/fish.hpp
+    src/Entities/Player.hpp
+    src/Entities/turtle.hpp
+    src/Entities/Space.hpp
+    src/Entities/Vamp.cpp
+    src/Entities/Vamp.hpp
+    src/Entities/MainMenu.cpp src/Entities/MainMenu.hpp
+    src/Entities/Explosion.cpp src/Entities/Explosion.hpp
+
+    src/Entities/UI/Health.cpp
+    src/Entities/UI/Health.hpp
+    src/Entities/UI/Dialogue.cpp
+    src/Entities/UI/Dialogue.hpp
+    src/Entities/UI/Continue.cpp
+    src/Entities/UI/Continue.hpp
+    src/Entities/UI/VampCharge.cpp
+    src/Entities/UI/VampCharge.hpp
+    src/Entities/UI/UIPanel.cpp src/Entities/UI/UIPanel.hpp
+    src/Entities/UI/BossHealth.cpp src/Entities/UI/BossHealth.hpp
+    src/Entities/UI/BossHealthBar.cpp src/Entities/UI/BossHealthBar.hpp
+
+    "src/Entities/Projectiles and Damaging/Projectile.hpp"
+    "src/Entities/Projectiles and Damaging/bullet.cpp"
+    "src/Entities/Projectiles and Damaging/bullet.hpp"
+    "src/Entities/Projectiles and Damaging/Laser.cpp" "src/Entities/Projectiles and Damaging/Laser.hpp"
+
+    src/Entities/Bosses/Boss.hpp
+    src/Entities/Bosses/Boss1.cpp
+    src/Entities/Bosses/Boss1.hpp
+    src/Entities/Bosses/Boss2.cpp src/Entities/Bosses/Boss2.hpp
+
+    src/Components/MotionComponent.hpp
+    src/Components/PhysicsComponent.hpp
+    src/Components/EffectComponent.hpp
+    src/Components/SpriteComponent.hpp
+    src/Components/TransformComponent.hpp
     src/Components/MeshComponent.hpp
     src/Components/TextureComponent.hpp
     src/Components/HealthComponent.hpp
-    src/Systems/EnemySpawnerSystem.cpp
-    src/Systems/EnemySpawnerSystem.hpp
-        src/Systems/MotionSystem.cpp
-    src/Systems/MotionSystem.hpp
     src/Components/BoundaryComponent.hpp
     src/Components/EnemyComponent.hpp
+    src/Components/CollisionComponent.hpp
 
-    src/Levels/Level.hpp
-    src/Entities/MainMenu.cpp src/Entities/MainMenu.hpp
-    src/Entities/Explosion.cpp src/Entities/Explosion.hpp src/Entities/Bosses/Boss.hpp src/Components/CollisionComponent.hpp src/Systems/CollisionSystem.cpp src/Systems/CollisionSystem.hpp "src/Entities/Projectiles and Damaging/Laser.cpp" "src/Entities/Projectiles and Damaging/Laser.hpp" src/Entities/Bosses/Boss2.cpp src/Entities/Bosses/Boss2.hpp "src/Entities/Projectiles and Damaging/Projectile.hpp")
+    src/Systems/EnemySpawnerSystem.cpp
+    src/Systems/EnemySpawnerSystem.hpp
+    src/Systems/MotionSystem.cpp
+    src/Systems/MotionSystem.hpp
+    src/Systems/CollisionSystem.cpp src/Systems/CollisionSystem.hpp
+
+    src/Levels/Level.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
