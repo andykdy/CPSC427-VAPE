@@ -28,8 +28,8 @@ std::vector<Turtle *> *EnemySpawnerSystem::getEnemies() {
     return &enemies;
 }
 
-void EnemySpawnerSystem::reset() {
-    level = Levels::level1; // TODO
+void EnemySpawnerSystem::reset(Levels::Timeline levelTimeline) {
+    level = levelTimeline;
     time = 0;
     // TODO cleanup enemies
     enemies.clear();
