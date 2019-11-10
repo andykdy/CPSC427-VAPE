@@ -81,8 +81,10 @@ void LevelState::init() {
 
     m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
     m_player->init(screen, INIT_HEALTH);
+    m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
+    m_uiPanel->init(screen, screen.y * 0.1f);
     m_health = &GameEngine::getInstance().getEntityManager()->addEntity<Health>();
-    m_health->init({45, 60});
+    m_health->init({45, screen.y-50});
     m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
     m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
     m_vamp_mode_charge = 0;
@@ -91,7 +93,7 @@ void LevelState::init() {
     m_space.init();
     m_explosion.init();
     m_boss = &GameEngine::getInstance().getEntityManager()->addEntity<Boss1>();
-    m_boss->init();
+    m_boss->init(screen);
 
     m_space.set_position({screen.x/2, 0});
 
@@ -123,6 +125,7 @@ void LevelState::terminate() {
         turtle->destroy();
     }
 
+    m_uiPanel->destroy();
     m_health->destroy();
     m_vamp_charge->destroy();
     m_turtles->clear();
@@ -436,6 +439,7 @@ void LevelState::draw() {
     if (m_boss_mode) {
         m_boss->draw(projection_2D);
     }
+    m_uiPanel->draw(projection_2D);
     m_health->draw(projection_2D);
     m_vamp_charge->draw(projection_2D);
     m_dialogue.draw(projection_2D);
@@ -506,12 +510,14 @@ void LevelState::on_mouse_button(GLFWwindow *window, int button, int action, int
 void LevelState::reset(vec2 screen) {
     m_vamp_mode = false;
     m_player->destroy();
+    m_uiPanel->destroy();
     m_health->destroy();
     m_vamp.destroy();
     m_explosion.destroy();
     m_vamp_charge->destroy();
     m_player->init(screen, INIT_HEALTH);
-    m_health->init({45, 60});
+    m_uiPanel->init(screen, screen.y*0.1f);
+    m_health->init({45, screen.y-50});
     m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
     m_vamp_mode_charge = 0;
     m_boss->destroy();

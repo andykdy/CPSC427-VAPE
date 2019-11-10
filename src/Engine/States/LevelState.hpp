@@ -18,7 +18,7 @@
 #include "Entities/fish.hpp"
 #include "Entities/Space.hpp"
 #include "Entities/Projectiles and Damaging/bullet.hpp"
-#include "Entities/Dialogue.hpp"
+#include "Entities/UI/Dialogue.hpp"
 #include "Entities/UI/Health.hpp"
 #include "Entities/Explosion.hpp"
 
@@ -30,6 +30,7 @@
 #include <Entities/Vamp.hpp>
 #include <Entities/Bosses/Boss1.hpp>
 #include <Entities/UI/VampCharge.hpp>
+#include <Entities/UI/UIPanel.hpp>
 
 class LevelState : public GameState {
 public:
@@ -80,6 +81,7 @@ private:
     std::vector<Turtle*> *m_turtles;
 
     // UI
+    UIPanel* m_uiPanel;
     Health* m_health;
     VampCharge* m_vamp_charge;
 	Dialogue m_dialogue;

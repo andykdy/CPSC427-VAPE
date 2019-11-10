@@ -19,7 +19,7 @@ class Boss1 : public Boss {
 
 public:
     // Creates all the associated render resources and default transform
-    bool init() override;
+    bool init(vec2 screen) override;
 
     // Releases all the associated resources
     void destroy() override;
