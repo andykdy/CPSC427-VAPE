@@ -36,6 +36,8 @@ public:
     // Returns the Boss' bounding box for collision detection, called by collides_with()
     vec2 get_bounding_box() const override;
 
+    bool collidesWith(Vamp vamp) override;
+
 private:
 
 };

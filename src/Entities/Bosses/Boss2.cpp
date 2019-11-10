@@ -130,3 +130,22 @@ vec2 Boss2::get_bounding_box() const {
     // fabs is to avoid negative scale due to the facing direction.
     return { std::fabs(physics->scale.x) * SPRITE_W, std::fabs(physics->scale.y) * SPRITE_H };
 }
+
+bool Boss2::collidesWith(Vamp vamp) {
+    // TODO replace with complex
+    auto* motion = getComponent<MotionComponent>();
+    auto* physics = getComponent<PhysicsComponent>();
+
+    vec2 bbox = this->get_bounding_box();
+    vec2 vpos = vamp.get_position();
+    vec2 vbox = vamp.get_bounding_box();
+
+    float dx = motion->position.x - vpos.x;
+    float dy = motion->position.y - vpos.y;
+    float d_sq = dx * dx + dy * dy;
+    float other_r = std::max(vbox.x, vbox.y);
+    float my_r = std::max(bbox.x, bbox.y);
+    float r = std::max(other_r, my_r);
+    r *= 0.6f;
+    return d_sq < r * r;
+}

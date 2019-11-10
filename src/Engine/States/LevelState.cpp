@@ -103,6 +103,7 @@ void LevelState::init() {
     auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
     spawn.reset(m_level.timeline);
     m_turtles = spawn.getEnemies(); // TODO, probably just get rid of m_turtles, pull from spawn system when needed
+    GameEngine::getInstance().setM_current_speed(1.f);
     //std::cout << "initEnd" << std::endl;
 }
 
@@ -341,52 +342,59 @@ void LevelState::update(float ms) {
             m_boss->kill();
             m_points += 100;
             m_space.set_boss_dead();
-        }
+        } else {
+            if (m_vamp_mode && m_boss->collidesWith(m_vamp)) {
+                // TODO sound effect, etc
+                // TODO vamp mode adjustments, timer for this, etc
+                m_boss->addDamage(VAMP_HEAL);
+                add_health(VAMP_HEAL);
+            }
 
-        auto& bossBullets = m_boss->projectiles;
+            auto& bossBullets = m_boss->projectiles;
 
-        // Checking Enemy Bullet - Player collisions
-        auto boss_bullet_it = bossBullets.begin();
-        while (boss_bullet_it != bossBullets.end()) {
-            if ((*boss_bullet_it)->collides_with(*m_player))
-            {
-                (*boss_bullet_it)->destroy();
-                boss_bullet_it = bossBullets.erase(boss_bullet_it);
-                if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
-                    m_player->set_iframes(500.f);
-                    lose_health(DAMAGE_BOSS);
+            // Checking Enemy Bullet - Player collisions
+            auto boss_bullet_it = bossBullets.begin();
+            while (boss_bullet_it != bossBullets.end()) {
+                if ((*boss_bullet_it)->collides_with(*m_player))
+                {
+                    (*boss_bullet_it)->destroy();
+                    boss_bullet_it = bossBullets.erase(boss_bullet_it);
+                    if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
+                        m_player->set_iframes(500.f);
+                        lose_health(DAMAGE_BOSS);
+                    }
+                    break;
+                } else {
+                    ++boss_bullet_it;
                 }
-                break;
-            } else {
-                ++boss_bullet_it;
             }
-        }
 
-        // Removing out of screen bullets
-        // TODO move into boss class?
-        boss_bullet_it = bossBullets.begin();
-        while(boss_bullet_it != bossBullets.end()) {
-            if ((*boss_bullet_it)->isOffScreen(screen))
+            // Removing out of screen bullets
+            // TODO move into boss class?
+            boss_bullet_it = bossBullets.begin();
+            while(boss_bullet_it != bossBullets.end()) {
+                if ((*boss_bullet_it)->isOffScreen(screen))
+                {
+                    (*boss_bullet_it)->destroy();
+                    boss_bullet_it = bossBullets.erase(boss_bullet_it);
+                    continue;
+                } else {
+                    ++boss_bullet_it;
+                }
+            }
+
+            m_boss->update(ms);
+
+            // If boss dies, return to main menu
+            if (m_boss->getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
             {
-                (*boss_bullet_it)->destroy();
-                boss_bullet_it = bossBullets.erase(boss_bullet_it);
-                continue;
-            } else {
-                ++boss_bullet_it;
+                if (m_level.nextLevel != nullptr) {
+                    GameEngine::getInstance().changeState(new LevelState(*m_level.nextLevel, m_points));
+                } else {
+                    GameEngine::getInstance().changeState(new MainMenuState());
+                }
+                return;
             }
-        }
-
-        m_boss->update(ms);
-
-        // If boss dies, return to main menu
-        if (m_boss->getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
-        {
-            if (m_level.nextLevel != nullptr) {
-                GameEngine::getInstance().changeState(new LevelState(*m_level.nextLevel, m_points));
-            } else {
-                GameEngine::getInstance().changeState(new MainMenuState());
-            }
-			return;
         }
     }
 

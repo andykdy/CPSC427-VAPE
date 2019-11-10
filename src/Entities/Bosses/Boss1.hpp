@@ -43,6 +43,8 @@ public:
 
     void addDamage(int damage) override;
 
+    bool collidesWith(Vamp vamp) override;
+
 private:
     float m_speed;
     Direction dir; // Direction right or left

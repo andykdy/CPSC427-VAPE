@@ -7,6 +7,7 @@
 
 #include <common.hpp>
 #include <Engine/ECS/Entity.hpp>
+#include <Entities/Vamp.hpp>
 #include "../Projectiles and Damaging/bullet.hpp"
 #include "../UI/BossHealth.hpp"
 
@@ -52,6 +53,8 @@ public:
     inline bool is_alive() {return m_is_alive;};
 
     inline void kill() { m_is_alive = false; };
+
+    virtual bool collidesWith(Vamp vamp) = 0;
 };
 
 #endif //VAPE_BOSS_HPP
