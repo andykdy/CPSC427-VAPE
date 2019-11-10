@@ -16,6 +16,7 @@ namespace
 {
     const size_t BURST_COOLDOWN_MS = 800;
     const size_t BULLET_COOLDOWN_MS = 100;
+    const size_t DAMAGE_EFFECT_TIME = 100;
     const size_t INIT_HEALTH = 100;
 }
 
@@ -91,6 +92,7 @@ void Boss1::destroy() {
 
 void Boss1::update(float ms) {
     m_healthbar->setHealth(health);
+    m_damage_effect_cooldown -= ms;
 
     // Update bullets
     for (auto bullet : projectiles)
@@ -171,7 +173,11 @@ void Boss1::draw(const mat3 &projection) {
     transform->rotate(motion->radians);
     transform->end();
 
-    sprite->draw(projection, transform->out, effect->program);
+    float mod = 1;
+    if (m_damage_effect_cooldown > 0)
+        mod = 1/m_damage_effect_cooldown;
+
+    sprite->draw(projection, transform->out, effect->program, {1.f, mod * 1.f,mod * 1.f});
 
     m_healthbar->draw(projection);
 }
@@ -201,4 +207,9 @@ void Boss1::spawnBullet() {
     } else {
         throw std::runtime_error("Failed to spawn bullet");
     }
+}
+
+void Boss1::addDamage(int damage) {
+    m_damage_effect_cooldown = DAMAGE_EFFECT_TIME;
+    Boss::addDamage(damage);
 }

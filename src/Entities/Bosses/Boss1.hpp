@@ -41,12 +41,15 @@ public:
     // Returns the Boss' bounding box for collision detection, called by collides_with()
     vec2 get_bounding_box() const override;
 
+    void addDamage(int damage) override;
+
 private:
     float m_speed;
     Direction dir; // Direction right or left
     unsigned int m_burst_count;
     float m_burst_cooldown;
     float m_bullet_cooldown;
+    float m_damage_effect_cooldown;
 
     // Alternate update functions to run depending on state
     void state1Update(float ms);

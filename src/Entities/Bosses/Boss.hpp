@@ -47,7 +47,7 @@ public:
 
     inline int getHealth() const { return health; };
 
-    inline void addDamage(int damage) { health -= damage; };
+    virtual inline void addDamage(int damage) { health -= damage; };
 
     inline bool is_alive() {return m_is_alive;};
 
