@@ -45,6 +45,8 @@ public:
 
     bool collidesWith(Vamp vamp) override;
 
+    bool checkCollision(vec2 pos, vec2 box) const override;
+
 private:
     float m_speed;
     Direction dir; // Direction right or left

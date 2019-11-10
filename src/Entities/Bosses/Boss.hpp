@@ -13,6 +13,11 @@
 
 class Projectile;
 
+enum collisionType {
+    radius,
+    exact
+};
+
 class Boss : public ECS::Entity { // TODO refactor to new entity
     // Shared between all turtles, no need to load one for each instance
     static Texture boss_texture;
@@ -43,6 +48,8 @@ public:
 
     // Returns the Boss' bounding box for collision detection, called by collides_with()
     virtual vec2 get_bounding_box() const = 0;
+
+    virtual bool checkCollision(vec2 pos, vec2 box) const = 0;
 
     std::vector<Projectile*> projectiles;
 
