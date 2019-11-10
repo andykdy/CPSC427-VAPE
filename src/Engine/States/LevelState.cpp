@@ -384,6 +384,8 @@ void LevelState::update(float ms) {
             if (m_level.nextLevel != nullptr) {
                 GameEngine::getInstance().changeState(new LevelState(*m_level.nextLevel, m_points));
             } else {
+                // TODO save m_points to a leaderboard?
+                // TODO go to Epilogue state
                 GameEngine::getInstance().changeState(new MainMenuState());
             }
 			return;
