@@ -14,6 +14,7 @@
 // Same as static in c, local to compilation unit
 namespace
 {
+    const size_t BURST_COOLDOWN_MS = 800;
     const size_t BULLET_COOLDOWN_MS = 100;
     const size_t INIT_HEALTH = 100;
 }
@@ -62,6 +63,10 @@ bool Boss1::init(vec2 screen) {
 
     health = INIT_HEALTH;
     m_is_alive = true;
+
+    m_burst_count = 0;
+    m_burst_cooldown = BURST_COOLDOWN_MS;
+    m_bullet_cooldown = 0;
 
     int randomVal = rand() % 2;
     dir = (randomVal == 0 ? Direction::right : Direction::left);
@@ -122,10 +127,16 @@ void Boss1::state1Update(float ms) {
     motion->position.x = newX;
 
     // shoot
-    m_bullet_cooldown -= ms;
-    if (m_bullet_cooldown < 0.f) {
-        int randomVal = rand() % 100;
-        if (randomVal < 2) {// TODO untie from framerate. Chance depends on framerate
+    if (m_burst_cooldown > 0) {
+        m_burst_cooldown -= ms;
+    } else {
+        if (m_burst_count >= 3) {
+            m_burst_count = 0;
+            m_burst_cooldown = BURST_COOLDOWN_MS;
+        } else if (m_bullet_cooldown > 0) {
+            m_bullet_cooldown -= ms;
+        } else {
+            ++m_burst_count;
             m_bullet_cooldown = BULLET_COOLDOWN_MS;
             spawnBullet();
             // TODO play sound
