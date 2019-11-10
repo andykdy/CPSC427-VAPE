@@ -7,10 +7,18 @@
 
 #include <common.hpp>
 #include <Engine/ECS/Entity.hpp>
-#include "../Projectiles and Damaging/bullet.hpp"
+#include <Entities/Vamp.hpp>
+#include "../Projectiles and Damaging/Projectile.hpp"
 #include "../UI/BossHealth.hpp"
 
+// Forward Declarations
 class Projectile;
+class Player;
+
+enum collisionType {
+    radius,
+    exact
+};
 
 class Boss : public ECS::Entity { // TODO refactor to new entity
     // Shared between all turtles, no need to load one for each instance
@@ -43,15 +51,21 @@ public:
     // Returns the Boss' bounding box for collision detection, called by collides_with()
     virtual vec2 get_bounding_box() const = 0;
 
+    virtual bool checkCollision(vec2 pos, vec2 box) const = 0;
+
     std::vector<Projectile*> projectiles;
 
     inline int getHealth() const { return health; };
 
-    inline void addDamage(int damage) { health -= damage; };
+    virtual inline void addDamage(int damage) { health -= damage; };
 
     inline bool is_alive() {return m_is_alive;};
 
     inline void kill() { m_is_alive = false; };
+
+    virtual bool collidesWith(const Vamp& vamp) = 0;
+
+    virtual bool collidesWith(const Player& player) = 0;
 };
 
 #endif //VAPE_BOSS_HPP

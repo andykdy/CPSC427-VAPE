@@ -280,8 +280,7 @@ void TutorialState::update(float ms) {
 	// TODO move into player code? do same thing for boss/enemy bullets?
 	bullet_it = playerBullets.begin();
 	while (bullet_it != playerBullets.end()) {
-		float h = (*bullet_it)->get_bounding_box().y / 2;
-		if ((*bullet_it)->get_position().y + h < 0.f)
+		if ((*bullet_it)->isOffScreen(screen))
 		{
             (*bullet_it)->destroy();
 			bullet_it = playerBullets.erase(bullet_it);
@@ -309,7 +308,7 @@ void TutorialState::draw() {
 
 	// Updating window title with points
 	std::stringstream title_ss;
-	title_ss  << "FPS: " << 1.f / (GameEngine::getInstance().getElapsed_ms()/1000) << "		" << "Points: " << m_points;
+	title_ss  << "Points: " << m_points;
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
 	// Clearing backbuffer

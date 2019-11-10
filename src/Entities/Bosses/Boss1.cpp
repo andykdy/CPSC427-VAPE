@@ -14,7 +14,9 @@
 // Same as static in c, local to compilation unit
 namespace
 {
+    const size_t BURST_COOLDOWN_MS = 800;
     const size_t BULLET_COOLDOWN_MS = 100;
+    const size_t DAMAGE_EFFECT_TIME = 100;
     const size_t INIT_HEALTH = 100;
 }
 
@@ -63,6 +65,10 @@ bool Boss1::init(vec2 screen) {
     health = INIT_HEALTH;
     m_is_alive = true;
 
+    m_burst_count = 0;
+    m_burst_cooldown = BURST_COOLDOWN_MS;
+    m_bullet_cooldown = 0;
+
     int randomVal = rand() % 2;
     dir = (randomVal == 0 ? Direction::right : Direction::left);
 
@@ -86,6 +92,7 @@ void Boss1::destroy() {
 
 void Boss1::update(float ms) {
     m_healthbar->setHealth(health);
+    m_damage_effect_cooldown -= ms;
 
     // Update bullets
     for (auto bullet : projectiles)
@@ -122,10 +129,16 @@ void Boss1::state1Update(float ms) {
     motion->position.x = newX;
 
     // shoot
-    m_bullet_cooldown -= ms;
-    if (m_bullet_cooldown < 0.f) {
-        int randomVal = rand() % 100;
-        if (randomVal < 2) {// TODO untie from framerate. Chance depends on framerate
+    if (m_burst_cooldown > 0) {
+        m_burst_cooldown -= ms;
+    } else {
+        if (m_burst_count >= 3) {
+            m_burst_count = 0;
+            m_burst_cooldown = BURST_COOLDOWN_MS;
+        } else if (m_bullet_cooldown > 0) {
+            m_bullet_cooldown -= ms;
+        } else {
+            ++m_burst_count;
             m_bullet_cooldown = BULLET_COOLDOWN_MS;
             spawnBullet();
             // TODO play sound
@@ -160,7 +173,11 @@ void Boss1::draw(const mat3 &projection) {
     transform->rotate(motion->radians);
     transform->end();
 
-    sprite->draw(projection, transform->out, effect->program);
+    float mod = 1;
+    if (m_damage_effect_cooldown > 0)
+        mod = 1/m_damage_effect_cooldown;
+
+    sprite->draw(projection, transform->out, effect->program, {1.f, mod * 1.f,mod * 1.f});
 
     m_healthbar->draw(projection);
 }
@@ -190,4 +207,35 @@ void Boss1::spawnBullet() {
     } else {
         throw std::runtime_error("Failed to spawn bullet");
     }
+}
+
+void Boss1::addDamage(int damage) {
+    m_damage_effect_cooldown = DAMAGE_EFFECT_TIME;
+    Boss::addDamage(damage);
+}
+
+bool Boss1::collidesWith(const Vamp& vamp) {
+    return checkCollision(vamp.get_position(), vamp.get_bounding_box());
+}
+
+bool Boss1::collidesWith(const Player &player) {
+    return checkCollision(player.get_position(), player.get_bounding_box());
+}
+
+bool Boss1::checkCollision(vec2 pos, vec2 box) const {
+    auto* motion = getComponent<MotionComponent>();
+    auto* physics = getComponent<PhysicsComponent>();
+
+    vec2 bbox = this->get_bounding_box();
+
+    float dx = motion->position.x - pos.x;
+    float dy = motion->position.y - pos.y;
+    float d_sq = dx * dx + dy * dy;
+    float other_r = std::max(box.x, box.y);
+    float my_r = std::max(bbox.x, bbox.y);
+    float r = std::max(other_r, my_r);
+    r *= 0.6f;
+    if (d_sq < r * r)
+        return true;
+    return false;
 }

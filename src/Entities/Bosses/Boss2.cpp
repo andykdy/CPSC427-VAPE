@@ -48,7 +48,7 @@ bool Boss2::init(vec2 screen) {
         return false;
 
     if (!sprite->initTexture(&boss2_texture, SPRITE_FRAMES, SPRITE_W, SPRITE_H))
-        throw std::runtime_error("Failed to initialize bullet sprite");
+        throw std::runtime_error("Failed to initialize boss2 sprite");
 
     if (gl_has_errors())
         return false;
@@ -129,4 +129,34 @@ vec2 Boss2::get_bounding_box() const {
     // Returns the local bounding coordinates scaled by the current size of the turtle
     // fabs is to avoid negative scale due to the facing direction.
     return { std::fabs(physics->scale.x) * SPRITE_W, std::fabs(physics->scale.y) * SPRITE_H };
+}
+
+void Boss2::addDamage(int damage) {
+    // TODO damage indication
+    Boss::addDamage(damage);
+}
+
+bool Boss2::collidesWith(const Vamp& vamp) {
+    return checkCollision(vamp.get_position(), vamp.get_bounding_box());
+}
+
+bool Boss2::collidesWith(const Player &player) {
+    return checkCollision(player.get_position(), player.get_bounding_box());
+}
+
+bool Boss2::checkCollision(vec2 pos, vec2 box) const {
+    // TODO replace with complex collision checking
+    auto* motion = getComponent<MotionComponent>();
+    auto* physics = getComponent<PhysicsComponent>();
+
+    float dx = motion->position.x - pos.x;
+    float dy = motion->position.y - pos.y;
+    float d_sq = dx * dx + dy * dy;
+    float other_r = std::max(box.x, box.y);
+    float my_r = std::max(physics->scale.x, physics->scale.y);
+    float r = std::max(other_r, my_r);
+    r *= 0.6f;
+    if (d_sq < r * r)
+        return true;
+    return false;
 }

@@ -36,9 +36,7 @@ namespace
 
 LevelState::LevelState(Levels::Level level, unsigned int points) :
 m_level(level),
-m_points(points),
-m_next_turtle_spawn(0.f),
-m_next_fish_spawn(0.f)
+m_points(points)
 {
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
@@ -103,6 +101,7 @@ void LevelState::init() {
     auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
     spawn.reset(m_level.timeline);
     m_turtles = spawn.getEnemies(); // TODO, probably just get rid of m_turtles, pull from spawn system when needed
+    GameEngine::getInstance().setM_current_speed(1.f);
     //std::cout << "initEnd" << std::endl;
 }
 
@@ -299,30 +298,11 @@ void LevelState::update(float ms) {
         }
     }
 
-    // Spawning new turtles
-    m_next_turtle_spawn -= ms;
-    /*
-    if (m_spawn_enemies && m_turtles->size() <= MAX_TURTLES && m_next_turtle_spawn < 0.f)
-    {
-        if (!spawn_turtle())
-            throw std::runtime_error("Failed spawn turtle");
-
-        Turtle* new_turtle = m_turtles->back();
-
-        // Setting random initial position
-        new_turtle->set_position({ 50 + m_dist(m_rng) * (screen.x - 100), -150 });
-
-        // Next spawn
-        m_next_turtle_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS/2);
-    }
-     */
-
     // Removing out of screen bullets
     // TODO move into player code? do same thing for boss/enemy bullets?
     bullet_it = playerBullets.begin();
     while(bullet_it != playerBullets.end()) {
-        float h = (*bullet_it)->get_bounding_box().y / 2;
-        if ((*bullet_it)->get_position().y + h < 0.f)
+        if ((*bullet_it)->isOffScreen(screen))
         {
             (*bullet_it)->destroy();
             bullet_it = playerBullets.erase(bullet_it);
@@ -341,59 +321,77 @@ void LevelState::update(float ms) {
             m_boss->kill();
             m_points += 100;
             m_space.set_boss_dead();
-        }
+        } else {
+            // Player/Boss collision
+            if (m_player->is_alive() && m_boss->collidesWith(*m_player) && m_player->get_iframes() <= 0.f) {
+                m_player->set_iframes(500.f);
+                lose_health(DAMAGE_ENEMY);
+                Mix_PlayChannel(-1, m_player_explosion, 0);
+                // TODO Knockback?
+            }
 
-        auto& bossBullets = m_boss->projectiles;
+            // Vamp/Boss collision
+            if (m_vamp_mode && m_boss->collidesWith(m_vamp)) {
+                // TODO sound effect, etc
+                // TODO vamp mode adjustments, timer for this, etc
+                m_boss->addDamage(VAMP_HEAL);
+                add_health(VAMP_HEAL);
+            }
 
-        // Checking Enemy Bullet - Player collisions
-        auto boss_bullet_it = bossBullets.begin();
-        while (boss_bullet_it != bossBullets.end()) {
-            if ((*boss_bullet_it)->collides_with(*m_player))
-            {
-                (*boss_bullet_it)->destroy();
-                boss_bullet_it = bossBullets.erase(boss_bullet_it);
-                if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
-                    m_player->set_iframes(500.f);
-                    lose_health(DAMAGE_BOSS);
+            auto& bossBullets = m_boss->projectiles;
+
+            // Checking Enemy Bullet - Player collisions
+            auto boss_bullet_it = bossBullets.begin();
+            while (boss_bullet_it != bossBullets.end()) {
+                if ((*boss_bullet_it)->collides_with(*m_player))
+                {
+                    (*boss_bullet_it)->destroy();
+                    boss_bullet_it = bossBullets.erase(boss_bullet_it);
+                    if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
+                        m_player->set_iframes(500.f);
+                        lose_health(DAMAGE_BOSS);
+                    }
+                    break;
+                } else {
+                    ++boss_bullet_it;
                 }
-                break;
-            } else {
-                ++boss_bullet_it;
             }
-        }
 
-        // Removing out of screen bullets
-        // TODO move into boss class?
-        boss_bullet_it = bossBullets.begin();
-        while(boss_bullet_it != bossBullets.end()) {
-            if ((*boss_bullet_it)->isOffScreen(screen))
+            // Removing out of screen bullets
+            // TODO move into boss class?
+            boss_bullet_it = bossBullets.begin();
+            while(boss_bullet_it != bossBullets.end()) {
+                if ((*boss_bullet_it)->isOffScreen(screen))
+                {
+                    (*boss_bullet_it)->destroy();
+                    boss_bullet_it = bossBullets.erase(boss_bullet_it);
+                    continue;
+                } else {
+                    ++boss_bullet_it;
+                }
+            }
+
+            m_boss->update(ms);
+
+            // If boss dies, return to main menu
+            if (m_boss->getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
             {
-                (*boss_bullet_it)->destroy();
-                boss_bullet_it = bossBullets.erase(boss_bullet_it);
-                continue;
-            } else {
-                ++boss_bullet_it;
+                if (m_level.nextLevel != nullptr) {
+                    GameEngine::getInstance().changeState(new LevelState(*m_level.nextLevel, m_points));
+                } else {
+                // TODO save m_points to a leaderboard?
+                // TODO go to Epilogue state
+                    GameEngine::getInstance().changeState(new MainMenuState());
+                }
+                return;
             }
-        }
-
-        m_boss->update(ms);
-
-        // If boss dies, return to main menu
-        if (m_boss->getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
-        {
-            if (m_level.nextLevel != nullptr) {
-                GameEngine::getInstance().changeState(new LevelState(*m_level.nextLevel, m_points));
-            } else {
-                GameEngine::getInstance().changeState(new MainMenuState());
-            }
-			return;
         }
     }
 
     // If salmon is dead, restart the game after the fading animation
     if (!m_player->is_alive() &&
         m_space.get_salmon_dead_time() > 5) {
-       reset(screen);
+       reset();
     }
     //std::cout << "updateend" << std::endl;
 }
@@ -409,7 +407,7 @@ void LevelState::draw() {
 
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss  << "FPS: " << 1.f / (GameEngine::getInstance().getElapsed_ms()/1000) << "		" << "Points: " << m_points;
+    title_ss << "Points: " << m_points;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
     // Clearing backbuffer
@@ -495,11 +493,7 @@ void LevelState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod
     // Resetting game
     if (action == GLFW_RELEASE && key == GLFW_KEY_R)
     {
-        // Get screen size
-        int w, h;
-        glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
-        vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
-        reset(screen);
+        reset();
     }
 }
 
@@ -513,33 +507,6 @@ void LevelState::on_mouse_button(GLFWwindow *window, int button, int action, int
     (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[button] = true : keyMap[button] = false;
 }
 
-void LevelState::reset(vec2 screen) {
-    m_vamp_mode = false;
-    m_player->destroy();
-    m_uiPanel->destroy();
-    m_health->destroy();
-    m_vamp.destroy();
-    m_explosion.destroy();
-    m_vamp_charge->destroy();
-    m_player->init(screen, INIT_HEALTH);
-    m_uiPanel->init(screen, screen.y*0.1f);
-    m_health->init({45, screen.y-50});
-    m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
-    m_vamp_mode_charge = 0;
-    m_boss->destroy();
-    m_level_time = 0;
-    m_boss_mode = false;
-    m_boss_pre = false;
-    for (auto turtle : *m_turtles) {
-        turtle->destroy();
-    }
-    m_turtles->clear();
-    m_explosion.init();
-    Mix_PlayMusic(m_background_music, -1);
-
-    m_space.reset_salmon_dead_time();
-    m_space.reset_boss_dead_time();
-    GameEngine::getInstance().setM_current_speed(1.f);
-
-    GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>().reset(m_level.timeline);
+void LevelState::reset() {
+    GameEngine::getInstance().changeState(new LevelState(m_level, 0));
 }

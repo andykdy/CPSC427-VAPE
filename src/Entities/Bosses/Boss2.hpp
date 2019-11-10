@@ -36,6 +36,14 @@ public:
     // Returns the Boss' bounding box for collision detection, called by collides_with()
     vec2 get_bounding_box() const override;
 
+    void addDamage(int damage) override;
+
+    bool collidesWith(const Vamp& vamp) override;
+
+    bool collidesWith(const Player &player) override;
+
+    bool checkCollision(vec2 pos, vec2 box) const override;
+
 private:
 
 };

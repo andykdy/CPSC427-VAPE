@@ -64,7 +64,7 @@ private:
 
     void add_vamp_charge();
 
-    void reset(vec2 screen);
+    void reset();
 
     // Tracks keys being pressed
     std::map<int, bool> keyMap;
@@ -90,8 +90,6 @@ private:
 	Dialogue m_dialogue;
 
     float m_level_time;
-    float m_next_turtle_spawn;
-    float m_next_fish_spawn;
 
     bool m_boss_pre;
     bool m_boss_mode;

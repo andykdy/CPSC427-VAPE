@@ -144,31 +144,7 @@ bool Bullet::collides_with(const Fish &fish) {
 }
 
 bool Bullet::collides_with(const Boss &boss) {
-    auto* motion = getComponent<MotionComponent>();
-    auto* physics = getComponent<PhysicsComponent>();
-
-    /* TODO different collision detection, as the radius method doesn't work well for non-square bosses
-    vec2 bulPos = get_position();
-    vec2 bulBox = get_bounding_box();
-    vec2 bossPos = boss.get_position();
-    vec2 bossBox = boss.get_bounding_box();
-
-    return ((bulPos.x < bossPos.x + bossBox.x) &&
-            (bulPos.x + bulBox.x > bossPos.x) &&
-            (bulPos.y < bossPos.y + bossBox.y) &&
-            (bulPos.y + bulBox.y > bossPos.y));
-            */
-
-    float dx = motion->position.x - boss.get_position().x;
-    float dy = motion->position.y - boss.get_position().y;
-    float d_sq = dx * dx + dy * dy;
-    float other_r = std::max(boss.get_bounding_box().x, boss.get_bounding_box().y);
-    float my_r = std::max(physics->scale.x, physics->scale.y);
-    float r = std::max(other_r, my_r);
-    r *= 0.6f;
-    if (d_sq < r * r)
-        return true;
-    return false;
+    return boss.checkCollision(get_position(), get_bounding_box());
 }
 
 // Returns the local bounding coordinates scaled by the current size of the turtle
