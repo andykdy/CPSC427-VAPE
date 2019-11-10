@@ -13,6 +13,7 @@
 #include <Systems/EnemySpawnerSystem.hpp>
 #include <iostream>
 #include <Systems/CollisionSystem.hpp>
+#include <Entities/Bosses/Boss2.hpp>
 
 #include "LevelState.hpp"
 #include "MainMenuState.hpp"
@@ -29,13 +30,13 @@ namespace
     const size_t INIT_HEALTH = 50;
     const size_t DAMAGE_ENEMY = 5;
     const size_t DAMAGE_BOSS = 5;
-	const size_t BOSS_TIME = 70000;
     const size_t VAMP_HEAL = 2;
 }
 
 
-LevelState::LevelState() :
-m_points(0),
+LevelState::LevelState(Levels::Level level, unsigned int points) :
+m_level(level),
+m_points(points),
 m_next_turtle_spawn(0.f),
 m_next_fish_spawn(0.f)
 {
@@ -45,8 +46,8 @@ m_next_fish_spawn(0.f)
 
 void LevelState::init() {
     //std::cout << "init" << std::endl;
-    m_background_music = Mix_LoadMUS(audio_path("music.wav"));
-    m_boss_music = Mix_LoadMUS(audio_path("music_boss1.wav"));
+    m_background_music = Mix_LoadMUS(m_level.backgroundMusic);
+    m_boss_music = Mix_LoadMUS(m_level.bossMusic);
     m_victory_music = Mix_LoadMUS(audio_path("music_victory.wav"));
     m_player_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav"));
     m_player_eat_sound = Mix_LoadWAV(audio_path("salmon_eat.wav"));
@@ -88,19 +89,19 @@ void LevelState::init() {
     m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
     m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
     m_vamp_mode_charge = 0;
-	m_dialogue.init("Boss1Dialogue.png");
+	m_dialogue.init(m_level.bossDialogue);
 	m_dialogue.deactivate();
-    m_space.init();
+    m_space.init(m_level.backgroundTexture);
     m_explosion.init();
-    m_boss = &GameEngine::getInstance().getEntityManager()->addEntity<Boss1>();
+    m_boss = m_level.spawnBoss(GameEngine::getInstance().getEntityManager());
     m_boss->init(screen);
 
     m_space.set_position({screen.x/2, 0});
 
     GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
-    GameEngine::getInstance().getSystemManager()->addSystem<CollisionSystem>();
-    EnemySpawnerSystem& spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
-    spawn.reset();
+    // GameEngine::getInstance().getSystemManager()->addSystem<CollisionSystem>();
+    auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
+    spawn.reset(m_level.timeline);
     m_turtles = spawn.getEnemies(); // TODO, probably just get rid of m_turtles, pull from spawn system when needed
     //std::cout << "initEnd" << std::endl;
 }
@@ -133,6 +134,7 @@ void LevelState::terminate() {
         m_boss->destroy();
 	m_dialogue.destroy();
 	m_explosion.destroy();
+	m_space.destroy();
 }
 
 void LevelState::update(float ms) {
@@ -144,13 +146,13 @@ void LevelState::update(float ms) {
     m_level_time += ms;
 
     // To prepare for the boss, stop spawning enemies and change the music
-    if (m_level_time >= BOSS_TIME - 5000 && !m_boss_pre) {
+    if (m_level_time >= m_level.bossTime - 5000 && !m_boss_pre) {
         Mix_PlayMusic(m_boss_music, -1);
 		m_dialogue.activate();
         m_boss_pre = true;
     }
     // Spawn the boss
-    if (m_level_time >= BOSS_TIME && !m_boss_mode) {
+    if (m_level_time >= m_level.bossTime && !m_boss_mode) {
 		m_dialogue.deactivate();
         m_boss_mode = true;
         m_boss->set_position({static_cast<float>(w/2), static_cast<float>(h/10)});
@@ -379,7 +381,11 @@ void LevelState::update(float ms) {
         // If boss dies, return to main menu
         if (m_boss->getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
         {
-            GameEngine::getInstance().changeState(new MainMenuState());
+            if (m_level.nextLevel != nullptr) {
+                GameEngine::getInstance().changeState(new LevelState(*m_level.nextLevel, m_points));
+            } else {
+                GameEngine::getInstance().changeState(new MainMenuState());
+            }
 			return;
         }
     }
@@ -535,5 +541,5 @@ void LevelState::reset(vec2 screen) {
     m_space.reset_boss_dead_time();
     GameEngine::getInstance().setM_current_speed(1.f);
 
-    GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>().reset();
+    GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>().reset(m_level.timeline);
 }

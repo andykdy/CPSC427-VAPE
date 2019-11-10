@@ -82,7 +82,7 @@ void TutorialState::init() {
 
     m_space.set_position({screen.x/2, 0});
 
-	m_space.init();
+	m_space.init(textures_path("space_bg.png"));
 	m_dialogue.init("TutorialText.png");
 	m_continue_UI.init();
 	m_current_cmp = initial;
@@ -118,6 +118,7 @@ void TutorialState::terminate() {
 	m_dialogue.destroy();
 	m_explosion.destroy();
 	m_continue_UI.destroy();
+	m_space.destroy();
 }
 
 void TutorialState::update(float ms) {
@@ -427,7 +428,7 @@ void TutorialState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
 			m_continue_UI.set_activity(false);
 		}
 		if (m_current_cmp == clear) {
-			GameEngine::getInstance().changeState(new LevelState());
+			GameEngine::getInstance().changeState(new LevelState(Levels::level1, 0));
 		}
 	}
 

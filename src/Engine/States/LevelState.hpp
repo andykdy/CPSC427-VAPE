@@ -21,6 +21,7 @@
 #include "Entities/UI/Dialogue.hpp"
 #include "Entities/UI/Health.hpp"
 #include "Entities/Explosion.hpp"
+#include "Levels/level.hpp"
 
 // stlib
 #include <vector>
@@ -35,7 +36,7 @@
 class LevelState : public GameState {
 public:
     //! Constructor, taking in gameplay options
-    LevelState();
+    explicit LevelState(Levels::Level level, unsigned int points);
 
     //! Initializes the state
     void init() override;
@@ -56,6 +57,8 @@ public:
     void on_mouse_button(GLFWwindow *window, int button, int action, int mods) override;
 
 private:
+    Levels::Level m_level;
+
     void lose_health(int damage);
     void add_health(int heal);
 

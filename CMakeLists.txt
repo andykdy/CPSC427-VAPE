@@ -107,7 +107,7 @@ set(SOURCE_FILES
     src/Systems/MotionSystem.hpp
     src/Systems/CollisionSystem.cpp src/Systems/CollisionSystem.hpp
 
-    src/Levels/Level.hpp)
+    src/Levels/Level.hpp src/Levels/Waves.hpp src/Levels/Level1.hpp src/Levels/Levels.hpp src/Levels/Level2.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
