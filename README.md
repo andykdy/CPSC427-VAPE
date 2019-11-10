@@ -1,5 +1,5 @@
 #  CPSC427 2019 Winter 1
-![Image of logo](https://raw.github.students.cs.ubc.ca/CPSC427/vape_nation/master/data/textures/logo.png?token=AAABKUTAWTJ2BS3LG3YOITS5WO4WI)
+![Image of logo](data/textures/logo.png)
 # V.A.P.E. Nation (Vampire Astronaut Pirate Escape Nation)
 
 - Andrea Park 45168151
