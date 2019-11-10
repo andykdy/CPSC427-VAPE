@@ -12,6 +12,7 @@
 #include "../UI/BossHealth.hpp"
 
 class Projectile;
+class Player;
 
 enum collisionType {
     radius,
@@ -61,7 +62,9 @@ public:
 
     inline void kill() { m_is_alive = false; };
 
-    virtual bool collidesWith(Vamp vamp) = 0;
+    virtual bool collidesWith(const Vamp& vamp) = 0;
+
+    virtual bool collidesWith(const Player& player) = 0;
 };
 
 #endif //VAPE_BOSS_HPP

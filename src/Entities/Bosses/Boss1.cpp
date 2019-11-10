@@ -214,24 +214,13 @@ void Boss1::addDamage(int damage) {
     Boss::addDamage(damage);
 }
 
-bool Boss1::collidesWith(Vamp vamp) {
-    auto* motion = getComponent<MotionComponent>();
-    auto* physics = getComponent<PhysicsComponent>();
-
-    vec2 bbox = this->get_bounding_box();
-    vec2 vpos = vamp.get_position();
-    vec2 vbox = vamp.get_bounding_box();
-
-    float dx = motion->position.x - vpos.x;
-    float dy = motion->position.y - vpos.y;
-    float d_sq = dx * dx + dy * dy;
-    float other_r = std::max(vbox.x, vbox.y);
-    float my_r = std::max(bbox.x, bbox.y);
-    float r = std::max(other_r, my_r);
-    r *= 0.6f;
-    return d_sq < r * r;
+bool Boss1::collidesWith(const Vamp& vamp) {
+    return checkCollision(vamp.get_position(), vamp.get_bounding_box());
 }
 
+bool Boss1::collidesWith(const Player &player) {
+    return checkCollision(player.get_position(), player.get_bounding_box());
+}
 
 bool Boss1::checkCollision(vec2 pos, vec2 box) const {
     auto* motion = getComponent<MotionComponent>();

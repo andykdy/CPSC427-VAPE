@@ -300,24 +300,6 @@ void LevelState::update(float ms) {
         }
     }
 
-    // Spawning new turtles
-    m_next_turtle_spawn -= ms;
-    /*
-    if (m_spawn_enemies && m_turtles->size() <= MAX_TURTLES && m_next_turtle_spawn < 0.f)
-    {
-        if (!spawn_turtle())
-            throw std::runtime_error("Failed spawn turtle");
-
-        Turtle* new_turtle = m_turtles->back();
-
-        // Setting random initial position
-        new_turtle->set_position({ 50 + m_dist(m_rng) * (screen.x - 100), -150 });
-
-        // Next spawn
-        m_next_turtle_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS/2);
-    }
-     */
-
     // Removing out of screen bullets
     // TODO move into player code? do same thing for boss/enemy bullets?
     bullet_it = playerBullets.begin();
@@ -343,6 +325,15 @@ void LevelState::update(float ms) {
             m_points += 100;
             m_space.set_boss_dead();
         } else {
+            // Player/Boss collision
+            if (m_player->is_alive() && m_boss->collidesWith(*m_player) && m_player->get_iframes() <= 0.f) {
+                m_player->set_iframes(500.f);
+                lose_health(DAMAGE_ENEMY);
+                Mix_PlayChannel(-1, m_player_explosion, 0);
+                // TODO Knockback?
+            }
+
+            // Vamp/Boss collision
             if (m_vamp_mode && m_boss->collidesWith(m_vamp)) {
                 // TODO sound effect, etc
                 // TODO vamp mode adjustments, timer for this, etc

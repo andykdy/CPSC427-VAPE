@@ -43,7 +43,9 @@ public:
 
     void addDamage(int damage) override;
 
-    bool collidesWith(Vamp vamp) override;
+    bool collidesWith(const Vamp& vamp) override;
+
+    bool collidesWith(const Player &player) override;
 
     bool checkCollision(vec2 pos, vec2 box) const override;
 

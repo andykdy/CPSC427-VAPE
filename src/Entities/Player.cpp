@@ -246,6 +246,7 @@ bool Player::is_alive() const
 // Called when the player collides with an enemy
 void Player::lose_health(float amount)
 {
+	// TODO damage effect similar to boss?
 	getComponent<HealthComponent>()->lose_health(amount);
 }
 
