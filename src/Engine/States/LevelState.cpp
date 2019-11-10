@@ -125,10 +125,15 @@ void LevelState::terminate() {
         turtle->destroy();
     }
 
+    for (auto& pickup : m_pickups) {
+        pickup->destroy();
+    }
+
     m_uiPanel->destroy();
     m_health->destroy();
     m_vamp_charge->destroy();
     m_turtles->clear();
+    m_pickups.clear();
     if (m_boss != nullptr)
         m_boss->destroy();
 	m_dialogue.destroy();
@@ -181,6 +186,16 @@ void LevelState::update(float ms) {
 			turtle_it++;
 		}
     }
+
+    // Check Pickup Collisions
+    auto pickup_it = m_pickups.begin();
+	while (pickup_it != m_pickups.end()) {
+	    if ((*pickup_it)->collides_with(*m_player)) {
+            (*pickup_it)->applyEffect(*this);
+            (*pickup_it)->destroy();
+            pickup_it = m_pickups.erase(pickup_it);
+	    }
+	}
 
     // Checking Player Bullet - Enemy collisions
     auto& playerBullets = m_player->bullets;
