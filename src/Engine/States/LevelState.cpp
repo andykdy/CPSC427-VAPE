@@ -302,8 +302,7 @@ void LevelState::update(float ms) {
     // TODO move into player code? do same thing for boss/enemy bullets?
     bullet_it = playerBullets.begin();
     while(bullet_it != playerBullets.end()) {
-        float h = (*bullet_it)->get_bounding_box().y / 2;
-        if ((*bullet_it)->get_position().y + h < 0.f)
+        if ((*bullet_it)->isOffScreen(screen))
         {
             (*bullet_it)->destroy();
             bullet_it = playerBullets.erase(bullet_it);

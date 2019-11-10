@@ -48,7 +48,7 @@ bool Boss2::init(vec2 screen) {
         return false;
 
     if (!sprite->initTexture(&boss2_texture, SPRITE_FRAMES, SPRITE_W, SPRITE_H))
-        throw std::runtime_error("Failed to initialize bullet sprite");
+        throw std::runtime_error("Failed to initialize boss2 sprite");
 
     if (gl_has_errors())
         return false;

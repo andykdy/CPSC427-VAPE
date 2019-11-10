@@ -8,9 +8,10 @@
 #include <common.hpp>
 #include <Engine/ECS/Entity.hpp>
 #include <Entities/Vamp.hpp>
-#include "../Projectiles and Damaging/bullet.hpp"
+#include "../Projectiles and Damaging/Projectile.hpp"
 #include "../UI/BossHealth.hpp"
 
+// Forward Declarations
 class Projectile;
 class Player;
 
