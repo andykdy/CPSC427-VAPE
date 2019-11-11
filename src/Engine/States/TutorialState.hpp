@@ -16,7 +16,7 @@
 #include "Entities/turtle.hpp"
 #include "Entities/Space.hpp"
 #include "Entities/Projectiles and Damaging/bullet.hpp"
-#include "Entities/UI/Health.hpp"
+#include "Entities/UI/PlayerHealth/Health.hpp"
 #include "Entities/UI/Dialogue.hpp"
 #include "Entities/UI/Continue.hpp"
 
@@ -26,7 +26,7 @@
 
 #include <Engine/GameState.hpp>
 #include <Entities/Vamp.hpp>
-#include <Entities/UI/VampCharge.hpp>
+#include <Entities/UI/Vamp/VampCharge.hpp>
 #include <Entities/Explosion.hpp>
 #include <Entities/UI/UIPanel.hpp>
 
@@ -68,7 +68,7 @@ private:
 	void lose_health(int damage);
 	void add_health(int heal);
 
-	void reset(vec2 screen);
+	void reset();
 
 	// Generates a new turtle
 	bool spawn_turtle();

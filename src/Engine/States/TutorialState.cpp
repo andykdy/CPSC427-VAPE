@@ -293,7 +293,7 @@ void TutorialState::update(float ms) {
 	// If salmon is dead, restart the game after the fading animation
 	if (!m_player->is_alive() &&
 		m_space.get_salmon_dead_time() > 5) {
-		reset(screen);
+		reset();
 	}
 }
 
@@ -404,11 +404,7 @@ void TutorialState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
 	{
-		// Get screen size
-		int w, h;
-		glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
-		vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
-		reset(screen);
+		return reset();
 	}
 	if (m_current_cmp == movement) {
 		if (keyMap[GLFW_KEY_W]) m_mvmt_checklist[0] = true;
@@ -444,28 +440,6 @@ void TutorialState::on_mouse_button(GLFWwindow *window, int button, int action, 
 	(action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[button] = true : keyMap[button] = false;
 }
 
-void TutorialState::reset(vec2 screen) {
-	m_player->destroy();
-	m_uiPanel->destroy();
-	m_health->destroy();
-	m_vamp.destroy();
-	m_vamp_charge->destroy();
-	m_player->init(screen, INIT_HEALTH);
-	m_uiPanel->init(screen, screen.y*0.1f);
-    m_health->init({45, screen.y-60});
-    m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
-    for (auto& turtle : m_turtles)
-    	turtle->destroy();
-	m_turtles.clear();
-	Mix_PlayMusic(m_background_music, -1);
-	m_mvmt_checklist[0] = false;
-	m_mvmt_checklist[1] = false;
-	m_mvmt_checklist[2] = false;
-	m_mvmt_checklist[3] = false;
-	m_current_cmp = initial;
-
-	m_explosion.init();
-	m_space.reset_salmon_dead_time();
-	m_space.reset_boss_dead_time();
-	GameEngine::getInstance().setM_current_speed(1.f);
+void TutorialState::reset() {
+	GameEngine::getInstance().changeState(new TutorialState());
 }

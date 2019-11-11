@@ -9,11 +9,19 @@
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
 #include <Components/SpriteComponent.hpp>
+#include <Engine/GameEngine.hpp>
 #include "Health.hpp"
 
 Texture Health::health_point_texture;
 
 bool Health::init(vec2 position) {
+
+    m_bar = &GameEngine::getInstance().getEntityManager()->addEntity<HealthBar>();
+    m_bar->init(position); // TODO
+
+    m_icon = &GameEngine::getInstance().getEntityManager()->addEntity<HealthIcon>();
+    m_icon->init({position.x + 500,position.y}); // TODO
+
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
     auto* physics = addComponent<PhysicsComponent>();
@@ -46,6 +54,11 @@ void Health::update(float ms) {
 }
 
 void Health::draw(const mat3 &projection) {
+    if (m_bar != nullptr)
+        m_bar->draw(projection);
+    if (m_icon != nullptr)
+        m_icon->draw(projection);
+
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
     auto* motion = getComponent<MotionComponent>();
@@ -68,6 +81,11 @@ void Health::draw(const mat3 &projection) {
 }
 
 void Health::destroy() {
+    if (m_bar != nullptr)
+        m_bar->destroy();
+    if (m_icon != nullptr)
+        m_icon->destroy();
+
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();
 
