@@ -5,6 +5,7 @@
 #ifndef VAPE_BOSSHEALTHBAR_HPP
 #define VAPE_BOSSHEALTHBAR_HPP
 
+// Contains the bar surrounding/behind the actual health, managed by BossHealth
 
 #include <Engine/ECS/Entity.hpp>
 
@@ -19,7 +20,7 @@ public:
 
     vec2 getSize() { return m_size; };
 private:
-    vec2 m_size = {100, 100}; // TODO temp
+    vec2 m_size = {0, 0};
 };
 
 
