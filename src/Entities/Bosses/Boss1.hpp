@@ -56,6 +56,7 @@ private:
     float m_burst_cooldown;
     float m_bullet_cooldown;
     float m_damage_effect_cooldown;
+    float m_direction_cooldown;
 
     // Alternate update functions to run depending on state
     void state1Update(float ms);
