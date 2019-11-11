@@ -16,7 +16,6 @@
 #include <Entities/MainMenu.hpp>
 
 class MainMenuState : public GameState{
-    static Texture bg_texture;
 public:
     void init() override;
 

@@ -7,6 +7,7 @@
 #include "MainMenuState.hpp"
 #include "LevelState.hpp"
 #include "TutorialState.hpp"
+#include "IntroState.hpp"
 
 
 void MainMenuState::init() {
@@ -90,8 +91,7 @@ void MainMenuState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) 
 void MainMenuState::on_mouse_button(GLFWwindow *window, int button, int action, int mods) {
 	if (mouse_position.x >= 200 && mouse_position.x <= 600 && mouse_position.y >= 600 && mouse_position.y <= 700) {
 		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-		    // TODO Epilogue state
-			GameEngine::getInstance().changeState(new TutorialState());
+			GameEngine::getInstance().changeState(new IntroState());
 		}
 	}
 	if (mouse_position.x >= 280 && mouse_position.x <= 520 && mouse_position.y >= 740 && mouse_position.y <= 830) {
