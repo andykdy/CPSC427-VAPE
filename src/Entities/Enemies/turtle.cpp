@@ -44,7 +44,7 @@ bool Turtle::init()
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
-	physics->scale = { -0.33f, 0.33f };
+	physics->scale = { -0.28f, 0.28f };
 
 	return true;
 }
