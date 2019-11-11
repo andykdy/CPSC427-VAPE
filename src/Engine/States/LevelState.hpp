@@ -19,7 +19,7 @@
 #include "Entities/Space.hpp"
 #include "Entities/Projectiles and Damaging/bullet.hpp"
 #include "Entities/UI/Dialogue.hpp"
-#include "Entities/UI/Health.hpp"
+#include "Entities/UI/PlayerHealth/Health.hpp"
 #include "Entities/Explosion.hpp"
 #include "Levels/level.hpp"
 
@@ -30,7 +30,7 @@
 #include <Engine/GameState.hpp>
 #include <Entities/Vamp.hpp>
 #include <Entities/Bosses/Boss1.hpp>
-#include <Entities/UI/VampCharge.hpp>
+#include <Entities/UI/Vamp/VampCharge.hpp>
 #include <Entities/UI/UIPanel.hpp>
 #include <Entities/Pickups/Pickup.hpp>
 

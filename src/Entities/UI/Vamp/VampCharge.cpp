@@ -8,12 +8,21 @@
 #include <Components/PhysicsComponent.hpp>
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
+#include <Engine/GameEngine.hpp>
 #include "VampCharge.hpp"
 
 
 Texture VampCharge::vamp_charge_texture;
 
 bool VampCharge::init(vec2 position) {
+
+    m_bar = &GameEngine::getInstance().getEntityManager()->addEntity<VampBar>();
+    m_bar->init(position); // TODO
+
+    m_icon = &GameEngine::getInstance().getEntityManager()->addEntity<VampIcon>();
+    m_icon->init({position.x +200 ,position.y + 50});
+    // m_icon->init({position.x + 50,position.y}); // TODO
+
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
     auto* physics = addComponent<PhysicsComponent>();
@@ -51,6 +60,11 @@ void VampCharge::update(float ms) {
 }
 
 void VampCharge::draw(const mat3 &projection) {
+    if (m_bar != nullptr)
+        m_bar->draw(projection);
+    if (m_icon != nullptr)
+        m_icon->draw(projection);
+
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
 
@@ -78,6 +92,11 @@ void VampCharge::draw(const mat3 &projection) {
 }
 
 void VampCharge::destroy() {
+    if (m_bar != nullptr)
+        m_bar->destroy();
+    if (m_icon != nullptr)
+        m_icon->destroy();
+
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();
 

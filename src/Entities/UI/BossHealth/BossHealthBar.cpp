@@ -5,43 +5,35 @@
 #include <Components/TransformComponent.hpp>
 #include <Components/EffectComponent.hpp>
 #include <Components/MeshComponent.hpp>
-#include <Engine/GameEngine.hpp>
-#include "BossHealth.hpp"
+#include "BossHealthBar.hpp"
 
-bool BossHealth::init(vec2 screen, int maxHealth) {
+bool BossHealthBar::init(vec2 screen) {
     auto* transform = addComponent<TransformComponent>();
     auto* effect = addComponent<EffectComponent>();
     auto* mesh = addComponent<MeshComponent>();
-
-    m_bar = &GameEngine::getInstance().getEntityManager()->addEntity<BossHealthBar>();
-    m_bar->init(screen);
-    vec2 barsize = m_bar->getSize();
-    // TODO: Health bar 'particles' for instanced drawing, or solid bar?
-    float w = barsize.x * 0.99f / maxHealth; // width of health bar * 0.95, divided by health
-    float h = barsize.y * 0.9f; // TODO, height of health bar * 0.9
-    float wr = w * 0.5f;
-    float hr = h * 0.5f;
 
     // Clearing errors
     gl_flush_errors();
 
     // Allocate Vertex Data Buffer
-    // TexturedVertex vertexData[totalSprites * 4];
+//		TexturedVertex vertexData[totalSprites * 4];
     glGenBuffers(1, &mesh->vbo);
 
     // Allocate Index Buffer
     glGenBuffers(1, &mesh->ibo);
 
 
+    float height = 20; // TODO
+
     Vertex vertices[4];
-    vertices[0].position = {0, +hr, -0.02f};
-    vertices[0].color = {1.f, 0.2f, 0.2f};
-    vertices[1].position = {w, +hr, -0.02f};
-    vertices[1].color = {1.f, 0.2f, 0.2f};
-    vertices[2].position = {w, -hr, -0.02f};
-    vertices[2].color = {1.f, 0.2f, 0.2f};
-    vertices[3].position = {0, -hr, -0.02f};
-    vertices[3].color = {1.f, 0.2f, 0.2f};
+    vertices[0].position = {0, height, -0.02f};
+    vertices[0].color = {0,0,0};
+    vertices[1].position = {screen.x, height, -0.02f};
+    vertices[1].color = {0,0,0};
+    vertices[2].position = {screen.x, 0, -0.02f};
+    vertices[2].color = {0,0,0};
+    vertices[3].position = {0, 0, -0.02f};
+    vertices[3].color = {0,0,0};
     uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
 
     // Clearing errors
@@ -63,19 +55,13 @@ bool BossHealth::init(vec2 screen, int maxHealth) {
     if (gl_has_errors())
         return false;
 
-    m_screen = screen;
-    m_health = maxHealth;
+    m_size = {screen.x, height};
 
     // Loading shaders
     return effect->load_from_file(shader_path("coloured.vs.glsl"), shader_path("coloured.fs.glsl"));
 }
 
-void BossHealth::draw(const mat3 &projection) {
-    if (m_bar != nullptr)
-        m_bar->draw(projection);
-
-    if (m_health <= 0)
-        return;
+void BossHealthBar::draw(const mat3 &projection) {
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
     auto* mesh = getComponent<MeshComponent>();
@@ -83,11 +69,10 @@ void BossHealth::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     transform->begin();
-    transform->translate({m_bar->getSize().x*0.005f, m_bar->getSize().y/2});
+    transform->translate({0,0});
     transform->rotate(0);
-    transform->scale({(float)m_health,1});
+    transform->scale({1,1});
     transform->end();
-
 
     // Setting shaders
     glUseProgram(effect->program);
@@ -113,7 +98,7 @@ void BossHealth::draw(const mat3 &projection) {
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform->out);
-    float c[] = { 1.f, 0.2f, 0.2f };
+    float c[] = { 0, 0, 0 };
     glUniform3fv(color_uloc, 1, c);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
@@ -121,17 +106,8 @@ void BossHealth::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void BossHealth::destroy() {
-    if (m_bar != nullptr)
-        m_bar->destroy();
-
-    auto* effect = getComponent<EffectComponent>();
+void BossHealthBar::destroy() {
     auto* mesh = getComponent<MeshComponent>();
-    effect->release();
     mesh->release();
-    Entity::destroy();
-}
-
-void BossHealth::setHealth(int health) {
-    m_health = health;
+    ECS::Entity::destroy();
 }
