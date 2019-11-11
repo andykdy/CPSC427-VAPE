@@ -21,8 +21,8 @@ bool Vamp::init(vec2 position) {
     }
 
     // The position corresponds to the center of the texture
-    float wr = vamp_texture.width * 0.5f;
-    float hr = vamp_texture.height * 0.5f;
+    float wr = vamp_texture.width * 0.35f;
+    float hr = vamp_texture.height * 0.35f;
 
     TexturedVertex vertices[4];
     vertices[0].position = { -wr, +hr, -0.05f };
@@ -146,7 +146,7 @@ bool Vamp::collides_with(const Turtle &turtle) {
     float dy = m_position.y - turtle.get_position().y;
     float d_sq = dx * dx + dy * dy;
     float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
-    float my_r = std::max(vamp_texture.width * m_scale.x * 0.8f,  vamp_texture.height * m_scale.y * 0.8f);
+    float my_r = std::max(vamp_texture.width * m_scale.x * 0.55f,  vamp_texture.height * m_scale.y * 0.55f);
     float r = std::max(other_r, my_r);
     r *= 0.6f;
     if (d_sq < r * r)

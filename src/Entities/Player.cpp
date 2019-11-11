@@ -78,7 +78,7 @@ bool Player::init(vec2 screen, int hp)
 	motion->radians = 0.f;
 	motion->maxVelocity = 400.f;
 	motion->friction = 0.1;
-	physics->scale = { -0.40, 0.40 };
+	physics->scale = { -0.30, 0.30 };
 
 
 	m_light_up_countdown_ms = -1.f;
