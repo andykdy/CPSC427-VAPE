@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include "IntroState.hpp"
+#include "TutorialState.hpp"
 
 void IntroState::init() {
     m_background_music = Mix_LoadMUS(audio_path("intro.wav"));
@@ -38,7 +39,7 @@ void IntroState::terminate() {
     m_intro->destroy();
 }
 
-void IntroState::update(float ms) {}
+void IntroState::update(float ms) { m_intro->update(ms); }
 
 void IntroState::draw() {
     // Clearing error buffer
@@ -80,4 +81,11 @@ void IntroState::draw() {
     //////////////////
     // Presenting
     glfwSwapBuffers(m_window);
+}
+
+void IntroState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
+    if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER)
+    {
+        GameEngine::getInstance().changeState(new TutorialState());
+    }
 }

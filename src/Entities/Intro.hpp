@@ -17,7 +17,8 @@ public:
 
 private:
     int m_part = 0;
-    std::vector<Texture> introTextures;
+    float m_timer;
+    std::vector<Texture*> introTextures;
 };
 
 

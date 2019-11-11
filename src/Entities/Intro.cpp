@@ -14,9 +14,8 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-
+    const size_t DELAY = 10000;
 }
-
 
 bool Intro::init(vec2 screen) {
     auto* sprite = addComponent<SpriteComponent>();
@@ -29,36 +28,30 @@ bool Intro::init(vec2 screen) {
     std::vector<std::string> paths = {
         textures_path("intro/intro1.png"),
         textures_path("intro/intro2.png"),
-        textures_path("intro/intro3.png"),
-        textures_path("intro/intro4.png"),
-        textures_path("intro/intro5.png"),
-        textures_path("intro/intro6.png"),
-        textures_path("intro/intro7.png"),
     };
     for (auto& path : paths) {
-        Texture t;
-        if (!t.load_from_file(path.c_str()))
-        {
+        introTextures.emplace_back(new Texture());
+        if (!introTextures.back()->load_from_file(path.c_str())) {
             fprintf(stderr, "Failed to load the intro texture!");
-            return false;
+            return false;;
         }
-        introTextures.push_back(t);
     }
 
     // Loading shaders
     if (!effect->load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
 
-    if (!sprite->initTexture(&introTextures.front(), 100, 800, 1000))
+    if (!sprite->initTexture(introTextures.front()))
         throw std::runtime_error("Failed to initialize player sprite");
 
     // Setting initial values
     motion->position = { screen.x / 2, screen.y /2 };
+    m_timer = DELAY;
 
     return true;
 }
 
-void Intro::update(float ms) {}
+void Intro::update(float ms) { m_timer -= ms; }
 
 void Intro::draw(const mat3 &projection) {
     auto* transform = getComponent<TransformComponent>();
@@ -69,15 +62,17 @@ void Intro::draw(const mat3 &projection) {
     transform->begin();
     transform->translate(motion->position);
     transform->scale({1,1});
-    transform->rotate(motion->radians);
+    transform->rotate(0);
     transform->end();
 
     sprite->draw(projection, transform->out, effect->program);
 
-    if (sprite->hasLooped()) {
+    // if (sprite->hasLooped()) {
+    if (m_timer <= 0) {
         ++m_part;
         if (m_part < introTextures.size()) {
-            sprite->initTexture(&introTextures[m_part], 100,800,1000);
+            sprite->initTexture(introTextures[m_part]);
+            m_timer = DELAY;
         } else {
             GameEngine::getInstance().changeState(new TutorialState());
         }
@@ -91,8 +86,8 @@ void Intro::destroy() {
     effect->release();
     sprite->release();
 
-    for (auto& tex : introTextures)
-        tex.invalidate();
+    for (auto tex : introTextures)
+        delete tex;
     introTextures.clear();
 
     ECS::Entity::destroy();

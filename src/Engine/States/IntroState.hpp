@@ -19,7 +19,7 @@ public:
 
     void draw() override;
 
-    void on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) override {};
+    void on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) override;
 
     void on_mouse_move(GLFWwindow *window, double xpos, double ypos) override {};
 
