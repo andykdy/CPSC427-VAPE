@@ -14,14 +14,15 @@
 // internal
 #include "common.hpp"
 #include "Entities/Player.hpp"
-#include "Entities/turtle.hpp"
+#include "Entities/Enemies/turtle.hpp"
+//#include "Entities/Prototype.hpp"
 #include "Entities/fish.hpp"
 #include "Entities/Space.hpp"
 #include "Entities/Projectiles and Damaging/bullet.hpp"
 #include "Entities/UI/Dialogue.hpp"
 #include "Entities/UI/PlayerHealth/Health.hpp"
 #include "Entities/Explosion.hpp"
-#include "Levels/level.hpp"
+#include "Levels/Level.hpp"
 
 // stlib
 #include <vector>
@@ -85,8 +86,8 @@ private:
     // Game entities
     Player* m_player;
     Boss* m_boss;
-    std::vector<Turtle*> *m_turtles;
     std::vector<Pickup*> m_pickups; // TODO Maybe should be in a Pickup System eventuallyy
+    std::vector<Enemy*> *m_turtles;
 
     // UI
     UIPanel* m_uiPanel;

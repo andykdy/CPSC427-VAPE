@@ -5,6 +5,7 @@
 #include <cmath>
 #include <algorithm>
 #include "Vamp.hpp"
+#include <Engine/ECS/Entity.hpp>
 
 Texture Vamp::vamp_texture;
 
@@ -141,7 +142,7 @@ vec2 Vamp::get_position()const
     return m_position;
 }
 
-bool Vamp::collides_with(const Turtle &turtle) {
+bool Vamp::collides_with(const Enemy &turtle) {
     float dx = m_position.x - turtle.get_position().x;
     float dy = m_position.y - turtle.get_position().y;
     float d_sq = dx * dx + dy * dy;
