@@ -17,7 +17,7 @@ public:
     vec2 get_position() const override;
 
     bool collides_with(const Player &player) override;
-    bool collides_with(const Turtle &turtle) override;
+    bool collides_with(const Enemy &turtle) override;
     bool collides_with(const Boss &boss) override; // TODO player lasers?
 
     bool isOffScreen(const vec2 &screen) override;
