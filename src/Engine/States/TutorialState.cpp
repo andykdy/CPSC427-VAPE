@@ -293,7 +293,7 @@ void TutorialState::update(float ms) {
 	// If salmon is dead, restart the game after the fading animation
 	if (!m_player->is_alive() &&
 		m_space.get_salmon_dead_time() > 5) {
-		reset(screen);
+		reset();
 	}
 }
 
@@ -404,11 +404,7 @@ void TutorialState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
 	{
-		// Get screen size
-		int w, h;
-		glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
-		vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
-		reset(screen);
+		return reset();
 	}
 	if (m_current_cmp == movement) {
 		if (keyMap[GLFW_KEY_W]) m_mvmt_checklist[0] = true;
@@ -444,6 +440,6 @@ void TutorialState::on_mouse_button(GLFWwindow *window, int button, int action, 
 	(action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[button] = true : keyMap[button] = false;
 }
 
-void TutorialState::reset(vec2 screen) {
+void TutorialState::reset() {
 	GameEngine::getInstance().changeState(new TutorialState());
 }
