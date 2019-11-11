@@ -17,6 +17,7 @@ namespace
     const size_t BURST_COOLDOWN_MS = 800;
     const size_t BULLET_COOLDOWN_MS = 100;
     const size_t DAMAGE_EFFECT_TIME = 100;
+    const size_t DIRECTION_COOLDOWN_MS = 800;
     const size_t INIT_HEALTH = 100;
 }
 
@@ -68,6 +69,7 @@ bool Boss1::init(vec2 screen) {
     m_burst_count = 0;
     m_burst_cooldown = BURST_COOLDOWN_MS;
     m_bullet_cooldown = 0;
+    m_direction_cooldown = 0;
 
     int randomVal = rand() % 2;
     dir = (randomVal == 0 ? Direction::right : Direction::left);
@@ -92,7 +94,8 @@ void Boss1::destroy() {
 
 void Boss1::update(float ms) {
     m_healthbar->setHealth(health);
-    m_damage_effect_cooldown -= ms;
+    if (m_damage_effect_cooldown > 0)
+        m_damage_effect_cooldown -= ms;
 
     // Update bullets
     for (auto bullet : projectiles)
@@ -149,9 +152,15 @@ void Boss1::state1Update(float ms) {
 void Boss1::state2Update(float ms) {
     // Randomly switch directions
     int randomVal = rand() % 100;
-    if (randomVal < 1) {
+
+    if (m_direction_cooldown > 0)
+        m_direction_cooldown -= ms;
+    else if (randomVal < 1) {
+        int randt = rand() % 2000;
         dir = (dir == Direction::left ? Direction::right : Direction::left);
+        m_direction_cooldown = DIRECTION_COOLDOWN_MS + randt;
     }
+
     state1Update(ms);
 }
 
