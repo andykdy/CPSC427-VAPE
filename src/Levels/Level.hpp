@@ -7,12 +7,13 @@
 
 #include <map>
 #include <Engine/ECS/ECS.hpp>
+#include <Entities/Enemy.hpp>
 #include <Entities/turtle.hpp>
 
 // TODO change turtle to enemy superclass?
 
 namespace Levels {
-    typedef ECS::Entity* Spawner(ECS::EntityManager *e, vec2 pos, vec2 vel, float dir);
+    typedef Enemy* Spawner(ECS::EntityManager *e, vec2 pos, vec2 vel, float dir);
 
     struct spawnStruct {
         Spawner* fn;
@@ -24,8 +25,8 @@ namespace Levels {
     using Wave = std::vector<spawnStruct>;
     using Timeline = std::map<int, Wave>; // NOTE - YOU CANNOT HAVE WAVES SPAWN AT THE EXACT SAME MS (ITS A MAP)
 
-    template <typename T> ECS::Entity* spawn(ECS::EntityManager *e, vec2 pos, vec2 vel, float dir) {
-        ECS::Entity* t = &e->addEntity<T>();
+    template <typename T> Enemy* spawn(ECS::EntityManager *e, vec2 pos, vec2 vel, float dir) {
+        Enemy* t = &e->addEntity<T>();
         t->init();
         t->set_position(pos);
         t->set_velocity(vel);

@@ -79,7 +79,7 @@ private:
     // Game entities
     Player* m_player;
     Boss* m_boss;
-    std::vector<ECS::Entity*> *m_turtles;
+    std::vector<Enemy*> *m_turtles;
 
     // UI
     UIPanel* m_uiPanel;
