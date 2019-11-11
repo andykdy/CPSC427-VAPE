@@ -27,7 +27,7 @@ public:
     bool collides_with(const Boss& boss) override; //TODO either generic collides, or generic boss/enemy
 
     // Returns the bullet' bounding box for collision detection, called by collides_with()
-    vec2 get_bounding_box()const override;
+    vec2 get_bounding_box()const;
 
     bool isOffScreen(const vec2 &screen) override;
 

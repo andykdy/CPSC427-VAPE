@@ -10,6 +10,7 @@
 class Turtle;
 class Fish;
 class Projectile;
+class Enemy;
 
 class Player : public ECS::Entity
 {
@@ -30,11 +31,11 @@ public:
 	void draw(const mat3& projection)override;
 
 	// Collision routines for turtles and fish
-	bool collides_with(const Entity& turtle);
+	bool collides_with(const Enemy& turtle);
 	bool collides_with(const Fish& fish);
 
 	// Returns the current position
-	vec2 get_position() const override;
+	vec2 get_position() const;
 
 	// Returns the current rotation
 	float get_rotation()const;
@@ -55,7 +56,7 @@ public:
     void gain_health(float amount);
 
 	// Returns the bounding box for collision detection
-	vec2 get_bounding_box() const override;
+	vec2 get_bounding_box() const;
 
 	std::vector<Projectile*> bullets;
 
