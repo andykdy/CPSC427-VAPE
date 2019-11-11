@@ -12,6 +12,7 @@
 #include "bullet.hpp"
 #include "Entities/Player.hpp"
 #include "Entities/Bosses/Boss1.hpp"
+#include "Entities/Enemies/Enemy.hpp"
 
 Texture Bullet::bullet_texture;
 
@@ -111,14 +112,14 @@ bool Bullet::collides_with(const Player &player) {
     return false;
 }
 
-bool Bullet::collides_with(const Turtle &turtle) {
+bool Bullet::collides_with(const Enemy &enemy) {
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
 
-    float dx = motion->position.x - turtle.get_position().x;
-    float dy = motion->position.y - turtle.get_position().y;
+    float dx = motion->position.x - enemy.get_position().x;
+    float dy = motion->position.y - enemy.get_position().y;
     float d_sq = dx * dx + dy * dy;
-    float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
+    float other_r = std::max(enemy.get_bounding_box().x, enemy.get_bounding_box().y);
     float my_r = std::max(physics->scale.x, physics->scale.y);
     float r = std::max(other_r, my_r);
     r *= 0.6f;

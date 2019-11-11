@@ -6,17 +6,18 @@
 #define VAPE_ENEMYSPAWNERSYSTEM_HPP
 
 #include <Engine/ECS/System.hpp>
-#include <Entities/turtle.hpp>
+#include <Engine/ECS/Entity.hpp>
+#include <Entities/Enemies/turtle.hpp>
 #include <Levels/Levels.hpp>
 
 class EnemySpawnerSystem : public ECS::System {
 private:
     int time = 0;
-    std::vector<Turtle*> enemies = {};
+    std::vector<Enemy*> enemies;
     Levels::Timeline level = Levels::level1Timeline; // TODO
 public:
     void update(float ms) override;
-    std::vector<Turtle*> *getEnemies();
+    std::vector<Enemy*> *getEnemies();
     void reset(Levels::Timeline levelTimeline);
 };
 

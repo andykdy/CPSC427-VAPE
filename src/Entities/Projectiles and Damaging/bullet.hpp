@@ -22,7 +22,7 @@ public:
 
     // Collision routines for player, turtles and fish
     bool collides_with(const Player& player) override;
-    bool collides_with(const Turtle& turtle) override;
+    bool collides_with(const Enemy& turtle) override;
     bool collides_with(const Fish& fish);
     bool collides_with(const Boss& boss) override; //TODO either generic collides, or generic boss/enemy
 

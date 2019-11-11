@@ -53,12 +53,14 @@ set(SOURCE_FILES
 
     src/Entities/fish.cpp src/Entities/fish.hpp
     src/Entities/Player.cpp src/Entities/Player.hpp
-    src/Entities/turtle.cpp src/Entities/turtle.hpp
     src/Entities/Space.cpp src/Entities/Space.hpp
     src/Entities/Vamp.cpp src/Entities/Vamp.hpp
     src/Entities/MainMenu.cpp src/Entities/MainMenu.hpp
     src/Entities/Intro.cpp src/Entities/Intro.hpp
     src/Entities/Explosion.cpp src/Entities/Explosion.hpp
+
+    src/Entities/Enemies/Enemy.hpp
+    src/Entities/Enemies/turtle.cpp src/Entities/Enemies/turtle.hpp
 
     src/Entities/UI/PlayerHealth/Health.cpp src/Entities/UI/PlayerHealth/Health.hpp
     src/Entities/UI/PlayerHealth/HealthIcon.cpp src/Entities/UI/PlayerHealth/HealthIcon.hpp
