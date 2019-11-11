@@ -48,7 +48,7 @@ bool Player::init(vec2 screen, int hp)
 	m_player_bullet_sound = Mix_LoadWAV(audio_path("pow.wav"));
 	if ( m_player_bullet_sound == nullptr)
 	{
-		fprintf(stderr, "Failed to load sound player_bullet.wav\n %s\n %s\n %s\n make sure the data directory is present",
+		fprintf(stderr, "Failed to load sound player_bullet.wav\n %s\n make sure the data directory is present",
 				audio_path("player_bullet.wav"));
 		throw std::runtime_error("Failed to load sound player_bullet.wav");
 	}

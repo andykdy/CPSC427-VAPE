@@ -22,7 +22,7 @@
 #include "Entities/UI/Dialogue.hpp"
 #include "Entities/UI/PlayerHealth/Health.hpp"
 #include "Entities/Explosion.hpp"
-#include "Levels/level.hpp"
+#include "Levels/Level.hpp"
 
 // stlib
 #include <vector>

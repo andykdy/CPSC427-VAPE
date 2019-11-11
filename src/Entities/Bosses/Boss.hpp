@@ -43,13 +43,13 @@ public:
     void draw(const mat3& projection) override = 0;
 
     // Returns the current position
-    virtual vec2 get_position()const = 0;
+    virtual vec2 get_position()const override = 0;
 
     // Sets the new position
-    virtual void set_position(vec2 position) = 0;
+    virtual void set_position(vec2 position) override = 0;
 
     // Returns the Boss' bounding box for collision detection, called by collides_with()
-    virtual vec2 get_bounding_box() const = 0;
+    virtual vec2 get_bounding_box() const override = 0;
 
     virtual bool checkCollision(vec2 pos, vec2 box) const = 0;
 

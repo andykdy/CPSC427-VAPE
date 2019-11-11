@@ -34,7 +34,7 @@ public:
 	bool collides_with(const Fish& fish);
 
 	// Returns the current position
-	vec2 get_position() const;
+	vec2 get_position() const override;
 
 	// Returns the current rotation
 	float get_rotation()const;
@@ -55,7 +55,7 @@ public:
     void gain_health(float amount);
 
 	// Returns the bounding box for collision detection
-	vec2 get_bounding_box() const;
+	vec2 get_bounding_box() const override;
 
 	std::vector<Projectile*> bullets;
 

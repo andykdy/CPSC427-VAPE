@@ -11,7 +11,7 @@ class Turtle : public Enemy{
 public:
 
 // Creates all the associated render resources and default transform
-	bool init();
+	bool init() override;
 
 	// Releases all the associated resources
 	void destroy() override;
@@ -25,13 +25,13 @@ public:
 	void draw(const mat3& projection) override;
 
 	// Returns the current turtle position
-	vec2 get_position()const;
+	vec2 get_position()const override;
 
 	// Sets the new turtle position
-	void set_position(vec2 position);
+	void set_position(vec2 position) override;
 
 	// Returns the turtle' bounding box for collision detection, called by collides_with()
-	vec2 get_bounding_box() const;
+	vec2 get_bounding_box() const override;
 
-	void set_velocity(vec2 velocity);
+	void set_velocity(vec2 velocity) override;
 };
