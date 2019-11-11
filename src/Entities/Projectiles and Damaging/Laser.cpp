@@ -28,7 +28,7 @@ bool Laser::collides_with(const Player &player) {
     return false;
 }
 
-bool Laser::collides_with(const Turtle &turtle) {
+bool Laser::collides_with(const Enemy &turtle) {
     return false;
 }
 

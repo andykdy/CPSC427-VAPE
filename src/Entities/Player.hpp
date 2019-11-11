@@ -10,6 +10,7 @@
 class Turtle;
 class Fish;
 class Projectile;
+class Enemy;
 
 class Player : public ECS::Entity
 {
@@ -30,7 +31,7 @@ public:
 	void draw(const mat3& projection)override;
 
 	// Collision routines for turtles and fish
-	bool collides_with(const Turtle& turtle);
+	bool collides_with(const Enemy& turtle);
 	bool collides_with(const Fish& fish);
 
 	// Returns the current position
