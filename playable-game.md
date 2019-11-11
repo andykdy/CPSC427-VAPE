@@ -73,3 +73,18 @@ Refactored Bosses, Projectiles, and Enemies (TODO) to have superclasses, making 
 Level design was improved, allowing further definition of a level beyond just the enemy timeline. 
 Levels now declare what assets need to be used, and what the next level is. Points persist across levels.
 
+
+# Optional Components Implemented
+
+## Physics-Based animation
+This has been a thing in our engine since the start, using movement involving 
+acceleration, velocity, and friction decay.
+Our ECS MotionSystem runs off of this, and all of our ECS entities use it to some extent, 
+though some entities just use a static velocity with zero decay. 
+Player has his friction turned up high, since this isn't the kind of game you want to be drifting around in.
+
+
+## Complex Geometry
+TODO WIP - Boss 2 is going to be using a sprite texture, but a mesh for collisions. 
+Bullets and player will collide with it using accurate collision detection. Bounding box check for efficiency
+
