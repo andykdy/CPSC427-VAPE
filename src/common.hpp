@@ -70,6 +70,7 @@ struct Texture
 	GLuint depth_render_buffer_id;
 	int width;
 	int height;
+	std::string path;
 	
 	// Loads texture from file specified by path
 	bool load_from_file(const char* path);

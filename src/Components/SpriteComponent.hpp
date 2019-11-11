@@ -17,6 +17,7 @@ private:
     GLuint vao;
     GLuint vertexDataBuffer;
     GLuint* indexBuffers;
+    bool completed;
 
 public:
     bool initTexture(Texture* texture) {
@@ -28,6 +29,7 @@ public:
         index = 0;
         lastUpdate = glfwGetTime();
         this->totalSprites = totalSprites;
+        this->completed = false;
 
         // Clearing errors
         gl_flush_errors();
@@ -134,7 +136,10 @@ public:
 
     void incFrame() {
         int newIndex = index+1;
-        if (newIndex >= totalSprites) newIndex = 0;
+        if (newIndex >= totalSprites) {
+            completed = true;
+            newIndex = 0;
+        }
         index = newIndex;
         lastUpdate = glfwGetTime();
     }
@@ -156,6 +161,8 @@ public:
             vao = 0;
         }
     }
+
+    bool hasLooped() {return completed;};
 };
 
 #endif //VAPE_SPRITECOMPONENT_HPP

@@ -39,6 +39,8 @@ Once you complete the last level, you are returned to the main menu
 # Music Credits:
 - Main Menu:      
     - Dynatron - Stars of the Night
+- Intro
+    - Hubrid & BMX Escape - Pursuit Force
 - Tutorial BGM:   
     - M.O.O.N - Dust
 - Level 1 BGM:    

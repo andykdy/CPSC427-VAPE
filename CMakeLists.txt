@@ -35,16 +35,13 @@ set(SOURCE_FILES
     src/project_path.hpp
     src/common.cpp src/common.hpp
 
-    src/Engine/GameEngine.cpp
-    src/Engine/GameEngine.hpp
+    src/Engine/GameEngine.cpp src/Engine/GameEngine.hpp
     src/Engine/GameState.hpp
 
-    src/Engine/States/LevelState.cpp
-    src/Engine/States/LevelState.hpp
-    src/Engine/States/MainMenuState.cpp
-    src/Engine/States/MainMenuState.hpp
-    src/Engine/States/TutorialState.cpp
-    src/Engine/States/TutorialState.hpp
+    src/Engine/States/LevelState.cpp src/Engine/States/LevelState.hpp
+    src/Engine/States/MainMenuState.cpp src/Engine/States/MainMenuState.hpp
+    src/Engine/States/TutorialState.cpp src/Engine/States/TutorialState.hpp
+    src/Engine/States/IntroState.cpp src/Engine/States/IntroState.hpp
 
     src/Engine/ECS/Component.hpp
     src/Engine/ECS/Entity.hpp
@@ -56,18 +53,23 @@ set(SOURCE_FILES
 
     src/Entities/fish.cpp src/Entities/fish.hpp
     src/Entities/Player.cpp src/Entities/Player.hpp
-        src/Entities/Enemies/turtle.cpp src/Entities/Enemies/turtle.hpp
     src/Entities/Space.cpp src/Entities/Space.hpp
     src/Entities/Vamp.cpp src/Entities/Vamp.hpp
     src/Entities/MainMenu.cpp src/Entities/MainMenu.hpp
+    src/Entities/Intro.cpp src/Entities/Intro.hpp
     src/Entities/Explosion.cpp src/Entities/Explosion.hpp
+
+    src/Entities/Enemies/Enemy.hpp
+    src/Entities/Enemies/turtle.cpp src/Entities/Enemies/turtle.hpp
 
     src/Entities/UI/PlayerHealth/Health.cpp src/Entities/UI/PlayerHealth/Health.hpp
     src/Entities/UI/PlayerHealth/HealthIcon.cpp src/Entities/UI/PlayerHealth/HealthIcon.hpp
     src/Entities/UI/PlayerHealth/HealthBar.cpp src/Entities/UI/PlayerHealth/HealthBar.hpp
     src/Entities/UI/Dialogue.cpp src/Entities/UI/Dialogue.hpp
     src/Entities/UI/Continue.cpp src/Entities/UI/Continue.hpp
-        src/Entities/UI/Vamp/VampCharge.cpp src/Entities/UI/Vamp/VampCharge.hpp
+    src/Entities/UI/Vamp/VampCharge.cpp src/Entities/UI/Vamp/VampCharge.hpp
+    src/Entities/UI/Vamp/VampIcon.cpp src/Entities/UI/Vamp/VampIcon.hpp
+    src/Entities/UI/Vamp/VampBar.cpp src/Entities/UI/Vamp/VampBar.hpp
     src/Entities/UI/UIPanel.cpp src/Entities/UI/UIPanel.hpp
     src/Entities/UI/BossHealth/BossHealth.cpp src/Entities/UI/BossHealth/BossHealth.hpp
     src/Entities/UI/BossHealth/BossHealthBar.cpp src/Entities/UI/BossHealth/BossHealthBar.hpp
@@ -107,7 +109,7 @@ set(SOURCE_FILES
 
     src/Levels/Levels.hpp
     src/Levels/Level1.hpp
-    src/Levels/Level2.hpp src/Entities/UI/Vamp/VampIcon.cpp src/Entities/UI/Vamp/VampIcon.hpp src/Entities/UI/Vamp/VampBar.cpp src/Entities/UI/Vamp/VampBar.hpp)
+    src/Levels/Level2.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
