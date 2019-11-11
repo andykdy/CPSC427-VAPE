@@ -9,23 +9,27 @@
 
 class HealthComponent : public ECS::Component {
 public:
-    int m_health = 0;
-    int lose_health(float amount) {
+    float m_health = 0;
+    float lose_health(float amount) {
         m_health -= amount;
         return m_health;
     }
 
-    int gain_health(float amount) {
+    float gain_health(float amount) {
         m_health += amount;
         return m_health;
     }
 
-    int get_health() const {
+    float get_health() const {
         return m_health;
     }
 
     bool is_alive() {
         return m_health > 0;
+    }
+
+    void set_health(float init_health) {
+        m_health = init_health;
     }
 };
 #endif //VAPE_HEALTHCOMPONENT_HPP
