@@ -7,7 +7,7 @@
 
 #include <Engine/ECS/System.hpp>
 #include <Engine/ECS/Entity.hpp>
-#include <Entities/turtle.hpp>
+#include <Entities/Enemies/turtle.hpp>
 #include <Levels/Levels.hpp>
 
 class EnemySpawnerSystem : public ECS::System {

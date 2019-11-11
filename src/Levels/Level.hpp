@@ -8,8 +8,8 @@
 #include <map>
 #include <Engine/ECS/ECS.hpp>
 #include <Entities/Bosses/Boss.hpp>
-#include <Entities/Enemy.hpp>
-#include <Entities/turtle.hpp>
+#include <Entities/Enemies/Enemy.hpp>
+#include <Entities/Enemies/turtle.hpp>
 
 // TODO change turtle to enemy superclass?
 

@@ -12,7 +12,7 @@
 #include "bullet.hpp"
 #include "Entities/Player.hpp"
 #include "Entities/Bosses/Boss1.hpp"
-#include "Entities/Enemy.hpp"
+#include "Entities/Enemies/Enemy.hpp"
 
 Texture Bullet::bullet_texture;
 

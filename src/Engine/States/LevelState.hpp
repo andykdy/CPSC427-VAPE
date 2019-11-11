@@ -14,7 +14,7 @@
 // internal
 #include "common.hpp"
 #include "Entities/Player.hpp"
-#include "Entities/turtle.hpp"
+#include "Entities/Enemies/turtle.hpp"
 //#include "Entities/Prototype.hpp"
 #include "Entities/fish.hpp"
 #include "Entities/Space.hpp"

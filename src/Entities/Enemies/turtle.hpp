@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine/ECS/Entity.hpp>
-#include <Entities/Enemy.hpp>
+#include <Entities/Enemies/Enemy.hpp>
 #include "common.hpp"
 
 // Player enemy
