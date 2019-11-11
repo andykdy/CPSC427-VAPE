@@ -8,6 +8,8 @@
 
 #include <Engine/ECS/Entity.hpp>
 #include "common.hpp"
+#include "VampIcon.hpp"
+#include "VampBar.hpp"
 
 class VampCharge: public ECS::Entity {
     static Texture vamp_charge_texture;
@@ -20,6 +22,8 @@ public:
     void setVampCharge(int charge);
 
 private:
+    VampBar* m_bar;
+    VampIcon* m_icon;
     int charge = 0;
 };
 
