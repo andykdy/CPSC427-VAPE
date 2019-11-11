@@ -445,27 +445,5 @@ void TutorialState::on_mouse_button(GLFWwindow *window, int button, int action, 
 }
 
 void TutorialState::reset(vec2 screen) {
-	m_player->destroy();
-	m_uiPanel->destroy();
-	m_health->destroy();
-	m_vamp.destroy();
-	m_vamp_charge->destroy();
-	m_player->init(screen, INIT_HEALTH);
-	m_uiPanel->init(screen, screen.y*0.1f);
-    m_health->init({45, screen.y-60});
-    m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
-    for (auto& turtle : m_turtles)
-    	turtle->destroy();
-	m_turtles.clear();
-	Mix_PlayMusic(m_background_music, -1);
-	m_mvmt_checklist[0] = false;
-	m_mvmt_checklist[1] = false;
-	m_mvmt_checklist[2] = false;
-	m_mvmt_checklist[3] = false;
-	m_current_cmp = initial;
-
-	m_explosion.init();
-	m_space.reset_salmon_dead_time();
-	m_space.reset_boss_dead_time();
-	GameEngine::getInstance().setM_current_speed(1.f);
+	GameEngine::getInstance().changeState(new TutorialState());
 }
