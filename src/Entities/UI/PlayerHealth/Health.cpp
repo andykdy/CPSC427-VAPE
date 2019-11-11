@@ -17,10 +17,10 @@ Texture Health::health_point_texture;
 bool Health::init(vec2 position) {
 
     m_bar = &GameEngine::getInstance().getEntityManager()->addEntity<HealthBar>();
-    m_bar->init({0,0}); // TODO
+    m_bar->init(position); // TODO
 
     m_icon = &GameEngine::getInstance().getEntityManager()->addEntity<HealthIcon>();
-    m_icon->init({0,0}); // TODO
+    m_icon->init({position.x - 50,position.y}); // TODO
 
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
@@ -54,6 +54,10 @@ void Health::update(float ms) {
 }
 
 void Health::draw(const mat3 &projection) {
+    if (m_bar != nullptr)
+        m_bar->draw(projection);
+    if (m_icon != nullptr)
+        m_icon->draw(projection);
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
     auto* motion = getComponent<MotionComponent>();
