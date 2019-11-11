@@ -16,7 +16,7 @@
 #include "Entities/turtle.hpp"
 #include "Entities/Space.hpp"
 #include "Entities/Projectiles and Damaging/bullet.hpp"
-#include "Entities/UI/Health.hpp"
+#include "Entities/UI/PlayerHealth/Health.hpp"
 #include "Entities/UI/Dialogue.hpp"
 #include "Entities/UI/Continue.hpp"
 

@@ -53,41 +53,36 @@ set(SOURCE_FILES
     src/Engine/ECS/SystemManager.cpp src/Engine/ECS/SystemManager.hpp
     src/Engine/ECS/ECS.hpp
 
-    src/Entities/fish.cpp
-    src/Entities/Player.cpp
-    src/Entities/turtle.cpp
-    src/Entities/Space.cpp
 
-    src/Entities/fish.hpp
-    src/Entities/Player.hpp
-    src/Entities/turtle.hpp
-    src/Entities/Space.hpp
-    src/Entities/Vamp.cpp
-    src/Entities/Vamp.hpp
+    src/Entities/fish.cpp src/Entities/fish.hpp
+    src/Entities/Player.cpp src/Entities/Player.hpp
+    src/Entities/turtle.cpp src/Entities/turtle.hpp
+    src/Entities/Space.cpp src/Entities/Space.hpp
+    src/Entities/Vamp.cpp src/Entities/Vamp.hpp
     src/Entities/MainMenu.cpp src/Entities/MainMenu.hpp
     src/Entities/Explosion.cpp src/Entities/Explosion.hpp
 
-    src/Entities/UI/Health.cpp
-    src/Entities/UI/Health.hpp
-    src/Entities/UI/Dialogue.cpp
-    src/Entities/UI/Dialogue.hpp
-    src/Entities/UI/Continue.cpp
-    src/Entities/UI/Continue.hpp
-    src/Entities/UI/VampCharge.cpp
-    src/Entities/UI/VampCharge.hpp
+    src/Entities/UI/PlayerHealth/Health.cpp src/Entities/UI/PlayerHealth/Health.hpp
+    src/Entities/UI/PlayerHealth/HealthIcon.cpp src/Entities/UI/PlayerHealth/HealthIcon.hpp
+    src/Entities/UI/PlayerHealth/HealthBar.cpp src/Entities/UI/PlayerHealth/HealthBar.hpp
+    src/Entities/UI/Dialogue.cpp src/Entities/UI/Dialogue.hpp
+    src/Entities/UI/Continue.cpp src/Entities/UI/Continue.hpp
+    src/Entities/UI/VampCharge.cpp src/Entities/UI/VampCharge.hpp
     src/Entities/UI/UIPanel.cpp src/Entities/UI/UIPanel.hpp
-    src/Entities/UI/BossHealth.cpp src/Entities/UI/BossHealth.hpp
-    src/Entities/UI/BossHealthBar.cpp src/Entities/UI/BossHealthBar.hpp
+    src/Entities/UI/BossHealth/BossHealth.cpp src/Entities/UI/BossHealth/BossHealth.hpp
+    src/Entities/UI/BossHealth/BossHealthBar.cpp src/Entities/UI/BossHealth/BossHealthBar.hpp
 
     "src/Entities/Projectiles and Damaging/Projectile.hpp"
-    "src/Entities/Projectiles and Damaging/bullet.cpp"
-    "src/Entities/Projectiles and Damaging/bullet.hpp"
+    "src/Entities/Projectiles and Damaging/bullet.cpp" "src/Entities/Projectiles and Damaging/bullet.hpp"
     "src/Entities/Projectiles and Damaging/Laser.cpp" "src/Entities/Projectiles and Damaging/Laser.hpp"
 
     src/Entities/Bosses/Boss.hpp
-    src/Entities/Bosses/Boss1.cpp
-    src/Entities/Bosses/Boss1.hpp
+    src/Entities/Bosses/Boss1.cpp src/Entities/Bosses/Boss1.hpp
     src/Entities/Bosses/Boss2.cpp src/Entities/Bosses/Boss2.hpp
+
+    src/Entities/Pickups/Pickup.hpp
+    src/Entities/Pickups/TestPickup.cpp src/Entities/Pickups/TestPickup.hpp
+
 
     src/Components/MotionComponent.hpp
     src/Components/PhysicsComponent.hpp
@@ -101,13 +96,18 @@ set(SOURCE_FILES
     src/Components/EnemyComponent.hpp
     src/Components/CollisionComponent.hpp
 
-    src/Systems/EnemySpawnerSystem.cpp
-    src/Systems/EnemySpawnerSystem.hpp
-    src/Systems/MotionSystem.cpp
-    src/Systems/MotionSystem.hpp
+
+    src/Systems/EnemySpawnerSystem.cpp src/Systems/EnemySpawnerSystem.hpp
+    src/Systems/MotionSystem.cpp src/Systems/MotionSystem.hpp
     src/Systems/CollisionSystem.cpp src/Systems/CollisionSystem.hpp
 
-    src/Levels/Level.hpp src/Levels/Waves.hpp src/Levels/Level1.hpp src/Levels/Levels.hpp src/Levels/Level2.hpp src/Entities/Pickups/Pickup.hpp src/Entities/Pickups/TestPickup.cpp src/Entities/Pickups/TestPickup.hpp)
+
+    src/Levels/Level.hpp
+    src/Levels/Waves.hpp
+
+    src/Levels/Levels.hpp
+    src/Levels/Level1.hpp
+    src/Levels/Level2.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

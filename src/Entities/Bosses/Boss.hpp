@@ -9,7 +9,7 @@
 #include <Engine/ECS/Entity.hpp>
 #include <Entities/Vamp.hpp>
 #include "../Projectiles and Damaging/Projectile.hpp"
-#include "../UI/BossHealth.hpp"
+#include "Entities/UI/BossHealth/BossHealth.hpp"
 
 // Forward Declarations
 class Projectile;
