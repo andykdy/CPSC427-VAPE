@@ -15,6 +15,7 @@
 #include "common.hpp"
 #include "Entities/Player.hpp"
 #include "Entities/turtle.hpp"
+//#include "Entities/Prototype.hpp"
 #include "Entities/fish.hpp"
 #include "Entities/Space.hpp"
 #include "Entities/Projectiles and Damaging/bullet.hpp"
@@ -85,8 +86,8 @@ private:
     // Game entities
     Player* m_player;
     Boss* m_boss;
-    std::vector<Turtle*> *m_turtles;
     std::vector<Pickup*> m_pickups; // TODO Maybe should be in a Pickup System eventuallyy
+    std::vector<Enemy*> *m_turtles;
 
     // UI
     UIPanel* m_uiPanel;

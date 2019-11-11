@@ -30,7 +30,7 @@ public:
 	void draw(const mat3& projection)override;
 
 	// Collision routines for turtles and fish
-	bool collides_with(const Turtle& turtle);
+	bool collides_with(const Entity& turtle);
 	bool collides_with(const Fish& fish);
 
 	// Returns the current position

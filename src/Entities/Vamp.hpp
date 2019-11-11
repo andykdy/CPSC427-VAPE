@@ -8,6 +8,7 @@
 #include "common.hpp"
 #include "turtle.hpp"
 #include "fish.hpp"
+#include <Engine/ECS/Entity.hpp>
 
 class Vamp : public EntityOld {
     static Texture vamp_texture;
@@ -22,7 +23,7 @@ public:
     vec2 get_position()const;
 
     // Collision routines for turtles and fish
-    bool collides_with(const Turtle& turtle);
+    bool collides_with(const ECS::Entity& turtle);
 
     // Returns the vamp mode's bounding box for collision detection, called by collides_with()
     vec2 get_bounding_box()const;

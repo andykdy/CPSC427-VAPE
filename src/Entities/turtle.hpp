@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Engine/ECS/Entity.hpp>
+#include <Entities/Enemy.hpp>
 #include "common.hpp"
 
 // Player enemy
-class Turtle : public ECS::Entity
-{
+class Turtle : public Enemy{
 	// Shared between all turtles, no need to load one for each instance
 	static Texture turtle_texture;
 public:

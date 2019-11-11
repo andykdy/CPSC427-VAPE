@@ -46,18 +46,18 @@ void MotionSystem::update(float ms) {
     }
 }
 
-void MotionSystem::accelerate(MotionComponent * motion) {
-    float max = motion->maxVelocity;
-    if (max >= 0) {
-        float newX = motion->velocity.x + motion->acceleration.x;
-        if (newX > max) newX = max;
-        if (newX < -max) newX = -max;
+void MotionSystem::accelerate(MotionComponent* motion) {
+	float max = motion->maxVelocity;
+	if (max >= 0) {
+		float newX = motion->velocity.x + motion->acceleration.x;
+		if (newX > max) newX = max;
+		if (newX < -max) newX = -max;
 
-        float newY = motion->velocity.y + motion->acceleration.y;
-        if (newY > max) newY = max;
-        if (newY < -max) newY = -max;
+		float newY = motion->velocity.y + motion->acceleration.y;
+		if (newY > max) newY = max;
+		if (newY < -max) newY = -max;
 
-        motion->velocity.x = newX;
-        motion->velocity.y = newY;
-    }
+		motion->velocity.x = newX;
+		motion->velocity.y = newY;
+	}
 }
