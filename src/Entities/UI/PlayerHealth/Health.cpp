@@ -20,7 +20,7 @@ bool Health::init(vec2 position) {
     m_bar->init(position); // TODO
 
     m_icon = &GameEngine::getInstance().getEntityManager()->addEntity<HealthIcon>();
-    m_icon->init({position.x - 50,position.y}); // TODO
+    m_icon->init({position.x + 500,position.y}); // TODO
 
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
@@ -58,6 +58,7 @@ void Health::draw(const mat3 &projection) {
         m_bar->draw(projection);
     if (m_icon != nullptr)
         m_icon->draw(projection);
+
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
     auto* motion = getComponent<MotionComponent>();

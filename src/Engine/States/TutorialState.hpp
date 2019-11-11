@@ -26,7 +26,7 @@
 
 #include <Engine/GameState.hpp>
 #include <Entities/Vamp.hpp>
-#include <Entities/UI/VampCharge.hpp>
+#include <Entities/UI/Vamp/VampCharge.hpp>
 #include <Entities/Explosion.hpp>
 #include <Entities/UI/UIPanel.hpp>
 

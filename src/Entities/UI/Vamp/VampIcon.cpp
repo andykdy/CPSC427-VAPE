@@ -7,11 +7,11 @@
 #include <Components/PhysicsComponent.hpp>
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
-#include "HealthIcon.hpp"
+#include "VampIcon.hpp"
 
-Texture HealthIcon::health_icon_texture;
+Texture VampIcon::vamp_icon_texture;
 
-bool HealthIcon::init(vec2 pos) {
+bool VampIcon::init(vec2 pos) {
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
     auto* physics = addComponent<PhysicsComponent>();
@@ -19,9 +19,9 @@ bool HealthIcon::init(vec2 pos) {
     auto* transform = addComponent<TransformComponent>();
 
     // Load shared texture
-    if (!health_icon_texture.is_valid())
+    if (!vamp_icon_texture.is_valid())
     {
-        if (!health_icon_texture.load_from_file(textures_path("health_icon.png")))
+        if (!vamp_icon_texture.load_from_file(textures_path("vamp_icon.png")))
         {
             throw std::runtime_error("Failed to load health texture");
         }
@@ -31,8 +31,8 @@ bool HealthIcon::init(vec2 pos) {
     if (!effect->load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         throw std::runtime_error("Failed to load texture shaders");
 
-    if (!sprite->initTexture(&health_icon_texture))
-        throw std::runtime_error("Failed to initialize health icon sprite");
+    if (!sprite->initTexture(&vamp_icon_texture))
+        throw std::runtime_error("Failed to initialize vamp icon sprite");
 
     physics->scale = { 1.f, 1.f };
     motion->position = { pos.x, pos.y };
@@ -40,7 +40,7 @@ bool HealthIcon::init(vec2 pos) {
     return true;
 }
 
-void HealthIcon::draw(const mat3 &projection) {
+void VampIcon::draw(const mat3 &projection) {
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
     auto* motion = getComponent<MotionComponent>();
@@ -52,10 +52,10 @@ void HealthIcon::draw(const mat3 &projection) {
     transform->scale(physics->scale);
     transform->end();
 
-    sprite->draw(projection, transform->out, effect->program, {0.1f, 1.1f, 0.1f});
+    sprite->draw(projection, transform->out, effect->program, {1.f, 0.1f, 0.1f});
 }
 
-void HealthIcon::destroy() {
+void VampIcon::destroy() {
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();
 
