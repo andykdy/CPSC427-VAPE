@@ -68,7 +68,7 @@ private:
 	void lose_health(int damage);
 	void add_health(int heal);
 
-	void reset(vec2 screen);
+	void reset();
 
 	// Generates a new turtle
 	bool spawn_turtle();

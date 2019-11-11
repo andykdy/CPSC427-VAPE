@@ -32,8 +32,12 @@
 #include <Entities/Bosses/Boss1.hpp>
 #include <Entities/UI/VampCharge.hpp>
 #include <Entities/UI/UIPanel.hpp>
+#include <Entities/Pickups/Pickup.hpp>
+
+class Pickup;
 
 class LevelState : public GameState {
+    friend class Pickup;
 public:
     //! Constructor, taking in gameplay options
     explicit LevelState(Levels::Level level, unsigned int points);
@@ -82,6 +86,7 @@ private:
     Player* m_player;
     Boss* m_boss;
     std::vector<Turtle*> *m_turtles;
+    std::vector<Pickup*> m_pickups; // TODO Maybe should be in a Pickup System eventuallyy
 
     // UI
     UIPanel* m_uiPanel;

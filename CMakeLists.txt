@@ -76,6 +76,9 @@ set(SOURCE_FILES
     src/Entities/Bosses/Boss1.cpp src/Entities/Bosses/Boss1.hpp
     src/Entities/Bosses/Boss2.cpp src/Entities/Bosses/Boss2.hpp
 
+    src/Entities/Pickups/Pickup.hpp 
+    src/Entities/Pickups/TestPickup.cpp src/Entities/Pickups/TestPickup.hpp
+
     src/Components/MotionComponent.hpp
     src/Components/PhysicsComponent.hpp
     src/Components/EffectComponent.hpp

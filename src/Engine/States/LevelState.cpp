@@ -125,10 +125,15 @@ void LevelState::terminate() {
         turtle->destroy();
     }
 
+    for (auto& pickup : m_pickups) {
+        pickup->destroy();
+    }
+
     m_uiPanel->destroy();
     m_health->destroy();
     m_vamp_charge->destroy();
     m_turtles->clear();
+    m_pickups.clear();
     if (m_boss != nullptr)
         m_boss->destroy();
 	m_dialogue.destroy();
@@ -182,6 +187,16 @@ void LevelState::update(float ms) {
 		}
     }
 
+    // Check Pickup Collisions
+    auto pickup_it = m_pickups.begin();
+	while (pickup_it != m_pickups.end()) {
+	    if ((*pickup_it)->collides_with(*m_player)) {
+            (*pickup_it)->applyEffect(*this);
+            (*pickup_it)->destroy();
+            pickup_it = m_pickups.erase(pickup_it);
+	    }
+	}
+
     // Checking Player Bullet - Enemy collisions
     auto& playerBullets = m_player->bullets;
     auto bullet_it = playerBullets.begin();
@@ -208,9 +223,10 @@ void LevelState::update(float ms) {
                 ++turtle_it;
             }
         }
-        if (m_boss_mode && (*bullet_it)->collides_with(*m_boss)) {
+        if (m_boss_mode && m_boss->is_alive() && (*bullet_it)->collides_with(*m_boss)) {
             eraseBullet = true;
             // TODO sound
+            add_vamp_charge();
             m_boss->addDamage(2);
         }
         if (eraseBullet) {
@@ -315,13 +331,15 @@ void LevelState::update(float ms) {
 
     // Boss specific code
     if (m_boss_mode) {
+        m_boss->update(ms);
+
         // If boss drops below 0 health, set him as killed, award points, start timer
         if (m_boss->is_alive() && m_boss->getHealth() <= 0) {
             Mix_PlayMusic(m_victory_music, 0);
             m_boss->kill();
             m_points += 100;
             m_space.set_boss_dead();
-        } else {
+        } else if (m_boss->is_alive()) {
             // Player/Boss collision
             if (m_player->is_alive() && m_boss->collidesWith(*m_player) && m_player->get_iframes() <= 0.f) {
                 m_player->set_iframes(500.f);
@@ -371,20 +389,17 @@ void LevelState::update(float ms) {
                 }
             }
 
-            m_boss->update(ms);
-
-            // If boss dies, return to main menu
-            if (m_boss->getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
-            {
-                if (m_level.nextLevel != nullptr) {
-                    GameEngine::getInstance().changeState(new LevelState(*m_level.nextLevel, m_points));
-                } else {
+        // If boss dies, continue to next level or main menu
+        } else if (m_boss->getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
+        {
+            if (m_level.nextLevel != nullptr) {
+                GameEngine::getInstance().changeState(new LevelState(*m_level.nextLevel, m_points));
+            } else {
                 // TODO save m_points to a leaderboard?
                 // TODO go to Epilogue state
-                    GameEngine::getInstance().changeState(new MainMenuState());
-                }
-                return;
+                GameEngine::getInstance().changeState(new MainMenuState());
             }
+            return;
         }
     }
 
