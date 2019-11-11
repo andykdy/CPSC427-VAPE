@@ -226,6 +226,7 @@ void LevelState::update(float ms) {
         if (m_boss_mode && (*bullet_it)->collides_with(*m_boss)) {
             eraseBullet = true;
             // TODO sound
+            add_vamp_charge();
             m_boss->addDamage(2);
         }
         if (eraseBullet) {
