@@ -91,37 +91,38 @@ namespace
 
 
     const size_t CHARGE1 = 1500;
+    const size_t FIRE1 = 3000;
 
     const AttackPattern M12346 = {
             {true, false, true, true, false, true},
             // {0,0,0,0,0,0},
             {CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1},
-            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            6700
+            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
+            4700
     };
 
     const AttackPattern M12345 = {
             {true, true, true, true, true, false},
             // {0,0,0,0,0,0},
             {CHARGE1-500,CHARGE1,CHARGE1+500,CHARGE1+1000,CHARGE1+1500,CHARGE0},
-            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            8100
+            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
+            6100
     };
 
     const AttackPattern MZ123 = {
             {true, true, true, false, false, false},
             // {0,0,0,0,0,0},
             {CHARGE1-500,CHARGE1,CHARGE1+500,CHARGE0,CHARGE0,CHARGE0},
-            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            6600
+            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
+            4600
     };
 
     const AttackPattern MZ456 = {
             {false, false, false, true, true, true},
             // {0,0,0,0,0,0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE1+500,CHARGE1,CHARGE1-500},
-            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            6600
+            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
+            4600
     };
 
     const std::vector<AttackPattern> MediumPatterns = {
