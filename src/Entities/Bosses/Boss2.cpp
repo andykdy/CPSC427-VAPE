@@ -18,6 +18,7 @@ namespace
     const size_t SPRITE_FRAMES = 4;
     const size_t SPRITE_W = 264;
     const size_t SPRITE_H = 88;
+    const size_t DAMAGE_EFFECT_TIME = 100;
 }
 
 Texture Boss2::boss2_texture;
@@ -55,7 +56,7 @@ bool Boss2::init(vec2 screen) {
     if (gl_has_errors())
         return false;
 
-    // Collision Mesh //TODO mesh scaling?
+    // Collision Mesh
     FILE* mesh_file = fopen(mesh_path("boss2.testmesh"), "r");
     size_t num_vertices;
     fscanf(mesh_file, "%zu\n", &num_vertices);
@@ -73,7 +74,7 @@ bool Boss2::init(vec2 screen) {
 
     motion->position = {0.f, 0.f };
     motion->radians = 0;
-    motion->velocity = {0.f, 0.f}; // TODO switch to using velocity / motion system
+    motion->velocity = {0.f, 0.f};
 
     // Setting initial values, scale is negative to make it face the opposite way
     // 1.0 would be as big as the original texture.
@@ -81,6 +82,9 @@ bool Boss2::init(vec2 screen) {
 
     health = INIT_HEALTH;
     m_is_alive = true;
+
+    // TODO initailize lasers?
+    // TODO laser positions relative to sprite?
 
     return true;
 }
@@ -103,10 +107,14 @@ void Boss2::destroy() {
 
 void Boss2::update(float ms) {
     m_healthbar->setHealth(health);
+    if (m_damage_effect_cooldown > 0)
+        m_damage_effect_cooldown -= ms;
 
     // Update bullets
     for (auto laser : projectiles)
         laser->update(ms);
+
+    // TODO behavior?
 }
 
 void Boss2::draw(const mat3 &projection) {
@@ -126,7 +134,11 @@ void Boss2::draw(const mat3 &projection) {
     transform->rotate(motion->radians);
     transform->end();
 
-    sprite->draw(projection, transform->out, effect->program);
+    float mod = 1;
+    if (m_damage_effect_cooldown > 0)
+        mod = 1/m_damage_effect_cooldown;
+
+    sprite->draw(projection, transform->out, effect->program, {1.f, mod * 1.f,mod * 1.f});
 
     // Vertex Debug Drawing
     /*
@@ -163,7 +175,7 @@ vec2 Boss2::get_bounding_box() const {
 }
 
 void Boss2::addDamage(int damage) {
-    // TODO damage indication
+    m_damage_effect_cooldown = DAMAGE_EFFECT_TIME;
     Boss::addDamage(damage);
 }
 
@@ -176,7 +188,6 @@ bool Boss2::collidesWith(const Player &player) {
 }
 
 bool Boss2::checkCollision(vec2 pos, vec2 box) const {
-    // TODO replace with complex collision checking
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
 
@@ -190,7 +201,7 @@ bool Boss2::checkCollision(vec2 pos, vec2 box) const {
     }
 
     auto* transform = getComponent<TransformComponent>();
-    // For each vertex, check if within the other
+    // For each vertex, check if within the area
     for(auto vertex : m_vertices) {
         transform->begin();
         transform->translate(motion->position);

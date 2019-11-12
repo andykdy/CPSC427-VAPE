@@ -48,6 +48,7 @@ public:
 private:
     DebugDot m_dot;
     std::vector<Vertex> m_vertices;
+    float m_damage_effect_cooldown;
 };
 
 #endif //VAPE_BOSS2_HPP
