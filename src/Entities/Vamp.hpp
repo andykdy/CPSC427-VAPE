@@ -6,7 +6,7 @@
 #define VAPE_VAMP_HPP
 
 #include "common.hpp"
-#include "Enemies/Enemy.hpp"
+#include "Entities/Enemies/Enemy.hpp"
 #include "fish.hpp"
 #include <Engine/ECS/Entity.hpp>
 

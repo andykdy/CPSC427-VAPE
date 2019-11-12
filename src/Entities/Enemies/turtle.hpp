@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine/ECS/Entity.hpp>
 #include <Entities/Enemies/Enemy.hpp>
 #include "common.hpp"
 
