@@ -141,6 +141,8 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 	}
 	else
 	{
+		auto* boundary = getComponent<BoundaryComponent>();
+		boundary->maxY = 2000;
 		// If dead we make it face upwards and sink deep down
 		set_rotation(3.1415f);
 		motion->maxVelocity = 0;
