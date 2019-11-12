@@ -28,6 +28,8 @@ namespace Levels {
     const size_t SW = 800;
     const size_t SH = 1000;
 
+    const Wave TargetSingle = {genSpawn(spawn < EnemyTargettedShooter > , {100, -100}, TD, 0.f)};
+
 
     const Wave TL3 = {genSpawn(spawn < Turtle > , {100, -100}, TD, 0.f),
                       genSpawn(spawn < Turtle > , {200, -150}, TD, 0.f),

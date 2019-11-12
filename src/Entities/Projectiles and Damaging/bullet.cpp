@@ -83,7 +83,7 @@ void Bullet::draw(const mat3 &projection) {
     transform->begin();
     transform->translate(motion->position);
     transform->scale(physics->scale);
-    transform->rotate(motion->radians);
+    transform->rotate(motion->radians - 3.14f);
     transform->end();
 
     sprite->draw(projection, transform->out, effect->program);
