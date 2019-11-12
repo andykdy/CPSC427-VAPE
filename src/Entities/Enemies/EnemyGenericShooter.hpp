@@ -5,9 +5,7 @@
 #ifndef VAPE_ENEMYGENERICSHOOTER_HPP
 #define VAPE_ENEMYGENERICSHOOTER_HPP
 
-#include <Engine/ECS/Entity.hpp>
 #include <Entities/Enemies/Enemy.hpp>
-#include <Entities/Projectiles and Damaging/Projectile.hpp>
 #include "common.hpp"
 
 // Player enemy
@@ -41,7 +39,6 @@ public:
     void set_velocity(vec2 velocity) override;
 
 private:
-    std::vector<Projectile*> projectiles;
     float m_bullet_cooldown;
     unsigned int m_burst_count;
     float m_burst_cooldown;

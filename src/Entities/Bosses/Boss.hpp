@@ -14,6 +14,7 @@
 // Forward Declarations
 class Projectile;
 class Player;
+class Vamp;
 
 enum collisionType {
     radius,
