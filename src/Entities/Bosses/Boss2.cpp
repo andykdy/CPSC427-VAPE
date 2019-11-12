@@ -31,6 +31,9 @@ namespace
             {187,72},
             {219,76}
     };
+
+    const vec2 SPRITE_SCALE = {3.5, 3.5f};
+    const vec2 MESH_SCALE = {300.f, 300.f};
 }
 
 Texture Boss2::boss2_texture;
@@ -90,7 +93,7 @@ bool Boss2::init(vec2 screen) {
 
     // Setting initial values, scale is negative to make it face the opposite way
     // 1.0 would be as big as the original texture.
-    physics->scale = { 2.5f, 2.5f };
+    physics->scale = SPRITE_SCALE;
 
     health = INIT_HEALTH;
     m_is_alive = true;
@@ -135,8 +138,8 @@ void Boss2::update(float ms) {
 
     // Update lasers
     vec2 bbox = get_bounding_box();
-    float left = motion->position.x - bbox.x;
-    float top = motion->position.y - bbox.y;
+    float left = motion->position.x - bbox.x/2;
+    float top = motion->position.y - bbox.y/2;
     for (int i = 0; i < hardpoints.size(); i++) {
         std::cout << left << "," << top << std::endl;
         std::cout << hardpoints[i].x*physics->scale.x << "," << hardpoints[i].y*physics->scale.y << std::endl << std::endl;
@@ -173,18 +176,16 @@ void Boss2::draw(const mat3 &projection) {
     sprite->draw(projection, transform->out, effect->program, {1.f, mod * 1.f,mod * 1.f});
 
     // Vertex Debug Drawing
-    /*
     for (auto& vertex : m_vertices) {
         transform->begin();
         transform->translate(motion->position);
-        transform->scale({215.f,215.f});
+        transform->scale(MESH_SCALE);
         transform->rotate(motion->radians + 1.5708f);
         transform->end();
 
         vec3 pos = mul(transform->out, vec3{vertex.position.x, vertex.position.y, 1.0});
         m_dot.draw(projection, {1.f,1.f,1.f}, {pos.x, pos.y}, 0);
     }
-     */
 
     m_healthbar->draw(projection);
 }
@@ -196,7 +197,7 @@ vec2 Boss2::get_position() const {
 
 void Boss2::set_position(vec2 position) {
     auto* motion = getComponent<MotionComponent>();
-    motion->position = {position.x, position.y + 25};
+    motion->position = {position.x, position.y};
 }
 
 vec2 Boss2::get_bounding_box() const {
@@ -237,7 +238,7 @@ bool Boss2::checkCollision(vec2 pos, vec2 box) const {
     for(auto vertex : m_vertices) {
         transform->begin();
         transform->translate(motion->position);
-        transform->scale({215.f,215.f});
+        transform->scale(MESH_SCALE);
         transform->rotate(motion->radians + 1.5708f);
         transform->end();
         vec3 vpos = mul(transform->out, vec3{vertex.position.x, vertex.position.y, 1.0});
