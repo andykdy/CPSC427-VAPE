@@ -4,6 +4,8 @@
 #include <Engine/ECS/Entity.hpp>
 #include <Entities/Projectiles and Damaging/Projectile.hpp>
 
+class Projectile;
+
 class Enemy : public ECS::Entity {
 public:
 	virtual bool init() { return false; };
