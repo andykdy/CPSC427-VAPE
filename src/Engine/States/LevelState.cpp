@@ -165,6 +165,11 @@ void LevelState::update(float ms) {
     m_health->setHealth(m_player->get_health());
     m_vamp_charge->setVampCharge(m_vamp_mode_charge);
 
+    // Update the player's position for the enemies
+    for(auto& enemy: *m_turtles) {
+        enemy->player_position = m_player->get_position();
+    }
+
     // Checking Player - Turtle collisions
 	auto turtle_it = m_turtles->begin();
 	while (turtle_it != m_turtles->end())
