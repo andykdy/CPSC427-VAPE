@@ -40,6 +40,8 @@ private:
     float m_bullet_cooldown;
     unsigned int m_burst_count;
     float m_burst_cooldown;
+    float m_pause_cooldown_ms;
+    bool m_was_stationed;
 
     void spawnBullet();
 };

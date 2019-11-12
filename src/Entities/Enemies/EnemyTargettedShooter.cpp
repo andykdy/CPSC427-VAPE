@@ -20,6 +20,7 @@ namespace
 {
     const size_t BURST_COOLDOWN_MS = 600;
     const size_t BULLET_COOLDOWN_MS = 200;
+    const size_t PAUSE_TIME_MS = 4000;
 }
 
 bool EnemyTargettedShooter::init() {
@@ -79,15 +80,35 @@ void EnemyTargettedShooter::destroy() {
 
 void EnemyTargettedShooter::update(float ms) {
     auto* motion = getComponent<MotionComponent>();
+    bool stationed_to_shoot = motion->velocity.x == 0 && motion->velocity.y == 0 &&
+                                 motion->position.x > 0 && motion->position.y > 0;
 
-    float dy = player_position.y - motion->position.y;
-    float dx = player_position.x - motion->position.x;
+    if (m_pause_cooldown_ms > 0) {
+        m_pause_cooldown_ms -= ms;
+        motion->velocity = {0,0};
+        m_was_stationed = true;
+    } else {
+        if(motion->position.y > 150 && !m_was_stationed) {
+            m_pause_cooldown_ms = PAUSE_TIME_MS;
+        } else if (motion->position.y < -150 && !m_was_stationed) {
+            m_pause_cooldown_ms = PAUSE_TIME_MS;
+        } else {
+            motion->velocity.y = 180.f;
+        }
+    }
 
-    float angle = atan2(dx, dy);
+    if (stationed_to_shoot) {
+        float dy = player_position.y - motion->position.y;
+        float dx = player_position.x - motion->position.x;
 
-    cout << angle << endl;
+        float angle = atan2(dx, dy);
 
-    motion->radians = angle - M_PI;
+        cout << angle << endl;
+
+        motion->radians = angle - M_PI;
+    } else {
+        motion->radians = M_PI;
+    }
 
     // Update bullets
     for (auto bullet : projectiles)
@@ -105,7 +126,10 @@ void EnemyTargettedShooter::update(float ms) {
         } else {
             ++m_burst_count;
             m_bullet_cooldown = BULLET_COOLDOWN_MS;
-            spawnBullet();
+
+            if(stationed_to_shoot) {
+                spawnBullet();
+            }
         }
     }
 }
