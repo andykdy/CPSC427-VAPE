@@ -11,6 +11,7 @@
 #include <Entities/Enemies/Enemy.hpp>
 #include <Entities/Enemies/turtle.hpp>
 #include "Entities/Enemies/EnemyGenericShooter.hpp"
+#include "Entities/Enemies/EnemyTargettedShooter.hpp"
 
 // TODO change turtle to enemy superclass?
 
