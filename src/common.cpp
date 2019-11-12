@@ -98,6 +98,96 @@ vec2 normalize(vec2 v)
 	return { v.x / m, v.y / m };
 }
 
+// https://en.wikipedia.org/wiki/Cohen%E2%80%93Sutherland_algorithm
+typedef int OutCode;
+
+const int INSIDE = 0; // 0000
+const int LEFT = 1;   // 0001
+const int RIGHT = 2;  // 0010
+const int BOTTOM = 4; // 0100
+const int TOP = 8;    // 1000
+
+OutCode ComputeOutCode(const vec2& point, const vec2& tl, const vec2& br)
+{
+	OutCode code;
+
+	code = INSIDE;          // initialised as being inside of [[clip window]]
+
+	if (point.x < tl.x)           // to the left of clip window
+		code |= LEFT;
+	else if (point.x > br.x)      // to the right of clip window
+		code |= RIGHT;
+	if (point.y < tl.y)           // below the clip window
+		code |= BOTTOM;
+	else if (point.y > br.y)      // above the clip window
+		code |= TOP;
+
+	return code;
+}
+
+bool CohenSutherlandLineClipAndDraw(const vec2& p0, const vec2& p1, const vec2& tl, const vec2& br) {
+	// compute outcodes for P0, P1, and whatever point lies outside the clip rectangle
+	OutCode outcode0 = ComputeOutCode(p0, tl, br);
+	OutCode outcode1 = ComputeOutCode(p1, tl, br);
+	bool accept = false;
+
+	float x0 = p0.x;
+	float y0 = p0.y;
+	float x1 = p1.x;
+	float y1 = p1.y;
+
+	while (true) {
+		if (!(outcode0 | outcode1)) {
+			// bitwise OR is 0: both points inside window; trivially accept and exit loop
+			return true;
+		} else if (outcode0 & outcode1) {
+			// bitwise AND is not 0: both points share an outside zone (LEFT, RIGHT, TOP,
+			// or BOTTOM), so both must be outside window; exit loop (accept is false)
+			return false;
+		} else {
+			// failed both tests, so calculate the line segment to clip
+			// from an outside point to an intersection with clip edge
+			float x, y = 0;
+
+			// At least one endpoint is outside the clip rectangle; pick it.
+			OutCode outcodeOut = outcode0 ? outcode0 : outcode1;
+
+			// Now find the intersection point;
+			// use formulas:
+			//   slope = (y1 - y0) / (x1 - x0)
+			//   x = x0 + (1 / slope) * (ym - y0), where ym is ymin or ymax
+			//   y = y0 + slope * (xm - x0), where xm is xmin or xmax
+			// No need to worry about divide-by-zero because, in each case, the
+			// outcode bit being tested guarantees the denominator is non-zero
+			if (outcodeOut & TOP) {           // point is above the clip window
+				x = x0 + (x1 - x0) * (br.y - y0) / (y1 - y0);
+				y = br.y;
+			} else if (outcodeOut & BOTTOM) { // point is below the clip window
+				x = x0 + (x1 - x0) * (tl.y - y0) / (y1 - y0);
+				y = tl.y;
+			} else if (outcodeOut & RIGHT) {  // point is to the right of clip window
+				y = y0 + (y1 - y0) * (br.x - x0) / (x1 - x0);
+				x = br.x;
+			} else if (outcodeOut & LEFT) {   // point is to the left of clip window
+				y = y0 + (y1 - y0) * (tl.x - x0) / (x1 - x0);
+				x = tl.x;
+			}
+
+			// Now we move outside point to intersection point to clip
+			// and get ready for next pass.
+			if (outcodeOut == outcode0) {
+				x0 = x;
+				y0 = y;
+				outcode0 = ComputeOutCode({x0,y0}, tl, br);
+			} else {
+				x1 = x;
+				y1 = y;
+				outcode1 = ComputeOutCode({x1,y1}, tl, br);
+			}
+		}
+	}
+}
+
 Texture::Texture()
 {
 

@@ -40,6 +40,7 @@ public:
     inline void setState(laserState state) { m_state = state; };
 private:
     vec2 m_origin;
+    float m_rotation;
     laserState m_state;
     std::vector<Particle> m_particles;
     GLuint m_vbo;

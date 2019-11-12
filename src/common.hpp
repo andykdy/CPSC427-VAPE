@@ -42,6 +42,11 @@ float len(vec2 a);
 
 
 
+
+bool CohenSutherlandLineClipAndDraw(const vec2& p0, const vec2& p1, const vec2& tl, const vec2& br);
+
+
+
 // OpenGL utilities
 // cleans error buffer
 void gl_flush_errors();

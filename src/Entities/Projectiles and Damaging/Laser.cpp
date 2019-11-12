@@ -11,6 +11,7 @@
 
 constexpr int NUM_SEGMENTS = 12;
 constexpr int MAX_PARTICLES = 5000;
+constexpr int LASER_WIDTH = 20;
 
 bool Laser::init(vec2 position, float rotation) {
     gl_flush_errors();
@@ -60,7 +61,8 @@ bool Laser::init(vec2 position, float rotation) {
 
     m_origin = position;
     m_erase_on_collide = false;
-    return false;
+    m_rotation = rotation;
+    return true;
 }
 
 void Laser::destroy() {
@@ -94,8 +96,8 @@ void Laser::update(float ms) {
 void Laser::spawn() {
     int n = 0;
     vec2 vel = {0,2000};
-    float xmin = m_origin.x - 10;
-    float xmax = m_origin.x + 10;
+    float xmin = m_origin.x - (float)LASER_WIDTH/2;
+    float xmax = m_origin.x + (float)LASER_WIDTH/2;
     float ymin = m_origin.y - 10;
     float ymax = m_origin.y + 10;
 
@@ -118,7 +120,7 @@ void Laser::spawn() {
         p.life = 2000;
         p.color = {1.f,1.f,1.f,1.f};
         if (m_state == laserState::firing) {
-            float mod = (std::fabs(randx - m_origin.x) / 10);
+            float mod = (std::fabs(randx - m_origin.x) / LASER_WIDTH/2);
             p.color = {1.f * mod, 1.f * mod, 1.f, 1.f};
         }
     }
@@ -184,8 +186,23 @@ vec2 Laser::get_position() const {
 
 bool Laser::collides_with(const Player &player) {
     if (m_state != laserState::firing) return false;
-    // TODO, collision area = (laserXmin, origin.y), (laserXmax, screen.y)
-    return false;
+
+    vec2 playerpos = player.get_position();
+    vec2 playerbox = player.get_bounding_box();
+
+
+    float lx = m_origin.x - LASER_WIDTH/2;
+    vec2 p00 = {lx, m_origin.y};
+    vec2 p01 = { lx + 2000*sinf(m_rotation), m_origin.y + 2000*cosf(m_rotation)};
+
+    float rx = m_origin.x + LASER_WIDTH/2;
+    vec2 p10 = {rx, m_origin.y};
+    vec2 p11 = {rx + 2000*sinf(m_rotation), m_origin.y + 2000*cosf(m_rotation)};
+
+    vec2 tl = {playerpos.x - playerbox.x/2, playerpos.y - playerbox.y/2};
+    vec2 br = {playerpos.x + playerbox.x/2, playerpos.y + playerbox.y/2};
+    return (CohenSutherlandLineClipAndDraw(p00, p01, tl, br) ||
+            CohenSutherlandLineClipAndDraw(p10, p11, tl, br));
 }
 
 bool Laser::collides_with(const Enemy &turtle) {
