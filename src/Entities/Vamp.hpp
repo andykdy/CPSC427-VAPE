@@ -6,9 +6,11 @@
 #define VAPE_VAMP_HPP
 
 #include "common.hpp"
-#include "Entities/Enemies/turtle.hpp"
+#include "Entities/Enemies/Enemy.hpp"
 #include "fish.hpp"
 #include <Engine/ECS/Entity.hpp>
+
+class Enemy;
 
 class Vamp : public EntityOld {
     static Texture vamp_texture;

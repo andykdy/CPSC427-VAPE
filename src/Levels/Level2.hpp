@@ -11,7 +11,7 @@
 namespace Levels {
 
     const Timeline level2Timeline = {
-
+            {1500, LM3GenericShooter}
     };
 
     const Level level2 = Level(

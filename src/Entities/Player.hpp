@@ -6,8 +6,8 @@
 #include <vector>
 #include <SDL_mixer.h>
 #include <Engine/ECS/Entity.hpp>
+#include "Entities/Enemies/Enemy.hpp"
 
-class Turtle;
 class Fish;
 class Projectile;
 class Enemy;

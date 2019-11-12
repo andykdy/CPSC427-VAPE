@@ -10,6 +10,7 @@
 #include <Entities/Bosses/Boss.hpp>
 #include <Entities/Enemies/Enemy.hpp>
 #include <Entities/Enemies/turtle.hpp>
+#include "Entities/Enemies/EnemyGenericShooter.hpp"
 
 // TODO change turtle to enemy superclass?
 

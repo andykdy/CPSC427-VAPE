@@ -12,7 +12,7 @@ void IntroState::init() {
 
     if (m_background_music == nullptr)
     {
-        fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
+        fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
                 audio_path("intro.wav"));
         throw std::runtime_error("Failed to load sounds");
     }
