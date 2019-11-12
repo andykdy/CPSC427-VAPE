@@ -32,8 +32,8 @@ namespace
             {219,76}
     };
 
-    const vec2 SPRITE_SCALE = {4.f, 4.f};
-    const vec2 MESH_SCALE = {340.f, 340.f};
+    const vec2 SPRITE_SCALE = {4.5f, 4.5f};
+    const vec2 MESH_SCALE = {380.f, 380.f};
 }
 
 Texture Boss2::boss2_texture;

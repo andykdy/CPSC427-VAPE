@@ -191,16 +191,18 @@ bool Laser::collides_with(const Player &player) {
     vec2 playerbox = player.get_bounding_box();
 
 
-    float lx = m_origin.x - LASER_WIDTH/2;
+    float lx = m_origin.x - LASER_WIDTH/3;
     vec2 p00 = {lx, m_origin.y};
     vec2 p01 = { lx + 2000*sinf(m_rotation), m_origin.y + 2000*cosf(m_rotation)};
 
-    float rx = m_origin.x + LASER_WIDTH/2;
+    float rx = m_origin.x + LASER_WIDTH/3;
     vec2 p10 = {rx, m_origin.y};
     vec2 p11 = {rx + 2000*sinf(m_rotation), m_origin.y + 2000*cosf(m_rotation)};
 
-    vec2 tl = {playerpos.x - playerbox.x/2, playerpos.y - playerbox.y/2};
-    vec2 br = {playerpos.x + playerbox.x/2, playerpos.y + playerbox.y/2};
+    float w = playerbox.x/2;
+    float h = playerbox.y/2;
+    vec2 tl = {playerpos.x - w, playerpos.y - h};
+    vec2 br = {playerpos.x + w, playerpos.y + h};
     return (CohenSutherlandLineClipAndDraw(p00, p01, tl, br) ||
             CohenSutherlandLineClipAndDraw(p10, p11, tl, br));
 }
