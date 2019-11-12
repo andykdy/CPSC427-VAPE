@@ -244,6 +244,8 @@ void Boss2::update(float ms) {
         laser->update(ms);
     }
 
+    if (health <= 0)
+        return;
     if (m_pattern_timer > 0)
         m_pattern_timer -= ms;
     else {
