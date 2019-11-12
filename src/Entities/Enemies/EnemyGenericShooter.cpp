@@ -18,8 +18,8 @@ using namespace std;
 
 namespace
 {
-    const size_t BURST_COOLDOWN_MS = 800;
-    const size_t BULLET_COOLDOWN_MS = 100;
+    const size_t BURST_COOLDOWN_MS = 1000;
+    const size_t BULLET_COOLDOWN_MS = 200;
 }
 
 bool EnemyGenericShooter::init() {
@@ -144,7 +144,6 @@ void EnemyGenericShooter::set_velocity(vec2 velocity) {
 }
 
 void EnemyGenericShooter::spawnBullet() {
-    fprintf(stderr, "spawned\n");
     auto* motion = getComponent<MotionComponent>();
     Bullet* bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
     if (bullet->init(motion->position, motion->radians+ 3.14)) {
