@@ -47,6 +47,7 @@ bool Bullet::init(vec2 position, float rotation) {
         return false;
 
     physics->scale = {0.4f, 0.4f};
+    motion->velocity = {0.f,0.f};
 
     motion->radians = rotation;
     // place bullet n away from center of entity
@@ -83,7 +84,7 @@ void Bullet::draw(const mat3 &projection) {
     transform->begin();
     transform->translate(motion->position);
     transform->scale(physics->scale);
-    transform->rotate(motion->radians - 3.14f);
+    transform->rotate(-motion->radians - 3.14f);
     transform->end();
 
     sprite->draw(projection, transform->out, effect->program);
