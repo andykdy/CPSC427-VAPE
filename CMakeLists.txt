@@ -115,7 +115,8 @@ set(SOURCE_FILES
     src/Entities/UI/Vamp/VampBar.cpp 
     src/Entities/UI/Vamp/VampBar.hpp 
     src/Entities/Enemies/EnemyGenericShooter.cpp 
-    src/Entities/Enemies/EnemyGenericShooter.hpp)
+    src/Entities/Enemies/EnemyGenericShooter.hpp
+    src/Entities/Debugging/DebugDot.cpp src/Entities/Debugging/DebugDot.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

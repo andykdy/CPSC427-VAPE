@@ -26,6 +26,8 @@ bool Boss2::init(vec2 screen) {
     m_healthbar = &GameEngine::getInstance().getEntityManager()->addEntity<BossHealth>();
     m_healthbar->init(screen, INIT_HEALTH);
 
+    m_vertices.clear();
+
     gl_flush_errors();
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
@@ -53,7 +55,21 @@ bool Boss2::init(vec2 screen) {
     if (gl_has_errors())
         return false;
 
-    // TODO mesh for complex collisions
+    // Collision Mesh //TODO mesh scaling?
+    FILE* mesh_file = fopen(mesh_path("boss2.testmesh"), "r");
+    size_t num_vertices;
+    fscanf(mesh_file, "%zu\n", &num_vertices);
+    for (size_t i = 0; i < num_vertices; ++i)
+    {
+        float x, y;
+        fscanf(mesh_file, "%f %f\n", &x, &y);
+        Vertex vertex;
+        vertex.position = { x, y, -0.01f };
+        vertex.color = { 1.f,1.f,1.f };
+        m_vertices.push_back(vertex);
+    }
+    m_dot.init();
+
 
     motion->position = {0.f, 0.f };
     motion->radians = 0;
@@ -71,6 +87,7 @@ bool Boss2::init(vec2 screen) {
 
 void Boss2::destroy() {
     m_healthbar->destroy();
+    m_dot.destroy();
 
     for (auto laser : projectiles)
         laser->destroy();
@@ -111,6 +128,20 @@ void Boss2::draw(const mat3 &projection) {
 
     sprite->draw(projection, transform->out, effect->program);
 
+    // Vertex Debug Drawing
+    /*
+    for (auto& vertex : m_vertices) {
+        transform->begin();
+        transform->translate(motion->position);
+        transform->scale({215.f,215.f});
+        transform->rotate(motion->radians + 1.5708f);
+        transform->end();
+
+        vec3 pos = mul(transform->out, vec3{vertex.position.x, vertex.position.y, 1.0});
+        m_dot.draw(projection, {1.f,1.f,1.f}, {pos.x, pos.y}, 0);
+    }
+     */
+
     m_healthbar->draw(projection);
 }
 
@@ -121,7 +152,7 @@ vec2 Boss2::get_position() const {
 
 void Boss2::set_position(vec2 position) {
     auto* motion = getComponent<MotionComponent>();
-    motion->position = position;
+    motion->position = {position.x, position.y + 25};
 }
 
 vec2 Boss2::get_bounding_box() const {
@@ -149,14 +180,32 @@ bool Boss2::checkCollision(vec2 pos, vec2 box) const {
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
 
-    float dx = motion->position.x - pos.x;
-    float dy = motion->position.y - pos.y;
-    float d_sq = dx * dx + dy * dy;
-    float other_r = std::max(box.x, box.y);
-    float my_r = std::max(physics->scale.x, physics->scale.y);
-    float r = std::max(other_r, my_r);
-    r *= 0.6f;
-    if (d_sq < r * r)
-        return true;
+    // bounding box slightly larger than sprite
+    vec2 bbox = { (std::fabs(physics->scale.x)+0.1f) * boss2_texture.width, (std::fabs(physics->scale.y)+0.1f) * boss2_texture.height };
+
+    // AABB Bounding box check first
+    if ( !((fabs(motion->position.x - pos.x) * 2 < (bbox.x + box.x)) &&
+         (fabs(motion->position.y - pos.y) * 2 < (bbox.y + box.y)))) {
+         return false;
+    }
+
+    auto* transform = getComponent<TransformComponent>();
+    // For each vertex, check if within the other
+    for(auto vertex : m_vertices) {
+        transform->begin();
+        transform->translate(motion->position);
+        transform->scale({215.f,215.f});
+        transform->rotate(motion->radians + 1.5708f);
+        transform->end();
+        vec3 vpos = mul(transform->out, vec3{vertex.position.x, vertex.position.y, 1.0});
+        float w = box.x/2;
+        float h = box.y/2;
+        if (vpos.x >= pos.x - w &&
+            vpos.x <= pos.x + w &&
+            vpos.y >= pos.y - h &&
+            vpos.y <= pos.y + h) {
+            return true;
+        }
+    }
     return false;
 }
