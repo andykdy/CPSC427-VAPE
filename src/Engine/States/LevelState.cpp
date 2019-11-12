@@ -159,7 +159,7 @@ void LevelState::update(float ms) {
     if (m_level_time >= m_level.bossTime && !m_boss_mode) {
 		m_dialogue.deactivate();
         m_boss_mode = true;
-        m_boss->set_position({static_cast<float>(w/2), static_cast<float>(h/10)});
+        m_boss->set_position({static_cast<float>(screen.x/2), static_cast<float>(screen.y/10)});
     }
 
     m_health->setHealth(m_player->get_health());
@@ -404,8 +404,12 @@ void LevelState::update(float ms) {
             while (boss_bullet_it != bossBullets.end()) {
                 if ((*boss_bullet_it)->collides_with(*m_player))
                 {
-                    (*boss_bullet_it)->destroy();
-                    boss_bullet_it = bossBullets.erase(boss_bullet_it);
+                    if ((*boss_bullet_it)->shouldErase()){
+                        (*boss_bullet_it)->destroy();
+                        boss_bullet_it = bossBullets.erase(boss_bullet_it);
+                    } else {
+                        ++boss_bullet_it;
+                    }
                     if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
                         m_player->set_iframes(500.f);
                         lose_health(DAMAGE_BOSS);

@@ -8,16 +8,129 @@
 #include <Components/PhysicsComponent.hpp>
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
+#include <Entities/Projectiles and Damaging/Laser.hpp>
 #include "Boss2.hpp"
 
 
 // Same as static in c, local to compilation unit
 namespace
 {
-    const size_t INIT_HEALTH = 100;
+    const size_t INIT_HEALTH = 300;
     const size_t SPRITE_FRAMES = 4;
     const size_t SPRITE_W = 264;
     const size_t SPRITE_H = 88;
+    const size_t DAMAGE_EFFECT_TIME = 100;
+
+    const std::vector<vec2> hardpoints = {
+            {44,76},
+            {76,72},
+                    // TODO bullet hardpoints too?
+            {123,85},
+            {140,85},
+
+            {187,72},
+            {219,76}
+    };
+
+    const vec2 SPRITE_SCALE = {4.5f, 4.5f};
+    const vec2 MESH_SCALE = {380.f, 380.f};
+
+
+    const size_t CHARGE0 = 3000;
+    const size_t FIRE0 = 5000;
+
+    const AttackPattern EZ1346 = {
+            {true, false, true, true, false, true},
+            // {0,0,0,0,0,0},
+            {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
+            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
+            8100
+    };
+
+
+    const AttackPattern EZ25 = {
+            {false, true, false, false, true, false},
+            // {0,0,0,0,0,0},
+            {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
+            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
+            8100
+    };
+
+
+    const AttackPattern EZ123 = {
+            {true, true, true, false, false, false},
+            // {0,0,0,0,0,0},
+            {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
+            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
+            8100
+    };
+
+    const AttackPattern EZ456 = {
+            {false, false, false, true, true, true},
+            // {0,0,0,0,0,0},
+            {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
+            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
+            8100
+    };
+
+    const AttackPattern EZ2345 = {
+            {false, true, true, true, true, false},
+            // {0,0,0,0,0,0},
+            {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
+            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
+            8100
+    };
+
+    const std::vector<AttackPattern> EasyPatterns = {
+            EZ1346,
+            EZ25,
+            EZ123,
+            EZ456,
+            EZ2345
+    };
+
+
+    const size_t CHARGE1 = 1500;
+    const size_t FIRE1 = 3000;
+
+    const AttackPattern M12346 = {
+            {true, false, true, true, false, true},
+            // {0,0,0,0,0,0},
+            {CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1},
+            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
+            4700
+    };
+
+    const AttackPattern M12345 = {
+            {true, true, true, true, true, false},
+            // {0,0,0,0,0,0},
+            {CHARGE1-500,CHARGE1,CHARGE1+500,CHARGE1+1000,CHARGE1+1500,CHARGE0},
+            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
+            6100
+    };
+
+    const AttackPattern MZ123 = {
+            {true, true, true, false, false, false},
+            // {0,0,0,0,0,0},
+            {CHARGE1-500,CHARGE1,CHARGE1+500,CHARGE0,CHARGE0,CHARGE0},
+            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
+            4600
+    };
+
+    const AttackPattern MZ456 = {
+            {false, false, false, true, true, true},
+            // {0,0,0,0,0,0},
+            {CHARGE0,CHARGE0,CHARGE0,CHARGE1+500,CHARGE1,CHARGE1-500},
+            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
+            4600
+    };
+
+    const std::vector<AttackPattern> MediumPatterns = {
+            M12346,
+            M12345,
+            MZ123,
+            MZ456,
+    };
 }
 
 Texture Boss2::boss2_texture;
@@ -55,7 +168,7 @@ bool Boss2::init(vec2 screen) {
     if (gl_has_errors())
         return false;
 
-    // Collision Mesh //TODO mesh scaling?
+    // Collision Mesh
     FILE* mesh_file = fopen(mesh_path("boss2.testmesh"), "r");
     size_t num_vertices;
     fscanf(mesh_file, "%zu\n", &num_vertices);
@@ -73,14 +186,25 @@ bool Boss2::init(vec2 screen) {
 
     motion->position = {0.f, 0.f };
     motion->radians = 0;
-    motion->velocity = {0.f, 0.f}; // TODO switch to using velocity / motion system
+    motion->velocity = {0.f, 0.f};
 
     // Setting initial values, scale is negative to make it face the opposite way
     // 1.0 would be as big as the original texture.
-    physics->scale = { 2.5f, 2.5f };
+    physics->scale = SPRITE_SCALE;
 
     health = INIT_HEALTH;
     m_is_alive = true;
+
+    // Initialize lasers
+    for (vec2 hardpoint : hardpoints) {
+        Laser* laser = &GameEngine::getInstance().getEntityManager()->addEntity<Laser>();
+        laser->init({0,0}, 0);
+        laser->setState(laserState::off);
+
+        // In projectiles for levelstate to use, but also in m_lasers for us to do laser-specific functions
+        projectiles.push_back(laser);
+        m_lasers.push_back(laser);
+    }
 
     return true;
 }
@@ -102,11 +226,66 @@ void Boss2::destroy() {
 }
 
 void Boss2::update(float ms) {
-    m_healthbar->setHealth(health);
+    auto* motion = getComponent<MotionComponent>();
+    auto* physics = getComponent<PhysicsComponent>();
 
-    // Update bullets
-    for (auto laser : projectiles)
+    m_healthbar->setHealth(health);
+    if (m_damage_effect_cooldown > 0)
+        m_damage_effect_cooldown -= ms;
+
+    // Update lasers
+    vec2 bbox = get_bounding_box();
+    float left = motion->position.x - bbox.x/2;
+    float top = motion->position.y - bbox.y/2;
+    for (int i = 0; i < hardpoints.size(); i++) {
+        m_lasers[i]->set_position({hardpoints[i].x*physics->scale.x  + left, hardpoints[i].y*physics->scale.y + top});
+    }
+    for (auto laser : projectiles) {
         laser->update(ms);
+    }
+
+    if (health <= 0)
+        return;
+    if (m_pattern_timer > 0)
+        m_pattern_timer -= ms;
+    else {
+        if (health > INIT_HEALTH/2) {
+            bool retry = true;
+            while(retry) {
+                float randi = rand() % EasyPatterns.size();
+                if (m_pattern == EasyPatterns[randi]) {
+                    continue;
+                } else {
+                    retry = false;
+                    m_pattern = EasyPatterns[randi];
+                }
+            }
+        } else {
+            bool retry = true;
+            while(retry) {
+                float randi = rand() % MediumPatterns.size();
+                if (m_pattern == MediumPatterns[randi]) {
+                    continue;
+                } else {
+                    retry = false;
+                    m_pattern = MediumPatterns[randi];
+                }
+            }
+        }
+        fireLasers(m_pattern);
+    }
+}
+
+void Boss2::fireLasers(AttackPattern pattern) {
+    for (int i = 0; i < 6; i++) {
+        Laser* laser = m_lasers[i];
+
+        if (pattern.lasers[i]) {
+            laser->fire(pattern.chargeTime[i], pattern.fireTime[i]);
+        }
+        // laser->setRotationTarget(pattern.rotations[i]);
+    }
+    m_pattern_timer = pattern.nextPatternDelay;
 }
 
 void Boss2::draw(const mat3 &projection) {
@@ -126,21 +305,23 @@ void Boss2::draw(const mat3 &projection) {
     transform->rotate(motion->radians);
     transform->end();
 
-    sprite->draw(projection, transform->out, effect->program);
+    float mod = 1;
+    if (m_damage_effect_cooldown > 0)
+        mod = 1/m_damage_effect_cooldown;
+
+    sprite->draw(projection, transform->out, effect->program, {1.f, mod * 1.f,mod * 1.f});
 
     // Vertex Debug Drawing
-    /*
     for (auto& vertex : m_vertices) {
         transform->begin();
         transform->translate(motion->position);
-        transform->scale({215.f,215.f});
+        transform->scale(MESH_SCALE);
         transform->rotate(motion->radians + 1.5708f);
         transform->end();
 
         vec3 pos = mul(transform->out, vec3{vertex.position.x, vertex.position.y, 1.0});
         m_dot.draw(projection, {1.f,1.f,1.f}, {pos.x, pos.y}, 0);
     }
-     */
 
     m_healthbar->draw(projection);
 }
@@ -152,7 +333,7 @@ vec2 Boss2::get_position() const {
 
 void Boss2::set_position(vec2 position) {
     auto* motion = getComponent<MotionComponent>();
-    motion->position = {position.x, position.y + 25};
+    motion->position = {position.x, position.y};
 }
 
 vec2 Boss2::get_bounding_box() const {
@@ -163,7 +344,7 @@ vec2 Boss2::get_bounding_box() const {
 }
 
 void Boss2::addDamage(int damage) {
-    // TODO damage indication
+    m_damage_effect_cooldown = DAMAGE_EFFECT_TIME;
     Boss::addDamage(damage);
 }
 
@@ -176,12 +357,11 @@ bool Boss2::collidesWith(const Player &player) {
 }
 
 bool Boss2::checkCollision(vec2 pos, vec2 box) const {
-    // TODO replace with complex collision checking
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
 
     // bounding box slightly larger than sprite
-    vec2 bbox = { (std::fabs(physics->scale.x)+0.1f) * boss2_texture.width, (std::fabs(physics->scale.y)+0.1f) * boss2_texture.height };
+    vec2 bbox = { (std::fabs(physics->scale.x)+0.1f) * SPRITE_W, (std::fabs(physics->scale.y)+0.1f) * SPRITE_H };
 
     // AABB Bounding box check first
     if ( !((fabs(motion->position.x - pos.x) * 2 < (bbox.x + box.x)) &&
@@ -190,11 +370,11 @@ bool Boss2::checkCollision(vec2 pos, vec2 box) const {
     }
 
     auto* transform = getComponent<TransformComponent>();
-    // For each vertex, check if within the other
+    // For each vertex, check if within the area
     for(auto vertex : m_vertices) {
         transform->begin();
         transform->translate(motion->position);
-        transform->scale({215.f,215.f});
+        transform->scale(MESH_SCALE);
         transform->rotate(motion->radians + 1.5708f);
         transform->end();
         vec3 vpos = mul(transform->out, vec3{vertex.position.x, vertex.position.y, 1.0});
@@ -208,4 +388,15 @@ bool Boss2::checkCollision(vec2 pos, vec2 box) const {
         }
     }
     return false;
+}
+
+bool AttackPattern::operator==(const AttackPattern &rhs) const {
+    return lasers == rhs.lasers &&
+           chargeTime == rhs.chargeTime &&
+           fireTime == rhs.fireTime &&
+           nextPatternDelay == rhs.nextPatternDelay;
+}
+
+bool AttackPattern::operator!=(const AttackPattern &rhs) const {
+    return !(rhs == *this);
 }
