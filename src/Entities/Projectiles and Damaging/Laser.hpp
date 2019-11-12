@@ -37,7 +37,12 @@ public:
 
     bool isOffScreen(const vec2 &screen) override;
 
+    inline laserState getState() const { return m_state; };
     inline void setState(laserState state) { m_state = state; };
+
+    void fire(float chargeDur = 3000, float fireDur = 5000);
+    inline void setRotationTarget(float rotation) { m_rotationTarget = rotation; };
+    void setRotationTarget(vec2 position);
 private:
     vec2 m_origin;
     float m_rotation;
@@ -45,6 +50,12 @@ private:
     std::vector<Particle> m_particles;
     GLuint m_vbo;
     GLuint m_instance_vbo;
+
+    float m_chargeTimer;
+    float m_fireTimer;
+
+    float m_rotationTarget;
+
 
     void spawn();
 };

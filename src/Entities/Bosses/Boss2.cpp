@@ -102,7 +102,7 @@ bool Boss2::init(vec2 screen) {
     for (vec2 hardpoint : hardpoints) {
         Laser* laser = &GameEngine::getInstance().getEntityManager()->addEntity<Laser>();
         laser->init({0,0}, 0);
-        laser->setState(laserState::firing); // TODO remove
+        laser->setState(laserState::off);
 
         // In projectiles for levelstate to use, but also in m_lasers for us to do laser-specific functions
         projectiles.push_back(laser);
@@ -147,6 +147,12 @@ void Boss2::update(float ms) {
         laser->update(ms);
     }
 
+    if (m_test_timer > 0)
+        m_test_timer -= ms;
+    else {
+        m_test_timer = 10000;
+        m_lasers[2]->fire();
+    }
     // TODO behavior - laser patterns
 }
 

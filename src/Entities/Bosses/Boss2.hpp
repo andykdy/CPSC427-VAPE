@@ -9,6 +9,14 @@
 #include <Entities/Debugging/DebugDot.hpp>
 #include "Boss.hpp"
 
+struct AttackPattern {
+    bool lasers[6] = {false,false,false,false,false,false};
+    float rotations[6] = {0,0,0,0,0,0};
+    float chargeTime[6] = {0,0,0,0,0,0}; // TODO
+    float fireTime[6] = {0,0,0,0,0,0}; // TODO
+    float nextPatternDelay = 0; // TODO
+};
+
 class Laser;
 
 class Boss2 : public Boss {
@@ -53,6 +61,8 @@ private:
     float m_damage_effect_cooldown;
 
     std::vector<Laser*> m_lasers;
+
+    float m_test_timer;
 };
 
 #endif //VAPE_BOSS2_HPP

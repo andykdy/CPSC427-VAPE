@@ -62,6 +62,10 @@ bool Laser::init(vec2 position, float rotation) {
     m_origin = position;
     m_erase_on_collide = false;
     m_rotation = rotation;
+    m_rotationTarget = rotation;
+    m_chargeTimer = 0;
+    m_fireTimer = 0;
+    m_state = laserState::off;
     return true;
 }
 
@@ -73,7 +77,40 @@ void Laser::destroy() {
 }
 
 void Laser::update(float ms) {
-    // TODO
+
+    // Update timers
+    if (m_state == laserState::primed){
+        if (m_chargeTimer > 0)
+            m_chargeTimer -= ms;
+        else {
+            m_chargeTimer = 0;
+            m_state = laserState::firing;
+        }
+    }
+    if (m_state == laserState::firing) {
+        if (m_fireTimer > 0)
+            m_fireTimer -= ms;
+        else {
+            m_fireTimer = 0;
+            m_state = laserState::off;
+        }
+    }
+
+    // Rotate towards target
+    if (m_rotationTarget != m_rotation) {
+        float step = 100 * (ms / 1000);
+        if (m_rotationTarget < m_rotation) {
+            m_rotation -= step;
+            if (m_rotation < m_rotationTarget)
+                m_rotation = m_rotationTarget;
+        } else {
+            m_rotation += step;
+            if (m_rotation > m_rotationTarget)
+                m_rotation = m_rotationTarget;
+        }
+    }
+
+    // Particle Effects
     spawn();
 
     for (auto& particle : m_particles) {
@@ -118,7 +155,7 @@ void Laser::spawn() {
         p.position = {randx, randy};
         p.velocity = vel;
         p.life = 2000;
-        p.color = {1.f,1.f,1.f,1.f};
+        p.color = {1.f,1.f,1.f,0.5f};
         if (m_state == laserState::firing) {
             float mod = (std::fabs(randx - m_origin.x) / LASER_WIDTH/2);
             p.color = {1.f * mod, 1.f * mod, 1.f, 1.f};
@@ -217,4 +254,14 @@ bool Laser::collides_with(const Boss &boss) {
 
 bool Laser::isOffScreen(const vec2 &screen) {
     return false;
+}
+
+void Laser::fire(float chargeDur, float fireDur) {
+    m_state = laserState::primed;
+    m_chargeTimer = chargeDur;
+    m_fireTimer = fireDur;
+}
+
+void Laser::setRotationTarget(vec2 position) {
+    setRotationTarget(atan2f(position.x - m_origin.x, position.y - m_origin.y));
 }

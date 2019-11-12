@@ -103,8 +103,6 @@ void EnemyTargettedShooter::update(float ms) {
 
         float angle = atan2(dx, dy);
 
-        cout << angle << endl;
-
         motion->radians = angle - M_PI;
     } else {
         motion->radians = M_PI;

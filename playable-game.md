@@ -90,3 +90,6 @@ Bullets and player collide with it using accurate collision detection.
 
 For efficiency, an axis-aligned bounding box check is performed first, using a slightly larger box than the texture.
 If that passes, the boss' vertices are checked against the player's collision box for any collisions.
+
+And not sure if it counts for complex collisions, but we use Cohen-Sutherland algorithm (https://en.wikipedia.org/wiki/Cohen%E2%80%93Sutherland_algorithm)
+to test two rays check for collisions between boss2's lasers and the player.
