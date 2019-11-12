@@ -8,7 +8,6 @@
 #include <Engine/ECS/Entity.hpp>
 #include "Entities/Enemies/Enemy.hpp"
 
-class Turtle;
 class Fish;
 class Projectile;
 class Enemy;
