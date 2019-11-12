@@ -32,8 +32,8 @@ namespace
             {219,76}
     };
 
-    const vec2 SPRITE_SCALE = {3.5, 3.5f};
-    const vec2 MESH_SCALE = {300.f, 300.f};
+    const vec2 SPRITE_SCALE = {4.f, 4.f};
+    const vec2 MESH_SCALE = {340.f, 340.f};
 }
 
 Texture Boss2::boss2_texture;
@@ -141,8 +141,6 @@ void Boss2::update(float ms) {
     float left = motion->position.x - bbox.x/2;
     float top = motion->position.y - bbox.y/2;
     for (int i = 0; i < hardpoints.size(); i++) {
-        std::cout << left << "," << top << std::endl;
-        std::cout << hardpoints[i].x*physics->scale.x << "," << hardpoints[i].y*physics->scale.y << std::endl << std::endl;
         m_lasers[i]->set_position({hardpoints[i].x*physics->scale.x  + left, hardpoints[i].y*physics->scale.y + top});
     }
     for (auto laser : projectiles) {

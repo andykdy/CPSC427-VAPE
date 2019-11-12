@@ -3,14 +3,17 @@
 // Input attributes
 layout (location = 0) in vec3 in_position;
 layout (location = 1) in vec3 in_translate;
+layout (location = 2) in vec4 in_color;
 
 uniform mat3 projection;
 
 out vec2 vpos;
+out vec4 vcolor;
 
 void main()
 {
     vpos = in_position.xy;
+    vcolor = in_color;
 
     mat3 transform = mat3(
     1.0, 0.0, 0.0,

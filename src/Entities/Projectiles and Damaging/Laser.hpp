@@ -20,6 +20,7 @@ class Laser : public Projectile {
         float life = 0.0f; // remove pebble when its life reaches 0
         vec2 position{0,0};
         vec2 velocity{0,0};
+        vec4 color {1.f,1.f,1.f,1.f};
     };
 public:
     bool init(vec2 position, float rotation) override;

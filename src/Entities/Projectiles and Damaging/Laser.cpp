@@ -55,7 +55,7 @@ bool Laser::init(vec2 position, float rotation) {
     if (gl_has_errors())
         return false;
 
-    // TODO init
+    // TODO do a texture too
 
 
     m_origin = position;
@@ -93,7 +93,7 @@ void Laser::update(float ms) {
 
 void Laser::spawn() {
     int n = 0;
-    vec2 vel = {0,0};
+    vec2 vel = {0,2000};
     float xmin = m_origin.x - 10;
     float xmax = m_origin.x + 10;
     float ymin = m_origin.y - 10;
@@ -101,10 +101,8 @@ void Laser::spawn() {
 
     if (m_state == laserState::firing) {
         n = 50;
-        vel = {0,1000};
     } else if (m_state == laserState::primed) {
         n = 10;
-        vel = {0,500};
         xmin = m_origin.x - 1;
         xmax = m_origin.x + 1;
     }
@@ -113,11 +111,16 @@ void Laser::spawn() {
         m_particles.emplace_back();
         Particle& p = m_particles.back();
 
-        float randx = rand() % (int)(xmax-xmin) + (int)xmin; // TODO normalize so more in center? Or actually probably switch entire strat to having a texture behind, and focus them on the sides?
+        float randx = rand() % (int)(xmax-xmin) + (int)xmin;
         float randy = rand() % (int)(ymax-ymin) + (int)ymin;
         p.position = {randx, randy};
         p.velocity = vel;
         p.life = 2000;
+        p.color = {1.f,1.f,1.f,1.f};
+        if (m_state == laserState::firing) {
+            float mod = (std::fabs(randx - m_origin.x) / 10);
+            p.color = {1.f * mod, 1.f * mod, 1.f, 1.f};
+        }
     }
 }
 
@@ -162,12 +165,17 @@ void Laser::draw(const mat3 &projection) {
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (GLvoid*)offsetof(Particle, position));
     glVertexAttribDivisor(1, 1);
 
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (GLvoid*)offsetof(Particle, color));
+    glVertexAttribDivisor(2, 1);
+
     // Draw using instancing
     // https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glDrawArraysInstanced.xhtml
     glDrawArraysInstanced(GL_TRIANGLES, 0, NUM_SEGMENTS*3, m_particles.size());
 
     // Reset divisor
     glVertexAttribDivisor(1, 0);
+    glVertexAttribDivisor(2, 0);
 }
 
 vec2 Laser::get_position() const {
