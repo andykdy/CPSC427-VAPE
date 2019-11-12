@@ -7,6 +7,7 @@
 
 #include <Engine/ECS/Entity.hpp>
 #include <Entities/Enemies/Enemy.hpp>
+#include <Entities/Projectiles and Damaging/Projectile.hpp>
 #include "common.hpp"
 
 // Player enemy
@@ -38,6 +39,14 @@ public:
     vec2 get_bounding_box() const override;
 
     void set_velocity(vec2 velocity) override;
+
+private:
+    std::vector<Projectile*> projectiles;
+    float m_bullet_cooldown;
+    unsigned int m_burst_count;
+    float m_burst_cooldown;
+
+    void spawnBullet();
 };
 
 #endif //VAPE_ENEMYGENERICSHOOTER_HPP

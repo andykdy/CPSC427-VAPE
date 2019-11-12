@@ -79,6 +79,11 @@ namespace Levels {
                       genSpawn(spawn < Turtle > , {-200, 600}, TR, 0.f)
     };
 
+    const Wave LM3Generic = {genSpawn(spawn < EnemyGenericShooter > , {-100, 200}, TR, 0.f),
+                             genSpawn(spawn < EnemyGenericShooter > , {-150, 400}, TR, 0.f),
+                             genSpawn(spawn < EnemyGenericShooter > , {-200, 600}, TR, 0.f)
+    };
+
     const Wave LM3Fast = {genSpawn(spawn < Turtle > , {-100, 200}, TR2, 0.f),
                           genSpawn(spawn < Turtle > , {-150, 400}, TR2, 0.f),
                           genSpawn(spawn < Turtle > , {-200, 600}, TR2, 0.f)

@@ -10,9 +10,17 @@
 #include <Components/PhysicsComponent.hpp>
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
+#include <Entities/Projectiles and Damaging/bullet.hpp>
+#include <Engine/GameEngine.hpp>
 
 Texture EnemyGenericShooter::texture;
 using namespace std;
+
+namespace
+{
+    const size_t BURST_COOLDOWN_MS = 800;
+    const size_t BULLET_COOLDOWN_MS = 100;
+}
 
 bool EnemyGenericShooter::init() {
     auto* sprite = addComponent<SpriteComponent>();
@@ -24,7 +32,7 @@ bool EnemyGenericShooter::init() {
     // Load shared texture
     if (!texture.is_valid())
     {
-        if (!texture.load_from_file(textures_path("turtle.png")))
+        if (!texture.load_from_file(textures_path("turtle2.png")))
         {
             fprintf(stderr, "Failed to load turtle texture!");
             return false;
@@ -42,12 +50,16 @@ bool EnemyGenericShooter::init() {
     if (gl_has_errors())
         return false;
 
-    motion->radians = (rand() % 4) * 3.14f / 4;
+    motion->radians = M_PI;
     motion->velocity = {0.f, 180.f};
 
     // Setting initial values, scale is negative to make it face the opposite way
     // 1.0 would be as big as the original texture.
-    physics->scale = { -0.33f, 0.33f };
+    physics->scale = { -0.28f, 0.28f };
+
+    m_burst_count = 0;
+    m_burst_cooldown = BURST_COOLDOWN_MS;
+    m_bullet_cooldown = 0;
 
     return true;
 }
@@ -56,14 +68,42 @@ void EnemyGenericShooter::destroy() {
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();
 
+    for (auto bullet : projectiles)
+        bullet->destroy();
+    projectiles.clear();
+
     effect->release();
     sprite->release();
     ECS::Entity::destroy();
 }
 
-void EnemyGenericShooter::update(float ms) {}
+void EnemyGenericShooter::update(float ms) {
+    // Update bullets
+    for (auto bullet : projectiles)
+        bullet->update(ms);
+
+    // shoot
+    if (m_burst_cooldown > 0) {
+        m_burst_cooldown -= ms;
+    } else {
+        if (m_burst_count >= 3) {
+            m_burst_count = 0;
+            m_burst_cooldown = BURST_COOLDOWN_MS;
+        } else if (m_bullet_cooldown > 0) {
+            m_bullet_cooldown -= ms;
+        } else {
+            ++m_burst_count;
+            m_bullet_cooldown = BULLET_COOLDOWN_MS;
+            spawnBullet();
+        }
+    }
+}
 
 void EnemyGenericShooter::draw(const mat3 &projection) {
+    // Draw bullets
+    for (auto bullet : projectiles)
+        bullet->draw(projection);
+
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
     auto* motion = getComponent<MotionComponent>();
@@ -101,4 +141,15 @@ void EnemyGenericShooter::set_velocity(vec2 velocity) {
     auto* motion = getComponent<MotionComponent>();
     motion->velocity.x = velocity.x;
     motion->velocity.y = velocity.y;
+}
+
+void EnemyGenericShooter::spawnBullet() {
+    fprintf(stderr, "spawned\n");
+    auto* motion = getComponent<MotionComponent>();
+    Bullet* bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
+    if (bullet->init(motion->position, motion->radians+ 3.14)) {
+        projectiles.emplace_back(bullet);
+    } else {
+        throw std::runtime_error("Failed to spawn bullet");
+    }
 }
