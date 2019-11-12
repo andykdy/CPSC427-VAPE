@@ -34,6 +34,18 @@ namespace
 
     const vec2 SPRITE_SCALE = {4.5f, 4.5f};
     const vec2 MESH_SCALE = {380.f, 380.f};
+
+
+    const size_t CHARGE0 = 3000;
+    const size_t FIRE0 = 5000;
+
+    const AttackPattern A1 = {
+            {true, false, true, true, false, true},
+            {0,0,0,0,0,0},
+            {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
+            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
+            10000
+    };
 }
 
 Texture Boss2::boss2_texture;
@@ -147,13 +159,26 @@ void Boss2::update(float ms) {
         laser->update(ms);
     }
 
-    if (m_test_timer > 0)
-        m_test_timer -= ms;
+    if (m_pattern_timer > 0)
+        m_pattern_timer -= ms;
     else {
-        m_test_timer = 10000;
+        m_pattern = A1;
+        // TODO choose different pattern
+        fireLasers(m_pattern);
         m_lasers[2]->fire();
     }
-    // TODO behavior - laser patterns
+}
+
+void Boss2::fireLasers(AttackPattern pattern) {
+    for (int i = 0; i < 6; i++) {
+        Laser* laser = m_lasers[i];
+
+        if (pattern.lasers[i]) {
+            laser->fire(pattern.chargeTime[i], pattern.fireTime[i]);
+        }
+        laser->setRotationTarget(pattern.rotations[i]);
+    }
+    m_pattern_timer = pattern.nextPatternDelay;
 }
 
 void Boss2::draw(const mat3 &projection) {
