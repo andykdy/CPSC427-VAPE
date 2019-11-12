@@ -146,7 +146,7 @@ void EnemyGenericShooter::set_velocity(vec2 velocity) {
 void EnemyGenericShooter::spawnBullet() {
     auto* motion = getComponent<MotionComponent>();
     Bullet* bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
-    if (bullet->init(motion->position, motion->radians+ 3.14)) {
+    if (bullet->init(motion->position, motion->radians + 3.14f)) {
         projectiles.emplace_back(bullet);
     } else {
         throw std::runtime_error("Failed to spawn bullet");
