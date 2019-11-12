@@ -159,7 +159,7 @@ void LevelState::update(float ms) {
     if (m_level_time >= m_level.bossTime && !m_boss_mode) {
 		m_dialogue.deactivate();
         m_boss_mode = true;
-        m_boss->set_position({static_cast<float>(w/2), static_cast<float>(h/10)});
+        m_boss->set_position({static_cast<float>(screen.x/2), static_cast<float>(screen.y/10)});
     }
 
     m_health->setHealth(m_player->get_health());
