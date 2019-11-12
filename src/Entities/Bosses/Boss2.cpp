@@ -8,6 +8,7 @@
 #include <Components/PhysicsComponent.hpp>
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
+#include <Entities/Projectiles and Damaging/Laser.hpp>
 #include "Boss2.hpp"
 
 
@@ -19,6 +20,17 @@ namespace
     const size_t SPRITE_W = 264;
     const size_t SPRITE_H = 88;
     const size_t DAMAGE_EFFECT_TIME = 100;
+
+    const std::vector<vec2> hardpoints = {
+            {44,76},
+            {76,72},
+                    // TODO bullet hardpoints too?
+            {123,85},
+            {140,85},
+
+            {187,72},
+            {219,76}
+    };
 }
 
 Texture Boss2::boss2_texture;
@@ -83,8 +95,16 @@ bool Boss2::init(vec2 screen) {
     health = INIT_HEALTH;
     m_is_alive = true;
 
-    // TODO initailize lasers?
-    // TODO laser positions relative to sprite?
+    // Initialize lasers
+    for (vec2 hardpoint : hardpoints) {
+        Laser* laser = &GameEngine::getInstance().getEntityManager()->addEntity<Laser>();
+        laser->init({0,0}, 0);
+        laser->setState(laserState::firing); // TODO remove
+
+        // In projectiles for levelstate to use, but also in m_lasers for us to do laser-specific functions
+        projectiles.push_back(laser);
+        m_lasers.push_back(laser);
+    }
 
     return true;
 }
@@ -106,15 +126,27 @@ void Boss2::destroy() {
 }
 
 void Boss2::update(float ms) {
+    auto* motion = getComponent<MotionComponent>();
+    auto* physics = getComponent<PhysicsComponent>();
+
     m_healthbar->setHealth(health);
     if (m_damage_effect_cooldown > 0)
         m_damage_effect_cooldown -= ms;
 
-    // Update bullets
-    for (auto laser : projectiles)
+    // Update lasers
+    vec2 bbox = get_bounding_box();
+    float left = motion->position.x - bbox.x;
+    float top = motion->position.y - bbox.y;
+    for (int i = 0; i < hardpoints.size(); i++) {
+        std::cout << left << "," << top << std::endl;
+        std::cout << hardpoints[i].x*physics->scale.x << "," << hardpoints[i].y*physics->scale.y << std::endl << std::endl;
+        m_lasers[i]->set_position({hardpoints[i].x*physics->scale.x  + left, hardpoints[i].y*physics->scale.y + top});
+    }
+    for (auto laser : projectiles) {
         laser->update(ms);
+    }
 
-    // TODO behavior?
+    // TODO behavior - laser patterns
 }
 
 void Boss2::draw(const mat3 &projection) {
@@ -192,7 +224,7 @@ bool Boss2::checkCollision(vec2 pos, vec2 box) const {
     auto* physics = getComponent<PhysicsComponent>();
 
     // bounding box slightly larger than sprite
-    vec2 bbox = { (std::fabs(physics->scale.x)+0.1f) * boss2_texture.width, (std::fabs(physics->scale.y)+0.1f) * boss2_texture.height };
+    vec2 bbox = { (std::fabs(physics->scale.x)+0.1f) * SPRITE_W, (std::fabs(physics->scale.y)+0.1f) * SPRITE_H };
 
     // AABB Bounding box check first
     if ( !((fabs(motion->position.x - pos.x) * 2 < (bbox.x + box.x)) &&

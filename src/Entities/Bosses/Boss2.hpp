@@ -9,6 +9,8 @@
 #include <Entities/Debugging/DebugDot.hpp>
 #include "Boss.hpp"
 
+class Laser;
+
 class Boss2 : public Boss {
     // Shared between all turtles, no need to load one for each instance
     static Texture boss2_texture;
@@ -49,6 +51,8 @@ private:
     DebugDot m_dot;
     std::vector<Vertex> m_vertices;
     float m_damage_effect_cooldown;
+
+    std::vector<Laser*> m_lasers;
 };
 
 #endif //VAPE_BOSS2_HPP

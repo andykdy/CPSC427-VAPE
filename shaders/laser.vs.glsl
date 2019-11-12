@@ -7,12 +7,10 @@ layout (location = 1) in vec3 in_translate;
 uniform mat3 projection;
 
 out vec2 vpos;
-out vec3 vcolor;
 
 void main()
 {
     vpos = in_position.xy;
-    vcolor = in_color;
 
     mat3 transform = mat3(
     1.0, 0.0, 0.0,
