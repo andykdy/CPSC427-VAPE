@@ -15,7 +15,7 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-    const size_t INIT_HEALTH = 100;
+    const size_t INIT_HEALTH = 300;
     const size_t SPRITE_FRAMES = 4;
     const size_t SPRITE_W = 264;
     const size_t SPRITE_H = 88;
@@ -39,12 +39,96 @@ namespace
     const size_t CHARGE0 = 3000;
     const size_t FIRE0 = 5000;
 
-    const AttackPattern A1 = {
+    const AttackPattern EZ1346 = {
             {true, false, true, true, false, true},
-            {0,0,0,0,0,0},
+            // {0,0,0,0,0,0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            10000
+            8100
+    };
+
+
+    const AttackPattern EZ25 = {
+            {false, true, false, false, true, false},
+            // {0,0,0,0,0,0},
+            {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
+            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
+            8100
+    };
+
+
+    const AttackPattern EZ123 = {
+            {true, true, true, false, false, false},
+            // {0,0,0,0,0,0},
+            {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
+            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
+            8100
+    };
+
+    const AttackPattern EZ456 = {
+            {false, false, false, true, true, true},
+            // {0,0,0,0,0,0},
+            {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
+            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
+            8100
+    };
+
+    const AttackPattern EZ2345 = {
+            {false, true, true, true, true, false},
+            // {0,0,0,0,0,0},
+            {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
+            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
+            8100
+    };
+
+    const std::vector<AttackPattern> EasyPatterns = {
+            EZ1346,
+            EZ25,
+            EZ123,
+            EZ456,
+            EZ2345
+    };
+
+
+    const size_t CHARGE1 = 1500;
+
+    const AttackPattern M12346 = {
+            {true, false, true, true, false, true},
+            // {0,0,0,0,0,0},
+            {CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1},
+            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
+            6700
+    };
+
+    const AttackPattern M12345 = {
+            {true, true, true, true, true, false},
+            // {0,0,0,0,0,0},
+            {CHARGE1-500,CHARGE1,CHARGE1+500,CHARGE1+1000,CHARGE1+1500,CHARGE0},
+            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
+            8100
+    };
+
+    const AttackPattern MZ123 = {
+            {true, true, true, false, false, false},
+            // {0,0,0,0,0,0},
+            {CHARGE1-500,CHARGE1,CHARGE1+500,CHARGE0,CHARGE0,CHARGE0},
+            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
+            6600
+    };
+
+    const AttackPattern MZ456 = {
+            {false, false, false, true, true, true},
+            // {0,0,0,0,0,0},
+            {CHARGE0,CHARGE0,CHARGE0,CHARGE1+500,CHARGE1,CHARGE1-500},
+            {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
+            6600
+    };
+
+    const std::vector<AttackPattern> MediumPatterns = {
+            M12346,
+            M12345,
+            MZ123,
+            MZ456,
     };
 }
 
@@ -162,10 +246,30 @@ void Boss2::update(float ms) {
     if (m_pattern_timer > 0)
         m_pattern_timer -= ms;
     else {
-        m_pattern = A1;
-        // TODO choose different pattern
+        if (health > INIT_HEALTH/2) {
+            bool retry = true;
+            while(retry) {
+                float randi = rand() % EasyPatterns.size();
+                if (m_pattern == EasyPatterns[randi]) {
+                    continue;
+                } else {
+                    retry = false;
+                    m_pattern = EasyPatterns[randi];
+                }
+            }
+        } else {
+            bool retry = true;
+            while(retry) {
+                float randi = rand() % MediumPatterns.size();
+                if (m_pattern == MediumPatterns[randi]) {
+                    continue;
+                } else {
+                    retry = false;
+                    m_pattern = MediumPatterns[randi];
+                }
+            }
+        }
         fireLasers(m_pattern);
-        m_lasers[2]->fire();
     }
 }
 
@@ -176,7 +280,7 @@ void Boss2::fireLasers(AttackPattern pattern) {
         if (pattern.lasers[i]) {
             laser->fire(pattern.chargeTime[i], pattern.fireTime[i]);
         }
-        laser->setRotationTarget(pattern.rotations[i]);
+        // laser->setRotationTarget(pattern.rotations[i]);
     }
     m_pattern_timer = pattern.nextPatternDelay;
 }
@@ -281,4 +385,15 @@ bool Boss2::checkCollision(vec2 pos, vec2 box) const {
         }
     }
     return false;
+}
+
+bool AttackPattern::operator==(const AttackPattern &rhs) const {
+    return lasers == rhs.lasers &&
+           chargeTime == rhs.chargeTime &&
+           fireTime == rhs.fireTime &&
+           nextPatternDelay == rhs.nextPatternDelay;
+}
+
+bool AttackPattern::operator!=(const AttackPattern &rhs) const {
+    return !(rhs == *this);
 }

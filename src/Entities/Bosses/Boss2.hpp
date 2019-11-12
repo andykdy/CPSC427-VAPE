@@ -11,10 +11,14 @@
 
 struct AttackPattern {
     bool lasers[6];
-    float rotations[6];
+    // float rotations[6]; TODO rotation code for lasers is going to be annoying, so avoiding it for now
     float chargeTime[6]; // TODO
     float fireTime[6]; // TODO
     float nextPatternDelay; // TODO
+
+    bool operator==(const AttackPattern &rhs) const;
+
+    bool operator!=(const AttackPattern &rhs) const;
 };
 
 class Laser;
