@@ -187,6 +187,42 @@ void LevelState::update(float ms) {
 		}
     }
 
+	// Checking Enemy Bullet - Player collisions
+	for(auto& enemy: *m_turtles) {
+        auto& bullets = enemy->projectiles;
+
+        // Checking Enemy Bullet - Player collisions
+        auto bullet_it = bullets.begin();
+        while (bullet_it != bullets.end()) {
+            if ((*bullet_it)->collides_with(*m_player))
+            {
+                (*bullet_it)->destroy();
+                bullet_it = bullets.erase(bullet_it);
+                if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
+                    m_player->set_iframes(500.f);
+                    lose_health(DAMAGE_BOSS);
+                }
+                break;
+            } else {
+                ++bullet_it;
+            }
+        }
+
+        // Removing out of screen bullets
+        // TODO move into bullet class?
+        bullet_it = bullets.begin();
+        while(bullet_it != bullets.end()) {
+            if ((*bullet_it)->isOffScreen(screen))
+            {
+                (*bullet_it)->destroy();
+                bullet_it = bullets.erase(bullet_it);
+                continue;
+            } else {
+                ++bullet_it;
+            }
+        }
+	}
+
     // Check Pickup Collisions
     auto pickup_it = m_pickups.begin();
 	while (pickup_it != m_pickups.end()) {
