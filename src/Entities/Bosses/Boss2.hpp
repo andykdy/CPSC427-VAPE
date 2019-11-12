@@ -6,6 +6,7 @@
 #define VAPE_BOSS2_HPP
 
 
+#include <Entities/Debugging/DebugDot.hpp>
 #include "Boss.hpp"
 
 class Boss2 : public Boss {
@@ -45,7 +46,8 @@ public:
     bool checkCollision(vec2 pos, vec2 box) const override;
 
 private:
-
+    DebugDot m_dot;
+    std::vector<Vertex> m_vertices;
 };
 
 #endif //VAPE_BOSS2_HPP

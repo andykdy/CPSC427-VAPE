@@ -85,6 +85,8 @@ Player has his friction turned up high, since this isn't the kind of game you wa
 
 
 ## Complex Geometry
-TODO WIP - Boss 2 is going to be using a sprite texture, but a mesh for collisions. 
-Bullets and player will collide with it using accurate collision detection. Bounding box check for efficiency
+Boss 2 contains both a sprite texture for animation, and an internal mesh for collisions.
+Bullets and player collide with it using accurate collision detection. 
 
+For efficiency, an axis-aligned bounding box check is performed first, using a slightly larger box than the texture.
+If that passes, the boss' vertices are checked against the player's collision box for any collisions.
