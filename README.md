@@ -1,10 +1,10 @@
 #  CPSC427 2019 Winter 1
-![Image of logo](https://raw.github.students.cs.ubc.ca/CPSC427/vape_nation/master/data/textures/logo.png?token=AAABKUTAWTJ2BS3LG3YOITS5WO4WI)
+![Image of logo](data/textures/logo.png)
 # V.A.P.E. Nation (Vampire Astronaut Pirate Escape Nation)
 
 - Andrea Park 45168151
 - Andy (Dong Young) Kim 16785157
-- Cody Newman 35833145 - Most of my commits were under Cody Newman
+- Cody Newman 35833145
 - Matteo Alps-Mocellin 32909146
 - Sam Parhimchik 41037152
 - Tanha Kabir 10850155
