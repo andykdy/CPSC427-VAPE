@@ -98,6 +98,7 @@ private:
 	Dialogue m_dialogue;
 
     float m_level_time;
+    float m_vamp_cooldown;
 
     bool m_boss_pre;
     bool m_boss_mode;

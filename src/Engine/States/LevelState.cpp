@@ -32,6 +32,10 @@ namespace
     const size_t DAMAGE_ENEMY = 5;
     const size_t DAMAGE_BOSS = 5;
     const size_t VAMP_HEAL = 2;
+    const size_t VAMP_TIMER = 300;
+    const size_t VAMP_TIME_PER_POINT = 150;
+    const size_t VAMP_ACTIVATION_COOLDOWN = 300;
+
 }
 
 
@@ -78,6 +82,7 @@ void LevelState::init() {
     m_level_time = 0;
     m_boss_mode = false;
     m_boss_pre = false;
+    m_vamp_cooldown = 0;
 
     m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
     m_player->init(screen, INIT_HEALTH);
@@ -156,6 +161,7 @@ void LevelState::update(float ms) {
     vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
     m_level_time += ms;
+    m_vamp_cooldown -= ms;
 
     // To prepare for the boss, stop spawning enemies and change the music
     if (m_level_time >= m_level.bossTime - 5000 && !m_boss_pre) {
@@ -290,6 +296,7 @@ void LevelState::update(float ms) {
         turtle_it = m_turtles->begin();
         while (turtle_it != m_turtles->end()) {
             if (m_vamp.collides_with(**turtle_it)) {
+                // TODO - restructure
                 m_explosion.spawn((*turtle_it)->get_position());
                 Mix_PlayChannel(-1, m_player_explosion, 0);
                 (*turtle_it)->destroy();
@@ -341,27 +348,52 @@ void LevelState::update(float ms) {
         return;
     }
 
-    if (m_vamp_mode_charge >= 15 && keyMap[GLFW_KEY_ENTER]) {
-        m_vamp_mode = true;
-        m_vamp_mode_timer = VAMP_MODE_DURATION;
-        m_vamp_mode_charge = 0;
-        GameEngine::getInstance().setM_current_speed(0.5f);
-        m_vamp_charge->setVampCharge(0);
+    bool end_vamp_mode = false;
 
-        m_vamp.init(m_player->get_position());
+    if (keyMap[GLFW_KEY_ENTER] && m_vamp_cooldown <= 0) {
+        // TODO - restructure
+        m_vamp_cooldown = VAMP_ACTIVATION_COOLDOWN;
+
+        if (!m_vamp_mode && m_vamp_mode_charge >= 4)
+        {
+            m_vamp_mode = true;
+            // m_vamp_mode_timer = VAMP_MODE_DURATION;
+            // m_vamp_mode_charge = 0;
+            m_vamp_mode_charge -= 3;
+            std::cout << "subtracting 3" << std::endl;
+
+            GameEngine::getInstance().setM_current_speed(0.5f);
+            m_vamp_charge->setVampCharge(m_vamp_mode_charge);
+            m_vamp.init(m_player->get_position());
+        } else {
+            end_vamp_mode = true;
+//            GameEngine::getInstance().setM_current_speed(1.f);
+//            m_vamp_mode = false;
+//            m_vamp.destroy();
+        }
     }
 
-    if (m_vamp_mode_timer > 0.f) {
-        m_vamp_mode_timer -= ms;
-        m_vamp.update(ms, m_player->get_position());
+    if (m_vamp_mode) {
+        std::cout << "is vamp mode" << std::endl;
+        //m_vamp_mode_timer -= ms;
 
 
-        if (m_vamp_mode_timer <= 0.f) {
+        if (m_vamp_mode_charge <= 0 || end_vamp_mode) {
             GameEngine::getInstance().setM_current_speed(1.f);
             m_vamp_mode = false;
             m_vamp.destroy();
+        } else {
+            m_vamp.update(ms, m_player->get_position());
+            m_vamp_mode_timer += ms;
+            if (m_vamp_mode_timer >= 300.f) {
+                std::cout << "subtracting a point" << std::endl;
+                m_vamp_mode_charge -= 1;
+                m_vamp_mode_timer = 0;
+            }
         }
     }
+
+    std::cout << m_vamp_mode_charge << std::endl;
 
     // Removing out of screen bullets
     // TODO move into player code? do same thing for boss/enemy bullets?
