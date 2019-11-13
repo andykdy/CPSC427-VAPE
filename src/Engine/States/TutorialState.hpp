@@ -13,11 +13,12 @@
   // internal
 #include "common.hpp"
 #include "Entities/Player.hpp"
-#include "Entities/turtle.hpp"
+#include "Entities/Enemies/turtle.hpp"
 #include "Entities/Space.hpp"
-#include "Entities/bullet.hpp"
-#include "Entities/UI/Health.hpp"
-#include "Entities/Dialogue.hpp"
+#include "Entities/Projectiles and Damaging/bullet.hpp"
+#include "Entities/UI/PlayerHealth/Health.hpp"
+#include "Entities/UI/Dialogue.hpp"
+#include "Entities/UI/Continue.hpp"
 
 // stlib
 #include <vector>
@@ -25,13 +26,17 @@
 
 #include <Engine/GameState.hpp>
 #include <Entities/Vamp.hpp>
-#include <Entities/UI/VampCharge.hpp>
+#include <Entities/UI/Vamp/VampCharge.hpp>
+#include <Entities/Explosion.hpp>
+#include <Entities/UI/UIPanelBackground.hpp>
+#include <Entities/UI/UIPanel.hpp>
 
 enum Component {
 	initial,
 	movement,
 	shooting,
-	vamp,
+	vamp_1,
+	vamp_2,
 	clear
 };
 
@@ -64,7 +69,7 @@ private:
 	void lose_health(int damage);
 	void add_health(int heal);
 
-	void reset(vec2 screen);
+	void reset();
 
 	// Generates a new turtle
 	bool spawn_turtle();
@@ -87,6 +92,9 @@ private:
 	VampCharge* m_vamp_charge;
 	std::vector<Turtle*> m_turtles;
 	Dialogue m_dialogue;
+	Continue m_continue_UI;
+    UIPanelBackground* m_uiPanelBackground;
+    UIPanel* m_uiPanel ;
 
 	float m_next_turtle_spawn;
 	float m_next_fish_spawn;
@@ -101,6 +109,7 @@ private:
 	bool m_vamp_mode;
 	float m_vamp_mode_timer;
 	unsigned int m_vamp_mode_charge;
+    Explosion m_explosion;
 
 	Mix_Music* m_background_music;
 	Mix_Chunk* m_player_dead_sound;

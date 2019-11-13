@@ -74,19 +74,11 @@ void GameEngine::init() {
     glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
     glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
-    // Create a frame buffer
-    m_frame_buffer = 0;
-    glGenFramebuffers(1, &m_frame_buffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
-
     // For some high DPI displays (ex. Retina Display on Macbooks)
     // https://stackoverflow.com/questions/36672935/why-retina-screen-coordinate-value-is-twice-the-value-of-pixel-value
     int fb_width, fb_height;
     glfwGetFramebufferSize(m_window, &fb_width, &fb_height);
     m_screen_scale = static_cast<float>(fb_width) / SCREEN_WIDTH;
-
-    // Initialize the screen texture
-    m_screen_tex.create_from_screen(m_window);
 
     //-------------------------------------------------------------------------
     // Loading music and sounds
@@ -109,7 +101,6 @@ void GameEngine::init() {
  * Cleans up the engine, terminating the running state, deleting any allocated objects
  */
 void GameEngine::terminate() {
-    glDeleteFramebuffers(1, &m_frame_buffer);
 
     // Clean up the current state
     if (state != nullptr){
@@ -140,6 +131,8 @@ void GameEngine::changeState(GameState *state) {
         this->state->terminate();
         delete (this->state);
     }
+    entityManager.clear();
+    systemManager.clear();
     this->state = state;
     state->init();
 }
@@ -148,7 +141,7 @@ void GameEngine::changeState(GameState *state) {
  * Runs the state's update function
  */
 void GameEngine::update(float ms) {
-    //entityManager.update(ms);
+    entityManager.update(ms * m_current_speed);
     systemManager.update(ms * m_current_speed);
     this->elapsed_ms = ms;
     state->update(ms * m_current_speed);
@@ -200,14 +193,6 @@ GLFWwindow *GameEngine::getM_window() const {
 
 float GameEngine::getM_screen_scale() const {
     return m_screen_scale;
-}
-
-GLuint GameEngine::getM_frame_buffer() const {
-    return m_frame_buffer;
-}
-
-const Texture &GameEngine::getM_screen_tex() const {
-    return m_screen_tex;
 }
 
 float GameEngine::getM_current_speed() const {

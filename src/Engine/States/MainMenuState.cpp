@@ -3,21 +3,14 @@
 //
 
 #include <sstream>
+#include <Levels/Levels.hpp>
 #include "MainMenuState.hpp"
 #include "LevelState.hpp"
 #include "TutorialState.hpp"
+#include "IntroState.hpp"
 
-Texture MainMenuState::bg_texture;
 
 void MainMenuState::init() {
-    if (!bg_texture.is_valid())
-    {
-        if (!bg_texture.load_from_file(textures_path("mainmenu_bg.png")))
-        {
-            throw std::runtime_error("Failed to load background texture!");
-        }
-    }
-
     m_background_music = Mix_LoadMUS(audio_path("mainmenu.wav"));
 
     // Playing background music indefinitely
@@ -50,10 +43,6 @@ void MainMenuState::draw() {
     title_ss << "V.A.P.E";
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
-    ////////////////////////////////////
-    // First render to the custom framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, GameEngine::getInstance().getM_frame_buffer());
-
     // Clearing backbuffer
     glViewport(0, 0, w, h);
     glDepthRange(0.00001, 10);
@@ -75,21 +64,6 @@ void MainMenuState::draw() {
     float ty = -(top + bottom) / (top - bottom);
     mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
-    /////////////////////
-    // Truely render to the screen
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    // Clearing backbuffer
-    glViewport(0, 0, w, h);
-    glDepthRange(0, 10);
-    glClearColor(0, 0, 0, 1.0);
-    glClearDepth(1.f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // Bind our texture in Texture Unit 0
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, GameEngine::getInstance().getM_screen_tex().id);
-
     menu.draw(projection_2D);
 
     //////////////////
@@ -99,6 +73,14 @@ void MainMenuState::draw() {
 }
 
 void MainMenuState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
+    if (action == GLFW_RELEASE && key == GLFW_KEY_1)
+    {
+        GameEngine::getInstance().changeState(new LevelState(Levels::level1, 0));
+    }
+    if (action == GLFW_RELEASE && key == GLFW_KEY_2)
+    {
+        GameEngine::getInstance().changeState(new LevelState(Levels::level2, 0));
+    }
 }
 
 void MainMenuState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
@@ -109,7 +91,12 @@ void MainMenuState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) 
 void MainMenuState::on_mouse_button(GLFWwindow *window, int button, int action, int mods) {
 	if (mouse_position.x >= 200 && mouse_position.x <= 600 && mouse_position.y >= 600 && mouse_position.y <= 700) {
 		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-			GameEngine::getInstance().changeState(new TutorialState());
+			GameEngine::getInstance().changeState(new IntroState());
+		}
+	}
+	if (mouse_position.x >= 280 && mouse_position.x <= 520 && mouse_position.y >= 740 && mouse_position.y <= 830) {
+		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+			GameEngine::getInstance().quit();
 		}
 	}
 }

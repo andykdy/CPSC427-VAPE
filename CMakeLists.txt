@@ -32,64 +32,88 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CU
 
 set(SOURCE_FILES
     src/main.cpp
-    src/common.cpp
-    src/Engine/GameEngine.cpp
-    src/Engine/GameEngine.hpp
-    src/Engine/GameState.hpp
-    src/Engine/States/LevelState.cpp
-    src/Engine/States/LevelState.hpp
-    src/Engine/States/MainMenuState.cpp
-    src/Engine/States/MainMenuState.hpp
-    src/Engine/States/TutorialState.cpp
-    src/Engine/States/TutorialState.hpp
-
-    src/Entities/fish.cpp
-    src/Entities/Player.cpp
-    src/Entities/turtle.cpp
-    src/Entities/Space.cpp
-    src/Entities/Dialogue.cpp
-    src/Entities/Dialogue.hpp
-
     src/project_path.hpp
-    src/common.hpp
-    src/Entities/fish.hpp
-    src/Entities/Player.hpp
-    src/Entities/turtle.hpp
-    src/Entities/Space.hpp
-    src/Entities/bullet.cpp
-    src/Entities/bullet.hpp
-    src/Entities/Bosses/Boss1.cpp
-    src/Entities/Bosses/Boss1.hpp
-    src/Entities/UI/Health.cpp
-    src/Entities/UI/Health.hpp
-    src/Entities/Vamp.cpp
-    src/Entities/Vamp.hpp
-    src/Entities/UI/VampCharge.cpp
-    src/Entities/UI/VampCharge.hpp
+    src/common.cpp src/common.hpp
 
+    src/Engine/GameEngine.cpp src/Engine/GameEngine.hpp
+    src/Engine/GameState.hpp
+
+    src/Engine/States/LevelState.cpp src/Engine/States/LevelState.hpp
+    src/Engine/States/MainMenuState.cpp src/Engine/States/MainMenuState.hpp
+    src/Engine/States/TutorialState.cpp src/Engine/States/TutorialState.hpp
+    src/Engine/States/IntroState.cpp src/Engine/States/IntroState.hpp
+
+    src/Engine/ECS/Component.hpp
+    src/Engine/ECS/Entity.hpp
+    src/Engine/ECS/EntityManager.cpp src/Engine/ECS/EntityManager.hpp
+    src/Engine/ECS/System.hpp
+    src/Engine/ECS/SystemManager.cpp src/Engine/ECS/SystemManager.hpp
     src/Engine/ECS/ECS.hpp
+
+
+    src/Entities/fish.cpp src/Entities/fish.hpp
+    src/Entities/Player.cpp src/Entities/Player.hpp
+    src/Entities/Space.cpp src/Entities/Space.hpp
+    src/Entities/Vamp.cpp src/Entities/Vamp.hpp
+    src/Entities/MainMenu.cpp src/Entities/MainMenu.hpp
+    src/Entities/Intro.cpp src/Entities/Intro.hpp
+    src/Entities/Explosion.cpp src/Entities/Explosion.hpp
+
+    src/Entities/Enemies/Enemy.hpp
+    src/Entities/Enemies/turtle.cpp src/Entities/Enemies/turtle.hpp
+    src/Entities/Enemies/EnemyGenericShooter.cpp src/Entities/Enemies/EnemyGenericShooter.hpp
+    src/Entities/Enemies/EnemyTargettedShooter.cpp src/Entities/Enemies/EnemyTargettedShooter.hpp
+
+    src/Entities/UI/PlayerHealth/Health.cpp src/Entities/UI/PlayerHealth/Health.hpp
+    src/Entities/UI/Dialogue.cpp src/Entities/UI/Dialogue.hpp
+    src/Entities/UI/Continue.cpp src/Entities/UI/Continue.hpp
+    src/Entities/UI/Vamp/VampCharge.cpp src/Entities/UI/Vamp/VampCharge.hpp
+    src/Entities/UI/UIPanel.cpp src/Entities/UI/UIPanel.hpp
+    src/Entities/UI/UIPanelBackground.cpp src/Entities/UI/UIPanelBackground.hpp
+    src/Entities/UI/BossHealth/BossHealth.cpp src/Entities/UI/BossHealth/BossHealth.hpp
+    src/Entities/UI/BossHealth/BossHealthBar.cpp src/Entities/UI/BossHealth/BossHealthBar.hpp
+
+    "src/Entities/Projectiles and Damaging/Projectile.hpp"
+    "src/Entities/Projectiles and Damaging/bullet.cpp" "src/Entities/Projectiles and Damaging/bullet.hpp"
+    "src/Entities/Projectiles and Damaging/Laser.cpp" "src/Entities/Projectiles and Damaging/Laser.hpp"
+
+    src/Entities/Bosses/Boss.hpp
+    src/Entities/Bosses/Boss1.cpp src/Entities/Bosses/Boss1.hpp
+    src/Entities/Bosses/Boss2.cpp src/Entities/Bosses/Boss2.hpp
+
+    src/Entities/Pickups/Pickup.hpp
+    src/Entities/Pickups/TestPickup.cpp src/Entities/Pickups/TestPickup.hpp
+
 
     src/Components/MotionComponent.hpp
     src/Components/PhysicsComponent.hpp
     src/Components/EffectComponent.hpp
     src/Components/SpriteComponent.hpp
     src/Components/TransformComponent.hpp
-    src/Engine/ECS/Component.hpp
-    src/Engine/ECS/Entity.hpp
-    src/Engine/ECS/EntityManager.hpp
-    src/Engine/ECS/System.hpp
-    src/Engine/ECS/SystemManager.hpp
     src/Components/MeshComponent.hpp
     src/Components/TextureComponent.hpp
     src/Components/HealthComponent.hpp
-    src/Systems/EnemySpawnerSystem.cpp
-    src/Systems/EnemySpawnerSystem.hpp
-    src/Components/BulletComponent.hpp
-    src/Systems/MotionSystem.cpp
-    src/Systems/MotionSystem.hpp
     src/Components/BoundaryComponent.hpp
     src/Components/EnemyComponent.hpp
-    src/Levels/Level.hpp src/Entities/MainMenu.cpp src/Entities/MainMenu.hpp)
+    src/Components/CollisionComponent.hpp
+
+
+    src/Systems/EnemySpawnerSystem.cpp src/Systems/EnemySpawnerSystem.hpp
+    src/Systems/MotionSystem.cpp src/Systems/MotionSystem.hpp
+    src/Systems/CollisionSystem.cpp src/Systems/CollisionSystem.hpp
+
+
+    src/Levels/Level.hpp
+    src/Levels/Waves.hpp
+
+    src/Levels/Levels.hpp
+    src/Levels/Level1.hpp
+    src/Levels/Level2.hpp
+    src/Levels/Level2.hpp
+    
+    src/Utils/SaveData.cpp src/Utils/SaveData.hpp
+
+    src/Entities/Debugging/DebugDot.cpp src/Entities/Debugging/DebugDot.hpp )
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

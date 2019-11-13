@@ -2,26 +2,26 @@
 
 #include <map>
 #include "common.hpp"
-#include "bullet.hpp"
+#include "Entities/Projectiles and Damaging/Projectile.hpp"
 #include <vector>
 #include <SDL_mixer.h>
 #include <Engine/ECS/Entity.hpp>
+#include "Entities/Enemies/Enemy.hpp"
 
-class Turtle;
 class Fish;
+class Projectile;
+class Enemy;
 
 class Player : public ECS::Entity
 {
 	static Texture player_texture;
 	static Texture vamp_texture;
 public:
-    Player(ECS::EntityId id);
-
 // Creates all the associated render resources and default transform
 	bool init(vec2 screen, int hp);
 
 	// Releases all associated resources
-	void destroy();
+	void destroy() override;
 	
 	// Update salmon position based on direction
 	// ms represents the number of milliseconds elapsed from the previous update() call
@@ -31,7 +31,7 @@ public:
 	void draw(const mat3& projection)override;
 
 	// Collision routines for turtles and fish
-	bool collides_with(const Turtle& turtle);
+	bool collides_with(const Enemy& turtle);
 	bool collides_with(const Fish& fish);
 
 	// Returns the current position
@@ -55,13 +55,10 @@ public:
 	// Gain health after draining an enemy in vamp mode
     void gain_health(float amount);
 
-    // Called when the salmon collides with a fish, starts lighting up the salmon
-	void light_up();
-
 	// Returns the bounding box for collision detection
 	vec2 get_bounding_box() const;
 
-	std::vector<Bullet> bullets;
+	std::vector<Projectile*> bullets;
 
 	// Called when the salmon collides with an enemy, activate invulerability frames 
 	void set_iframes(float magnitude);

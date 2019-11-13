@@ -14,9 +14,20 @@ public:
     GLuint ibo;
 
     void release() {
-        glDeleteBuffers(1, &vbo);
-        glDeleteBuffers(1, &ibo);
-        glDeleteBuffers(1, &vao);
+        if (vbo != 0){
+            glDeleteBuffers(1, &vbo);
+            vbo = 0;
+        }
+
+        if( ibo != 0 ) {
+            glDeleteBuffers(1, &ibo);
+            ibo = 0;
+        }
+
+        if (vao != 0){
+            glDeleteVertexArrays(1, &vao);
+            vao = 0;
+        }
     }
 };
 

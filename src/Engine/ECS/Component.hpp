@@ -8,20 +8,6 @@
 #include "Entity.hpp"
 
 namespace ECS {
-    using ComponentId = std::size_t;
-
-    // Returns a unique, incremeneted Id
-    inline ComponentId getComponentTypeId() {
-        static ComponentId lastId = 0;
-        return lastId++;
-    };
-
-    // Returns a unique id for each type T of component;
-    template <typename T> inline ComponentId getComponentTypeId() noexcept {
-        static ComponentId typeId = getComponentTypeId();
-        return typeId;
-    }
-
     class Entity;
 
     class Component {

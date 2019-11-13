@@ -4,13 +4,13 @@
 
 Texture Space::bg_texture;
 
-bool Space::init() {
+bool Space::init(const char* background) {
 	m_dead_time = -1;
 
     // Load shared texture
     if (!bg_texture.is_valid())
     {
-        if (!bg_texture.load_from_file(textures_path("space_bg.png")))
+        if (!bg_texture.load_from_file(background))
         {
             fprintf(stderr, "Failed to load turtle texture!");
             return false;
@@ -69,11 +69,12 @@ bool Space::init() {
 void Space::destroy() {
     glDeleteBuffers(1, &mesh.vbo);
     glDeleteBuffers(1, &mesh.ibo);
-    glDeleteBuffers(1, &mesh.vao);
+    glDeleteVertexArrays(1, &mesh.vao);
 
 	glDeleteShader(effect.vertex);
 	glDeleteShader(effect.fragment);
 	glDeleteShader(effect.program);
+	bg_texture.invalidate();
 }
 
 void Space::set_salmon_dead() {

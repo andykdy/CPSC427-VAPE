@@ -19,7 +19,7 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-	const size_t VAMP_MODE_DURATION = 1500;
+	const size_t VAMP_MODE_DURATION = 2000;
 	const size_t MAX_HEALTH = 75;
 	const size_t INIT_HEALTH = 50;
 	const size_t DAMAGE_ENEMY = 5;
@@ -69,19 +69,24 @@ void TutorialState::init() {
 
 	m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
 	m_player->init(screen, INIT_HEALTH);
-	m_health = &GameEngine::getInstance().getEntityManager()->addEntity<Health>();
-	m_health->init({45, 60});
+	m_uiPanelBackground = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanelBackground>();
+	m_uiPanelBackground->init(screen, screen.y * 0.1f);
+    m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
+    m_uiPanel->init(screen, screen.y, screen.x);
+    m_health = &GameEngine::getInstance().getEntityManager()->addEntity<Health>();
+    m_health->init({53, screen.y-50});
 
-	m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
-    m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
+    m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
+    m_vamp_charge->init({screen.x-52, screen.y-50});
 	m_vamp_mode_charge = 0;
 
 	GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
 
     m_space.set_position({screen.x/2, 0});
 
-	m_space.init();
+	m_space.init(textures_path("space_bg.png"));
 	m_dialogue.init("TutorialText.png");
+	m_continue_UI.init();
 	m_current_cmp = initial;
 	m_vamp_mode = false;
 	m_mvmt_checklist[0] = false;
@@ -89,6 +94,7 @@ void TutorialState::init() {
 	m_mvmt_checklist[2] = false;
 	m_mvmt_checklist[3] = false;
 	m_vamp_quota = VAMP_KILLS_NEEDED;
+	m_explosion.init();
 
 }
 
@@ -107,10 +113,15 @@ void TutorialState::terminate() {
 	m_vamp.destroy();
 	for (auto& turtle : m_turtles)
 		turtle->destroy();
+    m_uiPanelBackground->destroy();
+    m_uiPanel->destroy();
 	m_health->destroy();
 	m_vamp_charge->destroy();
 	m_turtles.clear();
 	m_dialogue.destroy();
+	m_explosion.destroy();
+	m_continue_UI.destroy();
+	m_space.destroy();
 }
 
 void TutorialState::update(float ms) {
@@ -130,9 +141,10 @@ void TutorialState::update(float ms) {
 				if (m_player->get_iframes() <= 0.f) {
 					m_player->set_iframes(500.f);
 					lose_health(DAMAGE_ENEMY);
-					ECS::EntityId id = (*turtle_it)->getId();
-					m_turtles.erase(turtle_it);
-					GameEngine::getInstance().getEntityManager()->removeEntity(id);
+                    m_explosion.spawn(m_player->get_position());
+                    Mix_PlayChannel(-1, m_player_explosion, 0);
+					(*turtle_it)->destroy();
+					turtle_it = m_turtles.erase(turtle_it);
 				}
 			}
 			break;
@@ -142,7 +154,7 @@ void TutorialState::update(float ms) {
 			turtle_it++;
 		}
 	}
-	float turtle_limit = m_current_cmp == shooting ? 1 : m_current_cmp == vamp ? m_vamp_quota : 0;
+	float turtle_limit = m_current_cmp == shooting ? 1 : m_current_cmp == vamp_1 || m_current_cmp == vamp_2 ? m_vamp_quota : 0;
 	if (m_turtles.size() < turtle_limit)
 	{
 		if (!spawn_turtle())
@@ -151,7 +163,7 @@ void TutorialState::update(float ms) {
 		Turtle* new_turtle = m_turtles.back();
 
 		// Setting random initial position
-		if (m_current_cmp == vamp) {
+		if (m_current_cmp == vamp_1 || m_current_cmp == vamp_2) {
 			new_turtle->set_position({ 50 + m_dist(m_rng) * (screen.x - 100),  200 + m_dist(m_rng) * (screen.y - 600) });
 			new_turtle->set_velocity({0.f, 0.f});
 		}
@@ -160,27 +172,29 @@ void TutorialState::update(float ms) {
 		}
 	}
 
+	auto& playerBullets = m_player->bullets;
+
 	// Checking Player Bullet - Enemy collisions
-	auto bullet_it = m_player->bullets.begin();
-	while (bullet_it != m_player->bullets.end())
+	auto bullet_it = playerBullets.begin();
+	while (bullet_it != playerBullets.end())
 	{
 		bool eraseBullet = false;
 		auto turtle_it = m_turtles.begin();
 		while (turtle_it != m_turtles.end())
 		{
-			if (bullet_it->collides_with(**turtle_it))
+			if ((*bullet_it)->collides_with(**turtle_it))
 			{
 				eraseBullet = true;
-				ECS::EntityId id = (*turtle_it)->getId();
+                m_explosion.spawn((*turtle_it)->get_position());
+				(*turtle_it)->destroy();
 				turtle_it = m_turtles.erase(turtle_it);
-				GameEngine::getInstance().getEntityManager()->removeEntity(id);
 				Mix_PlayChannel(-1, m_player_explosion, 0);
 				++m_points;
 				add_vamp_charge();
 				if (m_current_cmp == shooting) {
 					m_dialogue.next();
-					m_current_cmp = vamp;
-					m_vamp_mode_charge = 15;
+					m_current_cmp = vamp_1;
+					m_vamp_mode_charge = 12;
 				}
 				break;
 			}
@@ -188,9 +202,10 @@ void TutorialState::update(float ms) {
 				++turtle_it;
 			}
 		}
-		if (eraseBullet)
-			bullet_it = m_player->bullets.erase(bullet_it);
-		else
+		if (eraseBullet) {
+            (*bullet_it)->destroy();
+            bullet_it = playerBullets.erase(bullet_it);
+        }else
 			++bullet_it;
 	}
 
@@ -199,22 +214,25 @@ void TutorialState::update(float ms) {
 		turtle_it = m_turtles.begin();
 		while (turtle_it != m_turtles.end()) {
 			if (m_vamp.collides_with(**turtle_it)) {
+                m_explosion.spawn((*turtle_it)->get_position());
+                Mix_PlayChannel(-1, m_player_explosion, 0);
+				(*turtle_it)->destroy();
 				turtle_it = m_turtles.erase(turtle_it);
 				add_health(VAMP_HEAL);
 				m_vamp_quota--;
 				continue;
 			}
-
 			++turtle_it;
 		}
 	}
-	if (m_vamp_quota == 0 && m_current_cmp == vamp && !m_vamp_mode) {
+	if (m_vamp_quota == 0 && m_current_cmp == vamp_2 && !m_vamp_mode) {
 		m_current_cmp = clear;
 		m_dialogue.next();
+		m_continue_UI.set_activity(true);
 	}
 
     m_space.update(ms);
-
+    m_explosion.update(ms);
 	// Updating all entities, making the turtle and fish
 	// faster based on current
 	m_player->update(ms, keyMap, mouse_position);
@@ -226,6 +244,18 @@ void TutorialState::update(float ms) {
 	// for debugging purposes
 	if (keyMap[GLFW_KEY_F]) {
 		m_vamp_mode_charge = 15;
+	}
+	if (m_current_cmp == vamp_2) {
+		m_vamp_mode_charge = 15;
+	}
+	if (keyMap[GLFW_KEY_ESCAPE]) {
+		GameEngine::getInstance().changeState(new MainMenuState());
+		return;
+	}
+
+	if (m_vamp_mode_charge == 15 && m_current_cmp == vamp_1) {
+		m_current_cmp = vamp_2;
+ 		m_dialogue.next();
 	}
 
 	if (m_vamp_mode_charge >= 15 && keyMap[GLFW_KEY_ENTER]) {
@@ -251,12 +281,12 @@ void TutorialState::update(float ms) {
 
 	// Removing out of screen bullets
 	// TODO move into player code? do same thing for boss/enemy bullets?
-	bullet_it = m_player->bullets.begin();
-	while (bullet_it != m_player->bullets.end()) {
-		float h = bullet_it->get_bounding_box().y / 2;
-		if (bullet_it->get_position().y + h < 0.f)
+	bullet_it = playerBullets.begin();
+	while (bullet_it != playerBullets.end()) {
+		if ((*bullet_it)->isOffScreen(screen))
 		{
-			bullet_it = m_player->bullets.erase(bullet_it);
+            (*bullet_it)->destroy();
+			bullet_it = playerBullets.erase(bullet_it);
 			continue;
 		}
 
@@ -266,7 +296,7 @@ void TutorialState::update(float ms) {
 	// If salmon is dead, restart the game after the fading animation
 	if (!m_player->is_alive() &&
 		m_space.get_salmon_dead_time() > 5) {
-		reset(screen);
+		reset();
 	}
 }
 
@@ -281,12 +311,8 @@ void TutorialState::draw() {
 
 	// Updating window title with points
 	std::stringstream title_ss;
-	title_ss << "Points: " << m_points;
+	title_ss  << "Points: " << m_points;
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
-
-	/////////////////////////////////////
-	// First render to the custom framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, GameEngine::getInstance().getM_frame_buffer());
 
 	// Clearing backbuffer
 	glViewport(0, 0, w, h);
@@ -309,24 +335,7 @@ void TutorialState::draw() {
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
-
-	/////////////////////
-	// Truely render to the screen
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// Clearing backbuffer
-	glViewport(0, 0, w, h);
-	glDepthRange(0, 10);
-	glClearColor(0, 0, 0, 1.0);
-	glClearDepth(1.f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// Bind our texture in Texture Unit 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, GameEngine::getInstance().getM_screen_tex().id);
-
 	m_space.draw(projection_2D);
-
 	// Drawing entities
 	for (auto& turtle : m_turtles)
 		turtle->draw(projection_2D);
@@ -334,12 +343,15 @@ void TutorialState::draw() {
 		m_vamp.draw(projection_2D);
 	}
 	m_player->draw(projection_2D);
+	m_uiPanelBackground->draw(projection_2D);
 	m_health->draw(projection_2D);
 	m_vamp_charge->draw(projection_2D);
-
+	if (m_continue_UI.isActive()) {
+		m_continue_UI.draw(projection_2D);
+	}
+    m_uiPanel->draw(projection_2D);
 	m_dialogue.draw(projection_2D);
-
-
+    m_explosion.draw(projection_2D);
 	//////////////////
 	// Presenting
 	glfwSwapBuffers(m_window);
@@ -396,11 +408,7 @@ void TutorialState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
 	{
-		// Get screen size
-		int w, h;
-		glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
-		vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
-		reset(screen);
+		return reset();
 	}
 	if (m_current_cmp == movement) {
 		if (keyMap[GLFW_KEY_W]) m_mvmt_checklist[0] = true;
@@ -410,6 +418,16 @@ void TutorialState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
 		if (m_mvmt_checklist[0] && m_mvmt_checklist[1] && m_mvmt_checklist[2] && m_mvmt_checklist[3]) {
 			m_current_cmp = shooting;
 			m_dialogue.next();
+		}
+	}
+	if (keyMap[GLFW_KEY_LEFT_SHIFT] || keyMap[GLFW_KEY_RIGHT_SHIFT]) {
+		if (m_current_cmp == initial) {
+			m_current_cmp = movement;
+			m_dialogue.next();
+			m_continue_UI.set_activity(false);
+		}
+		if (m_current_cmp == clear) {
+			GameEngine::getInstance().changeState(new LevelState(Levels::level1, 0));
 		}
 	}
 
@@ -424,33 +442,8 @@ void TutorialState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) 
 void TutorialState::on_mouse_button(GLFWwindow *window, int button, int action, int mods) {
 	// Track which mouse buttons are being pressed or held
 	(action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[button] = true : keyMap[button] = false;
-	if (keyMap[button]) {
-		if (m_current_cmp == initial) {
-			m_current_cmp = movement;
-			m_dialogue.next();
-		}
-		if (m_current_cmp == clear) {
-			GameEngine::getInstance().changeState(new LevelState());
-		}
-	}
 }
 
-void TutorialState::reset(vec2 screen) {
-	m_player->destroy();
-	m_vamp.destroy();
-	m_vamp_charge->destroy();
-	m_player->init(screen, INIT_HEALTH);
-    m_health->init({45, 60});
-    m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
-	m_turtles.clear();
-	Mix_PlayMusic(m_background_music, -1);
-	m_mvmt_checklist[0] = false;
-	m_mvmt_checklist[1] = false;
-	m_mvmt_checklist[2] = false;
-	m_mvmt_checklist[3] = false;
-	m_current_cmp = initial;
-
-	m_space.reset_salmon_dead_time();
-	m_space.reset_boss_dead_time();
-	GameEngine::getInstance().setM_current_speed(1.f);
+void TutorialState::reset() {
+	GameEngine::getInstance().changeState(new TutorialState());
 }

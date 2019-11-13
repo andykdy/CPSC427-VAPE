@@ -2,13 +2,14 @@
 #include "Player.hpp"
 
 // internal
-#include "turtle.hpp"
+#include "Entities/Enemies/turtle.hpp"
 #include "Entities/fish.hpp"
 
 // stlib
 #include <string>
 #include <algorithm>
 #include <cmath>
+
 #include <Components/TransformComponent.hpp>
 #include <Components/EffectComponent.hpp>
 #include <Components/MotionComponent.hpp>
@@ -16,6 +17,8 @@
 #include <Components/SpriteComponent.hpp>
 #include <Components/BoundaryComponent.hpp>
 #include <Components/HealthComponent.hpp>
+#include <Engine/GameEngine.hpp>
+#include "Entities/Projectiles and Damaging/bullet.hpp"
 
 // Same as static in c, local to compilation unit
 namespace
@@ -39,13 +42,13 @@ bool Player::init(vec2 screen, int hp)
 	auto* health = addComponent<HealthComponent>();
 
 	addComponent<BoundaryComponent>(screenBuffer.x, screen.x - screenBuffer.x,
-									screenBuffer.y, screen.y - screenBuffer.y);
+									screenBuffer.y, screen.y*0.9f - screenBuffer.y);
 
 	// Load sound
 	m_player_bullet_sound = Mix_LoadWAV(audio_path("pow.wav"));
 	if ( m_player_bullet_sound == nullptr)
 	{
-		fprintf(stderr, "Failed to load sound player_bullet.wav\n %s\n %s\n %s\n make sure the data directory is present",
+		fprintf(stderr, "Failed to load sound player_bullet.wav\n %s\n make sure the data directory is present",
 				audio_path("player_bullet.wav"));
 		throw std::runtime_error("Failed to load sound player_bullet.wav");
 	}
@@ -68,14 +71,14 @@ bool Player::init(vec2 screen, int hp)
 		return false;
 
 	if (!sprite->initTexture(&player_texture, spriteFrames, spriteWH, spriteWH))
-		throw std::runtime_error("Failed to initialize health sprite");
+		throw std::runtime_error("Failed to initialize player sprite");
 
 	// Setting initial values
 	motion->position = { screen.x / 2, screen.y - 100 };
 	motion->radians = 0.f;
 	motion->maxVelocity = 400.f;
 	motion->friction = 0.1;
-	physics->scale = { -0.40, 0.40 };
+	physics->scale = { -0.30, 0.30 };
 
 
 	m_light_up_countdown_ms = -1.f;
@@ -93,8 +96,8 @@ void Player::destroy()
 	if (m_player_bullet_sound != nullptr)
 		Mix_FreeChunk(m_player_bullet_sound);
 
-	for (auto& bullet : bullets)
-		bullet.destroy();
+	for (auto bullet : bullets)
+		bullet->destroy();
 	bullets.clear();
 
 	auto* effect = getComponent<EffectComponent>();
@@ -112,7 +115,7 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 
 	// Update player bullets
 	for (auto& bullet : bullets)
-		bullet.update(ms);
+		bullet->update(ms);
 
 	// Spawning player bullets
 	m_bullet_cooldown -= ms;
@@ -138,6 +141,8 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 	}
 	else
 	{
+		auto* boundary = getComponent<BoundaryComponent>();
+		boundary->maxY = 2000;
 		// If dead we make it face upwards and sink deep down
 		set_rotation(3.1415f);
 		motion->maxVelocity = 0;
@@ -160,8 +165,8 @@ void Player::draw(const mat3& projection)
     auto* sprite = getComponent<SpriteComponent>();
 
     // Draw player bullets
-    for (auto& bullet : bullets)
-        bullet.draw(projection);
+    for (auto bullet : bullets)
+        bullet->draw(projection);
 
 
     transform->begin();
@@ -170,7 +175,11 @@ void Player::draw(const mat3& projection)
     transform->rotate(motion->radians);
     transform->end();
 
-    sprite->draw(projection, transform->out, effect->program);
+	float mod = 1;
+	if (m_iframe > 0)
+		mod = 1/m_iframe;
+
+	sprite->draw(projection, transform->out, effect->program, {1.f, mod * 1.f,mod * 1.f});
 }
 
 // TODO collisionSystem
@@ -178,7 +187,7 @@ void Player::draw(const mat3& projection)
 // This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
 // if the center point of either object is inside the other's bounding-box-circle. You don't
 // need to try to use this technique.
-bool Player::collides_with(const Turtle& turtle)
+bool Player::collides_with(const Enemy& turtle)
 {
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
@@ -253,16 +262,10 @@ void Player::gain_health(float amount)
 	getComponent<HealthComponent>()->gain_health(amount);
 }
 
-// Called when the salmon collides with a fish
-void Player::light_up()
-{
-	m_light_up_countdown_ms = 1500.f;
-}
-
 void Player::spawn_bullet() {
     auto* motion = getComponent<MotionComponent>();
-	Bullet bullet;
-	if (bullet.init(motion->position, motion->radians + 3.14)) {
+	Bullet* bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
+	if (bullet->init(motion->position, motion->radians + 3.14f)) {
 		bullets.emplace_back(bullet);
 	} else {
 		throw std::runtime_error("Failed to spawn bullet");
@@ -291,4 +294,3 @@ int Player::get_health() const {
 	return getComponent<HealthComponent>()->get_health();
 }
 
-Player::Player(ECS::EntityId id) : Entity(id) {}

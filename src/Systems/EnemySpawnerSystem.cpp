@@ -14,7 +14,7 @@ void EnemySpawnerSystem::update(float ms) {
             Levels::Wave wave = it->second;
             for (auto &wavit : wave) {
                 // std::cout << "spawned" << std::endl;
-                Turtle* t = wavit.fn(GameEngine::getInstance().getEntityManager(), wavit.pos, wavit.vel, wavit.dir);
+                Enemy* t = wavit.fn(GameEngine::getInstance().getEntityManager(), wavit.pos, wavit.vel, wavit.dir);
                 enemies.emplace_back(t);
             }
             it = level.erase(it);
@@ -24,12 +24,13 @@ void EnemySpawnerSystem::update(float ms) {
     }
 }
 
-std::vector<Turtle *> *EnemySpawnerSystem::getEnemies() {
+std::vector<Enemy*> *EnemySpawnerSystem::getEnemies() {
     return &enemies;
 }
 
-void EnemySpawnerSystem::reset() {
-    level = Levels::level1; // TODO
+void EnemySpawnerSystem::reset(Levels::Timeline levelTimeline) {
+    level = levelTimeline;
     time = 0;
+    // TODO cleanup enemies
     enemies.clear();
 }

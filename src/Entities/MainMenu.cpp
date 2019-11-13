@@ -10,7 +10,7 @@ bool MainMenu::init() {
     // Load shared texture
     if (!bg_texture.is_valid())
     {
-        if (!bg_texture.load_from_file(textures_path("mainmenu_bg.png")))
+        if (!bg_texture.load_from_file(textures_path("mainmenu_bg_exit.png")))
         {
             fprintf(stderr, "Failed to load turtle texture!");
             return false;
@@ -68,7 +68,7 @@ bool MainMenu::init() {
 void MainMenu::destroy() {
     glDeleteBuffers(1, &mesh.vbo);
     glDeleteBuffers(1, &mesh.ibo);
-    glDeleteBuffers(1, &mesh.vao);
+    glDeleteVertexArrays(1, &mesh.vao);
 
     glDeleteShader(effect.vertex);
     glDeleteShader(effect.fragment);

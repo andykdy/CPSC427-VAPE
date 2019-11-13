@@ -14,12 +14,15 @@
 // internal
 #include "common.hpp"
 #include "Entities/Player.hpp"
-#include "Entities/turtle.hpp"
+#include "Entities/Enemies/turtle.hpp"
+//#include "Entities/Prototype.hpp"
 #include "Entities/fish.hpp"
 #include "Entities/Space.hpp"
-#include "Entities/bullet.hpp"
-#include "Entities/Dialogue.hpp"
-#include "Entities/UI/Health.hpp"
+#include "Entities/Projectiles and Damaging/bullet.hpp"
+#include "Entities/UI/Dialogue.hpp"
+#include "Entities/UI/PlayerHealth/Health.hpp"
+#include "Entities/Explosion.hpp"
+#include "Levels/Level.hpp"
 
 // stlib
 #include <vector>
@@ -28,12 +31,18 @@
 #include <Engine/GameState.hpp>
 #include <Entities/Vamp.hpp>
 #include <Entities/Bosses/Boss1.hpp>
-#include <Entities/UI/VampCharge.hpp>
+#include <Entities/UI/Vamp/VampCharge.hpp>
+#include <Entities/UI/UIPanelBackground.hpp>
+#include <Entities/UI/UIPanel.hpp>
+#include <Entities/Pickups/Pickup.hpp>
+
+class Pickup;
 
 class LevelState : public GameState {
+    friend class Pickup;
 public:
     //! Constructor, taking in gameplay options
-    LevelState();
+    explicit LevelState(Levels::Level level, unsigned int points);
 
     //! Initializes the state
     void init() override;
@@ -54,18 +63,14 @@ public:
     void on_mouse_button(GLFWwindow *window, int button, int action, int mods) override;
 
 private:
+    Levels::Level m_level;
+
     void lose_health(int damage);
     void add_health(int heal);
 
     void add_vamp_charge();
 
-    void reset(vec2 screen);
-
-    // Generates a new turtle
-    bool spawn_turtle();
-
-    // Generates a new fish
-    bool spawn_fish();
+    void reset();
 
     // Tracks keys being pressed
     std::map<int, bool> keyMap;
@@ -78,23 +83,23 @@ private:
 
     // Number of fish eaten by the salmon, displayed in the window title
     unsigned int m_points;
+    unsigned int m_highscore;
 
     // Game entities
     Player* m_player;
-    Boss1 m_boss;
-    std::vector<Turtle*> *m_turtles;
+    Boss* m_boss;
+    std::vector<Pickup*> m_pickups; // TODO Maybe should be in a Pickup System eventuallyy
+    std::vector<Enemy*> *m_turtles;
 
     // UI
+    UIPanelBackground* m_uiPanelBackground;
+    UIPanel* m_uiPanel;
     Health* m_health;
     VampCharge* m_vamp_charge;
 	Dialogue m_dialogue;
 
-    // To remove
-    std::vector<Fish> m_fish;
-
     float m_level_time;
-    float m_next_turtle_spawn;
-    float m_next_fish_spawn;
+    float m_vamp_cooldown;
 
     bool m_boss_pre;
     bool m_boss_mode;
@@ -104,6 +109,7 @@ private:
     bool m_vamp_mode;
     float m_vamp_mode_timer;
     unsigned int m_vamp_mode_charge;
+    Explosion m_explosion;
 
 
 

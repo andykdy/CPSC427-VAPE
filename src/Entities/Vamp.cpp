@@ -5,6 +5,7 @@
 #include <cmath>
 #include <algorithm>
 #include "Vamp.hpp"
+#include <Engine/ECS/Entity.hpp>
 
 Texture Vamp::vamp_texture;
 
@@ -21,8 +22,8 @@ bool Vamp::init(vec2 position) {
     }
 
     // The position corresponds to the center of the texture
-    float wr = vamp_texture.width * 0.5f;
-    float hr = vamp_texture.height * 0.5f;
+    float wr = vamp_texture.width * 0.35f;
+    float hr = vamp_texture.height * 0.35f;
 
     TexturedVertex vertices[4];
     vertices[0].position = { -wr, +hr, -0.05f };
@@ -58,8 +59,7 @@ bool Vamp::init(vec2 position) {
     // Loading shaders
     if (!effect.load_from_file(shader_path("vamp.vs.glsl"), shader_path("vamp.fs.glsl")))
         return false;
-
-
+    
     m_scale.x = 0.5f;
     m_scale.y = 0.5f;
 
@@ -75,7 +75,7 @@ bool Vamp::init(vec2 position) {
 void Vamp::destroy() {
     glDeleteBuffers(1, &mesh.vbo);
     glDeleteBuffers(1, &mesh.ibo);
-    glDeleteBuffers(1, &mesh.vao);
+    glDeleteVertexArrays(1, &mesh.vao);
 
     glDeleteShader(effect.vertex);
     glDeleteShader(effect.fragment);
@@ -142,12 +142,12 @@ vec2 Vamp::get_position()const
     return m_position;
 }
 
-bool Vamp::collides_with(const Turtle &turtle) {
+bool Vamp::collides_with(const Enemy &turtle) {
     float dx = m_position.x - turtle.get_position().x;
     float dy = m_position.y - turtle.get_position().y;
     float d_sq = dx * dx + dy * dy;
     float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
-    float my_r = std::max(vamp_texture.width * m_scale.x * 0.8f,  vamp_texture.height * m_scale.y * 0.8f);
+    float my_r = std::max(vamp_texture.width * m_scale.x * 0.55f,  vamp_texture.height * m_scale.y * 0.55f);
     float r = std::max(other_r, my_r);
     r *= 0.6f;
     if (d_sq < r * r)
