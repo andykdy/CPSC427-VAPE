@@ -16,13 +16,6 @@ Texture VampCharge::vamp_charge_texture;
 
 bool VampCharge::init(vec2 position) {
 
-    m_bar = &GameEngine::getInstance().getEntityManager()->addEntity<VampBar>();
-    m_bar->init(position); // TODO
-
-    m_icon = &GameEngine::getInstance().getEntityManager()->addEntity<VampIcon>();
-    m_icon->init({position.x +200 ,position.y + 50});
-    // m_icon->init({position.x + 50,position.y}); // TODO
-
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
     auto* physics = addComponent<PhysicsComponent>();
@@ -32,9 +25,9 @@ bool VampCharge::init(vec2 position) {
     // Load shared texture
     if (!vamp_charge_texture.is_valid())
     {
-        if (!vamp_charge_texture.load_from_file(textures_path("vamp_charge.png")))
+        if (!vamp_charge_texture.load_from_file(textures_path("UI_base_bar.png")))
         {
-            fprintf(stderr, "Failed to load vamp_charge texture!");
+            fprintf(stderr, "Failed to load UI_base_bar texture!");
             return false;
         }
     }
@@ -49,8 +42,9 @@ bool VampCharge::init(vec2 position) {
     if (!sprite->initTexture(&vamp_charge_texture))
         throw std::runtime_error("Failed to initialize health sprite");
 
-    physics->scale = { 0.25f, 0.25f };
+    physics->scale = { 0.7f, 1.f };
     motion->position = { position.x, position.y };
+//    motion->position = { 100, 100 };
     charge = 0;
 
     return !gl_has_errors();
@@ -60,10 +54,6 @@ void VampCharge::update(float ms) {
 }
 
 void VampCharge::draw(const mat3 &projection) {
-    if (m_bar != nullptr)
-        m_bar->draw(projection);
-    if (m_icon != nullptr)
-        m_icon->draw(projection);
 
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
@@ -74,28 +64,34 @@ void VampCharge::draw(const mat3 &projection) {
     auto* physics = getComponent<PhysicsComponent>();
     auto* sprite = getComponent<SpriteComponent>();
 
+//    for (int i = 0; i < charge; i++) {
+//        transform->begin();
+//        vec2 offset = {i * 3.55f, 0.f};
+//        offset.x -= motion->position.x;
+//        offset.y += motion->position.y;
+//        transform->translate(offset);
+//        transform->scale(physics->scale);
+//        transform->end();
+//
+//        sprite->draw(projection, transform->out, effect->program, {1.f, 0.f, 0.f});
+//    }
+
+
     int num = 4*charge;
     for (int i = 0; i < num; i++) {
         transform->begin();
-        vec2 offset = {(float)i/2.f * 5.f, 0.f};
-        if (i%2 == 0) {
-            offset = {(float)i/2.f * - 5.f, 0.f};
-        }
+        vec2 offset = {(float)i/1.1f * - 5.f, 0.f};
         offset.x += motion->position.x;
         offset.y += motion->position.y;
         transform->translate(offset);
         transform->scale(physics->scale);
         transform->end();
 
-        sprite->draw(projection, transform->out, effect->program);
+        sprite->draw(projection, transform->out, effect->program,{1.f, 0.f, 0.f});
     }
 }
 
 void VampCharge::destroy() {
-    if (m_bar != nullptr)
-        m_bar->destroy();
-    if (m_icon != nullptr)
-        m_icon->destroy();
 
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();

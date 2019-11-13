@@ -69,13 +69,15 @@ void TutorialState::init() {
 
 	m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
 	m_player->init(screen, INIT_HEALTH);
-	m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
-	m_uiPanel->init(screen, screen.y * 0.1f);
-	m_health = &GameEngine::getInstance().getEntityManager()->addEntity<Health>();
-	m_health->init({45, screen.y-50});
+	m_uiPanelBackground = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanelBackground>();
+	m_uiPanelBackground->init(screen, screen.y * 0.1f);
+    m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
+    m_uiPanel->init(screen, screen.y, screen.x);
+    m_health = &GameEngine::getInstance().getEntityManager()->addEntity<Health>();
+    m_health->init({53, screen.y-50});
 
-	m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
-    m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
+    m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
+    m_vamp_charge->init({screen.x-52, screen.y-50});
 	m_vamp_mode_charge = 0;
 
 	GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
@@ -111,7 +113,8 @@ void TutorialState::terminate() {
 	m_vamp.destroy();
 	for (auto& turtle : m_turtles)
 		turtle->destroy();
-	m_uiPanel->destroy();
+    m_uiPanelBackground->destroy();
+    m_uiPanel->destroy();
 	m_health->destroy();
 	m_vamp_charge->destroy();
 	m_turtles.clear();
@@ -340,12 +343,13 @@ void TutorialState::draw() {
 		m_vamp.draw(projection_2D);
 	}
 	m_player->draw(projection_2D);
-	m_uiPanel->draw(projection_2D);
+	m_uiPanelBackground->draw(projection_2D);
 	m_health->draw(projection_2D);
 	m_vamp_charge->draw(projection_2D);
 	if (m_continue_UI.isActive()) {
 		m_continue_UI.draw(projection_2D);
 	}
+    m_uiPanel->draw(projection_2D);
 	m_dialogue.draw(projection_2D);
     m_explosion.draw(projection_2D);
 	//////////////////

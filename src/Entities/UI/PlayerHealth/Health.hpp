@@ -7,8 +7,6 @@
 
 #include "common.hpp"
 #include "Engine/ECS/ECS.hpp"
-#include "HealthBar.hpp"
-#include "HealthIcon.hpp"
 
 class Health: public ECS::Entity {
     static Texture health_point_texture;
@@ -22,8 +20,6 @@ public:
     void setHealth(int health);
 
 private:
-    HealthBar* m_bar;
-    HealthIcon* m_icon;
     int health = 1;
 };
 

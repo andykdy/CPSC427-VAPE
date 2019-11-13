@@ -1,5 +1,5 @@
 //
-// Created by Cody on 11/8/2019.
+// Created by matte on 2019-11-12.
 //
 
 #ifndef VAPE_UIPANEL_HPP
@@ -12,9 +12,11 @@ class UIPanel: public ECS::Entity {
 private:
     vec2 m_screen;
 public:
-    bool init(vec2 screen, float height);
+    bool init(vec2 screen, float height, float width);
     void draw(const mat3& projection) override;
     void destroy() override;
+
+    static Texture UI_texture;
 };
 
 
