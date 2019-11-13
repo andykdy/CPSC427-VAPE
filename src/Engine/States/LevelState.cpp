@@ -85,6 +85,8 @@ void LevelState::init() {
     m_boss_mode = false;
     m_boss_pre = false;
     m_vamp_cooldown = 0;
+    m_vamp_mode_charge = 0;
+
 
     m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
     m_player->init(screen, INIT_HEALTH);
@@ -94,13 +96,10 @@ void LevelState::init() {
     m_health->init({53, screen.y-50});
     m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
     m_vamp_charge->init({screen.x-52, screen.y-50});
-
-
-    // TODO - remove spacing
+//    m_vamp_particle_emitter
+//    m_vamp_particle_emitter->init();
     m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
     m_uiPanel->init(screen, screen.y, screen.x);
-
-    m_vamp_mode_charge = 0;
     m_dialogue.init(m_level.bossDialogue);
     m_dialogue.deactivate();
     m_space.init(m_level.backgroundTexture);
@@ -163,7 +162,6 @@ void LevelState::update(float ms) {
     vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
     m_level_time += ms;
-    m_vamp_cooldown -= ms;
 
     // To prepare for the boss, stop spawning enemies and change the music
     if (m_level_time >= m_level.bossTime - 5000 && !m_boss_pre) {
@@ -294,11 +292,13 @@ void LevelState::update(float ms) {
     }
 
     // check for vamp/turtle collisions
+    m_vamp_cooldown -= ms;
+
     if (m_vamp_mode) {
         turtle_it = m_turtles->begin();
         while (turtle_it != m_turtles->end()) {
             if (m_vamp.collides_with(**turtle_it)) {
-                // TODO - restructure
+                // TODO - Re-add resetting vamp timer on leaving aura
                 (*turtle_it)->add_vamp_timer(ms);
                  std::cout << (*turtle_it)->get_vamp_timer() << std::endl;
 
@@ -309,8 +309,6 @@ void LevelState::update(float ms) {
                     turtle_it = m_turtles->erase(turtle_it);
                     add_health(VAMP_HEAL);
                     continue;
-                } else {
-                 //   (*turtle_it)->reset_vamp_timer();
                 }
 
             }

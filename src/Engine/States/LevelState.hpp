@@ -21,7 +21,7 @@
 #include "Entities/Projectiles and Damaging/bullet.hpp"
 #include "Entities/UI/Dialogue.hpp"
 #include "Entities/UI/PlayerHealth/Health.hpp"
-#include "Entities/Explosion.hpp"
+#include "Entities/Effects/Explosion.hpp"
 #include "Levels/Level.hpp"
 
 // stlib
@@ -99,7 +99,6 @@ private:
 	Dialogue m_dialogue;
 
     float m_level_time;
-    float m_vamp_cooldown;
 
     bool m_boss_pre;
     bool m_boss_mode;
@@ -108,10 +107,11 @@ private:
     Vamp m_vamp;
     bool m_vamp_mode;
     float m_vamp_mode_timer;
+    float m_vamp_cooldown;
     unsigned int m_vamp_mode_charge;
+    VampParticleEmitter m_vamp_particle_emitter;
+
     Explosion m_explosion;
-
-
 
     Mix_Music* m_background_music;
     Mix_Music* m_boss_music;

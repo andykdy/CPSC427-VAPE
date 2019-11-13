@@ -57,7 +57,7 @@ set(SOURCE_FILES
     src/Entities/Vamp.cpp src/Entities/Vamp.hpp
     src/Entities/MainMenu.cpp src/Entities/MainMenu.hpp
     src/Entities/Intro.cpp src/Entities/Intro.hpp
-    src/Entities/Explosion.cpp src/Entities/Explosion.hpp
+        src/Entities/Effects/Explosion.cpp src/Entities/Effects/Explosion.hpp
 
     src/Entities/Enemies/Enemy.hpp
     src/Entities/Enemies/turtle.cpp src/Entities/Enemies/turtle.hpp
@@ -113,7 +113,7 @@ set(SOURCE_FILES
     
     src/Utils/SaveData.cpp src/Utils/SaveData.hpp
 
-    src/Entities/Debugging/DebugDot.cpp src/Entities/Debugging/DebugDot.hpp )
+    src/Entities/Debugging/DebugDot.cpp src/Entities/Debugging/DebugDot.hpp src/Entities/Effects/VampParticleEmitter.cpp src/Entities/Effects/VampParticleEmitter.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
