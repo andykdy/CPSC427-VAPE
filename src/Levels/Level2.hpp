@@ -13,11 +13,7 @@ namespace Levels {
     const Timeline level2Timeline = {
             { 1500, TSpaced3GenericShooter },
 
-            { 3000, TL3 },
-            { 5000, TR3 },
-            { 6000, TLDiag3 },
-            { 6200, TRDiag3 },
-
+            { 4000, TLTargetSingle },
 
             { 8000, TSpaced4Fast },
             { 9000, TSpaced3 },
@@ -34,8 +30,6 @@ namespace Levels {
 
             {20000, TSpaced4Fast},
             {20500, TM3},
-            {21000, TL3},
-            {21001, TR3},
             {21002, LM2GenericShooter},
             {21003, RM2GenericShooter},
 
