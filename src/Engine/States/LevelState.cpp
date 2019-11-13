@@ -367,7 +367,7 @@ void LevelState::update(float ms) {
             m_vamp.init(m_player->get_position());
         } else {
             end_vamp_mode = true;
-//            GameEngine::getInstance().setM_current_speed(1.f);
+//             GameEngine::getInstance().setM_current_speed(1.f);
 //            m_vamp_mode = false;
 //            m_vamp.destroy();
         }
