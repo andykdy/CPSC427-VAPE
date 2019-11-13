@@ -28,6 +28,7 @@ protected:
     BossHealth* m_healthbar;
     int health = 1;
     bool m_is_alive = true;
+    float vamp_timer = 0;
 public:
     // Creates all the associated render resources and default transform
     virtual bool init(vec2 screen) = 0;
@@ -67,6 +68,12 @@ public:
     virtual bool collidesWith(const Vamp& vamp) = 0;
 
     virtual bool collidesWith(const Player& player) = 0;
+
+    inline void add_vamp_timer(float ms) { vamp_timer += ms; };
+
+    inline void reset_vamp_timer() { vamp_timer = 0; };
+
+    inline float get_vamp_timer() { return vamp_timer; };
 };
 
 #endif //VAPE_BOSS_HPP
