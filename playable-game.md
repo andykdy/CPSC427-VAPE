@@ -13,7 +13,7 @@ A new basic enemy, the Generic Shooter, was added. It still just follows a simpl
 ## Basic item pickups
 The initial framework for item pickups was put in place, building an abstract Pickups class, and implementing the
 appropriate logic in the levelState to manage it.
-TODO 
+
 
 ## Run user studies on minimal viable game
 Since we just ran the crossplay on it, we didn't do any additional testing during this week. We focused on making adjustments according to the crossplay feedback
@@ -30,7 +30,8 @@ of his ship. Upon hitting half health, he switches up to faster/more difficult p
 ## Additional grpahical effects
 Explosion particle effects were added, and are generated upon enemy deaths.
 Particle Effects are used for the boss2 laser beams.
-TODO - New vamp mode graphical effects,
+New vamp mode graphical effects were planned, but were unable to be implemented in time. 
+Will be moved into final milestone.
 
 ## Bug Fixes
 Fixed the bug in destruction code that was causing a segfault when attempting to the main menu. 
@@ -48,7 +49,7 @@ but now that those are done, it will be significantly simpler going forward to c
 
 
 ## Additional item pickups
-TODO
+TODO - Moved to final milestone
 
 ## Basic sound effects
 Was already done a long time ago. Additional music was added and some sound effects were adjusted.
