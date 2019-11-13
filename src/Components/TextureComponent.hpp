@@ -99,7 +99,6 @@ public:
     void release() {
         glDeleteBuffers(1, &vbo);
         glDeleteBuffers(1, &ibo);
-        glDeleteBuffers(1, &vao);
     }
 };
 

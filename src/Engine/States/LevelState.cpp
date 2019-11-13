@@ -14,6 +14,7 @@
 #include <iostream>
 #include <Systems/CollisionSystem.hpp>
 #include <Entities/Bosses/Boss2.hpp>
+#include <Utils/SaveData.hpp>
 
 #include "LevelState.hpp"
 #include "MainMenuState.hpp"
@@ -440,6 +441,7 @@ void LevelState::update(float ms) {
             if (m_level.nextLevel != nullptr) {
                 GameEngine::getInstance().changeState(new LevelState(*m_level.nextLevel, m_points));
             } else {
+                saveScore(m_points);
                 // TODO save m_points to a leaderboard?
                 // TODO go to Epilogue state
                 GameEngine::getInstance().changeState(new MainMenuState());
