@@ -31,7 +31,11 @@ public:
 
     bool isOffScreen(const vec2 &screen) override;
 
+    void set_speed_slow();
+    void set_speed_fast();
+
 private:
+    float m_speed;
 };
 
 #endif //VAPE_BULLET_HPP
