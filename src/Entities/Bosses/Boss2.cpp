@@ -311,6 +311,7 @@ void Boss2::draw(const mat3 &projection) {
 
     sprite->draw(projection, transform->out, effect->program, {1.f, mod * 1.f,mod * 1.f});
 
+    /*
     // Vertex Debug Drawing
     for (auto& vertex : m_vertices) {
         transform->begin();
@@ -322,6 +323,7 @@ void Boss2::draw(const mat3 &projection) {
         vec3 pos = mul(transform->out, vec3{vertex.position.x, vertex.position.y, 1.0});
         m_dot.draw(projection, {1.f,1.f,1.f}, {pos.x, pos.y}, 0);
     }
+     */
 
     m_healthbar->draw(projection);
 }

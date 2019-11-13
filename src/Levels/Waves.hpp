@@ -28,9 +28,13 @@ namespace Levels {
     const size_t SW = 800;
     const size_t SH = 1000;
 
-    const Wave TargetSingle = {genSpawn(spawn < EnemyTargettedShooter > , {100, -100}, TD, 0.f)};
 
 
+    /*
+     *
+     * Turtle-only Waves
+     *
+     */
     const Wave TL3 = {genSpawn(spawn < Turtle > , {100, -100}, TD, 0.f),
                       genSpawn(spawn < Turtle > , {200, -150}, TD, 0.f),
                       genSpawn(spawn < Turtle > , {300, -100}, TD, 0.f)
@@ -61,13 +65,6 @@ namespace Levels {
             genSpawn(spawn < Turtle > , {600, -100}, TD, 0.f),
     };
 
-    const Wave TSpaced4GenericShooter = {
-            genSpawn(spawn < EnemyGenericShooter > , {150, -100}, TD, 0.f),
-            genSpawn(spawn < EnemyGenericShooter > , {300, -100}, TD, 0.f),
-            genSpawn(spawn < EnemyGenericShooter > , {450, -100}, TD, 0.f),
-            genSpawn(spawn < EnemyGenericShooter > , {600, -100}, TD, 0.f),
-    };
-
     const Wave TSpaced4Fast = {
             genSpawn(spawn < Turtle > , {150, -100}, TD2, 0.f),
             genSpawn(spawn < Turtle > , {300, -100}, TD2, 0.f),
@@ -86,11 +83,6 @@ namespace Levels {
     const Wave LM3 = {genSpawn(spawn < Turtle > , {-100, 200}, TR, 0.f),
                       genSpawn(spawn < Turtle > , {-150, 400}, TR, 0.f),
                       genSpawn(spawn < Turtle > , {-200, 600}, TR, 0.f)
-    };
-
-    const Wave LM3GenericShooter = {genSpawn(spawn < EnemyGenericShooter > , {-100, 200}, TR, 0.f),
-                                    genSpawn(spawn < EnemyGenericShooter > , {-150, 400}, TR, 0.f),
-                                    genSpawn(spawn < EnemyGenericShooter > , {-200, 600}, TR, 0.f)
     };
 
     const Wave LM3Fast = {genSpawn(spawn < Turtle > , {-100, 200}, TR2, 0.f),
@@ -143,5 +135,50 @@ namespace Levels {
             genSpawn(spawn < Turtle > , {SW + 100, -100}, TDL, 0.f),
             genSpawn(spawn < Turtle > , {SW + 200, -0}, TDL, 0.f)
     };
+
+
+
+
+    /*
+     *
+     * Generic Shooter Waves
+     *
+     *
+     */
+    const Wave TSpaced3GenericShooter = {
+            genSpawn(spawn < EnemyGenericShooter > , {250, -100}, TD, 0.f),
+            genSpawn(spawn < EnemyGenericShooter > , {400, -200}, TD, 0.f),
+            genSpawn(spawn < EnemyGenericShooter > , {550, -100}, TD, 0.f),
+    };
+
+    const Wave TSpaced4GenericShooter = {
+            genSpawn(spawn < EnemyGenericShooter > , {150, -100}, TD, 0.f),
+            genSpawn(spawn < EnemyGenericShooter > , {300, -100}, TD, 0.f),
+            genSpawn(spawn < EnemyGenericShooter > , {450, -100}, TD, 0.f),
+            genSpawn(spawn < EnemyGenericShooter > , {600, -100}, TD, 0.f),
+    };
+
+
+
+    const Wave LM2GenericShooter = {genSpawn(spawn < EnemyGenericShooter > , {-100, 200}, TR, 0.f),
+                                    genSpawn(spawn < EnemyGenericShooter > , {-150, 400}, TR, 0.f),
+    };
+    const Wave RM2GenericShooter = {genSpawn(spawn < EnemyGenericShooter > , {SW + 100, 300}, TL, 0.f),
+                                    genSpawn(spawn < EnemyGenericShooter > , {SW + 150, 500}, TL, 0.f),
+    };
+
+
+
+
+
+    /*
+     *
+     * Targetted Shooter Waves
+     *
+     */
+
+    const Wave TLTargetSingle = {genSpawn(spawn < EnemyTargettedShooter > , {100, -100}, TD, 0.f)};
+    const Wave TRTargetSingle = {genSpawn(spawn <EnemyTargettedShooter>, {SW-100, -100}, TD, 0.f)};
+    const Wave TMTargetSingle = {genSpawn(spawn <EnemyTargettedShooter>, {SW/2, -100}, TD, 0.f)};
 }
 #endif //VAPE_WAVES_HPP
