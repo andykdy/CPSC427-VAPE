@@ -180,6 +180,7 @@ void EnemyTargettedShooter::spawnBullet() {
     auto *motion = getComponent<MotionComponent>();
     Bullet *bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
     if (bullet->init(motion->position, motion->radians + M_PI)) {
+        bullet->set_speed_slow();
         projectiles.emplace_back(bullet);
     } else {
         throw std::runtime_error("Failed to spawn bullet");
