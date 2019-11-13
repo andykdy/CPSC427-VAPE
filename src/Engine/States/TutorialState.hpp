@@ -28,6 +28,7 @@
 #include <Entities/Vamp.hpp>
 #include <Entities/UI/Vamp/VampCharge.hpp>
 #include <Entities/Explosion.hpp>
+#include <Entities/UI/UIPanelBackground.hpp>
 #include <Entities/UI/UIPanel.hpp>
 
 enum Component {
@@ -92,7 +93,8 @@ private:
 	std::vector<Turtle*> m_turtles;
 	Dialogue m_dialogue;
 	Continue m_continue_UI;
-	UIPanel* m_uiPanel;
+    UIPanelBackground* m_uiPanelBackground;
+    UIPanel* m_uiPanel ;
 
 	float m_next_turtle_spawn;
 	float m_next_fish_spawn;

@@ -1,112 +1,82 @@
 //
-// Created by Cody on 11/8/2019.
+// Created by matte on 2019-11-12.
 //
 
 #include <Components/TransformComponent.hpp>
 #include <Components/EffectComponent.hpp>
 #include <Components/MeshComponent.hpp>
+#include <Components/SpriteComponent.hpp>
+#include <Components/MotionComponent.hpp>
+#include <Components/PhysicsComponent.hpp>
+#include <Engine/GameEngine.hpp>
+#include "UIPanelBackground.hpp"
 #include "UIPanel.hpp"
 
-bool UIPanel::init(vec2 screen, float height) {
-    auto* transform = addComponent<TransformComponent>();
+Texture UIPanel::UI_texture;
+
+bool UIPanel::init(vec2 screen, float height, float width) {
+
+    auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
-    auto* mesh = addComponent<MeshComponent>();
+    auto* physics = addComponent<PhysicsComponent>();
+    auto* motion = addComponent<MotionComponent>();
+    auto* transform = addComponent<TransformComponent>();
 
-    // Clearing errors
-    gl_flush_errors();
-
-    // Allocate Vertex Data Buffer
-//		TexturedVertex vertexData[totalSprites * 4];
-    glGenBuffers(1, &mesh->vbo);
-
-    // Allocate Index Buffer
-    glGenBuffers(1, &mesh->ibo);
-
-
-    Vertex vertices[4];
-    vertices[0].position = {0, 0, -0.02f};
-    vertices[0].color = {0,0,0};
-    vertices[1].position = {screen.x, 0, -0.02f};
-    vertices[1].color = {0,0,0};
-    vertices[2].position = {screen.x, -height, -0.02f};
-    vertices[2].color = {0,0,0};
-    vertices[3].position = {0, -height, -0.02f};
-    vertices[3].color = {0,0,0};
-    uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
-
-    // Clearing errors
-    gl_flush_errors();
-
-    // Vertex Buffer creation
-    glGenBuffers(1, &mesh->vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4, vertices, GL_STATIC_DRAW);
-
-    // Index Buffer creation
-    glGenBuffers(1, &mesh->ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
-
-    // Vertex Array (Container for Vertex + Index buffer)
-    glGenVertexArrays(1, &mesh->vao);
+    // Load texture
+    if (!UI_texture.is_valid())
+    {
+        if (!UI_texture.load_from_file(textures_path("UI.png")))
+        {
+            fprintf(stderr, "Failed to load UI_texture texture!");
+            return false;
+        }
+    }
 
     if (gl_has_errors())
         return false;
 
-    m_screen = screen;
-
     // Loading shaders
-    return effect->load_from_file(shader_path("coloured.vs.glsl"), shader_path("coloured.fs.glsl"));
+    if (!effect->load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
+        return false;
+
+    if (!sprite->initTexture(&UI_texture))
+        throw std::runtime_error("Failed to initialize health sprite");
+
+    physics->scale = { 1.f, 1.f };
+    motion->position = { width * .5f, height * 0.95f};
+//    motion->position = { height * 0.55f, width * .5f };
+
+    return !gl_has_errors();
 
 }
 
 void UIPanel::draw(const mat3 &projection) {
+
+    //std::cout << "Drawing here " << std::endl;
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
-    auto* mesh = getComponent<MeshComponent>();
+    auto* motion = getComponent<MotionComponent>();
+    auto* physics = getComponent<PhysicsComponent>();
+    auto* sprite = getComponent<SpriteComponent>();
 
-    // Transformation code, see Rendering and Transformation in the template specification for more info
-    // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
+
     transform->begin();
-    transform->translate({0, m_screen.y});
-    transform->rotate(0);
-    transform->scale({1,1});
+    transform->translate(motion->position);
+    transform->scale(physics->scale);
+    transform->rotate(motion->radians);
     transform->end();
 
-    // Setting shaders
-    glUseProgram(effect->program);
 
-    // Enabling alpha channel for textures
-    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_DEPTH_TEST);
 
-    // Getting uniform locations for glUniform* calls
-    GLint transform_uloc = glGetUniformLocation(effect->program, "transform");
-    GLint color_uloc = glGetUniformLocation(effect->program, "color");
-    GLint projection_uloc = glGetUniformLocation(effect->program, "projection");
-
-    // Setting vertices and indices
-    glBindVertexArray(mesh->vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ibo);
-
-    // Input data location as in the vertex buffer
-    GLint in_position_loc = glGetAttribLocation(effect->program, "in_position");
-    glEnableVertexAttribArray(in_position_loc);
-    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-
-    // Setting uniform values to the currently bound program
-    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform->out);
-    float c[] = { 0, 0, 0 };
-    glUniform3fv(color_uloc, 1, c);
-    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
-
-    // Drawing!
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+    sprite->draw(projection, transform->out, effect->program);
 }
 
 void UIPanel::destroy() {
-    auto* mesh = getComponent<MeshComponent>();
-    mesh->release();
+    auto* effect = getComponent<EffectComponent>();
+    auto* sprite = getComponent<SpriteComponent>();
+
+    effect->release();
+    sprite->release();
+    ECS::Entity::destroy();
     Entity::destroy();
 }

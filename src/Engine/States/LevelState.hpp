@@ -32,6 +32,7 @@
 #include <Entities/Vamp.hpp>
 #include <Entities/Bosses/Boss1.hpp>
 #include <Entities/UI/Vamp/VampCharge.hpp>
+#include <Entities/UI/UIPanelBackground.hpp>
 #include <Entities/UI/UIPanel.hpp>
 #include <Entities/Pickups/Pickup.hpp>
 
@@ -90,6 +91,7 @@ private:
     std::vector<Enemy*> *m_turtles;
 
     // UI
+    UIPanelBackground* m_uiPanelBackground;
     UIPanel* m_uiPanel;
     Health* m_health;
     VampCharge* m_vamp_charge;

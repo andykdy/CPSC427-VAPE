@@ -15,13 +15,6 @@
 Texture Health::health_point_texture;
 
 bool Health::init(vec2 position) {
-
-    m_bar = &GameEngine::getInstance().getEntityManager()->addEntity<HealthBar>();
-    m_bar->init(position); // TODO
-
-    m_icon = &GameEngine::getInstance().getEntityManager()->addEntity<HealthIcon>();
-    m_icon->init({position.x + 500,position.y}); // TODO
-
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
     auto* physics = addComponent<PhysicsComponent>();
@@ -31,7 +24,7 @@ bool Health::init(vec2 position) {
     // Load shared texture
     if (!health_point_texture.is_valid())
     {
-        if (!health_point_texture.load_from_file(textures_path("health_point.png")))
+        if (!health_point_texture.load_from_file(textures_path("UI_base_bar.png")))
         {
             throw std::runtime_error("Failed to load health texture");
         }
@@ -44,7 +37,7 @@ bool Health::init(vec2 position) {
     if (!sprite->initTexture(&health_point_texture))
         throw std::runtime_error("Failed to initialize health sprite");
 
-    physics->scale = { 0.25f, 0.25f };
+    physics->scale = { 0.7f, 1.f };
     motion->position = { position.x, position.y };
 
     return true;
@@ -54,11 +47,6 @@ void Health::update(float ms) {
 }
 
 void Health::draw(const mat3 &projection) {
-    if (m_bar != nullptr)
-        m_bar->draw(projection);
-    if (m_icon != nullptr)
-        m_icon->draw(projection);
-
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
     auto* motion = getComponent<MotionComponent>();
@@ -69,23 +57,18 @@ void Health::draw(const mat3 &projection) {
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     for (int i = 0; i < health; i++) {
         transform->begin();
-        vec2 offset = {i * 5.f, 0.f};
+        vec2 offset = {i * 3.55f, 0.f};
         offset.x += motion->position.x;
         offset.y += motion->position.y;
         transform->translate(offset);
         transform->scale(physics->scale);
         transform->end();
 
-        sprite->draw(projection, transform->out, effect->program);
+        sprite->draw(projection, transform->out, effect->program, {0.f, 1.f, 0.f});
     }
 }
 
 void Health::destroy() {
-    if (m_bar != nullptr)
-        m_bar->destroy();
-    if (m_icon != nullptr)
-        m_icon->destroy();
-
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();
 

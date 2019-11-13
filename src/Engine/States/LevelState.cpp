@@ -14,6 +14,7 @@
 #include <iostream>
 #include <Systems/CollisionSystem.hpp>
 #include <Entities/Bosses/Boss2.hpp>
+//#include <Entities/UI/UIPanel.hpp>
 
 #include "LevelState.hpp"
 #include "MainMenuState.hpp"
@@ -35,8 +36,8 @@ namespace
 
 
 LevelState::LevelState(Levels::Level level, unsigned int points) :
-m_level(level),
-m_points(points)
+        m_level(level),
+        m_points(points)
 {
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
@@ -80,15 +81,21 @@ void LevelState::init() {
 
     m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
     m_player->init(screen, INIT_HEALTH);
-    m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
-    m_uiPanel->init(screen, screen.y * 0.1f);
+    m_uiPanelBackground = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanelBackground>();
+    m_uiPanelBackground->init(screen, screen.y * 0.1f);
     m_health = &GameEngine::getInstance().getEntityManager()->addEntity<Health>();
-    m_health->init({45, screen.y-50});
+    m_health->init({53, screen.y-50});
     m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
-    m_vamp_charge->init({screen.x/2.f, screen.y - (screen.y/12.f)});
+    m_vamp_charge->init({screen.x-52, screen.y-50});
+
+
+    // TODO - remove spacing
+    m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
+    m_uiPanel->init(screen, screen.y, screen.x);
+
     m_vamp_mode_charge = 0;
-	m_dialogue.init(m_level.bossDialogue);
-	m_dialogue.deactivate();
+    m_dialogue.init(m_level.bossDialogue);
+    m_dialogue.deactivate();
     m_space.init(m_level.backgroundTexture);
     m_explosion.init();
     m_boss = m_level.spawnBoss(GameEngine::getInstance().getEntityManager());
@@ -129,6 +136,7 @@ void LevelState::terminate() {
         pickup->destroy();
     }
 
+    m_uiPanelBackground->destroy();
     m_uiPanel->destroy();
     m_health->destroy();
     m_vamp_charge->destroy();
@@ -136,9 +144,9 @@ void LevelState::terminate() {
     m_pickups.clear();
     if (m_boss != nullptr)
         m_boss->destroy();
-	m_dialogue.destroy();
-	m_explosion.destroy();
-	m_space.destroy();
+    m_dialogue.destroy();
+    m_explosion.destroy();
+    m_space.destroy();
 }
 
 void LevelState::update(float ms) {
@@ -152,12 +160,12 @@ void LevelState::update(float ms) {
     // To prepare for the boss, stop spawning enemies and change the music
     if (m_level_time >= m_level.bossTime - 5000 && !m_boss_pre) {
         Mix_PlayMusic(m_boss_music, -1);
-		m_dialogue.activate();
+        m_dialogue.activate();
         m_boss_pre = true;
     }
     // Spawn the boss
     if (m_level_time >= m_level.bossTime && !m_boss_mode) {
-		m_dialogue.deactivate();
+        m_dialogue.deactivate();
         m_boss_mode = true;
         m_boss->set_position({static_cast<float>(screen.x/2), static_cast<float>(screen.y/10)});
     }
@@ -171,29 +179,29 @@ void LevelState::update(float ms) {
     }
 
     // Checking Player - Turtle collisions
-	auto turtle_it = m_turtles->begin();
-	while (turtle_it != m_turtles->end())
-	{
+    auto turtle_it = m_turtles->begin();
+    while (turtle_it != m_turtles->end())
+    {
         if (m_player->collides_with(**turtle_it))
         {
             if (m_player->is_alive()) {
-				if (m_player->get_iframes() <= 0.f) {
-					m_player->set_iframes(500.f);
-					lose_health(DAMAGE_ENEMY);
+                if (m_player->get_iframes() <= 0.f) {
+                    m_player->set_iframes(500.f);
+                    lose_health(DAMAGE_ENEMY);
                     Mix_PlayChannel(-1, m_player_explosion, 0);
-					(*turtle_it)->destroy();
+                    (*turtle_it)->destroy();
                     turtle_it = m_turtles->erase(turtle_it);
-				}
-			}
+                }
+            }
             break;
-		} else
-		{
-			turtle_it++;
-		}
+        } else
+        {
+            turtle_it++;
+        }
     }
 
-	// Checking Enemy Bullet - Player collisions
-	for(auto& enemy: *m_turtles) {
+    // Checking Enemy Bullet - Player collisions
+    for(auto& enemy: *m_turtles) {
         auto& bullets = enemy->projectiles;
 
         // Checking Enemy Bullet - Player collisions
@@ -226,17 +234,17 @@ void LevelState::update(float ms) {
                 ++bullet_it;
             }
         }
-	}
+    }
 
     // Check Pickup Collisions
     auto pickup_it = m_pickups.begin();
-	while (pickup_it != m_pickups.end()) {
-	    if ((*pickup_it)->collides_with(*m_player)) {
+    while (pickup_it != m_pickups.end()) {
+        if ((*pickup_it)->collides_with(*m_player)) {
             (*pickup_it)->applyEffect(*this);
             (*pickup_it)->destroy();
             pickup_it = m_pickups.erase(pickup_it);
-	    }
-	}
+        }
+    }
 
     // Checking Player Bullet - Enemy collisions
     auto& playerBullets = m_player->bullets;
@@ -311,7 +319,7 @@ void LevelState::update(float ms) {
         float h = (*turtle_it)->get_bounding_box().y / 2;
         float w = (*turtle_it)->get_bounding_box().x / 2;
         if (std::abs((*turtle_it)->get_position().y) + h > screen.y + 400
-                || std::abs((*turtle_it)->get_position().x) + w > screen.x + 400) {
+            || std::abs((*turtle_it)->get_position().x) + w > screen.x + 400) {
             (*turtle_it)->destroy();
             turtle_it = m_turtles->erase(turtle_it);
             continue;
@@ -434,7 +442,7 @@ void LevelState::update(float ms) {
                 }
             }
 
-        // If boss dies, continue to next level or main menu
+            // If boss dies, continue to next level or main menu
         } else if (m_boss->getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
         {
             if (m_level.nextLevel != nullptr) {
@@ -451,7 +459,7 @@ void LevelState::update(float ms) {
     // If salmon is dead, restart the game after the fading animation
     if (!m_player->is_alive() &&
         m_space.get_salmon_dead_time() > 5) {
-       reset();
+        reset();
     }
     //std::cout << "updateend" << std::endl;
 }
@@ -503,9 +511,10 @@ void LevelState::draw() {
     if (m_boss_mode) {
         m_boss->draw(projection_2D);
     }
-    m_uiPanel->draw(projection_2D);
+    m_uiPanelBackground->draw(projection_2D);
     m_health->draw(projection_2D);
     m_vamp_charge->draw(projection_2D);
+    m_uiPanel->draw(projection_2D);
     m_dialogue.draw(projection_2D);
     m_explosion.draw(projection_2D);
 
@@ -538,7 +547,7 @@ void LevelState::add_health(int heal) {
 void LevelState::add_vamp_charge() {
     if (m_vamp_mode_charge < 15) {
         m_vamp_mode_charge++;
-        
+
         if (m_vamp_mode_charge == 15) {
             // TODO - replace with more appropriate sound
             Mix_PlayChannel(-1, m_player_charged, 0);
