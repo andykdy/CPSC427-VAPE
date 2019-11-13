@@ -92,6 +92,11 @@ get some kind of scripted animation or video library added to it.
 
 # Optional Components Implemented
 
+## Reloadability
+Likely doesn't count for the whole 10%, but score saving has been added, saving the player's score after 
+dying or completing the game. Currently, this saves the score with a default name, and only the highscore 
+is displayed (in the window bar, beside points).
+
 ## Physics-Based animation
 This has been a thing in our engine since the start, using movement involving 
 acceleration, velocity, and friction decay.
