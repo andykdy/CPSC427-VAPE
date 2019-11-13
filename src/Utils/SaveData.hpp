@@ -33,4 +33,6 @@ struct leaderboardEntry {
 
 void saveScore(unsigned int points, const std::string&name = std::string(defaultName));
 
+std::multiset<leaderboardEntry> getLeaderboard();
+
 #endif //VAPE_SAVEDATA_HPP

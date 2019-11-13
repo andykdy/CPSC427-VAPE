@@ -39,13 +39,13 @@ inline void  parse(const std::string&fileName, std::multiset<leaderboardEntry>* 
 inline void saveLeaderBoard(const std::string&fileName, const std::multiset<leaderboardEntry>& leaderboard) {
     FILE* leaderboard_file = fopen(fileName.c_str(), "w");
 
-    int i = 0;
-    for (auto& entry : leaderboard) {
-        if (i > 10) break;
+    int n = 0;
+    for (auto it = leaderboard.rbegin(); it != leaderboard.rend(); ++it) {
+        if (n > 10) break;
         std::ostringstream oss;
-        oss << entry.name.substr(0,32) << " : " + std::to_string(entry.points) +"\n";
+        oss << " " << it->name << " : " + std::to_string(it->points) +"\n";
         fputs(oss.str().c_str(), leaderboard_file);
-        ++i;
+        ++n;
     }
     fclose(leaderboard_file);
 }
@@ -60,4 +60,14 @@ void saveScore(unsigned int points, const std::string&name) {
     leaderboard.insert({name, points});
 
     saveLeaderBoard(fileName, leaderboard);
+}
+
+std::multiset<leaderboardEntry> getLeaderboard() {
+    std::string fileName = "leaderboard.vape";
+
+    std::multiset<leaderboardEntry> leaderboard = {};
+    if (fileExists(fileName)) {
+        parse(fileName, &leaderboard);
+    }
+    return leaderboard;
 }

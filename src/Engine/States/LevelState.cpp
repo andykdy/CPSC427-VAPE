@@ -41,6 +41,11 @@ m_points(points)
 {
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
+    auto leaderboard = getLeaderboard();
+
+    m_highscore = 0;
+    if (leaderboard.size() > 0)
+        m_highscore = (--leaderboard.end())->points;
 }
 
 void LevelState::init() {
@@ -442,7 +447,6 @@ void LevelState::update(float ms) {
                 GameEngine::getInstance().changeState(new LevelState(*m_level.nextLevel, m_points));
             } else {
                 saveScore(m_points);
-                // TODO save m_points to a leaderboard?
                 // TODO go to Epilogue state
                 GameEngine::getInstance().changeState(new MainMenuState());
             }
@@ -453,6 +457,7 @@ void LevelState::update(float ms) {
     // If salmon is dead, restart the game after the fading animation
     if (!m_player->is_alive() &&
         m_space.get_salmon_dead_time() > 5) {
+        saveScore(m_points);
        reset();
     }
     //std::cout << "updateend" << std::endl;
@@ -469,7 +474,7 @@ void LevelState::draw() {
 
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss << "Points: " << m_points;
+    title_ss << "Points: " << m_points << "             High Score: " << ((m_points < m_highscore) ? m_highscore : m_points);
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
     // Clearing backbuffer

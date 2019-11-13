@@ -82,6 +82,7 @@ private:
 
     // Number of fish eaten by the salmon, displayed in the window title
     unsigned int m_points;
+    unsigned int m_highscore;
 
     // Game entities
     Player* m_player;
