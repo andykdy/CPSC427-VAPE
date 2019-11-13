@@ -141,6 +141,8 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 	}
 	else
 	{
+		auto* boundary = getComponent<BoundaryComponent>();
+		boundary->maxY = 2000;
 		// If dead we make it face upwards and sink deep down
 		set_rotation(3.1415f);
 		motion->maxVelocity = 0;
@@ -263,7 +265,7 @@ void Player::gain_health(float amount)
 void Player::spawn_bullet() {
     auto* motion = getComponent<MotionComponent>();
 	Bullet* bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
-	if (bullet->init(motion->position, motion->radians + 3.14)) {
+	if (bullet->init(motion->position, motion->radians + 3.14f)) {
 		bullets.emplace_back(bullet);
 	} else {
 		throw std::runtime_error("Failed to spawn bullet");

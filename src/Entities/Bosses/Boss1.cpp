@@ -211,7 +211,7 @@ vec2 Boss1::get_bounding_box() const {
 void Boss1::spawnBullet() {
     auto* motion = getComponent<MotionComponent>();
     Bullet* bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
-    if (bullet->init(motion->position, motion->radians+ 3.14)) {
+    if (bullet->init(motion->position, motion->radians+ 3.14f)) {
         projectiles.emplace_back(bullet);
     } else {
         throw std::runtime_error("Failed to spawn bullet");

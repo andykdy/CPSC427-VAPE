@@ -19,6 +19,7 @@ public:
 	virtual vec2 get_bounding_box()const { return  { 0.f,0.f }; };
 
     std::vector<Projectile *> projectiles;
+    vec2 player_position;
 };
 
 #endif //VAPE_PROJECTILE_HPP

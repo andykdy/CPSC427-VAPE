@@ -9,6 +9,20 @@
 #include <Entities/Debugging/DebugDot.hpp>
 #include "Boss.hpp"
 
+struct AttackPattern {
+    bool lasers[6];
+    // float rotations[6]; TODO rotation code for lasers is going to be annoying, so avoiding it for now
+    float chargeTime[6]; // TODO
+    float fireTime[6]; // TODO
+    float nextPatternDelay; // TODO
+
+    bool operator==(const AttackPattern &rhs) const;
+
+    bool operator!=(const AttackPattern &rhs) const;
+};
+
+class Laser;
+
 class Boss2 : public Boss {
     // Shared between all turtles, no need to load one for each instance
     static Texture boss2_texture;
@@ -48,6 +62,14 @@ public:
 private:
     DebugDot m_dot;
     std::vector<Vertex> m_vertices;
+    float m_damage_effect_cooldown;
+
+    std::vector<Laser*> m_lasers;
+
+    float m_pattern_timer;
+    AttackPattern m_pattern;
+
+    void fireLasers(AttackPattern pattern);
 };
 
 #endif //VAPE_BOSS2_HPP

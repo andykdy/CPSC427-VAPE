@@ -24,6 +24,7 @@
 // If you want to do some overloads..
 struct vec2 { float x, y; };
 struct vec3 { float x, y, z; };
+struct vec4 { float x, y, z, w; };
 struct mat3 { vec3 c0, c1, c2; };
 
 // Utility functions
@@ -38,6 +39,11 @@ vec2 sub(vec2 a, vec2 b);
 vec2 to_vec2(vec3 v);
 float sq_len(vec2 a);
 float len(vec2 a);
+
+
+
+
+bool CohenSutherlandLineClipAndDraw(const vec2& p0, const vec2& p1, const vec2& tl, const vec2& br);
 
 
 

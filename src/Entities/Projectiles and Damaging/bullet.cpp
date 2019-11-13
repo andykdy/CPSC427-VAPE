@@ -17,6 +17,7 @@
 Texture Bullet::bullet_texture;
 
 float BULLET_SPEED = 1250;
+float BULLET_SPEED_SLOW = 750;
 
 bool Bullet::init(vec2 position, float rotation) {
     gl_flush_errors();
@@ -46,7 +47,9 @@ bool Bullet::init(vec2 position, float rotation) {
     if (gl_has_errors())
         return false;
 
+    m_speed = BULLET_SPEED;
     physics->scale = {0.4f, 0.4f};
+    motion->velocity = {0.f,0.f};
 
     motion->radians = rotation;
     // place bullet n away from center of entity
@@ -67,7 +70,7 @@ void Bullet::destroy() {
 
 void Bullet::update(float ms) {
     auto* motion = getComponent<MotionComponent>();
-    float step = BULLET_SPEED * (ms / 1000);
+    float step = m_speed * (ms / 1000);
     motion->position.x += step*sin(motion->radians);
     motion->position.y += step*cos(motion->radians);
 }
@@ -83,7 +86,7 @@ void Bullet::draw(const mat3 &projection) {
     transform->begin();
     transform->translate(motion->position);
     transform->scale(physics->scale);
-    transform->rotate(motion->radians);
+    transform->rotate(-motion->radians - 3.14f);
     transform->end();
 
     sprite->draw(projection, transform->out, effect->program);
@@ -159,4 +162,12 @@ vec2 Bullet::get_bounding_box()const
 bool Bullet::isOffScreen(const vec2 &screen) {
     float h = get_bounding_box().y / 2;
     return (get_position().y - h > screen.y);
+}
+
+void Bullet::set_speed_fast() {
+    m_speed = BULLET_SPEED;
+}
+
+void Bullet::set_speed_slow() {
+    m_speed = BULLET_SPEED_SLOW;
 }
