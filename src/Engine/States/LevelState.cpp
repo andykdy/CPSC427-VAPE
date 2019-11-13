@@ -33,6 +33,7 @@ namespace
     const size_t DAMAGE_BOSS = 5;
     const size_t VAMP_HEAL = 2;
     const size_t VAMP_DAMAGE_TIMER = 125;
+    const size_t VAMP_DAMAGE_TIMER_BOSS = 400;
     const size_t VAMP_TIME_PER_POINT = 150;
     const size_t VAMP_ACTIVATION_COOLDOWN = 300;
 
@@ -438,7 +439,7 @@ void LevelState::update(float ms) {
             if (m_vamp_mode && m_boss->collidesWith(m_vamp)) {
                 m_boss->add_vamp_timer(ms);
 
-                if (m_boss->get_vamp_timer() >= VAMP_DAMAGE_TIMER) {
+                if (m_boss->get_vamp_timer() >= VAMP_DAMAGE_TIMER_BOSS) {
                     m_boss->addDamage(4);
                     add_health(VAMP_HEAL);
                     m_boss->reset_vamp_timer();
