@@ -5,8 +5,12 @@
 #include "VampParticleEmitter.hpp"
 #include <cmath>
 #include <iostream>
+#include <random>
 
 constexpr int NUM_SEGMENTS = 12;
+m_rng = std::default_random_engine(std::random_device()());
+//pebble_vel.x = base_vel * cos(pebble_rads);
+//pebble_vel.y = base_vel * sin(pebble_rads);
 
 bool VampParticleEmitter::init()
 {
@@ -48,6 +52,29 @@ bool VampParticleEmitter::init()
     return true;
 }
 
+void VampParticleEmitter::spawn(vec2 position)
+{
+    // TODO - implement random spawn amount
+    m_dist(m_rng);
+
+    for (int i = 0; i < 5 + 3 * m_dist(m_rng); i++) {
+        float rads = 2 * M_PI * m_dist(m_rng);
+
+        VampParticle vampParticle;
+        vampParticle.life = 0;
+        vampParticle.position = position;
+
+        float initVel = 100 + 100 * m_dist(m_rng);
+
+        vampParticle.velocity.x = initVel * cos(rads);
+        vampParticle.velocity.y = initVel * sin(rads);
+        vampParticle.radius = 20.f;
+        m_particles.emplace_back(vampParticle);
+        std:: cout << "VAMP PARTICLE SPAWNED" << std::endl;
+
+    }
+}
+
 void VampParticleEmitter::destroy()
 {
     glDeleteBuffers(1, &mesh.vbo);
@@ -60,9 +87,33 @@ void VampParticleEmitter::destroy()
     m_particles.clear();
 }
 
-void VampParticleEmitter::update(float ms)
+void VampParticleEmitter::update(float ms, vec2 player_position)
 {
-    // TODO
+    // TODO - move all particles in array towards player pos, with speed depending on life
+
+    for (auto& particle : m_particles)
+    {
+//        if (abs(particle.position.x - player_position.x) >) {
+        particle.life += ms;
+
+        if (particle.life > 500.f) {
+            float rads = atan2((particle.position.y-player_position.y), (particle.position.x-player_position.x));
+
+            // add trig component
+            vec2 newVel;
+            newVel.x = 100 * particle.life / 50 * cos(rads);
+            newVel.y = 100 * particle.life / 50 * sin(rads);
+            particle.velocity = newVel;
+        } else {
+
+//            if
+//            vec2 newVel;
+//            // add trig component
+//            newVel.x = 100 * particle.life / 100 * cos();
+//            newVel.y = 100 * particle.life / 100;
+//            particle.velocity = newVel;
+        }
+    }
 }
 
 void VampParticleEmitter::draw(const mat3& projection)
@@ -80,9 +131,8 @@ void VampParticleEmitter::draw(const mat3& projection)
 
     // Pebble color
     // TODO
-    float r = 0.8f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.2)));
-    float g = 0.1f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.9)));
-    float color[] = { r, g, 0.4f };
+
+    float color[] = { 1.f, 0, 0 };
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 

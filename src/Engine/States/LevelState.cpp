@@ -291,7 +291,7 @@ void LevelState::update(float ms) {
             ++bullet_it;
     }
 
-    // check for vamp/turtle collisions
+    // check for vamp/enemy collisions
     m_vamp_cooldown -= ms;
 
     if (m_vamp_mode) {
@@ -303,6 +303,10 @@ void LevelState::update(float ms) {
                  std::cout << (*turtle_it)->get_vamp_timer() << std::endl;
 
                 if ((*turtle_it)->get_vamp_timer() >= VAMP_DAMAGE_TIMER) {
+
+                    // TODO - complete new emitter, maybe specify number of orbs to spawn
+                    m_vamp_particle_emitter.spawn((*turtle_it)->get_position());
+
                     m_explosion.spawn((*turtle_it)->get_position());
                     Mix_PlayChannel(-1, m_player_explosion, 0);
                     (*turtle_it)->destroy();
@@ -318,6 +322,7 @@ void LevelState::update(float ms) {
     }
 
     m_space.update(ms);
+    m_vamp_particle_emitter.update(ms, m_player->get_position());
     m_explosion.update(ms);
 
     // Updating all entities, making the turtle and fish
@@ -558,6 +563,7 @@ void LevelState::draw() {
     m_uiPanel->draw(projection_2D);
     m_dialogue.draw(projection_2D);
     m_explosion.draw(projection_2D);
+    m_vamp_particle_emitter.draw(projection_2D);
 
 
     //////////////////

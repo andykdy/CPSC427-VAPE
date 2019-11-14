@@ -22,6 +22,7 @@
 #include "Entities/UI/Dialogue.hpp"
 #include "Entities/UI/PlayerHealth/Health.hpp"
 #include "Entities/Effects/Explosion.hpp"
+#include "Entities/Effects/VampParticleEmitter.hpp"
 #include "Levels/Level.hpp"
 
 // stlib
