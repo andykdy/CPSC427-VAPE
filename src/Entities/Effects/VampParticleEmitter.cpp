@@ -98,30 +98,38 @@ void VampParticleEmitter::update(float ms, vec2 player_position)
 {
     // TODO - move all particles in array towards player pos, with speed depending on life
 
-    for (auto& particle : m_particles)
+
+    auto particle_it = m_particles.begin();
+    while (particle_it != m_particles.end())
     {
-        particle.life += ms;
+        particle_it->life += ms;
         float step = ms / 1000;
 
-        if (particle.life > 500.f) {
-            float rads = atan2((player_position.y-particle.position.y), (player_position.x-particle.position.x));
+        if (particle_it->life > 500.f) {
+            float rads = atan2((player_position.y-particle_it->position.y), (player_position.x-particle_it->position.x));
 
             vec2 newVel;
-            newVel.x = 100 * particle.life / 50 * cos(rads);
-            newVel.y = 100 * particle.life / 50 * sin(rads);
-            particle.velocity = newVel;
+            newVel.x = 100 * particle_it->life / 50 * cos(rads);
+            newVel.y = 100 * particle_it->life / 50 * sin(rads);
+            particle_it->velocity = newVel;
 
             // check to see if overlapping with player position
-            float x_diff = abs(particle.position.x - player_position.x);
-            float y_diff = abs(particle.position.y - player_position.y);
-            if (x_diff <= 50.f && y_diff <= 50.f) {
+            float x_diff = abs(particle_it->position.x - player_position.x);
+            float y_diff = abs(particle_it->position.y - player_position.y);
 
+            if (x_diff <= 50.f && y_diff <= 50.f) {
+                particle_it = m_particles.erase(particle_it);
+                continue;
             }
         }
 
-        particle.position.x += particle.velocity.x * step;
-        particle.position.y += particle.velocity.y * step;
+        particle_it->position.x += particle_it->velocity.x * step;
+        particle_it->position.y += particle_it->velocity.y * step;
+        ++particle_it;
+
     }
+
+
 }
 
 void VampParticleEmitter::draw(const mat3& projection)
@@ -140,7 +148,7 @@ void VampParticleEmitter::draw(const mat3& projection)
     // Pebble color
     float r = 0.8f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.2)));
     float g = 0.1f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.9)));
-    float color[] = { 1, 0.f, 0.f };
+    float color[] = { 1.f, 0.f, 0.f };
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
