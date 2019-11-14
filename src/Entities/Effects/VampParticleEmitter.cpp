@@ -3,12 +3,13 @@
 //
 
 #include "VampParticleEmitter.hpp"
+#include "common.hpp"
 #include <cmath>
 #include <iostream>
 #include <random>
 
 constexpr int NUM_SEGMENTS = 12;
-m_rng = std::default_random_engine(std::random_device()());
+std::default_random_engine m_rng = std::default_random_engine(std::random_device()());
 //pebble_vel.x = base_vel * cos(pebble_rads);
 //pebble_vel.y = base_vel * sin(pebble_rads);
 
@@ -55,24 +56,30 @@ bool VampParticleEmitter::init()
 void VampParticleEmitter::spawn(vec2 position)
 {
     // TODO - implement random spawn amount
-    m_dist(m_rng);
+    //m_dist(m_rng);
 
-    for (int i = 0; i < 5 + 3 * m_dist(m_rng); i++) {
+    //std:: cout << "GOT INSIDE" << std::endl;
+
+
+    for (int i = 0; i <= 5 + 3 * m_dist(m_rng); i++) {
         float rads = 2 * M_PI * m_dist(m_rng);
 
         VampParticle vampParticle;
         vampParticle.life = 0;
         vampParticle.position = position;
+        //vampParticle.position = {200, 200};
 
-        float initVel = 100 + 100 * m_dist(m_rng);
+        float initSpeed = 150 + 100 * m_dist(m_rng);
 
-        vampParticle.velocity.x = initVel * cos(rads);
-        vampParticle.velocity.y = initVel * sin(rads);
-        vampParticle.radius = 20.f;
+        vampParticle.velocity.x = initSpeed * cos(rads);
+        vampParticle.velocity.y = initSpeed * sin(rads);
+        vampParticle.radius = 6.f;
         m_particles.emplace_back(vampParticle);
         std:: cout << "VAMP PARTICLE SPAWNED" << std::endl;
 
     }
+
+    std::cout << m_particles.size() << std::endl;
 }
 
 void VampParticleEmitter::destroy()
@@ -93,26 +100,27 @@ void VampParticleEmitter::update(float ms, vec2 player_position)
 
     for (auto& particle : m_particles)
     {
-//        if (abs(particle.position.x - player_position.x) >) {
         particle.life += ms;
+        float step = ms / 1000;
 
         if (particle.life > 500.f) {
-            float rads = atan2((particle.position.y-player_position.y), (particle.position.x-player_position.x));
+            float rads = atan2((player_position.y-particle.position.y), (player_position.x-particle.position.x));
 
-            // add trig component
             vec2 newVel;
             newVel.x = 100 * particle.life / 50 * cos(rads);
             newVel.y = 100 * particle.life / 50 * sin(rads);
             particle.velocity = newVel;
-        } else {
 
-//            if
-//            vec2 newVel;
-//            // add trig component
-//            newVel.x = 100 * particle.life / 100 * cos();
-//            newVel.y = 100 * particle.life / 100;
-//            particle.velocity = newVel;
+            // check to see if overlapping with player position
+            float x_diff = abs(particle.position.x - player_position.x);
+            float y_diff = abs(particle.position.y - player_position.y);
+            if (x_diff <= 50.f && y_diff <= 50.f) {
+
+            }
         }
+
+        particle.position.x += particle.velocity.x * step;
+        particle.position.y += particle.velocity.y * step;
     }
 }
 
@@ -130,9 +138,9 @@ void VampParticleEmitter::draw(const mat3& projection)
     GLint color_uloc = glGetUniformLocation(effect.program, "color");
 
     // Pebble color
-    // TODO
-
-    float color[] = { 1.f, 0, 0 };
+    float r = 0.8f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.2)));
+    float g = 0.1f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.9)));
+    float color[] = { 1, 0.f, 0.f };
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 

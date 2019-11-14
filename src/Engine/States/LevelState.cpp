@@ -96,8 +96,7 @@ void LevelState::init() {
     m_health->init({53, screen.y-50});
     m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
     m_vamp_charge->init({screen.x-52, screen.y-50});
-//    m_vamp_particle_emitter
-//    m_vamp_particle_emitter->init();
+    m_vamp_particle_emitter.init();
     m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
     m_uiPanel->init(screen, screen.y, screen.x);
     m_dialogue.init(m_level.bossDialogue);
@@ -300,11 +299,12 @@ void LevelState::update(float ms) {
             if (m_vamp.collides_with(**turtle_it)) {
                 // TODO - Re-add resetting vamp timer on leaving aura
                 (*turtle_it)->add_vamp_timer(ms);
-                 std::cout << (*turtle_it)->get_vamp_timer() << std::endl;
+                 //std::cout << (*turtle_it)->get_vamp_timer() << std::endl;
 
                 if ((*turtle_it)->get_vamp_timer() >= VAMP_DAMAGE_TIMER) {
 
                     // TODO - complete new emitter, maybe specify number of orbs to spawn
+                    std::cout << "Destroying enemy" << std::endl;
                     m_vamp_particle_emitter.spawn((*turtle_it)->get_position());
 
                     m_explosion.spawn((*turtle_it)->get_position());
