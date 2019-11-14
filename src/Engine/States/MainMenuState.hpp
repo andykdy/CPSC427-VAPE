@@ -13,7 +13,8 @@
 
 
 #include <Engine/GameState.hpp>
-#include <Entities/MainMenu.hpp>
+#include <Entities/UI/MainMenu/MainMenu.hpp>
+#include <Entities/UI/Button.hpp>
 
 class MainMenuState : public GameState{
 public:
@@ -35,6 +36,9 @@ private:
 	MainMenu menu;
 	// Mouse position
 	vec2 mouse_position;
+
+	std::vector<Button*> m_buttons;
+    unsigned int m_button_cursor;
 
 	Mix_Music* m_background_music;
 };

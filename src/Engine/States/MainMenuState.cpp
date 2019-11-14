@@ -17,16 +17,26 @@ void MainMenuState::init() {
     Mix_PlayMusic(m_background_music, -1);
 
     menu.init();
+
+
+    // TODO setup buttons
 }
 
 void MainMenuState::terminate() {
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
+
+    for (auto& button : m_buttons)
+        button->destroy();
+    m_buttons.clear();
+    
     menu.destroy();
 }
 
 void MainMenuState::update(float ms) {
-
+    for (auto& button : m_buttons) {
+        button->update(ms, mouse_position);
+    }
 }
 
 void MainMenuState::draw() {
@@ -66,6 +76,11 @@ void MainMenuState::draw() {
 
     menu.draw(projection_2D);
 
+    for (auto& button : m_buttons) {
+        button->draw(projection_2D);
+    }
+    // TODO draw cursor beside targetted button? or have the button highlighted?
+
     //////////////////
     // Presenting
     glfwSwapBuffers(m_window);
@@ -73,6 +88,24 @@ void MainMenuState::draw() {
 }
 
 void MainMenuState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
+    if (action == GLFW_RELEASE && key == GLFW_KEY_UP) {
+        --m_button_cursor;
+        if (m_button_cursor < 0)
+            m_button_cursor = 0;
+    }
+    if (action == GLFW_RELEASE && key == GLFW_KEY_DOWN) {
+        ++m_button_cursor;
+        if (m_button_cursor > m_buttons.size()-1)
+            m_button_cursor = m_buttons.size()-1;
+    }
+    if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER) {
+        if (m_buttons.size() > 0 && m_button_cursor > 0 && m_button_cursor < m_buttons.size()-1) {
+            m_buttons[m_button_cursor]->doAction();
+        }
+    }
+
+
+
     if (action == GLFW_RELEASE && key == GLFW_KEY_1)
     {
         GameEngine::getInstance().changeState(new LevelState(Levels::level1, 0));
@@ -89,6 +122,17 @@ void MainMenuState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) 
 }
 
 void MainMenuState::on_mouse_button(GLFWwindow *window, int button, int action, int mods) {
+    if (action == GLFW_RELEASE) {
+        for (auto& button : m_buttons) {
+            if (button->isClicked(mouse_position)) {
+                button->doAction();
+                break;
+            }
+        }
+    }
+
+
+    // TODO remove
 	if (mouse_position.x >= 200 && mouse_position.x <= 600 && mouse_position.y >= 600 && mouse_position.y <= 700) {
 		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
 			GameEngine::getInstance().changeState(new IntroState());
