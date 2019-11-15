@@ -144,13 +144,13 @@ void MainMenuState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
             m_buttons[m_button_cursor]->delesect();
         }
 
-        if (action == GLFW_RELEASE && key == GLFW_KEY_UP) {
+        if (action == GLFW_RELEASE && (key == GLFW_KEY_UP || key == GLFW_KEY_W)) {
             if (m_button_cursor == 0) {
                 m_button_cursor = m_buttons.size() - 1;
             } else
                 --m_button_cursor;
         }
-        if (action == GLFW_RELEASE && key == GLFW_KEY_DOWN) {
+        if (action == GLFW_RELEASE && (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)) {
             ++m_button_cursor;
             if (m_button_cursor > m_buttons.size() - 1)
                 m_button_cursor = 0;
