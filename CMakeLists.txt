@@ -56,7 +56,6 @@ set(SOURCE_FILES
         src/Entities/Player.cpp src/Entities/Player.hpp
         src/Entities/Space.cpp src/Entities/Space.hpp
         src/Entities/Vamp.cpp src/Entities/Vamp.hpp
-        src/Entities/UI/MainMenu/MainMenu.cpp src/Entities/UI/MainMenu/MainMenu.hpp
         src/Entities/Intro.cpp src/Entities/Intro.hpp
         src/Entities/Explosion.cpp src/Entities/Explosion.hpp
 
@@ -75,6 +74,13 @@ set(SOURCE_FILES
         src/Entities/UI/UIPanel/UIPanelBackground.cpp src/Entities/UI/UIPanel/UIPanelBackground.hpp
         src/Entities/UI/BossHealth/BossHealth.cpp src/Entities/UI/BossHealth/BossHealth.hpp
         src/Entities/UI/BossHealth/BossHealthBar.cpp src/Entities/UI/BossHealth/BossHealthBar.hpp
+        src/Entities/UI/Button.hpp
+        src/Entities/UI/MainMenu/MainMenu.cpp src/Entities/UI/MainMenu/MainMenu.hpp
+        src/Entities/UI/MainMenu/ExitButton.cpp src/Entities/UI/MainMenu/ExitButton.hpp
+        src/Entities/UI/MainMenu/StartButton.cpp src/Entities/UI/MainMenu/StartButton.hpp
+        src/Entities/UI/MainMenu/ContinueButton.cpp src/Entities/UI/MainMenu/ContinueButton.hpp
+        src/Entities/UI/MainMenu/TutorialButton.cpp src/Entities/UI/MainMenu/TutorialButton.hpp
+
 
         "src/Entities/Projectiles and Damaging/Projectile.hpp"
         "src/Entities/Projectiles and Damaging/bullet.cpp" "src/Entities/Projectiles and Damaging/bullet.hpp"
@@ -116,7 +122,7 @@ set(SOURCE_FILES
 
         src/Utils/SaveData.cpp src/Utils/SaveData.hpp
 
-        src/Entities/UI/Button.hpp src/Entities/UI/MainMenu/ExitButton.cpp src/Entities/UI/MainMenu/ExitButton.hpp src/Entities/UI/MainMenu/StartButton.cpp src/Entities/UI/MainMenu/StartButton.hpp src/Entities/UI/MainMenu/ContinueButton.cpp src/Entities/UI/MainMenu/ContinueButton.hpp)
+        )
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

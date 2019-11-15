@@ -2,14 +2,13 @@
 // Created by Cody on 11/14/2019.
 //
 
-#ifndef VAPE_STARTBUTTON_HPP
-#define VAPE_STARTBUTTON_HPP
-
+#ifndef VAPE_TUTORIALBUTTON_HPP
+#define VAPE_TUTORIALBUTTON_HPP
 
 #include <Entities/UI/Button.hpp>
 
-class StartButton : public Button {
-    static Texture start_button_texture;
+class TutorialButton : public Button {
+    static Texture tutorial_button_texture;
 public:
     bool init(const vec2 &position, const vec2 &scale, float rotation) override;
 
@@ -25,4 +24,4 @@ public:
 };
 
 
-#endif //VAPE_STARTBUTTON_HPP
+#endif //VAPE_TUTORIALBUTTON_HPP

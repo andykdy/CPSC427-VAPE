@@ -124,7 +124,7 @@ void MainMenuState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) 
 void MainMenuState::on_mouse_button(GLFWwindow *window, int button, int action, int mods) {
     if (action == GLFW_RELEASE) {
         for (auto& button : m_buttons) {
-            if (button->isClicked(mouse_position)) {
+            if (button->isWithin(mouse_position)) {
                 button->doAction();
                 break;
             }
