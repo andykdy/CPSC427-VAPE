@@ -29,7 +29,7 @@ void MainMenuState::terminate() {
     for (auto& button : m_buttons)
         button->destroy();
     m_buttons.clear();
-    
+
     menu.destroy();
 }
 
