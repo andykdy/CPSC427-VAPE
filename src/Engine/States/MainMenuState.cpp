@@ -4,6 +4,10 @@
 
 #include <sstream>
 #include <Levels/Levels.hpp>
+#include <Entities/UI/MainMenu/ContinueButton.hpp>
+#include <Entities/UI/MainMenu/StartButton.hpp>
+#include <Entities/UI/MainMenu/TutorialButton.hpp>
+#include <Entities/UI/MainMenu/ExitButton.hpp>
 #include "MainMenuState.hpp"
 #include "LevelState.hpp"
 #include "TutorialState.hpp"
@@ -18,8 +22,44 @@ void MainMenuState::init() {
 
     menu.init();
 
+    int w, h;
+    glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
+    vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
-    // TODO setup buttons
+    vec2 buttonpos = {screen.x *0.75f, screen.y *0.3f};
+    vec2 buttonscale = {0.75f, 0.75f};
+    float buttonHeight = 150.f; // TODO
+    float offset = 20.f;
+
+
+    m_cursor = &GameEngine::getInstance().getEntityManager()->addEntity<Cursor>();
+    m_cursor->init({buttonpos.x- 100, buttonpos.y}, buttonscale, 0);
+
+
+    auto* continue_button = &GameEngine::getInstance().getEntityManager()->addEntity<ContinueButton>();
+    continue_button->init(buttonpos, buttonscale, 0);
+    m_buttons.push_back(continue_button);
+
+    buttonpos.y += buttonHeight + offset;
+
+    auto* start_button = &GameEngine::getInstance().getEntityManager()->addEntity<StartButton>();
+    start_button->init(buttonpos, buttonscale, 0);
+    m_buttons.push_back(start_button);
+
+    buttonpos.y += buttonHeight + offset;
+
+    auto* tutorial_button = &GameEngine::getInstance().getEntityManager()->addEntity<TutorialButton>();
+    tutorial_button->init(buttonpos, buttonscale, 0);
+    m_buttons.push_back(tutorial_button);
+
+    buttonpos.y += buttonHeight + offset;
+
+    auto* exit_button = &GameEngine::getInstance().getEntityManager()->addEntity<ExitButton>();
+    exit_button->init(buttonpos, buttonscale, 0);
+    m_buttons.push_back(exit_button);
+
+    buttonpos.y += buttonHeight + offset;
+
 }
 
 void MainMenuState::terminate() {
@@ -29,6 +69,8 @@ void MainMenuState::terminate() {
     for (auto& button : m_buttons)
         button->destroy();
     m_buttons.clear();
+
+    m_cursor->destroy();
 
     menu.destroy();
 }
@@ -40,6 +82,15 @@ void MainMenuState::update(float ms) {
 }
 
 void MainMenuState::draw() {
+    if (!m_buttons.empty() && m_button_cursor >= 0 && m_button_cursor < m_buttons.size()) {
+        vec2 pos = m_buttons[m_button_cursor]->getPosition();
+        m_cursor->setPosition({pos.x-210, pos.y}); // TODO
+    } else {
+        m_cursor->setPosition({-200, -200});
+    }
+
+
+
     // Clearing error buffer
     gl_flush_errors();
 
@@ -79,7 +130,7 @@ void MainMenuState::draw() {
     for (auto& button : m_buttons) {
         button->draw(projection_2D);
     }
-    // TODO draw cursor beside targetted button? or have the button highlighted?
+    m_cursor->draw(projection_2D);
 
     //////////////////
     // Presenting
@@ -88,19 +139,31 @@ void MainMenuState::draw() {
 }
 
 void MainMenuState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
-    if (action == GLFW_RELEASE && key == GLFW_KEY_UP) {
-        --m_button_cursor;
-        if (m_button_cursor < 0)
-            m_button_cursor = 0;
-    }
-    if (action == GLFW_RELEASE && key == GLFW_KEY_DOWN) {
-        ++m_button_cursor;
-        if (m_button_cursor > m_buttons.size()-1)
-            m_button_cursor = m_buttons.size()-1;
-    }
-    if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER) {
-        if (m_buttons.size() > 0 && m_button_cursor > 0 && m_button_cursor < m_buttons.size()-1) {
-            m_buttons[m_button_cursor]->doAction();
+    if (!m_buttons.empty()) {
+        if (m_button_cursor >= 0 && m_button_cursor < m_buttons.size()) {
+            m_buttons[m_button_cursor]->delesect();
+        }
+
+        if (action == GLFW_RELEASE && key == GLFW_KEY_UP) {
+            if (m_button_cursor == 0) {
+                m_button_cursor = m_buttons.size() - 1;
+            } else
+                --m_button_cursor;
+        }
+        if (action == GLFW_RELEASE && key == GLFW_KEY_DOWN) {
+            ++m_button_cursor;
+            if (m_button_cursor > m_buttons.size() - 1)
+                m_button_cursor = 0;
+        }
+
+        if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER) {
+            if (m_button_cursor >= 0 && m_button_cursor < m_buttons.size()) {
+                m_buttons[m_button_cursor]->doAction();
+            }
+        }
+
+        if (m_button_cursor >= 0 && m_button_cursor < m_buttons.size() ) {
+            m_buttons[m_button_cursor]->select();
         }
     }
 
@@ -133,6 +196,7 @@ void MainMenuState::on_mouse_button(GLFWwindow *window, int button, int action, 
 
 
     // TODO remove
+    /*
 	if (mouse_position.x >= 200 && mouse_position.x <= 600 && mouse_position.y >= 600 && mouse_position.y <= 700) {
 		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
 			GameEngine::getInstance().changeState(new IntroState());
@@ -143,4 +207,5 @@ void MainMenuState::on_mouse_button(GLFWwindow *window, int button, int action, 
 			GameEngine::getInstance().quit();
 		}
 	}
+     */
 }

@@ -22,6 +22,8 @@ public:
     bool isWithin(const vec2 &mouse_position) override;
 
     void doAction() override;
+
+    vec2 getPosition() override;
 };
 
 

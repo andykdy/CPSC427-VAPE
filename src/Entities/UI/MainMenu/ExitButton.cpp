@@ -68,7 +68,10 @@ void ExitButton::draw(const mat3 &projection) {
     transform->rotate(motion->radians);
     transform->end();
 
-    sprite->draw(projection, transform->out, effect->program);
+    vec3 color = {1,1,1};
+    if (!isSelected())
+        color = {0.8f, 0.8f, 0.8f};
+    sprite->draw(projection, transform->out, effect->program, color);
 }
 
 bool ExitButton::isWithin(const vec2 &mouse_position) {
@@ -82,4 +85,9 @@ bool ExitButton::isWithin(const vec2 &mouse_position) {
 
 void ExitButton::doAction() {
     GameEngine::getInstance().quit();
+}
+
+vec2 ExitButton::getPosition() {
+    auto* motion = getComponent<MotionComponent>();
+    return motion->position;
 }

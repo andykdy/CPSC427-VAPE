@@ -75,6 +75,7 @@ set(SOURCE_FILES
         src/Entities/UI/BossHealth/BossHealth.cpp src/Entities/UI/BossHealth/BossHealth.hpp
         src/Entities/UI/BossHealth/BossHealthBar.cpp src/Entities/UI/BossHealth/BossHealthBar.hpp
         src/Entities/UI/Button.hpp
+        src/Entities/UI/Cursor.cpp src/Entities/UI/Cursor.hpp
         src/Entities/UI/MainMenu/MainMenu.cpp src/Entities/UI/MainMenu/MainMenu.hpp
         src/Entities/UI/MainMenu/ExitButton.cpp src/Entities/UI/MainMenu/ExitButton.hpp
         src/Entities/UI/MainMenu/StartButton.cpp src/Entities/UI/MainMenu/StartButton.hpp

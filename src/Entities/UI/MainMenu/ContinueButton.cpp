@@ -40,6 +40,7 @@ bool ContinueButton::init(const vec2 &position, const vec2 &scale, const float r
     motion->radians = rotation;
 
     // TODO make disabled if no saved game available
+    disable();
 
     return true;
 }
@@ -71,7 +72,12 @@ void ContinueButton::draw(const mat3 &projection) {
     transform->rotate(motion->radians);
     transform->end();
 
-    sprite->draw(projection, transform->out, effect->program);
+    vec3 color = {1,1,1};
+    if (!isActive())
+        color = {0.1f, 0.1f, 0.1f};
+    else if (!isSelected())
+        color = {0.8f, 0.8f, 0.8f};
+    sprite->draw(projection, transform->out, effect->program, color);
 }
 
 bool ContinueButton::isWithin(const vec2 &mouse_position) {
@@ -86,4 +92,9 @@ bool ContinueButton::isWithin(const vec2 &mouse_position) {
 void ContinueButton::doAction() {
     // TODO get savegame level
     // TODO GameEngine::getInstance().changeState(new LevelState());
+}
+
+vec2 ContinueButton::getPosition() {
+    auto* motion = getComponent<MotionComponent>();
+    return motion->position;
 }

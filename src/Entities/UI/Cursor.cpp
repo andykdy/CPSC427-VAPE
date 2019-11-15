@@ -7,13 +7,11 @@
 #include <Components/PhysicsComponent.hpp>
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
-#include <Engine/GameEngine.hpp>
-#include <Engine/States/IntroState.hpp>
-#include "StartButton.hpp"
+#include "Cursor.hpp"
 
-Texture StartButton::start_button_texture;
+Texture Cursor::cursor_texture;
 
-bool StartButton::init(const vec2 &position, const vec2 &scale, const float rotation) {
+bool Cursor::init(const vec2 &position, const vec2 &scale, float rotation) {
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
     auto* physics = addComponent<PhysicsComponent>();
@@ -21,11 +19,11 @@ bool StartButton::init(const vec2 &position, const vec2 &scale, const float rota
     auto* transform = addComponent<TransformComponent>();
 
     // Load shared texture
-    if (!start_button_texture.is_valid())
+    if (!cursor_texture.is_valid())
     {
-        if (!start_button_texture.load_from_file(textures_path("UI/button_start.png")))
+        if (!cursor_texture.load_from_file(textures_path("UI/cursor.png")))
         {
-            throw std::runtime_error("Failed to load start button texture");
+            throw std::runtime_error("Failed to load cursor texture");
         }
     }
 
@@ -33,16 +31,17 @@ bool StartButton::init(const vec2 &position, const vec2 &scale, const float rota
     if (!effect->load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         throw std::runtime_error("Failed to load texture shaders");
 
-    if (!sprite->initTexture(&start_button_texture))
-        throw std::runtime_error("Failed to initialize start button sprite");
+    if (!sprite->initTexture(&cursor_texture))
+        throw std::runtime_error("Failed to initialize cursor sprite");
 
     physics->scale = scale;
     motion->position = position;
     motion->radians = rotation;
+
     return true;
 }
 
-void StartButton::destroy() {
+void Cursor::destroy() {
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();
 
@@ -52,11 +51,7 @@ void StartButton::destroy() {
     ECS::Entity::destroy();
 }
 
-void StartButton::update(const float ms, const vec2 &mouse_position) {
-    // TODO
-}
-
-void StartButton::draw(const mat3 &projection) {
+void Cursor::draw(const mat3 &projection) {
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
     auto* motion = getComponent<MotionComponent>();
@@ -69,26 +64,10 @@ void StartButton::draw(const mat3 &projection) {
     transform->rotate(motion->radians);
     transform->end();
 
-    vec3 color = {1,1,1};
-    if (!isSelected())
-        color = {0.8f, 0.8f, 0.8f};
-    sprite->draw(projection, transform->out, effect->program, color);
+    sprite->draw(projection, transform->out, effect->program);
 }
 
-bool StartButton::isWithin(const vec2 &mouse_position) {
-    auto* physics = getComponent<PhysicsComponent>();
+void Cursor::setPosition(const vec2 &position) {
     auto* motion = getComponent<MotionComponent>();
-    float w = std::fabs(physics->scale.x) * start_button_texture.width;
-    float h = std::fabs(physics->scale.y) * start_button_texture.height;
-    return ( (mouse_position.x >= motion->position.x-w && mouse_position.x <= motion->position.x+w)
-            && (mouse_position.y >= motion->position.y-h && mouse_position.y <= motion->position.y+h));
-}
-
-void StartButton::doAction() {
-    GameEngine::getInstance().changeState(new IntroState());
-}
-
-vec2 StartButton::getPosition() {
-    auto* motion = getComponent<MotionComponent>();
-    return motion->position;
+    motion->position = position;
 }

@@ -15,6 +15,7 @@
 #include <Engine/GameState.hpp>
 #include <Entities/UI/MainMenu/MainMenu.hpp>
 #include <Entities/UI/Button.hpp>
+#include <Entities/UI/Cursor.hpp>
 
 class MainMenuState : public GameState{
 public:
@@ -39,6 +40,7 @@ private:
 
 	std::vector<Button*> m_buttons;
     unsigned int m_button_cursor;
+    Cursor* m_cursor;
 
 	Mix_Music* m_background_music;
 };

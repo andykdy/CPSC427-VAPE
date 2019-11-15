@@ -23,7 +23,7 @@ bool TutorialButton::init(const vec2 &position, const vec2 &scale, float rotatio
     // Load shared texture
     if (!tutorial_button_texture.is_valid())
     {
-        if (!tutorial_button_texture.load_from_file(textures_path("UI/button_continue.png")))
+        if (!tutorial_button_texture.load_from_file(textures_path("UI/button_tutorial.png")))
         {
             throw std::runtime_error("Failed to load tutorial button texture");
         }
@@ -70,7 +70,10 @@ void TutorialButton::draw(const mat3 &projection) {
     transform->rotate(motion->radians);
     transform->end();
 
-    sprite->draw(projection, transform->out, effect->program);
+    vec3 color = {1,1,1};
+    if (!isSelected())
+        color = {0.8f, 0.8f, 0.8f};
+    sprite->draw(projection, transform->out, effect->program, color);
 }
 
 bool TutorialButton::isWithin(const vec2 &mouse_position) {
@@ -84,4 +87,9 @@ bool TutorialButton::isWithin(const vec2 &mouse_position) {
 
 void TutorialButton::doAction() {
     GameEngine::getInstance().changeState(new TutorialState());
+}
+
+vec2 TutorialButton::getPosition() {
+    auto* motion = getComponent<MotionComponent>();
+    return motion->position;
 }
