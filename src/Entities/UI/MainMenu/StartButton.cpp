@@ -80,8 +80,8 @@ bool StartButton::isWithin(const vec2 &mouse_position) {
     auto* motion = getComponent<MotionComponent>();
     float w = std::fabs(physics->scale.x) * start_button_texture.width;
     float h = std::fabs(physics->scale.y) * start_button_texture.height;
-    return ( (mouse_position.x >= motion->position.x-w && mouse_position.x <= motion->position.x+w)
-            && (mouse_position.y >= motion->position.y-h && mouse_position.y <= motion->position.y+h));
+    return ( (mouse_position.x >= motion->position.x-w/2 && mouse_position.x <= motion->position.x+w/2)
+            && (mouse_position.y >= motion->position.y-h/2 && mouse_position.y <= motion->position.y+h/2));
 }
 
 void StartButton::doAction() {

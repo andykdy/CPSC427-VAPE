@@ -156,14 +156,14 @@ void MainMenuState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
                 m_button_cursor = 0;
         }
 
+        if (m_button_cursor >= 0 && m_button_cursor < m_buttons.size() ) {
+            m_buttons[m_button_cursor]->select();
+        }
+
         if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER) {
             if (m_button_cursor >= 0 && m_button_cursor < m_buttons.size()) {
                 m_buttons[m_button_cursor]->doAction();
             }
-        }
-
-        if (m_button_cursor >= 0 && m_button_cursor < m_buttons.size() ) {
-            m_buttons[m_button_cursor]->select();
         }
     }
 
