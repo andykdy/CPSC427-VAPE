@@ -82,7 +82,7 @@ namespace Levels {
             textures_path("space_bg.png"),
             audio_path("music_level1.wav"),
             audio_path("music_boss1.wav"),
-            "Boss1Dialogue.png",
+            "Dialogues/Boss1Dialogue.png",
             &level2
     );
 }
