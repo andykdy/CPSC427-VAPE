@@ -63,10 +63,10 @@ namespace Levels {
             level2Timeline,
             spawnBoss<Boss2>,
             47000,
-            textures_path("space_bg2.png"), // TODO change
+            textures_path("space_bg2.png"),
             audio_path("music_level2.wav"),
             audio_path("music_boss2.wav"),
-            "Boss2Dialogue.png"
+            "Dialogues/Boss2Dialogue.png"
     );
 }
 

@@ -57,7 +57,7 @@ bool Continue::init()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	motion.position = { 625.f,175.f };
+	motion.position = { 625.f,200.f };
 	motion.radians = 0;
 	physics.scale = { 0.4f, 0.4f };
 	m_is_active = true;
