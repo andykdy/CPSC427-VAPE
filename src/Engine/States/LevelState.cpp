@@ -89,6 +89,7 @@ void LevelState::init() {
     m_boss_mode = false;
     m_boss_pre = false;
     m_vamp_cooldown = 0;
+    m_vamp_mode_timer = 0;
 
     m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
     m_player->init(screen, INIT_HEALTH);
@@ -389,7 +390,6 @@ void LevelState::update(float ms) {
     if (m_vamp_mode) {
         //std::cout << "is vamp mode" << std::endl;
         //m_vamp_mode_timer -= ms;
-
 
         if (m_vamp_mode_charge <= 0 || end_vamp_mode) {
             GameEngine::getInstance().setM_current_speed(1.f);
