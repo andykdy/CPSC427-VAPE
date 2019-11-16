@@ -41,6 +41,8 @@ public:
     // ms represents the number of milliseconds elapsed from the previous update() call
     void update(float ms) override;
 
+    void choosePattern(const std::vector<AttackPattern>& patterns);
+
     // Renders the Boss
     // projection is the 2D orthographic projection matrix
     void draw(const mat3 &projection) override;

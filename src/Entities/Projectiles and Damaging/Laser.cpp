@@ -158,7 +158,7 @@ void Laser::spawn() {
         p.color = {1.f,1.f,1.f,0.5f};
         if (m_state == laserState::firing) {
             float mod = (std::fabs(randx - m_origin.x) / LASER_WIDTH/2);
-            p.color = {1.f * mod, 1.f * mod, 1.f, 1.f};
+            p.color = {1.f * mod, 1.f * mod, 1.f, 0.8f};
         }
     }
 }

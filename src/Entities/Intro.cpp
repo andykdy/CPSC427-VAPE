@@ -15,7 +15,7 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-    const size_t DELAY = 10000;
+    const size_t DELAY = 14000;
 }
 
 bool Intro::init(vec2 screen) {

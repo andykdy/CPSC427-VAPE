@@ -153,6 +153,27 @@ namespace
             MZ123,
             MZ456,
     };
+
+
+    const size_t CHARGE2 = 750;
+    const size_t FIRE2 = 1500;
+
+    const AttackPattern H123456_R = {
+            {true, true, true, true, true, true},
+            // {0,0,0,0,0,0},
+            {CHARGE2,CHARGE2+250,CHARGE2+500,CHARGE2+750,CHARGE2+1000, CHARGE2+1250},
+            {FIRE2,FIRE2,FIRE2,FIRE2,FIRE2,FIRE2},
+            CHARGE2+1250+FIRE2,
+            {Levels::RM3Fast,}
+    };
+
+
+
+
+    const std::vector<AttackPattern> HardPatterns = {
+            H123456_R,
+            MZ456 // TODO remove
+    };
 }
 
 Texture Boss2::boss2_texture;
@@ -275,30 +296,27 @@ void Boss2::update(float ms) {
     if (m_pattern_timer > 0)
         m_pattern_timer -= ms;
     else {
-        if (health > INIT_HEALTH/2) {
-            bool retry = true;
-            while(retry) {
-                float randi = rand() % EasyPatterns.size();
-                if (m_pattern == EasyPatterns[randi]) {
-                    continue;
-                } else {
-                    retry = false;
-                    m_pattern = EasyPatterns[randi];
-                }
-            }
+        if (health > INIT_HEALTH * 0.66) {
+            choosePattern(EasyPatterns);
+        } else if (health > INIT_HEALTH * 0.33) {
+            choosePattern(MediumPatterns);
         } else {
-            bool retry = true;
-            while(retry) {
-                float randi = rand() % MediumPatterns.size();
-                if (m_pattern == MediumPatterns[randi]) {
-                    continue;
-                } else {
-                    retry = false;
-                    m_pattern = MediumPatterns[randi];
-                }
-            }
+            choosePattern(HardPatterns);
         }
         fireLasers(m_pattern);
+    }
+}
+
+void Boss2::choosePattern(const std::vector<AttackPattern>& patterns) {
+    bool retry = true;
+    while(retry) {
+        float randi = rand() % patterns.size();
+        if (m_pattern == patterns[randi]) {
+            continue;
+        } else {
+            retry = false;
+            m_pattern = patterns[randi];
+        }
     }
 }
 
@@ -425,10 +443,12 @@ bool Boss2::checkCollision(vec2 pos, vec2 box) const {
 }
 
 bool AttackPattern::operator==(const AttackPattern &rhs) const {
-    return lasers == rhs.lasers &&
-           chargeTime == rhs.chargeTime &&
-           fireTime == rhs.fireTime &&
-           nextPatternDelay == rhs.nextPatternDelay;
+    bool ret = true;
+    for (int i = 0; i < 6; i++) {
+        ret = ret && (lasers[i] == rhs.lasers[i]);
+    }
+    // TODO more? I think all I care about are same lasers
+    return ret;
 }
 
 bool AttackPattern::operator!=(const AttackPattern &rhs) const {
