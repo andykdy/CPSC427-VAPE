@@ -19,6 +19,7 @@ public:
     void update(float ms) override;
     std::vector<Enemy*> *getEnemies();
     void reset(Levels::Timeline levelTimeline);
+    void spawnWave(const Levels::Wave& wave);
 };
 
 

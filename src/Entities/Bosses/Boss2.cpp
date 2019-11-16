@@ -9,6 +9,7 @@
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
 #include <Entities/Projectiles and Damaging/Laser.hpp>
+#include <Systems/EnemySpawnerSystem.hpp>
 #include "Boss2.hpp"
 
 
@@ -44,7 +45,7 @@ namespace
             // {0,0,0,0,0,0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            8100
+            8100,
     };
 
 
@@ -62,7 +63,9 @@ namespace
             // {0,0,0,0,0,0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            8100
+            8100,
+
+            {Levels::RSpaced3,}
     };
 
     const AttackPattern EZ456 = {
@@ -70,7 +73,9 @@ namespace
             // {0,0,0,0,0,0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            8100
+            8100,
+
+            {Levels::LSpaced3,}
     };
 
     const AttackPattern EZ2345 = {
@@ -93,7 +98,7 @@ namespace
     const size_t CHARGE1 = 1500;
     const size_t FIRE1 = 3000;
 
-    const AttackPattern M12346 = {
+    const AttackPattern M1346 = {
             {true, false, true, true, false, true},
             // {0,0,0,0,0,0},
             {CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1},
@@ -106,7 +111,19 @@ namespace
             // {0,0,0,0,0,0},
             {CHARGE1-500,CHARGE1,CHARGE1+500,CHARGE1+1000,CHARGE1+1500,CHARGE0},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
-            6100
+            6100,
+
+            {Levels::LM3,}
+    };
+
+    const AttackPattern M23456 = {
+            {false, true, true, true, true, true},
+            // {0,0,0,0,0,0},
+            {CHARGE0,CHARGE1+1500,CHARGE1+1000,CHARGE1+500,CHARGE1,CHARGE1-500},
+            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
+            6100,
+
+            {Levels::LM3,}
     };
 
     const AttackPattern MZ123 = {
@@ -114,7 +131,9 @@ namespace
             // {0,0,0,0,0,0},
             {CHARGE1-500,CHARGE1,CHARGE1+500,CHARGE0,CHARGE0,CHARGE0},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
-            4600
+            4600,
+
+            {Levels::LM3Fast,}
     };
 
     const AttackPattern MZ456 = {
@@ -122,12 +141,15 @@ namespace
             // {0,0,0,0,0,0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE1+500,CHARGE1,CHARGE1-500},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
-            4600
+            4600,
+
+            {Levels::RM3Fast,}
     };
 
     const std::vector<AttackPattern> MediumPatterns = {
-            M12346,
+            M1346,
             M12345,
+            M23456,
             MZ123,
             MZ456,
     };
@@ -244,8 +266,12 @@ void Boss2::update(float ms) {
         laser->update(ms);
     }
 
-    if (health <= 0)
+    if (health <= 0){
+        for (auto laser : m_lasers) {
+            laser->setState(laserState::off);
+        }
         return;
+    }
     if (m_pattern_timer > 0)
         m_pattern_timer -= ms;
     else {
@@ -285,6 +311,12 @@ void Boss2::fireLasers(AttackPattern pattern) {
         }
         // laser->setRotationTarget(pattern.rotations[i]);
     }
+
+    auto & spawn = GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>();
+    for (auto& wave : pattern.waves) {
+        spawn.spawnWave(wave);
+    }
+
     m_pattern_timer = pattern.nextPatternDelay;
 }
 

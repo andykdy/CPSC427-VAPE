@@ -7,6 +7,7 @@
 
 
 #include <Entities/Debugging/DebugDot.hpp>
+#include <Levels/Level.hpp>
 #include "Boss.hpp"
 
 struct AttackPattern {
@@ -15,6 +16,8 @@ struct AttackPattern {
     float chargeTime[6]; // TODO
     float fireTime[6]; // TODO
     float nextPatternDelay; // TODO
+
+    std::vector<Levels::Wave> waves;
 
     bool operator==(const AttackPattern &rhs) const;
 
