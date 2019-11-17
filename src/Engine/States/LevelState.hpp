@@ -101,6 +101,7 @@ private:
 
     float m_level_time;
 
+
     bool m_boss_pre;
     bool m_boss_mode;
 
@@ -110,8 +111,10 @@ private:
     float m_vamp_mode_timer;
     float m_vamp_cooldown;
     unsigned int m_vamp_mode_charge;
-    VampParticleEmitter m_vamp_particle_emitter;
+    int m_numVampParticles;
 
+    // Effects
+    VampParticleEmitter m_vamp_particle_emitter;
     Explosion m_explosion;
 
     Mix_Music* m_background_music;

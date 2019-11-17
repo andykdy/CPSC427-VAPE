@@ -10,8 +10,6 @@
 
 constexpr int NUM_SEGMENTS = 12;
 std::default_random_engine m_rng = std::default_random_engine(std::random_device()());
-//pebble_vel.x = base_vel * cos(pebble_rads);
-//pebble_vel.y = base_vel * sin(pebble_rads);
 
 bool VampParticleEmitter::init()
 {
@@ -55,31 +53,19 @@ bool VampParticleEmitter::init()
 
 void VampParticleEmitter::spawn(vec2 position)
 {
-    // TODO - implement random spawn amount
-    //m_dist(m_rng);
-
-    //std:: cout << "GOT INSIDE" << std::endl;
-
-
     for (int i = 0; i <= 5 + 3 * m_dist(m_rng); i++) {
         float rads = 2 * M_PI * m_dist(m_rng);
+        float initSpeed = 50 + 200 * m_dist(m_rng);
 
         VampParticle vampParticle;
         vampParticle.life = 0;
         vampParticle.position = position;
-        //vampParticle.position = {200, 200};
-
-        float initSpeed = 150 + 100 * m_dist(m_rng);
-
         vampParticle.velocity.x = initSpeed * cos(rads);
         vampParticle.velocity.y = initSpeed * sin(rads);
-        vampParticle.radius = 6.f;
+        vampParticle.radius = 8.f;
         m_particles.emplace_back(vampParticle);
-        std:: cout << "VAMP PARTICLE SPAWNED" << std::endl;
-
+        // std:: cout << "VAMP PARTICLE SPAWNED" << std::endl;
     }
-
-    std::cout << m_particles.size() << std::endl;
 }
 
 void VampParticleEmitter::destroy()
@@ -96,17 +82,16 @@ void VampParticleEmitter::destroy()
 
 void VampParticleEmitter::update(float ms, vec2 player_position)
 {
-    // TODO - move all particles in array towards player pos, with speed depending on life
-
-
     auto particle_it = m_particles.begin();
     while (particle_it != m_particles.end())
     {
         particle_it->life += ms;
         float step = ms / 1000;
 
-        if (particle_it->life > 500.f) {
+        if (particle_it->life > 400.f + m_dist(m_rng) * 150.f) {
             float rads = atan2((player_position.y-particle_it->position.y), (player_position.x-particle_it->position.x));
+
+            // particle_it->velocity = {0,0};
 
             vec2 newVel;
             newVel.x = 100 * particle_it->life / 50 * cos(rads);
@@ -119,6 +104,7 @@ void VampParticleEmitter::update(float ms, vec2 player_position)
 
             if (x_diff <= 50.f && y_diff <= 50.f) {
                 particle_it = m_particles.erase(particle_it);
+                capturedParticles++;
                 continue;
             }
         }
@@ -146,9 +132,7 @@ void VampParticleEmitter::draw(const mat3& projection)
     GLint color_uloc = glGetUniformLocation(effect.program, "color");
 
     // Pebble color
-    float r = 0.8f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.2)));
-    float g = 0.1f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.9)));
-    float color[] = { 1.f, 0.f, 0.f };
+    float color[] = { 0.f, 1.f, 0.f };
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
@@ -185,4 +169,11 @@ void VampParticleEmitter::draw(const mat3& projection)
     // Reset divisor
     glVertexAttribDivisor(1, 0);
     glVertexAttribDivisor(2, 0);
+}
+
+int VampParticleEmitter::getCapturedParticles()
+{
+    int particleNum = capturedParticles;
+    capturedParticles = 0;
+    return particleNum;
 }

@@ -86,7 +86,7 @@ void Vamp::update(float ms, vec2 player_position) {
     float step = motion.speed * (ms / 1000);
     m_position.x = player_position.x;
     m_position.y = player_position.y;
-    motion.radians += step * 0.015;
+    motion.radians -= step * 0.015;
 }
 
 void Vamp::draw(const mat3 &projection) {

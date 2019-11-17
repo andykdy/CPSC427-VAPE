@@ -5,11 +5,19 @@ layout (location = 0) in vec3 in_position;
 layout (location = 1) in vec3 in_translate;
 layout (location = 2) in float in_scale;
 
+//out vec3 vcolor;
+out vec2 vpos;
+
 // Application data
 uniform mat3 projection;
 
 void main()
 {
+    vpos = in_position.xy;
+    //vcolor = vec3(1.f, 0.f, 0.f);
+
+    // ADD COLOR IN AND VPOS
+
     mat3 transform = mat3(
     in_scale, 0.0, 0.0,
     0.0, in_scale, 0.0,

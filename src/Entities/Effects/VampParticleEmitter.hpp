@@ -37,6 +37,8 @@ public:
     // Spawn new particle
     void spawn(vec2 position);
 
+    int getCapturedParticles();
+
 
 
 private:
@@ -44,5 +46,6 @@ private:
     std::vector<VampParticle> m_particles; // vector of particles
     std::uniform_real_distribution<float> m_dist;
     std::default_random_engine m_rng;
+    int capturedParticles;
 
 };
