@@ -37,13 +37,21 @@
 #include <Entities/UI/UIPanel/UIPanel.hpp>
 #include <Entities/Pickups/Pickup.hpp>
 
+const size_t INIT_LIVES = 5;
+
+struct PlayerData {
+    unsigned int lives;
+    unsigned int points;
+    unsigned int levelId;
+};
+
 class Pickup;
 
 class LevelState : public GameState {
     friend class Pickup;
 public:
     //! Constructor, taking in gameplay options
-    explicit LevelState(Levels::Level level, unsigned int points);
+    explicit LevelState(Levels::Level level, PlayerData data);
 
     //! Initializes the state
     void init() override;
@@ -82,6 +90,7 @@ private:
     // Space effect
     Space m_space;
 
+    int m_lives;
     // Number of fish eaten by the salmon, displayed in the window title
     unsigned int m_points;
     unsigned int m_highscore;

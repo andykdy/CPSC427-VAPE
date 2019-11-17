@@ -13,7 +13,6 @@
 #include "TutorialState.hpp"
 #include "IntroState.hpp"
 
-
 void MainMenuState::init() {
     m_background_music = Mix_LoadMUS(audio_path("mainmenu.wav"));
 
@@ -171,11 +170,11 @@ void MainMenuState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
 
     if (action == GLFW_RELEASE && key == GLFW_KEY_1)
     {
-        GameEngine::getInstance().changeState(new LevelState(Levels::level1, 0));
+        GameEngine::getInstance().changeState(new LevelState(Levels::level1, {INIT_LIVES,0,0}));
     }
     if (action == GLFW_RELEASE && key == GLFW_KEY_2)
     {
-        GameEngine::getInstance().changeState(new LevelState(Levels::level2, 0));
+        GameEngine::getInstance().changeState(new LevelState(Levels::level2, {INIT_LIVES,0,0}));
     }
 }
 
@@ -193,19 +192,4 @@ void MainMenuState::on_mouse_button(GLFWwindow *window, int button, int action, 
             }
         }
     }
-
-
-    // TODO remove
-    /*
-	if (mouse_position.x >= 200 && mouse_position.x <= 600 && mouse_position.y >= 600 && mouse_position.y <= 700) {
-		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-			GameEngine::getInstance().changeState(new IntroState());
-		}
-	}
-	if (mouse_position.x >= 280 && mouse_position.x <= 520 && mouse_position.y >= 740 && mouse_position.y <= 830) {
-		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-			GameEngine::getInstance().quit();
-		}
-	}
-     */
 }

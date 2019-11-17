@@ -75,7 +75,7 @@ void Intro::draw(const mat3 &projection) {
             sprite->initTexture(introTextures[m_part]);
             m_timer = DELAY;
         } else {
-            GameEngine::getInstance().changeState(new LevelState(Levels::level1, 0));
+            GameEngine::getInstance().changeState(new LevelState(Levels::level1, {INIT_LIVES,0,0}));
         }
     }
 }
