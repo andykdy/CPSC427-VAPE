@@ -87,6 +87,6 @@ void IntroState::draw() {
 void IntroState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
     if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER)
     {
-        GameEngine::getInstance().changeState(new LevelState(Levels::level1, 0));
+        GameEngine::getInstance().changeState(new LevelState(Levels::level1, {INIT_LIVES,0,0}));
     }
 }

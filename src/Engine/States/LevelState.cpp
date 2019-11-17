@@ -14,7 +14,6 @@
 #include <iostream>
 #include <Systems/CollisionSystem.hpp>
 #include <Entities/Bosses/Boss2.hpp>
-#include <Utils/SaveData.hpp>
 
 #include "LevelState.hpp"
 #include "MainMenuState.hpp"
@@ -36,9 +35,11 @@ namespace
 }
 
 
-LevelState::LevelState(Levels::Level level, unsigned int points) :
+LevelState::LevelState(Levels::Level level, PlayerData data) :
         m_level(level),
-        m_points(points)
+        m_points(data.points),
+        m_starting_points(data.points),
+        m_lives(data.lives)
 {
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
@@ -117,6 +118,16 @@ void LevelState::init() {
     spawn.reset(m_level.timeline);
     m_turtles = spawn.getEnemies(); // TODO, probably just get rid of m_turtles, pull from spawn system when needed
     GameEngine::getInstance().setM_current_speed(1.f);
+
+
+
+    PlayerData data;
+    data.points = m_starting_points;
+    data.lives = m_lives;
+    data.levelId = m_level.id;
+
+    saveGameData(data);
+
     //std::cout << "initEnd" << std::endl;
 }
 
@@ -500,9 +511,14 @@ void LevelState::update(float ms) {
         } else if (m_boss->getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
         {
             if (m_level.nextLevel != nullptr) {
-                GameEngine::getInstance().changeState(new LevelState(*m_level.nextLevel, m_points));
+                GameEngine::getInstance().changeState(new LevelState(*m_level.nextLevel, {
+                        m_lives,
+                        m_points,
+                        1 // TODO level Ids
+                }));
             } else {
                 saveScore(m_points);
+                saveGameData({0,0,0}); // Clear savegame
                 // TODO go to Epilogue state
                 GameEngine::getInstance().changeState(new MainMenuState());
             }
@@ -513,8 +529,13 @@ void LevelState::update(float ms) {
     // If salmon is dead, restart the game after the fading animation
     if (!m_player->is_alive() &&
         m_space.get_salmon_dead_time() > 5) {
-        saveScore(m_points);
-       reset();
+        if (m_lives > 0){
+            --m_lives;
+            reset();
+        }else {
+            saveScore(m_points);
+            GameEngine::getInstance().changeState(new MainMenuState()); // TODO game over state
+        }
     }
     //std::cout << "updateend" << std::endl;
 }
@@ -530,7 +551,7 @@ void LevelState::draw() {
 
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss << "Points: " << m_points << "             High Score: " << ((m_points < m_highscore) ? m_highscore : m_points);
+    title_ss << "Lives: " << m_lives << "          Points: " << m_points << "             High Score: " << ((m_points < m_highscore) ? m_highscore : m_points);
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
     // Clearing backbuffer
@@ -637,5 +658,5 @@ void LevelState::on_mouse_button(GLFWwindow *window, int button, int action, int
 }
 
 void LevelState::reset() {
-    GameEngine::getInstance().changeState(new LevelState(m_level, 0));
+    GameEngine::getInstance().changeState(new LevelState(m_level, {m_lives, m_starting_points, m_level.id}));
 }

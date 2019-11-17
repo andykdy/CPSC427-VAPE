@@ -60,6 +60,7 @@ namespace Levels {
     };
 
     const Level level2 = Level(
+            2,
             level2Timeline,
             spawnBoss<Boss2>,
             47000,

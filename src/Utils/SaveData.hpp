@@ -35,4 +35,15 @@ void saveScore(unsigned int points, const std::string&name = std::string(default
 
 std::multiset<leaderboardEntry> getLeaderboard();
 
+
+struct PlayerData {
+    unsigned int lives;
+    unsigned int points;
+    unsigned int levelId;
+};
+
+void saveGameData(PlayerData data);
+
+PlayerData loadGameData();
+
 #endif //VAPE_SAVEDATA_HPP
