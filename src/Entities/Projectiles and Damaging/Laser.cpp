@@ -132,26 +132,33 @@ void Laser::update(float ms) {
 
 void Laser::spawn() {
     int n = 0;
-    vec2 vel = {0,2000};
-    float xmin = m_origin.x - (float)LASER_WIDTH/2;
-    float xmax = m_origin.x + (float)LASER_WIDTH/2;
-    float ymin = m_origin.y - 10;
-    float ymax = m_origin.y + 10;
+    vec2 vel = {2000*sinf(m_rotation), 2000*cosf(m_rotation)};
 
+    float xrange = (float)LASER_WIDTH/2;
     if (m_state == laserState::firing) {
         n = 50;
     } else if (m_state == laserState::primed) {
         n = 10;
-        xmin = m_origin.x - 1;
-        xmax = m_origin.x + 1;
+        xrange = 1;
     }
+
+    vec2 xy1 = {m_origin.x + (xrange*sinf(m_rotation - 1.5708f)), m_origin.y - (10*cosf(m_rotation))};
+    vec2 xy2 = {m_origin.x + (xrange*sinf(m_rotation + 1.5708f)), m_origin.y + (10*cosf(m_rotation))};
+    float xmin = std::min(xy1.x, xy2.x);
+    float xmax = std::max(xy1.x, xy2.x);
+    float ymin = std::min(xy1.y, xy2.y);
+    float ymax = std::max(xy1.y, xy2.y);
 
     for (int i = 0; i < n && m_particles.size() < MAX_PARTICLES; i++) {
         m_particles.emplace_back();
         Particle& p = m_particles.back();
 
-        float randx = rand() % (int)(xmax-xmin) + (int)xmin;
-        float randy = rand() % (int)(ymax-ymin) + (int)ymin;
+        float randx = xmin;
+        if (xmin != xmax)
+            randx = rand() % (int)(xmax-xmin) + (int)xmin;
+        float randy = ymin;
+        if (ymin != ymax)
+            randy = rand() % (int)(ymax-ymin) + (int)ymin;
         p.position = {randx, randy};
         p.velocity = vel;
         p.life = 2000;
@@ -222,7 +229,8 @@ vec2 Laser::get_position() const {
 }
 
 bool Laser::collides_with(const Player &player) {
-    if (m_state != laserState::firing) return false;
+    if (m_state != laserState::firing)
+        return false;
 
     vec2 playerpos = player.get_position();
     vec2 playerbox = player.get_bounding_box();

@@ -60,9 +60,9 @@ namespace Levels {
     };
 
     const Level level2 = Level(
-            level2Timeline,
+            {},// level2Timeline,
             spawnBoss<Boss2>,
-            47000,
+            10000,//47000,
             textures_path("space_bg2.png"),
             audio_path("music_level2.wav"),
             audio_path("music_boss2.wav"),
