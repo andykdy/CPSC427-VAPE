@@ -241,13 +241,39 @@ vec2 Laser::get_position() const {
     return m_origin; // TODO?
 }
 
+// https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
+bool lineCircleCollision(vec2 start, vec2 end, vec2 center, float radius) {
+    vec2 d = sub(end, start);
+    vec2 f = sub(start, center);
+
+    float a = dot(d, d);
+    float b = 2*dot(f, d);
+    float c = dot(f, f) - radius*radius;
+
+    float discriminant = b*b-4*a*c;
+    if (discriminant < 0) {
+        return false;
+    } else {
+        discriminant = sqrtf(discriminant);
+
+        float t1 = (-b - discriminant) / (2*a);
+        float t2 = (-b + discriminant) / (2*a);
+
+        if (t1 >= 0 && t1 <= 1) {
+            return true;
+        }
+
+        return t2 >= 0 && t2 <= 1;
+    }
+}
+
 bool Laser::collides_with(const Player &player) {
     if (m_state != laserState::firing)
         return false;
 
     vec2 playerpos = player.get_position();
     vec2 playerbox = player.get_bounding_box();
-
+    float playerr = std::max(playerbox.x/2, playerbox.y/2)*0.6f;
 
     float lx = m_origin.x - LASER_WIDTH/3;
     vec2 p00 = {lx, m_origin.y};
@@ -261,8 +287,12 @@ bool Laser::collides_with(const Player &player) {
     float h = playerbox.y/2;
     vec2 tl = {playerpos.x - w, playerpos.y - h};
     vec2 br = {playerpos.x + w, playerpos.y + h};
+
+    return lineCircleCollision(p00, p01, playerpos, playerr) || lineCircleCollision(p10, p11, playerpos, playerr);
+    /*
     return (CohenSutherlandLineClipAndDraw(p00, p01, tl, br) ||
             CohenSutherlandLineClipAndDraw(p10, p11, tl, br));
+            */
 }
 
 bool Laser::collides_with(const Enemy &turtle) {
