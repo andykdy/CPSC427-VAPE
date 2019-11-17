@@ -88,6 +88,7 @@ void LevelState::init() {
     m_boss_pre = false;
     m_vamp_cooldown = 0;
     m_vamp_mode_charge = 0;
+    m_vamp_mode_timer = 0;
 
 
     m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();

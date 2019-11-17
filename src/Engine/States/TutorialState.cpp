@@ -14,7 +14,6 @@
 
 #include "TutorialState.hpp"
 #include "MainMenuState.hpp"
-#include "LevelState.hpp"
 
 // Same as static in c, local to compilation unit
 namespace
@@ -427,7 +426,7 @@ void TutorialState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
 			m_continue_UI.set_activity(false);
 		}
 		if (m_current_cmp == clear) {
-			GameEngine::getInstance().changeState(new LevelState(Levels::level1, 0));
+			GameEngine::getInstance().changeState(new MainMenuState());
 		}
 	}
 

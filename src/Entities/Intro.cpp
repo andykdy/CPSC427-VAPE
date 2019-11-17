@@ -7,7 +7,8 @@
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
 #include <Engine/GameEngine.hpp>
-#include <Engine/States/TutorialState.hpp>
+#include <Levels/Level1.hpp>
+#include <Engine/States/LevelState.hpp>
 #include "Intro.hpp"
 
 
@@ -74,7 +75,7 @@ void Intro::draw(const mat3 &projection) {
             sprite->initTexture(introTextures[m_part]);
             m_timer = DELAY;
         } else {
-            GameEngine::getInstance().changeState(new TutorialState());
+            GameEngine::getInstance().changeState(new LevelState(Levels::level1, 0));
         }
     }
 }

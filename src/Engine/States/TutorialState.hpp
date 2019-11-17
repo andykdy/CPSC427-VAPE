@@ -17,8 +17,8 @@
 #include "Entities/Space.hpp"
 #include "Entities/Projectiles and Damaging/bullet.hpp"
 #include "Entities/UI/PlayerHealth/Health.hpp"
-#include "Entities/UI/Dialogue.hpp"
-#include "Entities/UI/Continue.hpp"
+#include "Entities/UI/Dialogue/Dialogue.hpp"
+#include "Entities/UI/Dialogue/Continue.hpp"
 
 // stlib
 #include <vector>
@@ -28,8 +28,8 @@
 #include <Entities/Vamp.hpp>
 #include <Entities/UI/Vamp/VampCharge.hpp>
 #include <Entities/Effects/Explosion.hpp>
-#include <Entities/UI/UIPanelBackground.hpp>
-#include <Entities/UI/UIPanel.hpp>
+#include <Entities/UI/UIPanel/UIPanelBackground.hpp>
+#include <Entities/UI/UIPanel/UIPanel.hpp>
 
 enum Component {
 	initial,

@@ -10,7 +10,7 @@ bool MainMenu::init() {
     // Load shared texture
     if (!bg_texture.is_valid())
     {
-        if (!bg_texture.load_from_file(textures_path("mainmenu_bg_exit.png")))
+        if (!bg_texture.load_from_file(textures_path("mainmenu_bg_new.png")))
         {
             fprintf(stderr, "Failed to load turtle texture!");
             return false;

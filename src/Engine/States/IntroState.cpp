@@ -3,8 +3,9 @@
 //
 
 #include <sstream>
+#include <Levels/Level1.hpp>
 #include "IntroState.hpp"
-#include "TutorialState.hpp"
+#include "LevelState.hpp"
 
 void IntroState::init() {
     m_background_music = Mix_LoadMUS(audio_path("intro.wav"));
@@ -86,6 +87,6 @@ void IntroState::draw() {
 void IntroState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
     if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER)
     {
-        GameEngine::getInstance().changeState(new TutorialState());
+        GameEngine::getInstance().changeState(new LevelState(Levels::level1, 0));
     }
 }

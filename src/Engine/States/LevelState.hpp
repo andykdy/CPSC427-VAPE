@@ -19,7 +19,7 @@
 #include "Entities/fish.hpp"
 #include "Entities/Space.hpp"
 #include "Entities/Projectiles and Damaging/bullet.hpp"
-#include "Entities/UI/Dialogue.hpp"
+#include "Entities/UI/Dialogue/Dialogue.hpp"
 #include "Entities/UI/PlayerHealth/Health.hpp"
 #include "Entities/Effects/Explosion.hpp"
 #include "Entities/Effects/VampParticleEmitter.hpp"
@@ -33,8 +33,8 @@
 #include <Entities/Vamp.hpp>
 #include <Entities/Bosses/Boss1.hpp>
 #include <Entities/UI/Vamp/VampCharge.hpp>
-#include <Entities/UI/UIPanelBackground.hpp>
-#include <Entities/UI/UIPanel.hpp>
+#include <Entities/UI/UIPanel/UIPanelBackground.hpp>
+#include <Entities/UI/UIPanel/UIPanel.hpp>
 #include <Entities/Pickups/Pickup.hpp>
 
 class Pickup;
