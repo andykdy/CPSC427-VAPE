@@ -74,7 +74,7 @@ namespace
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
             8100,
 
-            {Levels::RSpaced3,}
+            {Levels::RM3,}
     };
 
     const AttackPattern EZ456 = {
@@ -86,7 +86,7 @@ namespace
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
             8100,
 
-            {Levels::LSpaced3,}
+            {Levels::LM3Low,}
     };
 
     const AttackPattern EZ2345 = {
@@ -130,7 +130,7 @@ namespace
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
             6100,
 
-            {Levels::LM3,
+            {Levels::LM3Low,
              Levels::RM3,}
     };
 
@@ -143,7 +143,7 @@ namespace
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
             6100,
 
-            {Levels::LM3,
+            {Levels::LM3Low,
              Levels::RM3,}
     };
 
@@ -180,7 +180,7 @@ namespace
             {FIRE2,FIRE2,FIRE2,FIRE2,FIRE2,FIRE2},
             CHARGE2+1250+FIRE2,
 
-            {Levels::RM3Fast,Levels::LM3Fast}
+            {Levels::RM3Fast,Levels::LM3FastLow}
     };
 
     const AttackPattern H123456_L = {
@@ -192,7 +192,7 @@ namespace
             {FIRE2,FIRE2,FIRE2,FIRE2,FIRE2,FIRE2},
             CHARGE2+1250+FIRE2,
 
-            {Levels::RM3Fast,Levels::LM3Fast}
+            {Levels::RM3Fast,Levels::LM3FastLow}
     };
 
 
