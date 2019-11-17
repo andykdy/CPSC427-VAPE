@@ -4,7 +4,6 @@
 #include <fstream> // stdout, stderr..
 
 // glfw
-#define NOMINMAX
 #include <gl3w.h>
 #include <GLFW/glfw3.h>
 

@@ -22,10 +22,6 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-    const size_t MAX_TURTLES = 30;
-    const size_t MAX_FISH = 5;
-    const size_t TURTLE_DELAY_MS = 500;
-    const size_t FISH_DELAY_MS = 5000;
     const size_t VAMP_MODE_DURATION = 1500;
     const size_t MAX_HEALTH = 75;
     const size_t INIT_HEALTH = 50;
@@ -34,7 +30,7 @@ namespace
     const size_t VAMP_HEAL = 2;
     const size_t VAMP_DAMAGE_TIMER = 125;
     const size_t VAMP_DAMAGE_TIMER_BOSS = 400;
-    const size_t VAMP_TIME_PER_POINT = 150;
+    const size_t VAMP_TIME_PER_POINT = 200;
     const size_t VAMP_ACTIVATION_COOLDOWN = 300;
 
 }
@@ -46,6 +42,7 @@ LevelState::LevelState(Levels::Level level, unsigned int points) :
 {
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
+
     auto leaderboard = getLeaderboard();
 
     m_highscore = 0;
@@ -89,7 +86,10 @@ void LevelState::init() {
     m_boss_mode = false;
     m_boss_pre = false;
     m_vamp_cooldown = 0;
+    m_vamp_mode_charge = 0;
     m_vamp_mode_timer = 0;
+    m_numVampParticles = 0;
+
 
     m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
     m_player->init(screen, INIT_HEALTH);
@@ -99,13 +99,9 @@ void LevelState::init() {
     m_health->init({53, screen.y-50});
     m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
     m_vamp_charge->init({screen.x-52, screen.y-50});
-
-
-    // TODO - remove spacing
+    m_vamp_particle_emitter.init();
     m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
     m_uiPanel->init(screen, screen.y, screen.x);
-
-    m_vamp_mode_charge = 0;
     m_dialogue.init(m_level.bossDialogue);
     m_dialogue.deactivate();
     m_space.init(m_level.backgroundTexture);
@@ -159,6 +155,8 @@ void LevelState::terminate() {
     m_dialogue.destroy();
     m_explosion.destroy();
     m_space.destroy();
+
+    m_vamp_particle_emitter.destroy();
 }
 
 void LevelState::update(float ms) {
@@ -168,7 +166,6 @@ void LevelState::update(float ms) {
     vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
     m_level_time += ms;
-    m_vamp_cooldown -= ms;
 
     // To prepare for the boss, stop spawning enemies and change the music
     if (m_level_time >= m_level.bossTime - 5000 && !m_boss_pre) {
@@ -298,24 +295,36 @@ void LevelState::update(float ms) {
             ++bullet_it;
     }
 
-    // check for vamp/turtle collisions
+    // add health if enough vampParticles
+    m_numVampParticles += m_vamp_particle_emitter.getCapturedParticles();
+    // 6 is average of particles dropped per kill
+    if (m_numVampParticles >= 6) {
+        //m_numVampParticles > 6
+        add_health(VAMP_HEAL);
+        m_numVampParticles = 0;
+    }
+
+    // check for vamp/enemy collisions
+    m_vamp_cooldown -= ms;
+
     if (m_vamp_mode) {
         turtle_it = m_turtles->begin();
         while (turtle_it != m_turtles->end()) {
             if (m_vamp.collides_with(**turtle_it)) {
-                // TODO - restructure
+                // TODO - Re-add resetting vamp timer on leaving aura
                 (*turtle_it)->add_vamp_timer(ms);
-                 std::cout << (*turtle_it)->get_vamp_timer() << std::endl;
+                 //std::cout << (*turtle_it)->get_vamp_timer() << std::endl;
 
                 if ((*turtle_it)->get_vamp_timer() >= VAMP_DAMAGE_TIMER) {
+                    // std::cout << "Destroying enemy" << std::endl;
+                    m_vamp_particle_emitter.spawn((*turtle_it)->get_position());
+
                     m_explosion.spawn((*turtle_it)->get_position());
                     Mix_PlayChannel(-1, m_player_explosion, 0);
                     (*turtle_it)->destroy();
                     turtle_it = m_turtles->erase(turtle_it);
-                    add_health(VAMP_HEAL);
+                    //add_health(VAMP_HEAL);
                     continue;
-                } else {
-                 //   (*turtle_it)->reset_vamp_timer();
                 }
 
             }
@@ -325,6 +334,7 @@ void LevelState::update(float ms) {
     }
 
     m_space.update(ms);
+    m_vamp_particle_emitter.update(ms, m_player->get_position());
     m_explosion.update(ms);
 
     // Updating all entities, making the turtle and fish
@@ -388,9 +398,6 @@ void LevelState::update(float ms) {
     }
 
     if (m_vamp_mode) {
-        //std::cout << "is vamp mode" << std::endl;
-        //m_vamp_mode_timer -= ms;
-
         if (m_vamp_mode_charge <= 0 || end_vamp_mode) {
             GameEngine::getInstance().setM_current_speed(1.f);
             m_vamp_mode = false;
@@ -398,8 +405,7 @@ void LevelState::update(float ms) {
         } else {
             m_vamp.update(ms, m_player->get_position());
             m_vamp_mode_timer += ms;
-            if (m_vamp_mode_timer >= 300.f) {
-                //std::cout << "subtracting a point" << std::endl;
+            if (m_vamp_mode_timer >= VAMP_TIME_PER_POINT) {
                 m_vamp_mode_charge -= 1;
                 m_vamp_mode_timer = 0;
             }
@@ -445,8 +451,10 @@ void LevelState::update(float ms) {
                 m_boss->add_vamp_timer(ms);
 
                 if (m_boss->get_vamp_timer() >= VAMP_DAMAGE_TIMER_BOSS) {
+                    m_vamp_particle_emitter.spawn(m_boss->get_position());
+                    m_vamp_particle_emitter.spawn(m_boss->get_position());
                     m_boss->addDamage(4);
-                    add_health(VAMP_HEAL);
+                    //add_health(VAMP_HEAL);
                     m_boss->reset_vamp_timer();
                 }
             }
@@ -551,19 +559,22 @@ void LevelState::draw() {
     // Drawing entities
     for (auto& turtle : (*m_turtles))
         turtle->draw(projection_2D);
-    if (m_vamp_mode) {
-        m_vamp.draw(projection_2D);
-    }
     m_player->draw(projection_2D);
     if (m_boss_mode) {
         m_boss->draw(projection_2D);
     }
+    if (m_vamp_mode) {
+        m_vamp.draw(projection_2D);
+    }
+    m_vamp_particle_emitter.draw(projection_2D);
+
+    m_explosion.draw(projection_2D);
+
     m_uiPanelBackground->draw(projection_2D);
     m_health->draw(projection_2D);
     m_vamp_charge->draw(projection_2D);
     m_uiPanel->draw(projection_2D);
     m_dialogue.draw(projection_2D);
-    m_explosion.draw(projection_2D);
 
 
     //////////////////
@@ -592,12 +603,14 @@ void LevelState::add_health(int heal) {
 }
 
 void LevelState::add_vamp_charge() {
-    if (m_vamp_mode_charge < 15) {
-        m_vamp_mode_charge++;
+    if (!m_vamp_mode) {
 
-        if (m_vamp_mode_charge == 15) {
-            // TODO - replace with more appropriate sound
-            Mix_PlayChannel(-1, m_player_charged, 0);
+        if (m_vamp_mode_charge < 15) {
+            m_vamp_mode_charge++;
+
+            if (m_vamp_mode_charge == 15) {
+                Mix_PlayChannel(-1, m_player_charged, 0);
+            }
         }
     }
 }
