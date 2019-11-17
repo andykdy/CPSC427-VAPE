@@ -85,9 +85,10 @@ private:
     // Space effect
     Space m_space;
 
-    int m_lives;
+    unsigned int m_lives;
     // Number of fish eaten by the salmon, displayed in the window title
     unsigned int m_points;
+    unsigned int m_starting_points;
     unsigned int m_highscore;
 
     // Game entities

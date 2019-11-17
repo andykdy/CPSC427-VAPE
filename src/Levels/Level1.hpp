@@ -74,6 +74,7 @@ namespace Levels {
     };
 
     const Level level1 = Level(
+            1,
             //{},
             level1Timeline,
             spawnBoss<Boss1>,

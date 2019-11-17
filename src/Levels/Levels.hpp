@@ -13,8 +13,8 @@
 namespace Levels {
     // maps specific levels to a levelId, for saving/loading purposes
     const std::map<unsigned int, const Level*> level_map = {
-            {1, &level1},
-            {2, &level2},
+            {level1.id, &level1},
+            {level2.id, &level2},
     };
 }
 

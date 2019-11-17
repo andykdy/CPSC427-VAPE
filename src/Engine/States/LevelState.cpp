@@ -38,6 +38,7 @@ namespace
 LevelState::LevelState(Levels::Level level, PlayerData data) :
         m_level(level),
         m_points(data.points),
+        m_starting_points(data.points),
         m_lives(data.lives)
 {
     // Seeding rng with random device
@@ -117,6 +118,16 @@ void LevelState::init() {
     spawn.reset(m_level.timeline);
     m_turtles = spawn.getEnemies(); // TODO, probably just get rid of m_turtles, pull from spawn system when needed
     GameEngine::getInstance().setM_current_speed(1.f);
+
+
+
+    PlayerData data;
+    data.points = m_starting_points;
+    data.lives = m_lives;
+    data.levelId = m_level.id;
+
+    saveGameData(data);
+
     //std::cout << "initEnd" << std::endl;
 }
 
@@ -501,12 +512,13 @@ void LevelState::update(float ms) {
         {
             if (m_level.nextLevel != nullptr) {
                 GameEngine::getInstance().changeState(new LevelState(*m_level.nextLevel, {
-                        static_cast<unsigned int>(m_lives),
+                        m_lives,
                         m_points,
                         1 // TODO level Ids
                 }));
             } else {
                 saveScore(m_points);
+                saveGameData({0,0,0}); // Clear savegame
                 // TODO go to Epilogue state
                 GameEngine::getInstance().changeState(new MainMenuState());
             }
@@ -517,11 +529,11 @@ void LevelState::update(float ms) {
     // If salmon is dead, restart the game after the fading animation
     if (!m_player->is_alive() &&
         m_space.get_salmon_dead_time() > 5) {
-        saveScore(m_points);
-        --m_lives;
-        if (m_lives >= 0){
+        if (m_lives > 0){
+            --m_lives;
             reset();
         }else {
+            saveScore(m_points);
             GameEngine::getInstance().changeState(new MainMenuState()); // TODO game over state
         }
     }
@@ -646,5 +658,5 @@ void LevelState::on_mouse_button(GLFWwindow *window, int button, int action, int
 }
 
 void LevelState::reset() {
-    GameEngine::getInstance().changeState(new LevelState(m_level, {static_cast<unsigned int>(m_lives), m_points, 1/*TODO LEVELID*/}));
+    GameEngine::getInstance().changeState(new LevelState(m_level, {m_lives, m_starting_points, m_level.id}));
 }

@@ -26,8 +26,9 @@ inline void parseLeaderboard(std::multiset<leaderboardEntry>* leaderboard) {
         return;
 
     FILE* leaderboard_file = fopen(leaderboardFile.c_str(), "r");
-    int ch = getc(leaderboard_file);
+    int ch = fgetc(leaderboard_file);
     while(ch != EOF) {
+        ungetc(ch, leaderboard_file);
         unsigned int points;
         char name[32];
         fscanf(leaderboard_file, "%s : %d\n", name, &points);
@@ -52,7 +53,7 @@ inline void saveLeaderBoard(const std::multiset<leaderboardEntry>& leaderboard) 
     for (auto it = leaderboard.rbegin(); it != leaderboard.rend(); ++it) {
         if (n > 10) break;
         std::ostringstream oss;
-        oss << " " << it->name << " : " + std::to_string(it->points) +"\n";
+        oss << it->name << " : " + std::to_string(it->points) +"\n";
         fputs(oss.str().c_str(), leaderboard_file);
         ++n;
     }
@@ -79,17 +80,17 @@ void saveGameData(PlayerData data) {
     FILE* savegame_file = fopen(savegameFile.c_str(), "w"); // TODO encryption of savedata? Maybe include game version for determining compatability
     {
         std::ostringstream oss;
-        oss << " lives" << " : " + std::to_string(data.lives) +"\n";
+        oss << "lives" << " : " + std::to_string(data.lives) +"\n";
         fputs(oss.str().c_str(), savegame_file);
     }
     {
         std::ostringstream oss;
-        oss << " points" << " : " + std::to_string(data.points) +"\n";
+        oss << "points" << " : " + std::to_string(data.points) +"\n";
         fputs(oss.str().c_str(), savegame_file);
     }
     {
         std::ostringstream oss;
-        oss << " levelId" << " : " + std::to_string(data.levelId) +"\n";
+        oss << "levelId" << " : " + std::to_string(data.levelId) +"\n";
         fputs(oss.str().c_str(), savegame_file);
     }
     fclose(savegame_file);
@@ -102,15 +103,16 @@ PlayerData loadGameData() {
 
     std::map<std::string, unsigned int> datamap;
     FILE* savegame_file = fopen(savegameFile.c_str(), "r");
-    int ch = getc(savegame_file);
+    int ch = fgetc(savegame_file);
     while(ch != EOF) {
+        ungetc(ch, savegame_file);
         unsigned int val;
         char name[32];
         fscanf(savegame_file, "%s : %d\n", name, &val);
 
         datamap.insert({name, val});
 
-        ch = getc(savegame_file);
+        ch = fgetc(savegame_file);
     }
     if (feof(savegame_file))
         std::cout << "End of file reached." << std::endl;
