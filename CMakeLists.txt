@@ -50,6 +50,7 @@ set(SOURCE_FILES
         src/Engine/ECS/SystemManager.cpp src/Engine/ECS/SystemManager.hpp
         src/Engine/ECS/ECS.hpp
 
+        src/Engine/Graphics/VideoUtil.cpp src/Engine/Graphics/VideoUtil.hpp
 
         src/Entities/Effects/Explosion.cpp src/Entities/Effects/Explosion.hpp
         src/Entities/Effects/VampParticleEmitter.cpp src/Entities/Effects/VampParticleEmitter.hpp
@@ -87,6 +88,7 @@ set(SOURCE_FILES
         "src/Entities/Projectiles and Damaging/Projectile.hpp"
         "src/Entities/Projectiles and Damaging/bullet.cpp" "src/Entities/Projectiles and Damaging/bullet.hpp"
         "src/Entities/Projectiles and Damaging/Laser/Laser.cpp" "src/Entities/Projectiles and Damaging/Laser/Laser.hpp"
+        "src/Entities/Projectiles and Damaging/Laser/LaserBeamSprite.cpp" "src/Entities/Projectiles and Damaging/Laser/LaserBeamSprite.hpp"
 
         src/Entities/Bosses/Boss.hpp
         src/Entities/Bosses/Boss1.cpp src/Entities/Bosses/Boss1.hpp
@@ -123,7 +125,7 @@ set(SOURCE_FILES
 
         src/Utils/SaveData.cpp src/Utils/SaveData.hpp
 
-        "src/Entities/Projectiles and Damaging/Laser/LaserBeamSprite.cpp" "src/Entities/Projectiles and Damaging/Laser/LaserBeamSprite.hpp")
+        )
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
@@ -218,10 +220,43 @@ if (NOT GLFW_FOUND OR NOT SDL2_FOUND)
    endif()
 endif()
 
+add_subdirectory(ext/ffmpeg)
+if (IS_OS_WINDOWS)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${AVCODEC_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/avcodec-58.dll")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${AVFORMAT_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/avformat-58.dll")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${AVFILTER_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/avfilter-7.dll")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${AVDEVICE_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/avdevice-58.dll")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${AVUTIL_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/avutil-56.dll")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${SWRESAMPLE_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/swresample-3.dll")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${SWSCALE_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/swscale-5.dll")
+endif()
+
 target_include_directories(${PROJECT_NAME} PUBLIC ${GLFW_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${SDL2_INCLUDE_DIRS})
+#target_include_directories(${PROJECT_NAME} PUBLIC ${FFMPEG_INCLUDE_DIRS})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES} )#${FFMPEG_LIBRARIES})
 
 # Needed to add this
 if(IS_OS_LINUX)
