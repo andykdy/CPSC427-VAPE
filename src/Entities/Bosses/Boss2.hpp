@@ -8,6 +8,7 @@
 
 #include <Entities/Debugging/DebugDot.hpp>
 #include <Levels/Level.hpp>
+#include <random>
 #include "Boss.hpp"
 
 struct AttackPattern {
@@ -24,6 +25,12 @@ struct AttackPattern {
     bool operator==(const AttackPattern &rhs) const;
 
     bool operator!=(const AttackPattern &rhs) const;
+};
+
+enum Boss2Phase {
+    full,
+    two_thirds,
+    one_third
 };
 
 class Laser;
@@ -43,7 +50,7 @@ public:
     // ms represents the number of milliseconds elapsed from the previous update() call
     void update(float ms) override;
 
-    void choosePattern(const std::vector<AttackPattern>& patterns);
+    void choosePattern(std::vector<AttackPattern>& patterns);
 
     // Renders the Boss
     // projection is the 2D orthographic projection matrix
@@ -77,6 +84,14 @@ private:
     AttackPattern m_pattern;
 
     void fireLasers(AttackPattern pattern);
+
+    std::default_random_engine m_rand;
+
+    std::vector<AttackPattern> m_easy_patterns;
+    std::vector<AttackPattern> m_medium_patterns;
+    std::vector<AttackPattern> m_hard_patterns;
+    int m_pattern_cursor;
+    Boss2Phase m_phase;
 };
 
 #endif //VAPE_BOSS2_HPP

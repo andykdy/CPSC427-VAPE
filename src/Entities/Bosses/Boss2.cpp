@@ -10,13 +10,15 @@
 #include <Components/TransformComponent.hpp>
 #include <Entities/Projectiles and Damaging/Laser/Laser.hpp>
 #include <Systems/EnemySpawnerSystem.hpp>
+#include <chrono>
+#include <random>
 #include "Boss2.hpp"
 
 
 // Same as static in c, local to compilation unit
 namespace
 {
-    const size_t INIT_HEALTH = 300;
+    const size_t INIT_HEALTH = 500;
     const size_t SPRITE_FRAMES = 4;
     const size_t SPRITE_W = 264;
     const size_t SPRITE_H = 88;
@@ -210,7 +212,7 @@ namespace
     const AttackPattern H2345_DM = {
             {false, true, true, true, true, false},
             {0,0.78f,-0.78f,0.78f,-0.78f,0},
-            {0,0.48f,-0.48f,0.48f,-0.48f,0},
+            {0,0.48f,-0.58f,0.58f,-0.48f,0},
             {ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2},
             {CHARGE2+1250,CHARGE2+1000,CHARGE2+750,CHARGE2+500,CHARGE2+250, CHARGE2},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
@@ -308,6 +310,19 @@ bool Boss2::init(vec2 screen) {
         m_lasers.push_back(laser);
     }
 
+    std::random_device rd;
+    m_rand = std::default_random_engine(rd());
+
+    m_easy_patterns = EasyPatterns;
+    std::shuffle(m_easy_patterns.begin(), m_easy_patterns.end(), m_rand);
+    m_medium_patterns = MediumPatterns;
+    std::shuffle(m_medium_patterns.begin(), m_medium_patterns.end(), m_rand);
+    m_hard_patterns = HardPatterns;
+    std::shuffle(m_hard_patterns.begin(), m_hard_patterns.end(), m_rand);
+
+    m_pattern_cursor = 0;
+    m_phase=full;
+
     return true;
 }
 
@@ -330,6 +345,24 @@ void Boss2::destroy() {
 void Boss2::update(float ms) {
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
+
+
+    if (health > INIT_HEALTH * 0.66f) {
+        if (m_phase != full) {
+            m_phase = full;
+            m_pattern_cursor = 0;
+        }
+    } else if (health > INIT_HEALTH * 0.33) {
+        if (m_phase != two_thirds) {
+            m_phase = two_thirds;
+            m_pattern_cursor = 0;
+        }
+    } else {
+        if (m_phase != one_third) {
+            m_phase = one_third;
+            m_pattern_cursor = 0;
+        }
+    }
 
     m_healthbar->setHealth(health);
     if (m_damage_effect_cooldown > 0)
@@ -355,18 +388,27 @@ void Boss2::update(float ms) {
     if (m_pattern_timer > 0)
         m_pattern_timer -= ms;
     else {
-        if (health > INIT_HEALTH * 0.66) {
-            choosePattern(EasyPatterns);
-        } else if (health > INIT_HEALTH * 0.33) {
-            choosePattern(MediumPatterns);
+        if (m_phase == full) {
+            choosePattern(m_easy_patterns);
+        } else if (m_phase == two_thirds) {
+            choosePattern(m_medium_patterns);
         } else {
-            choosePattern(HardPatterns);
+            choosePattern(m_hard_patterns);
         }
         fireLasers(m_pattern);
     }
 }
 
-void Boss2::choosePattern(const std::vector<AttackPattern>& patterns) {
+void Boss2::choosePattern(std::vector<AttackPattern>& patterns) {
+    if (m_pattern_cursor < patterns.size()) {
+        m_pattern = patterns[m_pattern_cursor];
+        ++m_pattern_cursor;
+    } else {
+        std::shuffle(patterns.begin(), patterns.end(), m_rand);
+        m_pattern = patterns[0];
+        m_pattern_cursor = 1;
+    }
+    /*
     bool retry = true;
     while(retry) {
         float randi = rand() % patterns.size();
@@ -377,6 +419,7 @@ void Boss2::choosePattern(const std::vector<AttackPattern>& patterns) {
             m_pattern = patterns[randi];
         }
     }
+     */
 }
 
 void Boss2::fireLasers(AttackPattern pattern) {
