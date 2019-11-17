@@ -5,7 +5,8 @@
 #ifndef VAPE_LASER_HPP
 #define VAPE_LASER_HPP
 
-#include "Projectile.hpp"
+#include "Entities/Projectiles and Damaging/Projectile.hpp"
+#include "LaserBeamSprite.hpp"
 
 enum laserState {
     off,
@@ -29,7 +30,7 @@ public:
     void draw(const mat3& projection) override;
 
     vec2 get_position() const override;
-    void set_position(vec2 position) { m_origin = position; }
+    void set_position(vec2 position);
 
     bool collides_with(const Player &player) override;
     bool collides_with(const Enemy &turtle) override;
@@ -45,6 +46,7 @@ public:
     void setRotationTarget(vec2 position);
     inline void setRotation(float rotation) { m_rotation = rotation; };
 private:
+    LaserBeamSprite* m_spr;
     vec2 m_origin;
     float m_rotation;
     laserState m_state;

@@ -86,7 +86,7 @@ set(SOURCE_FILES
 
         "src/Entities/Projectiles and Damaging/Projectile.hpp"
         "src/Entities/Projectiles and Damaging/bullet.cpp" "src/Entities/Projectiles and Damaging/bullet.hpp"
-        "src/Entities/Projectiles and Damaging/Laser.cpp" "src/Entities/Projectiles and Damaging/Laser.hpp"
+        "src/Entities/Projectiles and Damaging/Laser/Laser.cpp" "src/Entities/Projectiles and Damaging/Laser/Laser.hpp"
 
         src/Entities/Bosses/Boss.hpp
         src/Entities/Bosses/Boss1.cpp src/Entities/Bosses/Boss1.hpp
@@ -123,7 +123,7 @@ set(SOURCE_FILES
 
         src/Utils/SaveData.cpp src/Utils/SaveData.hpp
 
-        )
+        "src/Entities/Projectiles and Damaging/Laser/LaserBeamSprite.cpp" "src/Entities/Projectiles and Damaging/Laser/LaserBeamSprite.hpp")
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

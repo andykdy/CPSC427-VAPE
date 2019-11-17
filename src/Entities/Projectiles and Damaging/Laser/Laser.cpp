@@ -6,6 +6,7 @@
 #include <Components/EffectComponent.hpp>
 #include <Components/PhysicsComponent.hpp>
 #include <Components/TransformComponent.hpp>
+#include <Engine/GameEngine.hpp>
 #include "Laser.hpp"
 
 
@@ -56,7 +57,9 @@ bool Laser::init(vec2 position, float rotation) {
     if (gl_has_errors())
         return false;
 
-    // TODO do a texture too
+
+    m_spr = &GameEngine::getInstance().getEntityManager()->addEntity<LaserBeamSprite>();
+    m_spr->init(position);
 
 
     m_origin = position;
@@ -70,6 +73,8 @@ bool Laser::init(vec2 position, float rotation) {
 }
 
 void Laser::destroy() {
+    m_spr->destroy();
+
     auto* effect = getComponent<EffectComponent>();
 
     effect->release();
@@ -177,6 +182,8 @@ void Laser::spawn() {
 }
 
 void Laser::draw(const mat3 &projection) {
+    if (m_state == laserState::firing)
+        m_spr->draw(projection, m_rotation);
     auto* effect = getComponent<EffectComponent>();
 
     // Setting shaders
@@ -278,4 +285,10 @@ void Laser::fire(float chargeDur, float fireDur) {
 
 void Laser::setRotationTarget(vec2 position) {
     setRotationTarget(atan2f(position.x - m_origin.x, position.y - m_origin.y));
+}
+
+void Laser::set_position(vec2 position) {
+    m_origin = position;
+    if (m_spr != nullptr)
+        m_spr->set_position(position);
 }

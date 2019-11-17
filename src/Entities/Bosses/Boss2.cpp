@@ -8,7 +8,7 @@
 #include <Components/PhysicsComponent.hpp>
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
-#include <Entities/Projectiles and Damaging/Laser.hpp>
+#include <Entities/Projectiles and Damaging/Laser/Laser.hpp>
 #include <Systems/EnemySpawnerSystem.hpp>
 #include "Boss2.hpp"
 
