@@ -20,11 +20,11 @@ private:
     bool completed;
 
 public:
-    bool initTexture(Texture* texture) {
-        return initTexture(texture, 1, texture->width, texture->height);
+    bool initTexture(Texture* texture, float z = -0.02f) {
+        return initTexture(texture, 1, texture->width, texture->height, z);
     }
 
-    bool initTexture(Texture* texture, int totalSprites, int spriteW, int spriteH) {
+    bool initTexture(Texture* texture, int totalSprites, int spriteW, int spriteH, float z = -0.02f) {
         this->texture = texture;
         index = 0;
         lastUpdate = glfwGetTime();
@@ -55,16 +55,16 @@ public:
 
             int n = i * 4;
 
-            vertexData[n].position = { -wr, +hr, -0.02f };
+            vertexData[n].position = { -wr, +hr, z };
             vertexData[n].texcoord = { clipL, 1.f };
 
-            vertexData[n+1].position = { +wr, +hr, -0.02f };
+            vertexData[n+1].position = { +wr, +hr, z };
             vertexData[n+1].texcoord = { clipR, 1.f };
 
-            vertexData[n+2].position = { +wr, -hr, -0.02f };
+            vertexData[n+2].position = { +wr, -hr, z };
             vertexData[n+2].texcoord = { clipR, 0.f };
 
-            vertexData[n+3].position = { -wr, -hr, -0.02f };
+            vertexData[n+3].position = { -wr, -hr, z };
             vertexData[n+3].texcoord = { clipL, 0.f };
 
             indices[ 0 ] = static_cast<uint16_t>(i * 4 + 0);

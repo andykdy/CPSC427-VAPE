@@ -8,14 +8,17 @@
 #include <Components/PhysicsComponent.hpp>
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
-#include <Entities/Projectiles and Damaging/Laser.hpp>
+#include <Entities/Projectiles and Damaging/Laser/Laser.hpp>
+#include <Systems/EnemySpawnerSystem.hpp>
+#include <chrono>
+#include <random>
 #include "Boss2.hpp"
 
 
 // Same as static in c, local to compilation unit
 namespace
 {
-    const size_t INIT_HEALTH = 300;
+    const size_t INIT_HEALTH = 500;
     const size_t SPRITE_FRAMES = 4;
     const size_t SPRITE_W = 264;
     const size_t SPRITE_H = 88;
@@ -38,19 +41,24 @@ namespace
 
     const size_t CHARGE0 = 3000;
     const size_t FIRE0 = 5000;
+    const float ROTATION0 = 0.1f;
 
     const AttackPattern EZ1346 = {
             {true, false, true, true, false, true},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,-0.78f,0.78f,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            8100
+            8100,
     };
 
 
     const AttackPattern EZ25 = {
             {false, true, false, false, true, false},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0.78f,0,0,-0.78f,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
             8100
@@ -59,23 +67,33 @@ namespace
 
     const AttackPattern EZ123 = {
             {true, true, true, false, false, false},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            8100
+            8100,
+
+            {Levels::RM3,}
     };
 
     const AttackPattern EZ456 = {
             {false, false, false, true, true, true},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            8100
+            8100,
+
+            {Levels::LM3Low,}
     };
 
     const AttackPattern EZ2345 = {
             {false, true, true, true, true, false},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
             8100
@@ -93,9 +111,11 @@ namespace
     const size_t CHARGE1 = 1500;
     const size_t FIRE1 = 3000;
 
-    const AttackPattern M12346 = {
+    const AttackPattern M1346 = {
             {true, false, true, true, false, true},
-            // {0,0,0,0,0,0},
+            {0.78f,0,0,0,0,-0.78f},
+            {0,0,-0.78f,0.78f,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
             4700
@@ -103,33 +123,104 @@ namespace
 
     const AttackPattern M12345 = {
             {true, true, true, true, true, false},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE1-500,CHARGE1,CHARGE1+500,CHARGE1+1000,CHARGE1+1500,CHARGE0},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
-            6100
+            6100,
+
+            {Levels::LM3Low,
+             Levels::RM3,}
     };
 
-    const AttackPattern MZ123 = {
-            {true, true, true, false, false, false},
-            // {0,0,0,0,0,0},
-            {CHARGE1-500,CHARGE1,CHARGE1+500,CHARGE0,CHARGE0,CHARGE0},
+    const AttackPattern M23456 = {
+            {false, true, true, true, true, true},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
+            {CHARGE0,CHARGE1+1500,CHARGE1+1000,CHARGE1+500,CHARGE1,CHARGE1-500},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
-            4600
+            6100,
+
+            {Levels::LM3Low,
+             Levels::RM3,}
     };
 
-    const AttackPattern MZ456 = {
-            {false, false, false, true, true, true},
-            // {0,0,0,0,0,0},
-            {CHARGE0,CHARGE0,CHARGE0,CHARGE1+500,CHARGE1,CHARGE1-500},
-            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
-            4600
+    const AttackPattern MZ123_456 = {
+            {true, true, true, true, true, true},
+            {-0.18f,-0.18f,-0.18f,0.18f,0.18f,0.18f},
+            {0.78f,0.78f,0.78f,-0.78f,-0.78f,-0.78f},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
+            {CHARGE1+500,CHARGE1,CHARGE1-500,CHARGE1-500,CHARGE1,CHARGE1+500},
+            {FIRE1,FIRE1,FIRE1/2,FIRE1/2,FIRE1,FIRE1},
+            4600,
+
+            {Levels::TM3,}
     };
 
     const std::vector<AttackPattern> MediumPatterns = {
-            M12346,
+            M1346,
             M12345,
-            MZ123,
-            MZ456,
+            M23456,
+            MZ123_456,
+    };
+
+
+    const size_t CHARGE2 = 750;
+    const size_t FIRE2 = 1500;
+    const float ROTATION2 = 0.3f;
+
+    const AttackPattern H123456_R = {
+            {true, true, true, true, true, true},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2},
+            {CHARGE2,CHARGE2+250,CHARGE2+500,CHARGE2+750,CHARGE2+1000, CHARGE2+1250},
+            {FIRE2,FIRE2,FIRE2,FIRE2,FIRE2,FIRE2},
+            CHARGE2+1250+FIRE2,
+
+            {Levels::RM3Fast,Levels::LM3FastLow}
+    };
+
+    const AttackPattern H123456_L = {
+            {true, true, true, true, true, true},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2},
+            {CHARGE2+1250,CHARGE2+1000,CHARGE2+750,CHARGE2+500,CHARGE2+250, CHARGE2},
+            {FIRE2,FIRE2,FIRE2,FIRE2,FIRE2,FIRE2},
+            CHARGE2+1250+FIRE2,
+
+            {Levels::RM3Fast,Levels::LM3FastLow}
+    };
+
+
+    const AttackPattern H2345_DM = {
+            {false, true, true, true, true, false},
+            {0,0.78f,-0.78f,0.78f,-0.78f,0},
+            {0,0.58f,-0.48f,0.48f,-0.58f,0},
+            {ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2},
+            {CHARGE2+1250,CHARGE2+1000,CHARGE2+750,CHARGE2+500,CHARGE2+250, CHARGE2},
+            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
+            CHARGE2+1250+FIRE1,
+    };
+
+    const AttackPattern H12345_PNT = {
+            {true, true, true, true, true, true},
+            {0.78f,0.f,-0.78f,0.78f,0.f,-0.78f},
+            {0.48f,0.3f,-0.48f,0.48f,-0.3f,-0.48f},
+            {ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2},
+            {CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1},
+            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
+            CHARGE1+FIRE1,
+    };
+
+    const std::vector<AttackPattern> HardPatterns = {
+            H123456_R,
+            H123456_L,
+            H2345_DM,
+            H12345_PNT
     };
 }
 
@@ -206,6 +297,19 @@ bool Boss2::init(vec2 screen) {
         m_lasers.push_back(laser);
     }
 
+    std::random_device rd;
+    m_rand = std::default_random_engine(rd());
+
+    m_easy_patterns = EasyPatterns;
+    std::shuffle(m_easy_patterns.begin(), m_easy_patterns.end(), m_rand);
+    m_medium_patterns = MediumPatterns;
+    std::shuffle(m_medium_patterns.begin(), m_medium_patterns.end(), m_rand);
+    m_hard_patterns = HardPatterns;
+    std::shuffle(m_hard_patterns.begin(), m_hard_patterns.end(), m_rand);
+
+    m_pattern_cursor = 0;
+    m_phase=full;
+
     return true;
 }
 
@@ -229,6 +333,24 @@ void Boss2::update(float ms) {
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
 
+
+    if (health > INIT_HEALTH * 0.66f) {
+        if (m_phase != full) {
+            m_phase = full;
+            m_pattern_cursor = 0;
+        }
+    } else if (health > INIT_HEALTH * 0.33) {
+        if (m_phase != two_thirds) {
+            m_phase = two_thirds;
+            m_pattern_cursor = 0;
+        }
+    } else {
+        if (m_phase != one_third) {
+            m_phase = one_third;
+            m_pattern_cursor = 0;
+        }
+    }
+
     m_healthbar->setHealth(health);
     if (m_damage_effect_cooldown > 0)
         m_damage_effect_cooldown -= ms;
@@ -244,36 +366,47 @@ void Boss2::update(float ms) {
         laser->update(ms);
     }
 
-    if (health <= 0)
+    if (health <= 0){
+        for (auto laser : m_lasers) {
+            laser->setState(laserState::off);
+        }
         return;
+    }
     if (m_pattern_timer > 0)
         m_pattern_timer -= ms;
     else {
-        if (health > INIT_HEALTH/2) {
-            bool retry = true;
-            while(retry) {
-                float randi = rand() % EasyPatterns.size();
-                if (m_pattern == EasyPatterns[randi]) {
-                    continue;
-                } else {
-                    retry = false;
-                    m_pattern = EasyPatterns[randi];
-                }
-            }
+        if (m_phase == full) {
+            choosePattern(m_easy_patterns);
+        } else if (m_phase == two_thirds) {
+            choosePattern(m_medium_patterns);
         } else {
-            bool retry = true;
-            while(retry) {
-                float randi = rand() % MediumPatterns.size();
-                if (m_pattern == MediumPatterns[randi]) {
-                    continue;
-                } else {
-                    retry = false;
-                    m_pattern = MediumPatterns[randi];
-                }
-            }
+            choosePattern(m_hard_patterns);
         }
         fireLasers(m_pattern);
     }
+}
+
+void Boss2::choosePattern(std::vector<AttackPattern>& patterns) {
+    if (m_pattern_cursor < patterns.size()) {
+        m_pattern = patterns[m_pattern_cursor];
+        ++m_pattern_cursor;
+    } else {
+        std::shuffle(patterns.begin(), patterns.end(), m_rand);
+        m_pattern = patterns[0];
+        m_pattern_cursor = 1;
+    }
+    /*
+    bool retry = true;
+    while(retry) {
+        float randi = rand() % patterns.size();
+        if (m_pattern == patterns[randi]) {
+            continue;
+        } else {
+            retry = false;
+            m_pattern = patterns[randi];
+        }
+    }
+     */
 }
 
 void Boss2::fireLasers(AttackPattern pattern) {
@@ -283,8 +416,15 @@ void Boss2::fireLasers(AttackPattern pattern) {
         if (pattern.lasers[i]) {
             laser->fire(pattern.chargeTime[i], pattern.fireTime[i]);
         }
-        // laser->setRotationTarget(pattern.rotations[i]);
+        laser->setRotation(pattern.startRotations[i]);
+        laser->setRotationTarget(pattern.targetRotations[i]);
     }
+
+    auto & spawn = GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>();
+    for (auto& wave : pattern.waves) {
+        spawn.spawnWave(wave);
+    }
+
     m_pattern_timer = pattern.nextPatternDelay;
 }
 
@@ -393,10 +533,12 @@ bool Boss2::checkCollision(vec2 pos, vec2 box) const {
 }
 
 bool AttackPattern::operator==(const AttackPattern &rhs) const {
-    return lasers == rhs.lasers &&
-           chargeTime == rhs.chargeTime &&
-           fireTime == rhs.fireTime &&
-           nextPatternDelay == rhs.nextPatternDelay;
+    bool ret = true;
+    for (int i = 0; i < 6; i++) {
+        ret = ret && (lasers[i] == rhs.lasers[i]);
+    }
+    // TODO more? I think all I care about are same lasers
+    return ret;
 }
 
 bool AttackPattern::operator!=(const AttackPattern &rhs) const {

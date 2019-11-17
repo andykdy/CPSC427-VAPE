@@ -11,12 +11,7 @@ void EnemySpawnerSystem::update(float ms) {
     auto it = level.begin();
     while (it != level.end()) {
         if (it->first <= time) {
-            Levels::Wave wave = it->second;
-            for (auto &wavit : wave) {
-                // std::cout << "spawned" << std::endl;
-                Enemy* t = wavit.fn(GameEngine::getInstance().getEntityManager(), wavit.pos, wavit.vel, wavit.dir);
-                enemies.emplace_back(t);
-            }
+            spawnWave(it->second);
             it = level.erase(it);
         } else {
             it++;
@@ -33,4 +28,12 @@ void EnemySpawnerSystem::reset(Levels::Timeline levelTimeline) {
     time = 0;
     // TODO cleanup enemies
     enemies.clear();
+}
+
+void EnemySpawnerSystem::spawnWave(const Levels::Wave& wave) {
+    for (auto &wavit : wave) {
+        // std::cout << "spawned" << std::endl;
+        Enemy* t = wavit.fn(GameEngine::getInstance().getEntityManager(), wavit.pos, wavit.vel, wavit.dir);
+        enemies.emplace_back(t);
+    }
 }

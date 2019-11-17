@@ -85,9 +85,18 @@ namespace Levels {
                       genSpawn(spawn < Turtle > , {-200, 600}, TR, 0.f)
     };
 
+    const Wave LM3Low = {genSpawn(spawn < Turtle > , {-100, 300}, TR, 0.f),
+                      genSpawn(spawn < Turtle > , {-150, 500}, TR, 0.f),
+                      genSpawn(spawn < Turtle > , {-200, 700}, TR, 0.f)
+    };
+
     const Wave LM3Fast = {genSpawn(spawn < Turtle > , {-100, 200}, TR2, 0.f),
                           genSpawn(spawn < Turtle > , {-150, 400}, TR2, 0.f),
                           genSpawn(spawn < Turtle > , {-200, 600}, TR2, 0.f)
+    };
+    const Wave LM3FastLow = {genSpawn(spawn < Turtle > , {-100, 300}, TR2, 0.f),
+                          genSpawn(spawn < Turtle > , {-150, 500}, TR2, 0.f),
+                          genSpawn(spawn < Turtle > , {-200, 700}, TR2, 0.f)
     };
 
     const Wave LSpaced4 = {genSpawn(spawn < Turtle > , {-100, 150}, TR, 0.f),

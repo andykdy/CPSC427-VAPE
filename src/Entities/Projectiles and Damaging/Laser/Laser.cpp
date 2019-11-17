@@ -6,6 +6,7 @@
 #include <Components/EffectComponent.hpp>
 #include <Components/PhysicsComponent.hpp>
 #include <Components/TransformComponent.hpp>
+#include <Engine/GameEngine.hpp>
 #include "Laser.hpp"
 
 
@@ -56,7 +57,9 @@ bool Laser::init(vec2 position, float rotation) {
     if (gl_has_errors())
         return false;
 
-    // TODO do a texture too
+
+    m_spr = &GameEngine::getInstance().getEntityManager()->addEntity<LaserBeamSprite>();
+    m_spr->init(position);
 
 
     m_origin = position;
@@ -70,6 +73,8 @@ bool Laser::init(vec2 position, float rotation) {
 }
 
 void Laser::destroy() {
+    m_spr->destroy();
+
     auto* effect = getComponent<EffectComponent>();
 
     effect->release();
@@ -94,21 +99,23 @@ void Laser::update(float ms) {
             m_fireTimer = 0;
             m_state = laserState::off;
         }
-    }
 
-    // Rotate towards target
-    if (m_rotationTarget != m_rotation) {
-        float step = 100 * (ms / 1000);
-        if (m_rotationTarget < m_rotation) {
-            m_rotation -= step;
-            if (m_rotation < m_rotationTarget)
-                m_rotation = m_rotationTarget;
-        } else {
-            m_rotation += step;
-            if (m_rotation > m_rotationTarget)
-                m_rotation = m_rotationTarget;
+
+        // Rotate towards target
+        if (m_rotationTarget != m_rotation) {
+            float step = 0.1f * (ms / 1000);
+            if (m_rotationTarget < m_rotation) {
+                m_rotation -= step;
+                if (m_rotation < m_rotationTarget)
+                    m_rotation = m_rotationTarget;
+            } else {
+                m_rotation += step;
+                if (m_rotation > m_rotationTarget)
+                    m_rotation = m_rotationTarget;
+            }
         }
     }
+
 
     // Particle Effects
     spawn();
@@ -121,7 +128,11 @@ void Laser::update(float ms) {
 
     auto particle_it = m_particles.begin();
     while (particle_it != m_particles.end()) {
-        if ((*particle_it).life <= 0 || (*particle_it).position.y > 1000) { // TODO get screen size
+        if ((*particle_it).life <= 0
+            || (*particle_it).position.y > 1000 // TODO screen size
+            || (*particle_it).position.y < 0
+            || (*particle_it).position.x < 0
+            || (*particle_it).position.x > 800) {
             particle_it = m_particles.erase(particle_it);
             continue;
         } else {
@@ -132,38 +143,47 @@ void Laser::update(float ms) {
 
 void Laser::spawn() {
     int n = 0;
-    vec2 vel = {0,2000};
-    float xmin = m_origin.x - (float)LASER_WIDTH/2;
-    float xmax = m_origin.x + (float)LASER_WIDTH/2;
-    float ymin = m_origin.y - 10;
-    float ymax = m_origin.y + 10;
+    vec2 vel = {2000*sinf(m_rotation), 2000*cosf(m_rotation)};
 
+    float xrange = (float)LASER_WIDTH/2;
     if (m_state == laserState::firing) {
-        n = 50;
+        return; // TODO: Any particles while firing?
     } else if (m_state == laserState::primed) {
         n = 10;
-        xmin = m_origin.x - 1;
-        xmax = m_origin.x + 1;
+        xrange = 1;
     }
+
+    vec2 xy1 = {m_origin.x + (xrange*sinf(m_rotation - 1.5708f)), m_origin.y - (10*cosf(m_rotation))};
+    vec2 xy2 = {m_origin.x + (xrange*sinf(m_rotation + 1.5708f)), m_origin.y + (10*cosf(m_rotation))};
+    float xmin = std::min(xy1.x, xy2.x);
+    float xmax = std::max(xy1.x, xy2.x);
+    float ymin = std::min(xy1.y, xy2.y);
+    float ymax = std::max(xy1.y, xy2.y);
 
     for (int i = 0; i < n && m_particles.size() < MAX_PARTICLES; i++) {
         m_particles.emplace_back();
         Particle& p = m_particles.back();
 
-        float randx = rand() % (int)(xmax-xmin) + (int)xmin;
-        float randy = rand() % (int)(ymax-ymin) + (int)ymin;
+        float randx = xmin;
+        if (xmin != xmax)
+            randx = rand() % (int)(xmax-xmin) + (int)xmin;
+        float randy = ymin;
+        if (ymin != ymax)
+            randy = rand() % (int)(ymax-ymin) + (int)ymin;
         p.position = {randx, randy};
         p.velocity = vel;
         p.life = 2000;
         p.color = {1.f,1.f,1.f,0.5f};
         if (m_state == laserState::firing) {
             float mod = (std::fabs(randx - m_origin.x) / LASER_WIDTH/2);
-            p.color = {1.f * mod, 1.f * mod, 1.f, 1.f};
+            p.color = {1.f * mod, 1.f * mod, 1.f, 0.8f};
         }
     }
 }
 
 void Laser::draw(const mat3 &projection) {
+    if (m_state == laserState::firing)
+        m_spr->draw(projection, m_rotation);
     auto* effect = getComponent<EffectComponent>();
 
     // Setting shaders
@@ -221,12 +241,39 @@ vec2 Laser::get_position() const {
     return m_origin; // TODO?
 }
 
+// https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
+bool lineCircleCollision(vec2 start, vec2 end, vec2 center, float radius) {
+    vec2 d = sub(end, start);
+    vec2 f = sub(start, center);
+
+    float a = dot(d, d);
+    float b = 2*dot(f, d);
+    float c = dot(f, f) - radius*radius;
+
+    float discriminant = b*b-4*a*c;
+    if (discriminant < 0) {
+        return false;
+    } else {
+        discriminant = sqrtf(discriminant);
+
+        float t1 = (-b - discriminant) / (2*a);
+        float t2 = (-b + discriminant) / (2*a);
+
+        if (t1 >= 0 && t1 <= 1) {
+            return true;
+        }
+
+        return t2 >= 0 && t2 <= 1;
+    }
+}
+
 bool Laser::collides_with(const Player &player) {
-    if (m_state != laserState::firing) return false;
+    if (m_state != laserState::firing)
+        return false;
 
     vec2 playerpos = player.get_position();
     vec2 playerbox = player.get_bounding_box();
-
+    float playerr = std::max(playerbox.x/2, playerbox.y/2)*0.6f;
 
     float lx = m_origin.x - LASER_WIDTH/3;
     vec2 p00 = {lx, m_origin.y};
@@ -240,8 +287,12 @@ bool Laser::collides_with(const Player &player) {
     float h = playerbox.y/2;
     vec2 tl = {playerpos.x - w, playerpos.y - h};
     vec2 br = {playerpos.x + w, playerpos.y + h};
+
+    return lineCircleCollision(p00, p01, playerpos, playerr) || lineCircleCollision(p10, p11, playerpos, playerr);
+    /*
     return (CohenSutherlandLineClipAndDraw(p00, p01, tl, br) ||
             CohenSutherlandLineClipAndDraw(p10, p11, tl, br));
+            */
 }
 
 bool Laser::collides_with(const Enemy &turtle) {
@@ -264,4 +315,10 @@ void Laser::fire(float chargeDur, float fireDur) {
 
 void Laser::setRotationTarget(vec2 position) {
     setRotationTarget(atan2f(position.x - m_origin.x, position.y - m_origin.y));
+}
+
+void Laser::set_position(vec2 position) {
+    m_origin = position;
+    if (m_spr != nullptr)
+        m_spr->set_position(position);
 }

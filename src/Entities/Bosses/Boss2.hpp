@@ -7,18 +7,30 @@
 
 
 #include <Entities/Debugging/DebugDot.hpp>
+#include <Levels/Level.hpp>
+#include <random>
 #include "Boss.hpp"
 
 struct AttackPattern {
     bool lasers[6];
-    // float rotations[6]; TODO rotation code for lasers is going to be annoying, so avoiding it for now
-    float chargeTime[6]; // TODO
-    float fireTime[6]; // TODO
-    float nextPatternDelay; // TODO
+    float startRotations[6];
+    float targetRotations[6]; // TODO: vectors of targets for more complexity?
+    float rotationSpeeds[6];
+    float chargeTime[6];
+    float fireTime[6];
+    float nextPatternDelay;
+
+    std::vector<Levels::Wave> waves;
 
     bool operator==(const AttackPattern &rhs) const;
 
     bool operator!=(const AttackPattern &rhs) const;
+};
+
+enum Boss2Phase {
+    full,
+    two_thirds,
+    one_third
 };
 
 class Laser;
@@ -37,6 +49,8 @@ public:
     // Update Boss due to current
     // ms represents the number of milliseconds elapsed from the previous update() call
     void update(float ms) override;
+
+    void choosePattern(std::vector<AttackPattern>& patterns);
 
     // Renders the Boss
     // projection is the 2D orthographic projection matrix
@@ -70,6 +84,14 @@ private:
     AttackPattern m_pattern;
 
     void fireLasers(AttackPattern pattern);
+
+    std::default_random_engine m_rand;
+
+    std::vector<AttackPattern> m_easy_patterns;
+    std::vector<AttackPattern> m_medium_patterns;
+    std::vector<AttackPattern> m_hard_patterns;
+    int m_pattern_cursor;
+    Boss2Phase m_phase;
 };
 
 #endif //VAPE_BOSS2_HPP
