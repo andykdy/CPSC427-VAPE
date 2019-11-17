@@ -47,7 +47,7 @@ void LaserBeamSprite::draw(const mat3 &projection, float rotation) {
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();
-    
+
     vec2 offset = { m_origin.x  + SPRITE_H/2*sinf(rotation), m_origin.y + SPRITE_H/2*cosf(rotation)};
     transform->begin();
     transform->translate(offset);

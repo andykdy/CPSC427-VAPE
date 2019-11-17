@@ -39,7 +39,7 @@ namespace
 
     const size_t CHARGE0 = 3000;
     const size_t FIRE0 = 5000;
-    const size_t ROTATION0 = 0.1f;
+    const float ROTATION0 = 0.1f;
 
     const AttackPattern EZ1346 = {
             {true, false, true, true, false, true},
@@ -55,7 +55,7 @@ namespace
     const AttackPattern EZ25 = {
             {false, true, false, false, true, false},
             {0,0,0,0,0,0},
-            {0,0,0,0,0,0},
+            {0,0.78f,0,0,-0.78f,0},
             {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
@@ -111,8 +111,8 @@ namespace
 
     const AttackPattern M1346 = {
             {true, false, true, true, false, true},
-            {0,0,0,0,0,0},
-            {0,0,0,0,0,0},
+            {0.78f,0,0,0,0,-0.78f},
+            {0,0,-0.78f,0.78f,0,0},
             {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
@@ -128,7 +128,8 @@ namespace
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
             6100,
 
-            {Levels::LM3,}
+            {Levels::LM3,
+             Levels::RM3,}
     };
 
     const AttackPattern M23456 = {
@@ -140,13 +141,14 @@ namespace
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
             6100,
 
-            {Levels::LM3,}
+            {Levels::LM3,
+             Levels::RM3,}
     };
 
     const AttackPattern MZ123 = {
             {true, true, true, false, false, false},
             {0,0,0,0,0,0},
-            {0,0,0,0,0,0},
+            {0.78f,0.78f,0.78f,0,0,0},
             {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE1-500,CHARGE1,CHARGE1+500,CHARGE0,CHARGE0,CHARGE0},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
@@ -158,7 +160,7 @@ namespace
     const AttackPattern MZ456 = {
             {false, false, false, true, true, true},
             {0,0,0,0,0,0},
-            {0,0,0,0,0,0},
+            {0,0,0,-0.78f,-0.78f,-0.78f},
             {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE1+500,CHARGE1,CHARGE1-500},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
@@ -178,24 +180,58 @@ namespace
 
     const size_t CHARGE2 = 750;
     const size_t FIRE2 = 1500;
+    const float ROTATION2 = 0.3f;
 
     const AttackPattern H123456_R = {
             {true, true, true, true, true, true},
             {0,0,0,0,0,0},
             {0,0,0,0,0,0},
-            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
+            {ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2},
             {CHARGE2,CHARGE2+250,CHARGE2+500,CHARGE2+750,CHARGE2+1000, CHARGE2+1250},
             {FIRE2,FIRE2,FIRE2,FIRE2,FIRE2,FIRE2},
             CHARGE2+1250+FIRE2,
-            {Levels::RM3Fast,}
+
+            {Levels::RM3Fast,Levels::LM3Fast}
+    };
+
+    const AttackPattern H123456_L = {
+            {true, true, true, true, true, true},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2},
+            {CHARGE2+1250,CHARGE2+1000,CHARGE2+750,CHARGE2+500,CHARGE2+250, CHARGE2},
+            {FIRE2,FIRE2,FIRE2,FIRE2,FIRE2,FIRE2},
+            CHARGE2+1250+FIRE2,
+
+            {Levels::RM3Fast,Levels::LM3Fast}
     };
 
 
+    const AttackPattern H2345_DM = {
+            {false, true, true, true, true, false},
+            {0,0.78f,-0.78f,0.78f,-0.78f,0},
+            {0,0.48f,-0.48f,0.48f,-0.48f,0},
+            {ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2},
+            {CHARGE2+1250,CHARGE2+1000,CHARGE2+750,CHARGE2+500,CHARGE2+250, CHARGE2},
+            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
+            CHARGE2+1250+FIRE1,
+    };
 
+    const AttackPattern H12345_PNT = {
+            {true, true, true, true, true, true},
+            {0.78f,0.f,-0.78f,0.78f,0.f,-0.78f},
+            {0.48f,0.3f,-0.48f,0.48f,-0.3f,-0.48f},
+            {ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2},
+            {CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1},
+            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
+            CHARGE1+FIRE1,
+    };
 
     const std::vector<AttackPattern> HardPatterns = {
             H123456_R,
-            MZ456 // TODO remove
+            H123456_L,
+            H2345_DM,
+            H12345_PNT
     };
 }
 
