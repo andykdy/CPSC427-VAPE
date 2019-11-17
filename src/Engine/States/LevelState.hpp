@@ -36,14 +36,9 @@
 #include <Entities/UI/UIPanel/UIPanelBackground.hpp>
 #include <Entities/UI/UIPanel/UIPanel.hpp>
 #include <Entities/Pickups/Pickup.hpp>
+#include <Utils/SaveData.hpp>
 
 const size_t INIT_LIVES = 5;
-
-struct PlayerData {
-    unsigned int lives;
-    unsigned int points;
-    unsigned int levelId;
-};
 
 class Pickup;
 
