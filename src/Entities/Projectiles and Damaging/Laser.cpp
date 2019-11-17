@@ -94,21 +94,23 @@ void Laser::update(float ms) {
             m_fireTimer = 0;
             m_state = laserState::off;
         }
-    }
 
-    // Rotate towards target
-    if (m_rotationTarget != m_rotation) {
-        float step = 100 * (ms / 1000);
-        if (m_rotationTarget < m_rotation) {
-            m_rotation -= step;
-            if (m_rotation < m_rotationTarget)
-                m_rotation = m_rotationTarget;
-        } else {
-            m_rotation += step;
-            if (m_rotation > m_rotationTarget)
-                m_rotation = m_rotationTarget;
+
+        // Rotate towards target
+        if (m_rotationTarget != m_rotation) {
+            float step = 0.1f * (ms / 1000);
+            if (m_rotationTarget < m_rotation) {
+                m_rotation -= step;
+                if (m_rotation < m_rotationTarget)
+                    m_rotation = m_rotationTarget;
+            } else {
+                m_rotation += step;
+                if (m_rotation > m_rotationTarget)
+                    m_rotation = m_rotationTarget;
+            }
         }
     }
+
 
     // Particle Effects
     spawn();
@@ -121,7 +123,11 @@ void Laser::update(float ms) {
 
     auto particle_it = m_particles.begin();
     while (particle_it != m_particles.end()) {
-        if ((*particle_it).life <= 0 || (*particle_it).position.y > 1000) { // TODO get screen size
+        if ((*particle_it).life <= 0
+            || (*particle_it).position.y > 1000 // TODO screen size
+            || (*particle_it).position.y < 0
+            || (*particle_it).position.x < 0
+            || (*particle_it).position.x > 800) {
             particle_it = m_particles.erase(particle_it);
             continue;
         } else {

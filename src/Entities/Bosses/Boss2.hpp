@@ -12,10 +12,12 @@
 
 struct AttackPattern {
     bool lasers[6];
-    // float rotations[6]; TODO rotation code for lasers is going to be annoying, so avoiding it for now
-    float chargeTime[6]; // TODO
-    float fireTime[6]; // TODO
-    float nextPatternDelay; // TODO
+    float startRotations[6];
+    float targetRotations[6]; // TODO: vectors of targets for more complexity?
+    float rotationSpeeds[6];
+    float chargeTime[6];
+    float fireTime[6];
+    float nextPatternDelay;
 
     std::vector<Levels::Wave> waves;
 

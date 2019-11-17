@@ -39,10 +39,13 @@ namespace
 
     const size_t CHARGE0 = 3000;
     const size_t FIRE0 = 5000;
+    const size_t ROTATION0 = 0.1f;
 
     const AttackPattern EZ1346 = {
             {true, false, true, true, false, true},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,-0.78f,0.78f,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
             8100,
@@ -51,7 +54,9 @@ namespace
 
     const AttackPattern EZ25 = {
             {false, true, false, false, true, false},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
             8100
@@ -60,7 +65,9 @@ namespace
 
     const AttackPattern EZ123 = {
             {true, true, true, false, false, false},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
             8100,
@@ -70,7 +77,9 @@ namespace
 
     const AttackPattern EZ456 = {
             {false, false, false, true, true, true},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
             8100,
@@ -80,7 +89,9 @@ namespace
 
     const AttackPattern EZ2345 = {
             {false, true, true, true, true, false},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
             8100
@@ -100,7 +111,9 @@ namespace
 
     const AttackPattern M1346 = {
             {true, false, true, true, false, true},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
             4700
@@ -108,7 +121,9 @@ namespace
 
     const AttackPattern M12345 = {
             {true, true, true, true, true, false},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE1-500,CHARGE1,CHARGE1+500,CHARGE1+1000,CHARGE1+1500,CHARGE0},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
             6100,
@@ -118,7 +133,9 @@ namespace
 
     const AttackPattern M23456 = {
             {false, true, true, true, true, true},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE0,CHARGE1+1500,CHARGE1+1000,CHARGE1+500,CHARGE1,CHARGE1-500},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
             6100,
@@ -128,7 +145,9 @@ namespace
 
     const AttackPattern MZ123 = {
             {true, true, true, false, false, false},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE1-500,CHARGE1,CHARGE1+500,CHARGE0,CHARGE0,CHARGE0},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
             4600,
@@ -138,7 +157,9 @@ namespace
 
     const AttackPattern MZ456 = {
             {false, false, false, true, true, true},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE0,CHARGE0,CHARGE0,CHARGE1+500,CHARGE1,CHARGE1-500},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
             4600,
@@ -160,7 +181,9 @@ namespace
 
     const AttackPattern H123456_R = {
             {true, true, true, true, true, true},
-            // {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {0,0,0,0,0,0},
+            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
             {CHARGE2,CHARGE2+250,CHARGE2+500,CHARGE2+750,CHARGE2+1000, CHARGE2+1250},
             {FIRE2,FIRE2,FIRE2,FIRE2,FIRE2,FIRE2},
             CHARGE2+1250+FIRE2,
@@ -327,7 +350,8 @@ void Boss2::fireLasers(AttackPattern pattern) {
         if (pattern.lasers[i]) {
             laser->fire(pattern.chargeTime[i], pattern.fireTime[i]);
         }
-        // laser->setRotationTarget(pattern.rotations[i]);
+        laser->setRotation(pattern.startRotations[i]);
+        laser->setRotationTarget(pattern.targetRotations[i]);
     }
 
     auto & spawn = GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>();

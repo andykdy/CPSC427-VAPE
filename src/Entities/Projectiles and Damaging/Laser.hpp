@@ -43,6 +43,7 @@ public:
     void fire(float chargeDur = 3000, float fireDur = 5000);
     inline void setRotationTarget(float rotation) { m_rotationTarget = rotation; };
     void setRotationTarget(vec2 position);
+    inline void setRotation(float rotation) { m_rotation = rotation; };
 private:
     vec2 m_origin;
     float m_rotation;
