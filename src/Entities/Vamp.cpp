@@ -60,8 +60,8 @@ bool Vamp::init(vec2 position) {
     if (!effect.load_from_file(shader_path("vamp.vs.glsl"), shader_path("vamp.fs.glsl")))
         return false;
     
-    m_scale.x = 0.5f;
-    m_scale.y = 0.5f;
+    m_scale.x = 0.6f;
+    m_scale.y = 0.6f;
 
     motion.radians = 3.14f;
     motion.speed = 360.f;
@@ -86,7 +86,7 @@ void Vamp::update(float ms, vec2 player_position) {
     float step = motion.speed * (ms / 1000);
     m_position.x = player_position.x;
     m_position.y = player_position.y;
-    motion.radians += step * 0.015;
+    motion.radians -= step * 0.015;
 }
 
 void Vamp::draw(const mat3 &projection) {
@@ -149,7 +149,7 @@ bool Vamp::collides_with(const Enemy &turtle) {
     float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
     float my_r = std::max(vamp_texture.width * m_scale.x * 0.55f,  vamp_texture.height * m_scale.y * 0.55f);
     float r = std::max(other_r, my_r);
-    r *= 0.6f;
+    r *= 0.65f;
     if (d_sq < r * r)
         return true;
     return false;

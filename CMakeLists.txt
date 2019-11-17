@@ -51,13 +51,14 @@ set(SOURCE_FILES
         src/Engine/ECS/ECS.hpp
 
 
+        src/Entities/Effects/Explosion.cpp src/Entities/Effects/Explosion.hpp
+        src/Entities/Effects/VampParticleEmitter.cpp src/Entities/Effects/VampParticleEmitter.hpp
 
         src/Entities/fish.cpp src/Entities/fish.hpp
         src/Entities/Player.cpp src/Entities/Player.hpp
         src/Entities/Space.cpp src/Entities/Space.hpp
         src/Entities/Vamp.cpp src/Entities/Vamp.hpp
         src/Entities/Intro.cpp src/Entities/Intro.hpp
-        src/Entities/Explosion.cpp src/Entities/Explosion.hpp
 
         src/Entities/Debugging/DebugDot.cpp src/Entities/Debugging/DebugDot.hpp
 
@@ -111,7 +112,6 @@ set(SOURCE_FILES
         src/Systems/EnemySpawnerSystem.cpp src/Systems/EnemySpawnerSystem.hpp
         src/Systems/MotionSystem.cpp src/Systems/MotionSystem.hpp
         src/Systems/CollisionSystem.cpp src/Systems/CollisionSystem.hpp
-
 
         src/Levels/Level.hpp
         src/Levels/Waves.hpp
