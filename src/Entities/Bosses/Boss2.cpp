@@ -147,36 +147,23 @@ namespace
              Levels::RM3,}
     };
 
-    const AttackPattern MZ123 = {
-            {true, true, true, false, false, false},
-            {0,0,0,0,0,0},
-            {0.78f,0.78f,0.78f,0,0,0},
+    const AttackPattern MZ123_456 = {
+            {true, true, true, true, true, true},
+            {-0.18f,-0.18f,-0.18f,0.18f,0.18f,0.18f},
+            {0.78f,0.78f,0.78f,-0.78f,-0.78f,-0.78f},
             {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
-            {CHARGE1-500,CHARGE1,CHARGE1+500,CHARGE0,CHARGE0,CHARGE0},
-            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
+            {CHARGE1+500,CHARGE1,CHARGE1-500,CHARGE1-500,CHARGE1,CHARGE1+500},
+            {FIRE1,FIRE1,FIRE1/2,FIRE1/2,FIRE1,FIRE1},
             4600,
 
-            {Levels::LM3Fast,}
-    };
-
-    const AttackPattern MZ456 = {
-            {false, false, false, true, true, true},
-            {0,0,0,0,0,0},
-            {0,0,0,-0.78f,-0.78f,-0.78f},
-            {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
-            {CHARGE0,CHARGE0,CHARGE0,CHARGE1+500,CHARGE1,CHARGE1-500},
-            {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
-            4600,
-
-            {Levels::RM3Fast,}
+            {Levels::TM3,}
     };
 
     const std::vector<AttackPattern> MediumPatterns = {
             M1346,
             M12345,
             M23456,
-            MZ123,
-            MZ456,
+            MZ123_456,
     };
 
 
@@ -212,7 +199,7 @@ namespace
     const AttackPattern H2345_DM = {
             {false, true, true, true, true, false},
             {0,0.78f,-0.78f,0.78f,-0.78f,0},
-            {0,0.48f,-0.58f,0.58f,-0.48f,0},
+            {0,0.58f,-0.48f,0.48f,-0.58f,0},
             {ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2},
             {CHARGE2+1250,CHARGE2+1000,CHARGE2+750,CHARGE2+500,CHARGE2+250, CHARGE2},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
