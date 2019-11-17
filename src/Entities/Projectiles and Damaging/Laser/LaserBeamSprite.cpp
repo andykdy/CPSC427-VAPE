@@ -32,7 +32,7 @@ bool LaserBeamSprite::init(vec2 origin) {
     if (!effect->load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
 
-    if (!sprite->initTexture(&laser_texture, SPRITE_FRAMES, SPRITE_W, SPRITE_H))
+    if (!sprite->initTexture(&laser_texture, SPRITE_FRAMES, SPRITE_W, SPRITE_H, -0.03f))
         throw std::runtime_error("Failed to initialize laser sprite");
 
     if (gl_has_errors())
@@ -47,13 +47,12 @@ void LaserBeamSprite::draw(const mat3 &projection, float rotation) {
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();
-
-    // TODO calculate proper translation since origin needs to be the top-middle of this
-    vec2 offset = { m_origin.x + SPRITE_W/2*sinf(rotation), m_origin.y + SPRITE_H/2*cosf(rotation)};
+    
+    vec2 offset = { m_origin.x  + SPRITE_H/2*sinf(rotation), m_origin.y + SPRITE_H/2*cosf(rotation)};
     transform->begin();
     transform->translate(offset);
     transform->scale({1,1});
-    transform->rotate(rotation);
+    transform->rotate(-rotation);
     transform->end();
 
     sprite->draw(projection, transform->out, effect->program);

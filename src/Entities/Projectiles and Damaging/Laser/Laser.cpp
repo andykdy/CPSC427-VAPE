@@ -147,7 +147,7 @@ void Laser::spawn() {
 
     float xrange = (float)LASER_WIDTH/2;
     if (m_state == laserState::firing) {
-        n = 50;
+        return; // TODO: Any particles while firing?
     } else if (m_state == laserState::primed) {
         n = 10;
         xrange = 1;
