@@ -5,7 +5,7 @@
 #ifndef VAPE_CONTINUEBUTTON_HPP
 #define VAPE_CONTINUEBUTTON_HPP
 
-
+#include <Utils/SaveData.hpp>
 #include <Entities/UI/Button.hpp>
 
 class ContinueButton : public Button {
@@ -24,6 +24,8 @@ public:
     void doAction() override;
 
     vec2 getPosition() override;
+private:
+    PlayerData m_data;
 };
 
 

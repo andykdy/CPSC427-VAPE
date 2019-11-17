@@ -8,6 +8,7 @@
 #include <Components/TransformComponent.hpp>
 #include <Engine/GameEngine.hpp>
 #include <Engine/States/LevelState.hpp>
+#include <Levels/Levels.hpp>
 #include "ContinueButton.hpp"
 
 Texture ContinueButton::continue_button_texture;
@@ -39,8 +40,12 @@ bool ContinueButton::init(const vec2 &position, const vec2 &scale, const float r
     motion->position = position;
     motion->radians = rotation;
 
-    // TODO make disabled if no saved game available
-    disable();
+    m_data = loadGameData();
+    if (Levels::level_map.find(m_data.levelId) != Levels::level_map.end()) {
+
+    } else {
+        disable();
+    }
 
     return true;
 }
@@ -90,8 +95,8 @@ bool ContinueButton::isWithin(const vec2 &mouse_position) {
 }
 
 void ContinueButton::doAction() {
-    // TODO get savegame level
-    // TODO GameEngine::getInstance().changeState(new LevelState());
+    if (isActive() && Levels::level_map.find(m_data.levelId) != Levels::level_map.end())
+        GameEngine::getInstance().changeState(new LevelState(*Levels::level_map.find(m_data.levelId)->second, m_data));
 }
 
 vec2 ContinueButton::getPosition() {

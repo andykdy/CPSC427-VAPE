@@ -11,7 +11,11 @@
 #include "Level2.hpp"
 
 namespace Levels {
-
+    // maps specific levels to a levelId, for saving/loading purposes
+    const std::map<unsigned int, const Level*> level_map = {
+            {1, &level1},
+            {2, &level2},
+    };
 }
 
 #endif //VAPE_LEVELS_HPP

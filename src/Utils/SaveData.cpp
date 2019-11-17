@@ -8,8 +8,8 @@
 #include <map>
 #include "SaveData.hpp"
 
-constexpr std::string leaderboardFile = "leaderboard.vape";
-constexpr std::string savegameFile = "savegame.vape";
+constexpr char leaderboardFilename[] = "leaderboard.vape";
+constexpr char savegameFilename[] = "savegame.vape";
 
 inline bool fileExists(const std::string &fileName) {
     if (FILE *file = fopen(fileName.c_str(), "r")) {
@@ -21,6 +21,7 @@ inline bool fileExists(const std::string &fileName) {
 }
 
 inline void parseLeaderboard(std::multiset<leaderboardEntry>* leaderboard) {
+    std::string leaderboardFile = std::string(leaderboardFilename);
     if (!fileExists(leaderboardFile))
         return;
 
@@ -44,6 +45,7 @@ inline void parseLeaderboard(std::multiset<leaderboardEntry>* leaderboard) {
 
 
 inline void saveLeaderBoard(const std::multiset<leaderboardEntry>& leaderboard) {
+    std::string leaderboardFile = std::string(leaderboardFilename);
     FILE* leaderboard_file = fopen(leaderboardFile.c_str(), "w");
 
     int n = 0;
@@ -66,8 +68,6 @@ void saveScore(unsigned int points, const std::string&name) {
 }
 
 std::multiset<leaderboardEntry> getLeaderboard() {
-    std::string fileName = "leaderboard.vape";
-
     std::multiset<leaderboardEntry> leaderboard = {};
     parseLeaderboard(&leaderboard);
 
@@ -75,7 +75,8 @@ std::multiset<leaderboardEntry> getLeaderboard() {
 }
 
 void saveGameData(PlayerData data) {
-    FILE* savegame_file = fopen(savegameFile.c_str(), "w"); // TODO encryption of savedata?
+    std::string savegameFile = std::string(savegameFilename);
+    FILE* savegame_file = fopen(savegameFile.c_str(), "w"); // TODO encryption of savedata? Maybe include game version for determining compatability
     {
         std::ostringstream oss;
         oss << " lives" << " : " + std::to_string(data.lives) +"\n";
@@ -95,6 +96,7 @@ void saveGameData(PlayerData data) {
 }
 
 PlayerData loadGameData() {
+    std::string savegameFile = std::string(savegameFilename);
     if (!fileExists(savegameFile))
         return {0,0,0};
 
