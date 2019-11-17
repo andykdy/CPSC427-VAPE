@@ -43,7 +43,6 @@ LevelState::LevelState(Levels::Level level, unsigned int points) :
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
 
-    m_numVampParticles = 0;
     auto leaderboard = getLeaderboard();
 
     m_highscore = 0;
@@ -89,6 +88,7 @@ void LevelState::init() {
     m_vamp_cooldown = 0;
     m_vamp_mode_charge = 0;
     m_vamp_mode_timer = 0;
+    m_numVampParticles = 0;
 
 
     m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
@@ -155,6 +155,8 @@ void LevelState::terminate() {
     m_dialogue.destroy();
     m_explosion.destroy();
     m_space.destroy();
+
+    m_vamp_particle_emitter.destroy();
 }
 
 void LevelState::update(float ms) {

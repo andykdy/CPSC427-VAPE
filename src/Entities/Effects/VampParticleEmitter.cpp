@@ -48,6 +48,8 @@ bool VampParticleEmitter::init()
     if (!effect.load_from_file(shader_path("vampParticle.vs.glsl"), shader_path("vampParticle.fs.glsl")))
         return false;
 
+    capturedParticles = 0;
+
     return true;
 }
 
