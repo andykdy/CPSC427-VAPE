@@ -291,3 +291,7 @@ cmake-build-debug/
 data/textures/intro/PNG Sequences/
 
 build/
+
+*.avi
+
+*.mp4

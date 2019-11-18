@@ -28,7 +28,9 @@ endif()
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp")
 
 
-# TODO: Create a cmake file to download large assets like cutscenes from a remote server.
+# Download large assets like cutscenes from a remote server.
+include(${PROJECT_SOURCE_DIR}/cmake/Modules/assets-download.cmake)
+
 
 # You can switch to use the file GLOB for simplicity but at your own risk
 # file(GLOB SOURCE_FILES src/*.cpp src/*.hpp)
