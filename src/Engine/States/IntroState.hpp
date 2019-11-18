@@ -8,6 +8,7 @@
 
 #include <Engine/GameState.hpp>
 #include <Entities/Intro.hpp>
+#include <Entities/UI/EnterSkip.hpp>
 
 class IntroState : public GameState{
 public:
@@ -27,6 +28,7 @@ public:
 
 private:
     Video m_video;
+    EnterSkip m_skip;
     // Intro* m_intro;
     Mix_Music* m_background_music;
 };

@@ -35,6 +35,7 @@ void IntroState::init() {
     }
      */
     m_video.init(video_path("intro1.mp4"));
+    m_skip.init();
 }
 
 void IntroState::terminate() {
@@ -42,6 +43,7 @@ void IntroState::terminate() {
         Mix_FreeMusic(m_background_music);
    //  m_intro->destroy();
     m_video.destroy();
+    m_skip.destroy();
 }
 
 void IntroState::update(float ms) {
@@ -49,6 +51,7 @@ void IntroState::update(float ms) {
     m_video.update(ms);
     if (m_video.isOver())
         GameEngine::getInstance().changeState(new LevelState(Levels::level1, {INIT_LIVES,0,0}));
+    m_skip.update(ms);
 }
 
 void IntroState::draw() {
@@ -88,6 +91,7 @@ void IntroState::draw() {
 
     // m_intro->draw(projection_2D);
     m_video.draw(projection_2D);
+    m_skip.draw(projection_2D);
 
     //////////////////
     // Presenting

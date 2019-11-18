@@ -132,7 +132,7 @@ set(SOURCE_FILES
         src/Utils/SaveData.cpp src/Utils/SaveData.hpp
 
         src/Entities/Video.cpp src/Entities/Video.hpp
-        )
+        src/Entities/UI/EnterSkip.cpp src/Entities/UI/EnterSkip.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

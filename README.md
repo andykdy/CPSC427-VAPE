@@ -55,6 +55,9 @@ Once you complete the last level, you are returned to the main menu
 - Level 2 Boss:
     - Pertrubator - Versus
 
+# Video Credits:
+- Intro:
+    - Space Pirate Captain Harlock (2013)
 
 # Dependencies
 ## Assets
