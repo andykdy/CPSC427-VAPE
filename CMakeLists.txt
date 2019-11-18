@@ -231,31 +231,31 @@ add_subdirectory(ext/ffmpeg)
 if (IS_OS_WINDOWS)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${AVCODEC_DLL}"
+            "${LIBAVCODEC_DLL}"
             "$<TARGET_FILE_DIR:${PROJECT_NAME}>/avcodec-58.dll")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${AVFORMAT_DLL}"
+            "${LIBAVFORMAT_DLL}"
             "$<TARGET_FILE_DIR:${PROJECT_NAME}>/avformat-58.dll")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${AVFILTER_DLL}"
+            "${LIBAVFILTER_DLL}"
             "$<TARGET_FILE_DIR:${PROJECT_NAME}>/avfilter-7.dll")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${AVDEVICE_DLL}"
+            "${LIBAVDEVICE_DLL}"
             "$<TARGET_FILE_DIR:${PROJECT_NAME}>/avdevice-58.dll")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${AVUTIL_DLL}"
+            "${LIBAVUTIL_DLL}"
             "$<TARGET_FILE_DIR:${PROJECT_NAME}>/avutil-56.dll")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${SWRESAMPLE_DLL}"
+            "${LIBSWRESAMPLE_DLL}"
             "$<TARGET_FILE_DIR:${PROJECT_NAME}>/swresample-3.dll")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${SWSCALE_DLL}"
+            "${LIBSWSCALE_DLL}"
             "$<TARGET_FILE_DIR:${PROJECT_NAME}>/swscale-5.dll")
 endif()
 

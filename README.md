@@ -72,7 +72,7 @@ As video assets cannot be stored on github, you will need to retrieve them yours
 
 If the build process works as intended, cmake should automatically download the assets.
 
-If you have any issues, or need to download a new version of the zip, just delete /data/data.7z and any video files, and it will redownload next time you build.
-If its not downloading, and just linking, try just adding an line to cmakelists then hitting run.
+If you need to download a new version of the zip, just delete /data/data.7z and any videos and it will redownload next time you build. 
+You may need to add an empty line to cmakelists.txt to force it to build.
 
-If you have any issues with that build process, just comment out "download_assets()" in cmakelists.txt and download manually from the [google drive folder](https://drive.google.com/file/d/1a3yCBgBnr--UWfNw-07EkQegSBvIE2ON/view?usp=sharing)
+Otherwise, you can always just comment out "download_assets()" in cmakelists.txt and download manually from the [google drive folder](https://drive.google.com/file/d/1a3yCBgBnr--UWfNw-07EkQegSBvIE2ON/view?usp=sharing)
