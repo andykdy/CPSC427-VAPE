@@ -60,12 +60,6 @@ Once you complete the last level, you are returned to the main menu
     - Space Pirate Captain Harlock (2013)
 
 # Dependencies
-## Assets
-As video assets cannot be stored on github, you will need to retrieve them yourself.
-
-If the build process works as intended, cmake should automatically download the assets.
-
-However, if it doesnt, please fetch them from the [google drive folder](https://drive.google.com/file/d/1a3yCBgBnr--UWfNw-07EkQegSBvIE2ON/view?usp=sharing)
 ## Windows
 - All dependencies are included
 ## Mac / Linux
@@ -73,3 +67,12 @@ However, if it doesnt, please fetch them from the [google drive folder](https://
 - SDL2
 - SDL_Mixer
 - FFmpeg
+## Assets
+As video assets cannot be stored on github, you will need to retrieve them yourself.
+
+If the build process works as intended, cmake should automatically download the assets.
+
+If you have any issues, or need to download a new version of the zip, just delete /data/data.7z and any video files, and it will redownload next time you build.
+If its not downloading, and just linking, try just adding an line to cmakelists then hitting run.
+
+If you have any issues with that build process, just comment out "download_assets()" in cmakelists.txt and download manually from the [google drive folder](https://drive.google.com/file/d/1a3yCBgBnr--UWfNw-07EkQegSBvIE2ON/view?usp=sharing)
