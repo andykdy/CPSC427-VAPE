@@ -14,12 +14,13 @@ private:
     GLuint m_tex_id;
     bool m_first;
     double m_start;
+    bool m_is_over;
 public:
     bool init(const char* filename);
     void destroy();
     void update(float ms);
     void draw(const mat3& projection) override;
-    // TODO: a function to check if reached end of video
+    inline bool isOver() const { return m_is_over; };
 };
 
 

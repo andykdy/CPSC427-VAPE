@@ -64,6 +64,7 @@ bool Video::init(const char* filename) {
     motion.radians = 0;
     physics.scale = {1,1};
     m_first = true;
+    m_is_over = false;
 
     return true;
 }
@@ -82,6 +83,7 @@ void Video::draw(const mat3 &projection) {
     if (glfwGetTime() - m_start > m_video_reader.getTimeStamp()) {
         if (!m_video_reader.readFrame()) {
             fprintf(stderr, "Unable to load video frame!");
+            m_is_over = true;
             return;
         }
     }

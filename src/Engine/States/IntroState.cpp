@@ -47,6 +47,8 @@ void IntroState::terminate() {
 void IntroState::update(float ms) {
     // m_intro->update(ms);
     m_video.update(ms);
+    if (m_video.isOver())
+        GameEngine::getInstance().changeState(new LevelState(Levels::level1, {INIT_LIVES,0,0}));
 }
 
 void IntroState::draw() {
