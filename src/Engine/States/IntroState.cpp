@@ -28,19 +28,26 @@ void IntroState::init() {
     glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
     vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
+    /*
     m_intro = &GameEngine::getInstance().getEntityManager()->addEntity<Intro>();
     if (!m_intro->init(screen)) {
         throw std::runtime_error("Failed to load intro");
     }
+     */
+    m_video.init(video_path("test.mp4"));
 }
 
 void IntroState::terminate() {
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
-    m_intro->destroy();
+   //  m_intro->destroy();
+    m_video.destroy();
 }
 
-void IntroState::update(float ms) { m_intro->update(ms); }
+void IntroState::update(float ms) {
+    // m_intro->update(ms);
+    m_video.update(ms);
+}
 
 void IntroState::draw() {
     // Clearing error buffer
@@ -77,7 +84,8 @@ void IntroState::draw() {
     float ty = -(top + bottom) / (top - bottom);
     mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
-    m_intro->draw(projection_2D);
+    // m_intro->draw(projection_2D);
+    m_video.draw(projection_2D);
 
     //////////////////
     // Presenting

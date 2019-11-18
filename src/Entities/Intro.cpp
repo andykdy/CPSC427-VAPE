@@ -49,15 +49,11 @@ bool Intro::init(vec2 screen) {
     motion->position = { screen.x / 2, screen.y /2 };
     m_timer = DELAY;
 
-
-    m_video.init(video_path("intro.avi"));
-
     return true;
 }
 
 void Intro::update(float ms) {
     m_timer -= ms;
-    m_video.update(ms);
 }
 
 void Intro::draw(const mat3 &projection) {
@@ -84,8 +80,6 @@ void Intro::draw(const mat3 &projection) {
             GameEngine::getInstance().changeState(new LevelState(Levels::level1, {INIT_LIVES,0,0}));
         }
     }
-
-    m_video.draw(projection);
 }
 
 void Intro::destroy() {
@@ -98,8 +92,6 @@ void Intro::destroy() {
     for (auto tex : introTextures)
         delete tex;
     introTextures.clear();
-
-    m_video.destroy();
 
     ECS::Entity::destroy();
 }

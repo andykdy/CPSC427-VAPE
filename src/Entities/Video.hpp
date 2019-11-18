@@ -19,6 +19,7 @@ public:
     void destroy();
     void update(float ms);
     void draw(const mat3& projection) override;
+    // TODO: a function to check if reached end of video
 };
 
 

@@ -26,7 +26,8 @@ public:
     void on_mouse_button(GLFWwindow *window, int button, int action, int mods) override {};
 
 private:
-    Intro* m_intro;
+    Video m_video;
+    // Intro* m_intro;
     Mix_Music* m_background_music;
 };
 

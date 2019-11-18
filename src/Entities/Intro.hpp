@@ -19,7 +19,6 @@ public:
     void destroy() override;
 
 private:
-    Video m_video;
     int m_part = 0;
     float m_timer;
     std::vector<Texture*> introTextures;
