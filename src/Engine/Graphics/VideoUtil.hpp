@@ -17,7 +17,25 @@ extern "C" {
 }
 
 class VideoUtil {
+private:
+    AVFormatContext * m_format_ctx;
+    AVCodecContext * m_codec_ctx;
+    SwsContext* m_sws_ctx;
+    int m_stream_idx;
+    AVStream * m_video_stream;
+    AVCodec * m_decoder;
+    AVPacket * m_packet;
+    AVFrame * m_frame;
 
+public:
+    VideoUtil();
+
+    bool open(const char* filename);
+    void close();
+
+    bool readFrame();
+    
+    // TODO getters
 };
 
 
