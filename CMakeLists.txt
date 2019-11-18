@@ -11,6 +11,8 @@ set (CMAKE_CXX_STANDARD 11)
 # nice hierarchichal structure in MSVC
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+
 #Find OS
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(IS_OS_MAC 1)

@@ -82,7 +82,7 @@ void Video::draw(const mat3 &projection) {
     // Sync to video timestamp
     if (glfwGetTime() - m_start > m_video_reader.getTimeStamp()) {
         if (!m_video_reader.readFrame()) {
-            fprintf(stderr, "Unable to load video frame!");
+            // fprintf(stderr, "Unable to load video frame!"); End of video reached
             m_is_over = true;
             return;
         }

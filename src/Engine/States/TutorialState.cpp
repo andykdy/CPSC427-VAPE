@@ -57,7 +57,7 @@ void TutorialState::init() {
 	// Playing background music indefinitely
 	Mix_PlayMusic(m_background_music, -1);
 
-	fprintf(stderr, "Loaded music\n");
+	// fprintf(stderr, "Loaded music\n");
 
 	// Get screen size
 	int w, h;
