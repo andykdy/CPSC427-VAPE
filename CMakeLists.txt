@@ -30,6 +30,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CU
 
 # Download large assets like cutscenes from a remote server.
 include(${PROJECT_SOURCE_DIR}/cmake/Modules/assets-download.cmake)
+download_assets()
 
 
 # You can switch to use the file GLOB for simplicity but at your own risk

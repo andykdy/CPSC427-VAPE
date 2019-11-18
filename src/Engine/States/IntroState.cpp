@@ -34,7 +34,7 @@ void IntroState::init() {
         throw std::runtime_error("Failed to load intro");
     }
      */
-    m_video.init(video_path("test.mp4"));
+    m_video.init(video_path("intro1.mp4"));
 }
 
 void IntroState::terminate() {

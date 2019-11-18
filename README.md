@@ -57,6 +57,12 @@ Once you complete the last level, you are returned to the main menu
 
 
 # Dependencies
+## Assets
+As video assets cannot be stored on github, you will need to retrieve them yourself.
+
+If the build process works as intended, cmake should automatically download the assets.
+
+However, if it doesnt, please fetch them from the [google drive folder](https://drive.google.com/file/d/1a3yCBgBnr--UWfNw-07EkQegSBvIE2ON/view?usp=sharing)
 ## Windows
 - All dependencies are included
 ## Mac / Linux
