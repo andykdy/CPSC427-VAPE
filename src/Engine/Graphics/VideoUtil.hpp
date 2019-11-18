@@ -34,7 +34,7 @@ public:
     void close();
 
     bool readFrame();
-    
+
     // TODO getters
 };
 

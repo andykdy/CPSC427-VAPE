@@ -99,6 +99,35 @@ void VideoUtil::close() {
 }
 
 bool VideoUtil::readFrame() {
-    return false;
+    while (av_read_frame(m_format_ctx, m_packet) >= 0) {
+        if (m_packet->stream_index != m_stream_idx) {
+            av_packet_unref(m_packet);
+            continue;
+        }
+
+        // https://ffmpeg.org/doxygen/trunk/group__lavc__encdec.html
+        // Send the packet to the decoder
+        if (avcodec_send_packet(m_codec_ctx, m_packet) < 0) {
+            fprintf(stderr, "Failed to decode packet\n");
+            return false;
+        }
+
+        // Receive frame from the decoder
+        int res = avcodec_receive_frame(m_codec_ctx, m_frame);
+        if (res == AVERROR(EAGAIN) || res == AVERROR_EOF) {
+            av_packet_unref(m_packet);
+            continue;
+        } else if (res < 0) {
+            fprintf(stderr, "Failed to decode packet\n");
+            return false;
+        }
+
+        av_packet_unref(m_packet);
+        break;
+    }
+
+    // TODO sws scaling to fit?
+
+    return true;
 }
 
