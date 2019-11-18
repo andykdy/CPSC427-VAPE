@@ -79,6 +79,8 @@ bool VideoUtil::open(const char *filename) {
         return false;
     }
 
+    m_frame_buffer = new uint8_t[getWidth() * getHeight() * 4];
+
     return true;
 }
 
@@ -126,7 +128,20 @@ bool VideoUtil::readFrame() {
         break;
     }
 
-    // TODO sws scaling to fit?
+    // Set up sws scaler
+    if (!m_sws_ctx) {
+        m_sws_ctx = sws_getContext(getWidth(), getHeight(), m_codec_ctx->pix_fmt,
+                                        getWidth(), getHeight(), AV_PIX_FMT_RGB0,
+                                        SWS_BILINEAR, NULL, NULL, NULL);
+    }
+    if (!m_sws_ctx) {
+        fprintf(stderr, "Failed to initialize SWS \n");
+        return false;
+    }
+
+    uint8_t* dest[4] = { m_frame_buffer, nullptr, nullptr, nullptr };
+    int dest_linesize[4] = { getWidth() * 4, 0, 0, 0 };
+    sws_scale(m_sws_ctx, m_frame->data, m_frame->linesize, 0, m_frame->height, dest, dest_linesize);
 
     return true;
 }

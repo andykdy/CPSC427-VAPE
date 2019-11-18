@@ -26,6 +26,7 @@ private:
     AVCodec * m_decoder;
     AVPacket * m_packet;
     AVFrame * m_frame;
+    uint8_t* m_frame_buffer;
 
 public:
     VideoUtil();
@@ -36,6 +37,9 @@ public:
     bool readFrame();
 
     // TODO getters
+    inline int getWidth() const {return (m_codec_ctx) ? m_codec_ctx->width : -1;};
+    inline int getHeight() const {return (m_codec_ctx) ? m_codec_ctx->height : -1;};
+    inline uint8_t* getFrameBuffer() const { return m_frame_buffer; };
 };
 
 

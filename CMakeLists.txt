@@ -125,6 +125,7 @@ set(SOURCE_FILES
 
         src/Utils/SaveData.cpp src/Utils/SaveData.hpp
 
+        src/Entities/Video.cpp src/Entities/Video.hpp
         )
 
 if (IS_OS_MAC)
