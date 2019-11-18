@@ -55,3 +55,12 @@ Once you complete the last level, you are returned to the main menu
 - Level 2 Boss:
     - Pertrubator - Versus
 
+
+# Dependencies
+## Windows
+- All dependencies are included
+## Mac / Linux
+- GLFW3
+- SDL2
+- SDL_Mixer
+- FFmpeg
