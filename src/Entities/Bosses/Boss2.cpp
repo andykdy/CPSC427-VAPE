@@ -27,11 +27,11 @@ namespace
     const std::vector<vec2> hardpoints = {
             {44,76},
             {76,72},
-                    // TODO bullet hardpoints too?
-            {123,85},
+
+            {124,85},
             {140,85},
 
-            {187,72},
+            {188,72},
             {219,76}
     };
 
@@ -429,10 +429,6 @@ void Boss2::fireLasers(AttackPattern pattern) {
 }
 
 void Boss2::draw(const mat3 &projection) {
-    // Draw boss' bullets
-    for (auto laser : projectiles)
-        laser->draw(projection);
-
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
     auto* motion = getComponent<MotionComponent>();
@@ -450,6 +446,9 @@ void Boss2::draw(const mat3 &projection) {
         mod = 1/m_damage_effect_cooldown;
 
     sprite->draw(projection, transform->out, effect->program, {1.f, mod * 1.f,mod * 1.f});
+
+    for (auto laser : projectiles)
+        laser->draw(projection);
 
     /*
     // Vertex Debug Drawing

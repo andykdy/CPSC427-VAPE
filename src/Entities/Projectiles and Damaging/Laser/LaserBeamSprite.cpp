@@ -8,7 +8,7 @@
 #include "LaserBeamSprite.hpp"
 
 constexpr size_t SPRITE_FRAMES = 4;
-constexpr size_t SPRITE_W = 32;
+constexpr size_t SPRITE_W = 48;
 constexpr size_t SPRITE_H = 1128;
 
 Texture LaserBeamSprite::laser_texture;
@@ -22,7 +22,7 @@ bool LaserBeamSprite::init(vec2 origin) {
     // Load shared texture
     if (!laser_texture.is_valid())
     {
-        if (!laser_texture.load_from_file(textures_path("Laser3.png")))
+        if (!laser_texture.load_from_file(textures_path("Lasers3v2.png")))
         {
             fprintf(stderr, "Failed to load laser texture!");
             return false;
