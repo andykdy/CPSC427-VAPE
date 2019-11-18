@@ -31,6 +31,8 @@ namespace
     const size_t VAMP_DAMAGE_TIMER_BOSS = 400;
     const size_t VAMP_TIME_PER_POINT = 200;
     const size_t VAMP_ACTIVATION_COOLDOWN = 300;
+    const size_t MAX_VAMP_CHARGE = 15;
+    const size_t VAMP_ACTIVATION_COST = 3;
 
 }
 
@@ -90,7 +92,8 @@ void LevelState::init() {
     m_vamp_mode_charge = 0;
     m_vamp_mode_timer = 0;
     m_numVampParticles = 0;
-
+    m_debug_mode = false;
+    m_player_invincibility = false;
 
     m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
     m_player->init(screen, INIT_HEALTH);
@@ -175,6 +178,7 @@ void LevelState::update(float ms) {
     int w, h;
     glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
     vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
+    m_debug_mode = GameEngine::getInstance().getM_debug_mode();
 
     m_level_time += ms;
 
@@ -370,12 +374,27 @@ void LevelState::update(float ms) {
         }
     }
 
-    // for debugging purposes
-    if (keyMap[GLFW_KEY_F]) {
-        m_vamp_mode_charge = 15;
-    }
-    if (keyMap[GLFW_KEY_G]) {
-        add_health(MAX_HEALTH);
+
+    // debug state
+    if (m_debug_mode)
+    {
+
+        if (keyMap[GLFW_KEY_F]) {
+            add_health(MAX_HEALTH);
+        }
+
+        if (keyMap[GLFW_KEY_G]) {
+            m_vamp_mode_charge = MAX_VAMP_CHARGE;
+        }
+
+        if (keyMap[GLFW_KEY_V]) {
+            m_player_invincibility = !m_player_invincibility;
+        }
+
+        if (m_player_invincibility) {
+            m_vamp_mode_charge = MAX_VAMP_CHARGE;
+            add_health(MAX_HEALTH);
+        }
     }
 
     if (keyMap[GLFW_KEY_ESCAPE]) {
@@ -386,27 +405,21 @@ void LevelState::update(float ms) {
     bool end_vamp_mode = false;
 
     if (keyMap[GLFW_KEY_ENTER] && m_vamp_cooldown <= 0) {
-        // TODO - restructure
         m_vamp_cooldown = VAMP_ACTIVATION_COOLDOWN;
 
         if (!m_vamp_mode && m_vamp_mode_charge >= 4)
         {
             m_vamp_mode = true;
-            // m_vamp_mode_timer = VAMP_MODE_DURATION;
-            // m_vamp_mode_charge = 0;
-            m_vamp_mode_charge -= 3;
-            //std::cout << "subtracting 3" << std::endl;
+            m_vamp_mode_charge -= VAMP_ACTIVATION_COST;
 
             GameEngine::getInstance().setM_current_speed(0.5f);
             m_vamp_charge->setVampCharge(m_vamp_mode_charge);
             m_vamp.init(m_player->get_position());
         } else {
             end_vamp_mode = true;
-//             GameEngine::getInstance().setM_current_speed(1.f);
-//            m_vamp_mode = false;
-//            m_vamp.destroy();
         }
     }
+
 
     if (m_vamp_mode) {
         if (m_vamp_mode_charge <= 0 || end_vamp_mode) {
@@ -626,10 +639,10 @@ void LevelState::add_health(int heal) {
 void LevelState::add_vamp_charge() {
     if (!m_vamp_mode) {
 
-        if (m_vamp_mode_charge < 15) {
+        if (m_vamp_mode_charge < MAX_VAMP_CHARGE) {
             m_vamp_mode_charge++;
 
-            if (m_vamp_mode_charge == 15) {
+            if (m_vamp_mode_charge == MAX_VAMP_CHARGE) {
                 Mix_PlayChannel(-1, m_player_charged, 0);
             }
         }
@@ -644,6 +657,12 @@ void LevelState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod
     if (action == GLFW_RELEASE && key == GLFW_KEY_R)
     {
         reset();
+    }
+
+    // entering debug mode
+    if (action == GLFW_RELEASE && key == GLFW_KEY_F && mod == GLFW_MOD_SHIFT)
+    {
+        GameEngine::getInstance().toggleM_debug_mode();
     }
 }
 

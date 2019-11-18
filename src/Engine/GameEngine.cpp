@@ -203,6 +203,16 @@ void GameEngine::setM_current_speed(float m_current_speed) {
     GameEngine::m_current_speed = m_current_speed;
 }
 
+void GameEngine::toggleM_debug_mode() {
+    GameEngine::m_debug_mode = !GameEngine::m_debug_mode;
+}
+
+bool GameEngine::getM_debug_mode() {
+    return GameEngine::m_debug_mode;
+}
+
+
+
 ECS::EntityManager *GameEngine::getEntityManager() {
     return &entityManager;
 }
