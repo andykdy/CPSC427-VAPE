@@ -12,6 +12,8 @@ class Video : public EntityOld {
 private:
     VideoUtil m_video_reader;
     GLuint m_tex_id;
+    bool m_first;
+    double m_start;
 public:
     bool init(const char* filename);
     void destroy();

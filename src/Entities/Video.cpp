@@ -63,6 +63,7 @@ bool Video::init(const char* filename) {
     motion.position = {800/2, 1000/2}; // TODO get screen size
     motion.radians = 0;
     physics.scale = {1,1};
+    m_first = true;
 
     return true;
 }
@@ -72,9 +73,17 @@ void Video::update(float ms) {
 }
 
 void Video::draw(const mat3 &projection) {
-    if (!m_video_reader.readFrame()) {
-        fprintf(stderr, "Unable to load video frame!");
-        return;
+    if (m_first) {
+        m_start = glfwGetTime();
+        m_first = false;
+    }
+
+    // Sync to video timestamp
+    if (glfwGetTime() - m_start > m_video_reader.getTimeStamp()) {
+        if (!m_video_reader.readFrame()) {
+            fprintf(stderr, "Unable to load video frame!");
+            return;
+        }
     }
 
     glBindTexture(GL_TEXTURE_2D, m_tex_id);
@@ -129,6 +138,7 @@ void Video::destroy() {
     glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
 	glDeleteVertexArrays(1, &mesh.vao);
+    glDeleteTextures(1, &m_tex_id);
 
 	glDeleteShader(effect.vertex);
 	glDeleteShader(effect.fragment);

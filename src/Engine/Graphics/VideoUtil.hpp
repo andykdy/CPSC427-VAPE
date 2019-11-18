@@ -40,6 +40,7 @@ public:
     inline int getWidth() const {return (m_codec_ctx) ? m_codec_ctx->width : -1;};
     inline int getHeight() const {return (m_codec_ctx) ? m_codec_ctx->height : -1;};
     inline uint8_t* getFrameBuffer() const { return m_frame_buffer; };
+    inline double getTimeStamp() const { return (m_frame && m_frame->pts) ? m_frame->pts * (double)m_video_stream->time_base.num / (double)m_video_stream->time_base.den : -1;};
 };
 
 

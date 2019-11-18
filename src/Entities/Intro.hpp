@@ -6,6 +6,7 @@
 #define VAPE_INTRO_HPP
 
 #include "common.hpp"
+#include "Video.hpp"
 #include <Engine/ECS/ECS.hpp>
 
 // TODO: this could maybe be refactored out into a "slideshow" class, and have it take in a set of textures+durations+music. Then use if for potention in-between cutscenes and ending
@@ -18,6 +19,7 @@ public:
     void destroy() override;
 
 private:
+    Video m_video;
     int m_part = 0;
     float m_timer;
     std::vector<Texture*> introTextures;
