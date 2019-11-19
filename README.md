@@ -1,7 +1,7 @@
 #  CPSC427 2019 Winter 1
 ![Image of logo](data/textures/logo.png)
 # V.A.P.E. Nation (Vampire Astronaut Pirate Escape Nation)
-
+## Team 6
 - Andrea Park 45168151
 - Andy (Dong Young) Kim 16785157
 - Cody Newman 35833145
@@ -17,8 +17,9 @@
 # Controls
 - W, A, S, D  -> Movement
 - Spacebar -> Shoot
-- Enter ->  Vamp Mode
+- Enter ->  Vamp Mode / Skip Cutscenes
 - Shift -> Continue (Dialogues)
+- Escape -> Return to main menu (saves game to start of current level)
 - [Debug]
     - F -> Fill vamp mode
     - G -> Fill Health
