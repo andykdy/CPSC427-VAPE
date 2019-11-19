@@ -37,10 +37,11 @@ inline void parseLeaderboard(std::multiset<leaderboardEntry>* leaderboard) {
 
         ch = getc(leaderboard_file);
     }
-    if (feof(leaderboard_file))
-        std::cout << "End of file reached." << std::endl;
-    else
-        std::cout << "Something went wrong." << std::endl;
+
+    if (feof(leaderboard_file)){
+        // std::cout << "End of file reached." << std::endl;
+    } else
+        fprintf(stderr, "Something went wrong parsing leaderboard!\n");
     fclose(leaderboard_file);
 }
 
@@ -114,10 +115,10 @@ PlayerData loadGameData() {
 
         ch = fgetc(savegame_file);
     }
-    if (feof(savegame_file))
-        std::cout << "End of file reached." << std::endl;
-    else
-        std::cout << "Something went wrong." << std::endl;
+    if (feof(savegame_file)){
+        // std::cout << "End of file reached." << std::endl;
+    } else
+        fprintf(stderr, "Something went wrong loading save!\n");
     fclose(savegame_file);
 
 

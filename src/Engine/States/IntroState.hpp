@@ -8,6 +8,7 @@
 
 #include <Engine/GameState.hpp>
 #include <Entities/Intro.hpp>
+#include <Entities/UI/EnterSkip.hpp>
 
 class IntroState : public GameState{
 public:
@@ -26,7 +27,9 @@ public:
     void on_mouse_button(GLFWwindow *window, int button, int action, int mods) override {};
 
 private:
-    Intro* m_intro;
+    Video m_video;
+    EnterSkip m_skip;
+    // Intro* m_intro;
     Mix_Music* m_background_music;
 };
 

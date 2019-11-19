@@ -1,7 +1,7 @@
 #  CPSC427 2019 Winter 1
 ![Image of logo](data/textures/logo.png)
 # V.A.P.E. Nation (Vampire Astronaut Pirate Escape Nation)
-
+## Team 6
 - Andrea Park 45168151
 - Andy (Dong Young) Kim 16785157
 - Cody Newman 35833145
@@ -17,8 +17,9 @@
 # Controls
 - W, A, S, D  -> Movement
 - Spacebar -> Shoot
-- Enter ->  Vamp Mode
+- Enter ->  Vamp Mode / Skip Cutscenes
 - Shift -> Continue (Dialogues)
+- Escape -> Return to main menu (saves game to start of current level)
 - [Debug]
     - F -> Fill vamp mode
     - G -> Fill Health
@@ -55,3 +56,24 @@ Once you complete the last level, you are returned to the main menu
 - Level 2 Boss:
     - Pertrubator - Versus
 
+# Video Credits:
+- Intro:
+    - Space Pirate Captain Harlock (2013)
+
+# Dependencies
+## Windows
+- All dependencies are included
+## Mac / Linux
+- GLFW3
+- SDL2
+- SDL_Mixer
+- FFmpeg
+## Assets
+As video assets cannot be stored on github, you will need to retrieve them yourself.
+
+If the build process works as intended, cmake should automatically download the assets.
+
+If you need to download a new version of the zip, just delete /data/data.7z and any videos and it will redownload next time you build. 
+You may need to add an empty line to cmakelists.txt to force it to build.
+
+Otherwise, you can always just comment out "download_assets()" in cmakelists.txt and download manually from the [google drive folder](https://drive.google.com/file/d/1a3yCBgBnr--UWfNw-07EkQegSBvIE2ON/view?usp=sharing)

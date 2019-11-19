@@ -52,7 +52,9 @@ bool Intro::init(vec2 screen) {
     return true;
 }
 
-void Intro::update(float ms) { m_timer -= ms; }
+void Intro::update(float ms) {
+    m_timer -= ms;
+}
 
 void Intro::draw(const mat3 &projection) {
     auto* transform = getComponent<TransformComponent>();
