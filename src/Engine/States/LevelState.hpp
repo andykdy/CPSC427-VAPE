@@ -105,7 +105,8 @@ private:
 	Dialogue m_dialogue;
 
     float m_level_time;
-
+    bool m_debug_mode;
+    bool m_player_invincibility;
 
     bool m_boss_pre;
     bool m_boss_mode;
