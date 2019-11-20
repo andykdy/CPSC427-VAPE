@@ -6,8 +6,15 @@
 #define VAPE_CONTROLDIAGRAM_HPP
 
 
-class ControlDiagram {
+#include <Engine/ECS/Entity.hpp>
 
+class ControlDiagram : public ECS::Entity {
+    static Texture controls_texture;
+public:
+    bool init(vec2 position, vec2 scale, float rotation);
+    void destroy() override;
+    void update(float ms) override;
+    void draw(const mat3 &projection) override;
 };
 
 

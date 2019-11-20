@@ -36,7 +36,7 @@ bool PauseMenu::init(const vec2 &screen) {
 
     // Setup buttons/cursor
 
-    vec2 buttonpos = {screen.x *0.5f, screen.y *0.7f};
+    vec2 buttonpos = {screen.x *0.5f, screen.y *0.65f};
     vec2 buttonscale = {0.75f, 0.75f};
     float buttonHeight = 150.f; // TODO
     float offset = 20.f;
@@ -56,8 +56,8 @@ bool PauseMenu::init(const vec2 &screen) {
 
     buttonpos.y += buttonHeight + offset;
 
-    // TODO m_controls = &GameEngine::getInstance().getEntityManager()->addEntity<ControlDiagram>()
-    // TODO m_controls->init(...);
+    m_controls = &GameEngine::getInstance().getEntityManager()->addEntity<ControlDiagram>();
+    m_controls->init({screen.x/2, screen.y*0.33f}, {0.7f,0.7f}, 0);
 
     return true;
 }
@@ -66,7 +66,7 @@ void PauseMenu::destroy() {
     m_cursor->destroy();
     m_resume->destroy();
     m_exit->destroy();
-    //m_controls->destroy();
+    m_controls->destroy();
 
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();
@@ -118,7 +118,7 @@ void PauseMenu::draw(const mat3 &projection) {
     m_resume->draw(projection);
     m_exit->draw(projection);
     m_cursor->draw(projection);
-    //m_controls->draw(projection);
+    m_controls->draw(projection);
 }
 
 void PauseMenu::toggle() {

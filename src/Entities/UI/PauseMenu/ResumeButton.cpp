@@ -23,7 +23,7 @@ bool ResumeButton::init(const vec2 &position, const vec2 &scale, float rotation)
     {
         if (!resume_button_texture.load_from_file(textures_path("UI/button_continue.png")))
         {
-            throw std::runtime_error("Failed to load exit button texture");
+            throw std::runtime_error("Failed to load resume button texture");
         }
     }
 
@@ -32,7 +32,7 @@ bool ResumeButton::init(const vec2 &position, const vec2 &scale, float rotation)
         throw std::runtime_error("Failed to load texture shaders");
 
     if (!sprite->initTexture(&resume_button_texture))
-        throw std::runtime_error("Failed to initialize exit button sprite");
+        throw std::runtime_error("Failed to initialize resume button sprite");
 
     physics->scale = scale;
     motion->position = position;
