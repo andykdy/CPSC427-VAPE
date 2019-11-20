@@ -647,12 +647,6 @@ void LevelState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod
     {
         reset();
     }
-
-    // entering debug mode
-    if (action == GLFW_RELEASE && key == GLFW_KEY_F && mod == GLFW_MOD_SHIFT)
-    {
-        GameEngine::getInstance().toggleM_debug_mode();
-    }
 }
 
 void LevelState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
