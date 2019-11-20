@@ -84,6 +84,10 @@ void Player::destroy()
 {
 	weapon->destroy();
 
+    for (auto projectile : projectiles)
+        projectile->destroy();
+    projectiles.clear();
+
 	auto* effect = getComponent<EffectComponent>();
 	auto* sprite = getComponent<SpriteComponent>();
 
@@ -100,9 +104,30 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
     weapon->update(ms);
 	// Spawning player bullets
 	if (is_alive() && keyMap[GLFW_KEY_SPACE]) {
-		weapon->fire(motion->position, motion->radians + 3.14f);
+		Projectile* p = weapon->fire(motion->position, motion->radians + 3.14f);
+		if (p != nullptr)
+			projectiles.emplace_back(p);
 	}
 
+	// Get screen size
+	int w, h;
+	glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
+	vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
+
+	// Update bullets, removing out of screen bullets
+	auto projectile_it = projectiles.begin();
+	while(projectile_it != projectiles.end()) {
+		if ((*projectile_it)->isOffScreen(screen))
+		{
+			(*projectile_it)->destroy();
+			projectile_it = projectiles.erase(projectile_it);
+			continue;
+		} else {
+			(*projectile_it)->update(ms);
+		}
+
+		++projectile_it;
+	}
 
 	if (is_alive())
 	{
@@ -143,7 +168,8 @@ void Player::draw(const mat3& projection)
     auto* physics = getComponent<PhysicsComponent>();
     auto* sprite = getComponent<SpriteComponent>();
 
-    weapon->draw(projection);
+	for (auto projectile : projectiles)
+		projectile->draw(projection);
 
     transform->begin();
     transform->translate(motion->position);
@@ -240,10 +266,6 @@ float Player::get_iframes()
 
 int Player::get_health() const {
 	return getComponent<HealthComponent>()->get_health();
-}
-
-std::vector<Projectile *> *Player::getProjectiles() {
-	return weapon->getProjectiles();
 }
 
 void Player::changeWeapon(Weapon *newWeapon) {

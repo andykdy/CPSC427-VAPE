@@ -141,7 +141,7 @@ set(SOURCE_FILES
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 
-        src/Entities/UI/EnterContinue.cpp src/Entities/UI/EnterContinue.hpp src/Entities/Weapons/Weapon.hpp src/Entities/Weapons/BulletStraightShot.cpp src/Entities/Weapons/BulletStraightShot.hpp src/Entities/Weapons/Weapon.cpp)
+        src/Entities/UI/EnterContinue.cpp src/Entities/UI/EnterContinue.hpp src/Entities/Weapons/Weapon.hpp src/Entities/Weapons/BulletStraightShot.cpp src/Entities/Weapons/BulletStraightShot.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

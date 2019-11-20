@@ -178,11 +178,11 @@ void TutorialState::update(float ms) {
 		}
 	}
 
-	auto* playerBullets = m_player->getProjectiles();
+	auto& playerBullets = m_player->projectiles;
 
 	// Checking Player Bullet - Enemy collisions
-	auto bullet_it = playerBullets->begin();
-	while (bullet_it != playerBullets->end())
+	auto bullet_it = playerBullets.begin();
+	while (bullet_it != playerBullets.end())
 	{
 		bool eraseBullet = false;
 		auto turtle_it = m_turtles.begin();
@@ -210,7 +210,7 @@ void TutorialState::update(float ms) {
 		}
 		if (eraseBullet) {
             (*bullet_it)->destroy();
-            bullet_it = playerBullets->erase(bullet_it);
+            bullet_it = playerBullets.erase(bullet_it);
         }else
 			++bullet_it;
 	}

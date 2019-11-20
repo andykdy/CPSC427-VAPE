@@ -274,9 +274,9 @@ void LevelState::update(float ms) {
     }
 
     // Checking Player Bullet - Enemy collisions
-    auto* playerBullets = m_player->getProjectiles();
-    auto bullet_it = playerBullets->begin();
-    while (bullet_it != playerBullets->end())
+    auto& playerBullets = m_player->projectiles;
+    auto bullet_it = playerBullets.begin();
+    while (bullet_it != playerBullets.end())
     {
         bool eraseBullet = false;
         auto enemy_it = enemies->begin();
@@ -307,7 +307,7 @@ void LevelState::update(float ms) {
         }
         if (eraseBullet) {
             (*bullet_it)->destroy();
-            bullet_it = playerBullets->erase(bullet_it);
+            bullet_it = playerBullets.erase(bullet_it);
         } else
             ++bullet_it;
     }

@@ -64,7 +64,7 @@ public:
 
 	int get_health() const;
 
-	std::vector<Projectile*>* getProjectiles();
+	std::vector<Projectile*> projectiles;
 
 private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up

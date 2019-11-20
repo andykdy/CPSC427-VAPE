@@ -15,13 +15,11 @@ private:
 public:
     void init() override;
 
-    void fire(const vec2 &origin_position, float origin_rotation) override;
+    Projectile* fire(const vec2 &origin_position, float origin_rotation) override;
 
     void update(float ms) override;
 
     void destroy() override;
-
-    void draw(const mat3 &projection) override;
 };
 
 
