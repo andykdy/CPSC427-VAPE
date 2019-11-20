@@ -60,6 +60,8 @@ void MainMenuState::init() {
 
     buttonpos.y += buttonHeight + offset;
 
+    m_button_cursor = 0;
+
 }
 
 void MainMenuState::terminate() {
