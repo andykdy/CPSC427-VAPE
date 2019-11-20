@@ -8,7 +8,6 @@
 #include <Engine/ECS/Entity.hpp>
 #include "Entities/Enemies/Enemy.hpp"
 
-class Fish;
 class Projectile;
 class Enemy;
 
@@ -32,7 +31,6 @@ public:
 
 	// Collision routines for turtles and fish
 	bool collides_with(const Enemy& turtle);
-	bool collides_with(const Fish& fish);
 
 	// Returns the current position
 	vec2 get_position() const;

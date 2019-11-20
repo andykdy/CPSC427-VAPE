@@ -105,7 +105,7 @@ void Boss1::update(float ms) {
     if (health > 50) state1Update(ms);
     else if (health > 0) state2Update(ms);
     else {
-        // TODO death
+        // death?
     }
 }
 

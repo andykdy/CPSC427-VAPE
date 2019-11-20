@@ -29,7 +29,6 @@ public:
 private:
     Video m_video;
     EnterSkip m_skip;
-    // Intro* m_intro;
     Mix_Music* m_background_music;
 };
 

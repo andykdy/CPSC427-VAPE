@@ -7,7 +7,7 @@
 #include "EnemySpawnerSystem.hpp"
 
 void EnemySpawnerSystem::update(float ms) {
-    time += ms; // TODO game speed
+    time += ms;
     auto it = level.begin();
     while (it != level.end()) {
         if (it->first <= time) {
@@ -23,10 +23,12 @@ std::vector<Enemy*> *EnemySpawnerSystem::getEnemies() {
     return &enemies;
 }
 
-void EnemySpawnerSystem::reset(Levels::Timeline levelTimeline) {
+void EnemySpawnerSystem::reset(Levels::Timeline& levelTimeline) {
     level = levelTimeline;
     time = 0;
-    // TODO cleanup enemies
+    for (auto& enemy : enemies) {
+        enemy->destroy();
+    }
     enemies.clear();
 }
 

@@ -15,8 +15,6 @@
 #include "common.hpp"
 #include "Entities/Player.hpp"
 #include "Entities/Enemies/turtle.hpp"
-//#include "Entities/Prototype.hpp"
-#include "Entities/fish.hpp"
 #include "Entities/Space.hpp"
 #include "Entities/Projectiles and Damaging/bullet.hpp"
 #include "Entities/UI/Dialogue/Dialogue.hpp"
@@ -95,7 +93,6 @@ private:
     Player* m_player;
     Boss* m_boss;
     std::vector<Pickup*> m_pickups; // TODO Maybe should be in a Pickup System eventuallyy
-    std::vector<Enemy*> *m_turtles;
 
     // UI
     UIPanelBackground* m_uiPanelBackground;
@@ -105,7 +102,8 @@ private:
 	Dialogue m_dialogue;
 
     float m_level_time;
-
+    bool m_debug_mode;
+    bool m_player_invincibility;
 
     bool m_boss_pre;
     bool m_boss_mode;
@@ -129,10 +127,6 @@ private:
     Mix_Chunk* m_player_eat_sound;
     Mix_Chunk* m_player_explosion;
     Mix_Chunk* m_player_charged;
-
-    // C++ rng
-    std::default_random_engine m_rng;
-    std::uniform_real_distribution<float> m_dist; // default 0..1
 };
 
 

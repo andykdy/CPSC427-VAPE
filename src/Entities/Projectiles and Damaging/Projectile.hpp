@@ -21,14 +21,14 @@ protected:
     bool m_hostile = false;
     bool m_erase_on_collide = true; // Bullets will want to be erased, but things like lasers do not
 public:
-    virtual bool init(vec2 position, float rotation) = 0; // TODO, probably uneccessary
-    virtual vec2 get_position() const = 0; // TODO probably unneccessary, just get from components
+    virtual bool init(vec2 position, float rotation) = 0;
+    virtual vec2 get_position() const = 0;
     inline int getDamage() const { return m_damage; };
     inline bool isHostile() const { return m_hostile; };
     inline bool shouldErase() { return m_erase_on_collide; };
-    virtual bool collides_with(const Player &player) = 0; // TODO temp?
-    virtual bool collides_with(const Enemy &turtle) = 0; // TODO temp?
-    virtual bool collides_with(const Boss &boss) = 0; // TODO temp?
+    virtual bool collides_with(const Player &player) = 0;
+    virtual bool collides_with(const Enemy &turtle) = 0;
+    virtual bool collides_with(const Boss &boss) = 0;
 
     virtual bool isOffScreen(const vec2& screen) = 0;
 };

@@ -63,7 +63,6 @@ set(SOURCE_FILES
         src/Entities/Effects/Explosion.cpp src/Entities/Effects/Explosion.hpp
         src/Entities/Effects/VampParticleEmitter.cpp src/Entities/Effects/VampParticleEmitter.hpp
 
-        src/Entities/fish.cpp src/Entities/fish.hpp
         src/Entities/Player.cpp src/Entities/Player.hpp
         src/Entities/Space.cpp src/Entities/Space.hpp
         src/Entities/Vamp.cpp src/Entities/Vamp.hpp

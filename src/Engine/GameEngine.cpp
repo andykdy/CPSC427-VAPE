@@ -164,6 +164,12 @@ void GameEngine::draw() {
  * Runs the state's key handler
  */
 void GameEngine::on_key(GLFWwindow *window, int key, int i, int action, int mod) {
+    // entering debug mode
+    if (action == GLFW_RELEASE && key == GLFW_KEY_F && mod == GLFW_MOD_SHIFT)
+    {
+        toggleM_debug_mode();
+    }
+
     state->on_key(window, key, i, action, mod);
 }
 
@@ -202,6 +208,16 @@ float GameEngine::getM_current_speed() const {
 void GameEngine::setM_current_speed(float m_current_speed) {
     GameEngine::m_current_speed = m_current_speed;
 }
+
+void GameEngine::toggleM_debug_mode() {
+    GameEngine::m_debug_mode = !GameEngine::m_debug_mode;
+}
+
+bool GameEngine::getM_debug_mode() {
+    return GameEngine::m_debug_mode;
+}
+
+
 
 ECS::EntityManager *GameEngine::getEntityManager() {
     return &entityManager;

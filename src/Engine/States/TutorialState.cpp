@@ -22,8 +22,6 @@ namespace
 	const size_t MAX_HEALTH = 75;
 	const size_t INIT_HEALTH = 50;
 	const size_t DAMAGE_ENEMY = 5;
-	const size_t DAMAGE_BOSS = 5;
-	const size_t BOSS_TIME = 30;
 	const size_t VAMP_HEAL = 2;
 	const size_t VAMP_KILLS_NEEDED = 3;
 }
@@ -98,7 +96,6 @@ void TutorialState::init() {
 }
 
 void TutorialState::terminate() {
-	// TODO entity + system cleanup
 	if (m_background_music != nullptr)
 		Mix_FreeMusic(m_background_music);
 	if (m_player_dead_sound != nullptr)
@@ -279,7 +276,6 @@ void TutorialState::update(float ms) {
 	}
 
 	// Removing out of screen bullets
-	// TODO move into player code? do same thing for boss/enemy bullets?
 	bullet_it = playerBullets.begin();
 	while (bullet_it != playerBullets.end()) {
 		if ((*bullet_it)->isOffScreen(screen))
