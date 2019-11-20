@@ -67,6 +67,9 @@ public:
 private:
     Levels::Level m_level;
 
+    bool m_paused = false;
+    float m_resume_speed = 1.f;
+
     void lose_health(int damage);
     void add_health(int heal);
 

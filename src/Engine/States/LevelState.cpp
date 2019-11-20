@@ -166,6 +166,10 @@ void LevelState::terminate() {
 }
 
 void LevelState::update(float ms) {
+    if (m_paused) {
+        // TODO
+        return;
+    }
     auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
     auto * enemies = spawn.getEnemies();
 
@@ -384,11 +388,6 @@ void LevelState::update(float ms) {
             m_vamp_mode_charge = MAX_VAMP_CHARGE;
             add_health(MAX_HEALTH);
         }
-    }
-
-    if (keyMap[GLFW_KEY_ESCAPE]) {
-        GameEngine::getInstance().changeState(new MainMenuState());
-        return;
     }
 
     bool end_vamp_mode = false;
@@ -642,10 +641,30 @@ void LevelState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod
     // Track which keys are being pressed or held
     (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[key] = true : keyMap[key] = false;
 
-    // Resetting game
+    // Resetting game TODO should this be removed from final? Can cheese for lives
     if (action == GLFW_RELEASE && key == GLFW_KEY_R)
     {
         reset();
+    }
+
+    if (action == GLFW_RELEASE && key == GLFW_KEY_R)
+    {
+        reset();
+    }
+
+    if (action == GLFW_RELEASE && key == GLFW_KEY_ESCAPE)
+    {
+        if (GameEngine::getInstance().getM_current_speed() == 0.f) {
+            m_paused = false;
+            GameEngine::getInstance().setM_current_speed(m_resume_speed);
+            Mix_ResumeMusic();
+        } else {
+            m_paused = true;
+            m_resume_speed = GameEngine::getInstance().getM_current_speed(); // In case in vamp mode
+            GameEngine::getInstance().setM_current_speed(0.f);
+            Mix_PauseMusic();
+        }
+        //GameEngine::getInstance().changeState(new MainMenuState());
     }
 }
 
