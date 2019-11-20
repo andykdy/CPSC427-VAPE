@@ -4,11 +4,12 @@
 #include "common.hpp"
 #include "Entities/Projectiles and Damaging/Projectile.hpp"
 #include <vector>
-#include <SDL_mixer.h>
 #include <Engine/ECS/Entity.hpp>
+#include <Entities/Weapons/Weapon.hpp>
 #include "Entities/Enemies/Enemy.hpp"
 
 class Projectile;
+class Weapon;
 class Enemy;
 
 class Player : public ECS::Entity
@@ -56,8 +57,6 @@ public:
 	// Returns the bounding box for collision detection
 	vec2 get_bounding_box() const;
 
-	std::vector<Projectile*> bullets;
-
 	// Called when the salmon collides with an enemy, activate invulerability frames 
 	void set_iframes(float magnitude);
 
@@ -65,15 +64,16 @@ public:
 
 	int get_health() const;
 
-private:
-	Mix_Chunk* m_player_bullet_sound;
+	std::vector<Projectile*>* getProjectiles();
 
+private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up
 	float m_iframe; // Used to indicate how long the player should be invulnerable for
 
   	std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;
 
-	float m_bullet_cooldown;
-	void spawn_bullet();
+	Weapon* weapon;
+
+	void changeWeapon(Weapon* newWeapon);
 };
