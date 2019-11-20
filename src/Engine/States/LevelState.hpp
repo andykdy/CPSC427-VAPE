@@ -35,6 +35,7 @@
 #include <Entities/UI/UIPanel/UIPanel.hpp>
 #include <Entities/Pickups/Pickup.hpp>
 #include <Utils/SaveData.hpp>
+#include <Entities/UI/PauseMenu/PauseMenu.hpp>
 
 const size_t INIT_LIVES = 5;
 
@@ -67,8 +68,7 @@ public:
 private:
     Levels::Level m_level;
 
-    bool m_paused = false;
-    float m_resume_speed = 1.f;
+    PauseMenu* m_pause;
 
     void lose_health(int damage);
     void add_health(int heal);

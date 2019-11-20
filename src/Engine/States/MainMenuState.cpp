@@ -32,11 +32,12 @@ void MainMenuState::init() {
 
 
     m_cursor = &GameEngine::getInstance().getEntityManager()->addEntity<Cursor>();
-    m_cursor->init({buttonpos.x- 100, buttonpos.y}, buttonscale, 0);
+    m_cursor->init({buttonpos.x- 210, buttonpos.y}, buttonscale, 0);
 
 
     auto* continue_button = &GameEngine::getInstance().getEntityManager()->addEntity<ContinueButton>();
     continue_button->init(buttonpos, buttonscale, 0);
+    continue_button->select();
     m_buttons.push_back(continue_button);
 
     buttonpos.y += buttonHeight + offset;

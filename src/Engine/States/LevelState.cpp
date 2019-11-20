@@ -93,6 +93,9 @@ void LevelState::init() {
     m_debug_mode = false;
     m_player_invincibility = false;
 
+    m_pause = &GameEngine::getInstance().getEntityManager()->addEntity<PauseMenu>();
+    m_pause->init(screen);
+
     m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
     m_player->init(screen, INIT_HEALTH);
     m_uiPanelBackground = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanelBackground>();
@@ -120,7 +123,7 @@ void LevelState::init() {
 
 
 
-    PlayerData data;
+    PlayerData data{};
     data.points = m_starting_points;
     data.lives = m_lives;
     data.levelId = m_level.id;
@@ -145,6 +148,8 @@ void LevelState::terminate() {
     if (m_player_explosion != nullptr)
         Mix_FreeChunk(m_player_explosion);
 
+    m_pause->destroy();
+
     m_player->destroy();
 
     for (auto& pickup : m_pickups) {
@@ -166,8 +171,8 @@ void LevelState::terminate() {
 }
 
 void LevelState::update(float ms) {
-    if (m_paused) {
-        // TODO
+    if (m_pause->isPaused()) {
+        m_pause->update(ms, mouse_position, keyMap);
         return;
     }
     auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
@@ -599,6 +604,10 @@ void LevelState::draw() {
     m_dialogue.draw(projection_2D);
 
 
+
+
+    m_pause->draw(projection_2D);
+
     //////////////////
     // Presenting
     glfwSwapBuffers(m_window);
@@ -645,27 +654,16 @@ void LevelState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod
     if (action == GLFW_RELEASE && key == GLFW_KEY_R)
     {
         reset();
-    }
-
-    if (action == GLFW_RELEASE && key == GLFW_KEY_R)
-    {
-        reset();
+        return;
     }
 
     if (action == GLFW_RELEASE && key == GLFW_KEY_ESCAPE)
     {
-        if (GameEngine::getInstance().getM_current_speed() == 0.f) {
-            m_paused = false;
-            GameEngine::getInstance().setM_current_speed(m_resume_speed);
-            Mix_ResumeMusic();
-        } else {
-            m_paused = true;
-            m_resume_speed = GameEngine::getInstance().getM_current_speed(); // In case in vamp mode
-            GameEngine::getInstance().setM_current_speed(0.f);
-            Mix_PauseMusic();
-        }
-        //GameEngine::getInstance().changeState(new MainMenuState());
+        m_pause->toggle();
+        return;
     }
+
+    m_pause->on_key(wwindow, key, i, action, mod);
 }
 
 void LevelState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
