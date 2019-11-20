@@ -13,8 +13,6 @@
 #include "Entities/Enemies/EnemyGenericShooter.hpp"
 #include "Entities/Enemies/EnemyTargettedShooter.hpp"
 
-// TODO change turtle to enemy superclass?
-
 namespace Levels {
     typedef Boss* BossSpawner(ECS::EntityManager *e);
     typedef Enemy* Spawner(ECS::EntityManager *e, vec2 pos, vec2 vel, float dir);

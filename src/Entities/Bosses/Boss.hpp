@@ -21,7 +21,7 @@ enum collisionType {
     exact
 };
 
-class Boss : public ECS::Entity { // TODO refactor to new entity
+class Boss : public ECS::Entity {
     // Shared between all turtles, no need to load one for each instance
     static Texture boss_texture;
 protected:

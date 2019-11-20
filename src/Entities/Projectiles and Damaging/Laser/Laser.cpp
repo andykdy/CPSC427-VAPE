@@ -82,6 +82,9 @@ void Laser::destroy() {
 }
 
 void Laser::update(float ms) {
+    int w, h;
+    glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
+    vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
     // Update timers
     if (m_state == laserState::primed){
@@ -129,7 +132,7 @@ void Laser::update(float ms) {
     auto particle_it = m_particles.begin();
     while (particle_it != m_particles.end()) {
         if ((*particle_it).life <= 0
-            || (*particle_it).position.y > 1000 // TODO screen size
+            || (*particle_it).position.y > screen.y
             || (*particle_it).position.y < 0
             || (*particle_it).position.x < 0
             || (*particle_it).position.x > 800) {
@@ -147,7 +150,7 @@ void Laser::spawn() {
 
     float xrange = (float)LASER_WIDTH/2;
     if (m_state == laserState::firing) {
-        return; // TODO: Any particles while firing?
+        return;
     } else if (m_state == laserState::primed) {
         n = 10;
         xrange = 1;
@@ -238,7 +241,7 @@ void Laser::draw(const mat3 &projection) {
 }
 
 vec2 Laser::get_position() const {
-    return m_origin; // TODO?
+    return m_origin;
 }
 
 // https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
@@ -275,24 +278,15 @@ bool Laser::collides_with(const Player &player) {
     vec2 playerbox = player.get_bounding_box();
     float playerr = std::max(playerbox.x/2, playerbox.y/2)*0.6f;
 
-    float lx = m_origin.x - LASER_WIDTH/3;
+    float lx = m_origin.x - LASER_WIDTH/3.f;
     vec2 p00 = {lx, m_origin.y};
     vec2 p01 = { lx + 2000*sinf(m_rotation), m_origin.y + 2000*cosf(m_rotation)};
 
-    float rx = m_origin.x + LASER_WIDTH/3;
+    float rx = m_origin.x + LASER_WIDTH/3.f;
     vec2 p10 = {rx, m_origin.y};
     vec2 p11 = {rx + 2000*sinf(m_rotation), m_origin.y + 2000*cosf(m_rotation)};
 
-    float w = playerbox.x/2;
-    float h = playerbox.y/2;
-    vec2 tl = {playerpos.x - w, playerpos.y - h};
-    vec2 br = {playerpos.x + w, playerpos.y + h};
-
     return lineCircleCollision(p00, p01, playerpos, playerr) || lineCircleCollision(p10, p11, playerpos, playerr);
-    /*
-    return (CohenSutherlandLineClipAndDraw(p00, p01, tl, br) ||
-            CohenSutherlandLineClipAndDraw(p10, p11, tl, br));
-            */
 }
 
 bool Laser::collides_with(const Enemy &turtle) {

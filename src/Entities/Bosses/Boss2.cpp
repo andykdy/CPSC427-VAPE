@@ -536,7 +536,7 @@ bool AttackPattern::operator==(const AttackPattern &rhs) const {
     for (int i = 0; i < 6; i++) {
         ret = ret && (lasers[i] == rhs.lasers[i]);
     }
-    // TODO more? I think all I care about are same lasers
+    // I think all I care about are same lasers
     return ret;
 }
 

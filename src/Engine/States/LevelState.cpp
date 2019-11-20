@@ -43,9 +43,8 @@ LevelState::LevelState(Levels::Level level, PlayerData data) :
         m_starting_points(data.points),
         m_lives(data.lives)
 {
-    // Seeding rng with random device
-    m_rng = std::default_random_engine(std::random_device()());
 
+    // Load leaderboard data
     auto leaderboard = getLeaderboard();
 
     m_highscore = 0;
@@ -54,7 +53,6 @@ LevelState::LevelState(Levels::Level level, PlayerData data) :
 }
 
 void LevelState::init() {
-    //std::cout << "init" << std::endl;
     m_background_music = Mix_LoadMUS(m_level.backgroundMusic);
     m_boss_music = Mix_LoadMUS(m_level.bossMusic);
     m_victory_music = Mix_LoadMUS(audio_path("music_victory.wav"));
@@ -116,10 +114,8 @@ void LevelState::init() {
     m_space.set_position({screen.x/2, 0});
 
     GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
-    // GameEngine::getInstance().getSystemManager()->addSystem<CollisionSystem>();
     auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
     spawn.reset(m_level.timeline);
-    m_turtles = spawn.getEnemies(); // TODO, probably just get rid of m_turtles, pull from spawn system when needed
     GameEngine::getInstance().setM_current_speed(1.f);
 
 
@@ -130,12 +126,12 @@ void LevelState::init() {
     data.levelId = m_level.id;
 
     saveGameData(data);
-
-    //std::cout << "initEnd" << std::endl;
 }
 
 void LevelState::terminate() {
-    // TODO system cleanup
+    auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
+    spawn.reset(m_level.timeline);
+
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
     if (m_boss_music != nullptr)
@@ -150,9 +146,6 @@ void LevelState::terminate() {
         Mix_FreeChunk(m_player_explosion);
 
     m_player->destroy();
-    for (auto& turtle : *m_turtles){ // TODO do in enemyspawnersystem
-        turtle->destroy();
-    }
 
     for (auto& pickup : m_pickups) {
         pickup->destroy();
@@ -162,7 +155,6 @@ void LevelState::terminate() {
     m_uiPanel->destroy();
     m_health->destroy();
     m_vamp_charge->destroy();
-    m_turtles->clear();
     m_pickups.clear();
     if (m_boss != nullptr)
         m_boss->destroy();
@@ -174,7 +166,9 @@ void LevelState::terminate() {
 }
 
 void LevelState::update(float ms) {
-    //std::cout << "update" << std::endl;
+    auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
+    auto * enemies = spawn.getEnemies();
+
     int w, h;
     glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
     vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
@@ -192,41 +186,41 @@ void LevelState::update(float ms) {
     if (m_level_time >= m_level.bossTime && !m_boss_mode) {
         m_dialogue.deactivate();
         m_boss_mode = true;
-        m_boss->set_position({static_cast<float>(screen.x/2), static_cast<float>(screen.y/10)});
+        m_boss->set_position({screen.x/2, screen.y/10});
     }
 
     m_health->setHealth(m_player->get_health());
     m_vamp_charge->setVampCharge(m_vamp_mode_charge);
 
     // Update the player's position for the enemies
-    for(auto& enemy: *m_turtles) {
+    for(auto& enemy: *enemies) {
         enemy->player_position = m_player->get_position();
     }
 
-    // Checking Player - Turtle collisions
-    auto turtle_it = m_turtles->begin();
-    while (turtle_it != m_turtles->end())
+    // Checking Player - Enemy collisions
+    auto enemy_it = enemies->begin();
+    while (enemy_it != enemies->end())
     {
-        if (m_player->collides_with(**turtle_it))
+        if (m_player->collides_with(**enemy_it))
         {
             if (m_player->is_alive()) {
                 if (m_player->get_iframes() <= 0.f) {
                     m_player->set_iframes(500.f);
                     lose_health(DAMAGE_ENEMY);
                     Mix_PlayChannel(-1, m_player_explosion, 0);
-                    (*turtle_it)->destroy();
-                    turtle_it = m_turtles->erase(turtle_it);
+                    (*enemy_it)->destroy();
+                    enemy_it = enemies->erase(enemy_it);
                 }
             }
             break;
         } else
         {
-            turtle_it++;
+            enemy_it++;
         }
     }
 
     // Checking Enemy Bullet - Player collisions
-    for(auto& enemy: *m_turtles) {
+    for(auto& enemy: *enemies) {
         auto& bullets = enemy->projectiles;
 
         // Checking Enemy Bullet - Player collisions
@@ -247,7 +241,6 @@ void LevelState::update(float ms) {
         }
 
         // Removing out of screen bullets
-        // TODO move into bullet class?
         bullet_it = bullets.begin();
         while(bullet_it != bullets.end()) {
             if ((*bullet_it)->isOffScreen(screen))
@@ -277,15 +270,15 @@ void LevelState::update(float ms) {
     while (bullet_it != playerBullets.end())
     {
         bool eraseBullet = false;
-        auto turtle_it = m_turtles->begin();
-        while (turtle_it != m_turtles->end())
+        auto enemy_it = enemies->begin();
+        while (enemy_it != enemies->end())
         {
-            if ((*bullet_it)->collides_with(**turtle_it))
+            if ((*bullet_it)->collides_with(**enemy_it))
             {
                 eraseBullet = true;
-                m_explosion.spawn((*turtle_it)->get_position());
-                (*turtle_it)->destroy();
-                turtle_it = m_turtles->erase(turtle_it);
+                m_explosion.spawn((*enemy_it)->get_position());
+                (*enemy_it)->destroy();
+                enemy_it = enemies->erase(enemy_it);
                 Mix_PlayChannel(-1,m_player_explosion,0);
                 // expl
 
@@ -294,7 +287,7 @@ void LevelState::update(float ms) {
 
                 break;
             } else {
-                ++turtle_it;
+                ++enemy_it;
             }
         }
         if (m_boss_mode && m_boss->is_alive() && (*bullet_it)->collides_with(*m_boss)) {
@@ -323,28 +316,25 @@ void LevelState::update(float ms) {
     m_vamp_cooldown -= ms;
 
     if (m_vamp_mode) {
-        turtle_it = m_turtles->begin();
-        while (turtle_it != m_turtles->end()) {
-            if (m_vamp.collides_with(**turtle_it)) {
+        enemy_it = enemies->begin();
+        while (enemy_it != enemies->end()) {
+            if (m_vamp.collides_with(**enemy_it)) {
                 // TODO - Re-add resetting vamp timer on leaving aura
-                (*turtle_it)->add_vamp_timer(ms);
-                 //std::cout << (*turtle_it)->get_vamp_timer() << std::endl;
+                (*enemy_it)->add_vamp_timer(ms);
 
-                if ((*turtle_it)->get_vamp_timer() >= VAMP_DAMAGE_TIMER) {
-                    // std::cout << "Destroying enemy" << std::endl;
-                    m_vamp_particle_emitter.spawn((*turtle_it)->get_position());
+                if ((*enemy_it)->get_vamp_timer() >= VAMP_DAMAGE_TIMER) {
+                    m_vamp_particle_emitter.spawn((*enemy_it)->get_position());
 
-                    m_explosion.spawn((*turtle_it)->get_position());
+                    m_explosion.spawn((*enemy_it)->get_position());
                     Mix_PlayChannel(-1, m_player_explosion, 0);
-                    (*turtle_it)->destroy();
-                    turtle_it = m_turtles->erase(turtle_it);
-                    //add_health(VAMP_HEAL);
+                    (*enemy_it)->destroy();
+                    enemy_it = enemies->erase(enemy_it);
                     continue;
                 }
 
             }
 
-            ++turtle_it;
+            ++enemy_it;
         }
     }
 
@@ -352,25 +342,24 @@ void LevelState::update(float ms) {
     m_vamp_particle_emitter.update(ms, m_player->get_position());
     m_explosion.update(ms);
 
-    // Updating all entities, making the turtle and fish
-    // faster based on current
-    m_player->update(ms, keyMap, mouse_position);
-    for (auto& turtle : *m_turtles)
-        turtle->update(ms);
 
-    // Removing out of screen turtles
-    turtle_it = m_turtles->begin();
-    while (turtle_it != m_turtles->end())
+    m_player->update(ms, keyMap, mouse_position);
+    for (auto& enemy : *enemies)
+        enemy->update(ms);
+
+    // Removing out of screen enemies
+    enemy_it = enemies->begin();
+    while (enemy_it != enemies->end())
     {
-        float h = (*turtle_it)->get_bounding_box().y / 2;
-        float w = (*turtle_it)->get_bounding_box().x / 2;
-        if (std::abs((*turtle_it)->get_position().y) + h > screen.y + 400
-            || std::abs((*turtle_it)->get_position().x) + w > screen.x + 400) {
-            (*turtle_it)->destroy();
-            turtle_it = m_turtles->erase(turtle_it);
+        float h = (*enemy_it)->get_bounding_box().y / 2;
+        float w = (*enemy_it)->get_bounding_box().x / 2;
+        if (std::abs((*enemy_it)->get_position().y) + h > screen.y + 400
+            || std::abs((*enemy_it)->get_position().x) + w > screen.x + 400) {
+            (*enemy_it)->destroy();
+            enemy_it = enemies->erase(enemy_it);
             continue;
         } else {
-            ++turtle_it;
+            ++enemy_it;
         }
     }
 
@@ -437,7 +426,6 @@ void LevelState::update(float ms) {
     }
 
     // Removing out of screen bullets
-    // TODO move into player code? do same thing for boss/enemy bullets?
     bullet_it = playerBullets.begin();
     while(bullet_it != playerBullets.end()) {
         if ((*bullet_it)->isOffScreen(screen))
@@ -507,7 +495,6 @@ void LevelState::update(float ms) {
             }
 
             // Removing out of screen bullets
-            // TODO move into boss class?
             boss_bullet_it = bossBullets.begin();
             while(boss_bullet_it != bossBullets.end()) {
                 if ((*boss_bullet_it)->isOffScreen(screen))
@@ -527,7 +514,7 @@ void LevelState::update(float ms) {
                 GameEngine::getInstance().changeState(new LevelState(*m_level.nextLevel, {
                         m_lives,
                         m_points,
-                        1 // TODO level Ids
+                        m_level.nextLevel->id
                 }));
             } else {
                 saveScore(m_points);
@@ -550,10 +537,12 @@ void LevelState::update(float ms) {
             GameEngine::getInstance().changeState(new MainMenuState()); // TODO game over state
         }
     }
-    //std::cout << "updateend" << std::endl;
 }
 
 void LevelState::draw() {
+    auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
+    auto * enemies = spawn.getEnemies();
+    
     // Clearing error buffer
     gl_flush_errors();
 
@@ -591,8 +580,8 @@ void LevelState::draw() {
     m_space.draw(projection_2D);
 
     // Drawing entities
-    for (auto& turtle : (*m_turtles))
-        turtle->draw(projection_2D);
+    for (auto& enemy : (*enemies))
+        enemy->draw(projection_2D);
     m_player->draw(projection_2D);
     if (m_boss_mode) {
         m_boss->draw(projection_2D);

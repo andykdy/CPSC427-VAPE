@@ -1,10 +1,6 @@
 // Header
 #include "Player.hpp"
 
-// internal
-#include "Entities/Enemies/turtle.hpp"
-#include "Entities/fish.hpp"
-
 // stlib
 #include <string>
 #include <algorithm>
@@ -111,11 +107,28 @@ void Player::destroy()
 // Called on each frame by World::update()
 void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 {
+	// Get screen size
+	int w, h;
+	glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
+	vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
+
     auto* motion = getComponent<MotionComponent>();
 
-	// Update player bullets
-	for (auto& bullet : bullets)
-		bullet->update(ms);
+	// Update bullets, removing out of screen bullets
+	auto bullet_it = bullets.begin();
+	while(bullet_it != bullets.end()) {
+		if ((*bullet_it)->isOffScreen(screen))
+		{
+			(*bullet_it)->destroy();
+			bullet_it = bullets.erase(bullet_it);
+			continue;
+		} else {
+			(*bullet_it)->update(ms);
+		}
+
+		++bullet_it;
+	}
+
 
 	// Spawning player bullets
 	m_bullet_cooldown -= ms;
@@ -182,37 +195,19 @@ void Player::draw(const mat3& projection)
 	sprite->draw(projection, transform->out, effect->program, {1.f, mod * 1.f,mod * 1.f});
 }
 
-// TODO collisionSystem
 // Simple bounding box collision check
 // This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
 // if the center point of either object is inside the other's bounding-box-circle. You don't
 // need to try to use this technique.
-bool Player::collides_with(const Enemy& turtle)
+bool Player::collides_with(const Enemy& enemy)
 {
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
 
-	float dx = motion->position.x - turtle.get_position().x;
-	float dy = motion->position.y - turtle.get_position().y;
+	float dx = motion->position.x - enemy.get_position().x;
+	float dy = motion->position.y - enemy.get_position().y;
 	float d_sq = dx * dx + dy * dy;
-	float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
-	float my_r = std::max(physics->scale.x, physics->scale.y);
-	float r = std::max(other_r, my_r);
-	r *= 0.6f;
-	if (d_sq < r * r)
-		return true;
-	return false;
-}
-
-bool Player::collides_with(const Fish& fish)
-{
-    auto* motion = getComponent<MotionComponent>();
-    auto* physics = getComponent<PhysicsComponent>();
-
-    float dx = motion->position.x - fish.get_position().x;
-	float dy = motion->position.y - fish.get_position().y;
-	float d_sq = dx * dx + dy * dy;
-	float other_r = std::max(fish.get_bounding_box().x, fish.get_bounding_box().y);
+	float other_r = std::max(enemy.get_bounding_box().x, enemy.get_bounding_box().y);
 	float my_r = std::max(physics->scale.x, physics->scale.y);
 	float r = std::max(other_r, my_r);
 	r *= 0.6f;

@@ -14,11 +14,11 @@ class EnemySpawnerSystem : public ECS::System {
 private:
     int time = 0;
     std::vector<Enemy*> enemies;
-    Levels::Timeline level = Levels::level1Timeline; // TODO
+    Levels::Timeline level = Levels::level1Timeline;
 public:
     void update(float ms) override;
     std::vector<Enemy*> *getEnemies();
-    void reset(Levels::Timeline levelTimeline);
+    void reset(Levels::Timeline& levelTimeline);
     void spawnWave(const Levels::Wave& wave);
 };
 

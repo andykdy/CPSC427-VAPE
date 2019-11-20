@@ -142,11 +142,11 @@ vec2 Vamp::get_position()const
     return m_position;
 }
 
-bool Vamp::collides_with(const Enemy &turtle) {
-    float dx = m_position.x - turtle.get_position().x;
-    float dy = m_position.y - turtle.get_position().y;
+bool Vamp::collides_with(const Enemy &enemy) {
+    float dx = m_position.x - enemy.get_position().x;
+    float dy = m_position.y - enemy.get_position().y;
     float d_sq = dx * dx + dy * dy;
-    float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
+    float other_r = std::max(enemy.get_bounding_box().x, enemy.get_bounding_box().y);
     float my_r = std::max(vamp_texture.width * m_scale.x * 0.55f,  vamp_texture.height * m_scale.y * 0.55f);
     float r = std::max(other_r, my_r);
     r *= 0.65f;
