@@ -7,8 +7,8 @@
 #include "LevelState.hpp"
 
 
-BetweenLevelsState::BetweenLevelsState(const Levels::Level *m_next_level, const PlayerData &m_player_data) : m_next_level(
-        m_next_level), m_player_data(m_player_data) {}
+BetweenLevelsState::BetweenLevelsState(const Levels::Level *next_level, unsigned int prev_start_points, const PlayerData &player_data) :
+        m_next_level(next_level), m_prev_start_points(prev_start_points), m_player_data(player_data) {}
 
 void BetweenLevelsState::init() {
     m_continue.init();

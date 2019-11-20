@@ -34,7 +34,13 @@ namespace ECS {
         // TODO getter to just get ones with specific components?
         std::unordered_map<EntityId, std::unique_ptr<Entity>> * getEntities() { return &entities; }
 
-        void clear() { entities.clear(); }
+        void clear() {
+            for (auto& entity : entities) {
+                if (entity.second->isActive())
+                    entity.second->destroy();
+            }
+            entities.clear();
+        }
     };
 }
 
