@@ -50,6 +50,8 @@ set(SOURCE_FILES
         src/Engine/States/MainMenuState.cpp src/Engine/States/MainMenuState.hpp
         src/Engine/States/TutorialState.cpp src/Engine/States/TutorialState.hpp
         src/Engine/States/IntroState.cpp src/Engine/States/IntroState.hpp
+        src/Engine/States/ControlsState.hpp
+
 
         src/Engine/ECS/Component.hpp
         src/Engine/ECS/Entity.hpp
@@ -90,6 +92,11 @@ set(SOURCE_FILES
         src/Entities/UI/MainMenu/StartButton.cpp src/Entities/UI/MainMenu/StartButton.hpp
         src/Entities/UI/MainMenu/ContinueButton.cpp src/Entities/UI/MainMenu/ContinueButton.hpp
         src/Entities/UI/MainMenu/TutorialButton.cpp src/Entities/UI/MainMenu/TutorialButton.hpp
+        src/Entities/UI/EnterSkip.cpp src/Entities/UI/EnterSkip.hpp
+        src/Entities/UI/PauseMenu/PauseMenu.cpp src/Entities/UI/PauseMenu/PauseMenu.hpp
+        src/Entities/UI/PauseMenu/ResumeButton.cpp src/Entities/UI/PauseMenu/ResumeButton.hpp
+        src/Entities/UI/PauseMenu/ExitToMenuButton.cpp src/Entities/UI/PauseMenu/ExitToMenuButton.hpp
+        src/Entities/UI/PauseMenu/ControlDiagram.cpp src/Entities/UI/PauseMenu/ControlDiagram.hpp
 
 
         "src/Entities/Projectiles and Damaging/Projectile.hpp"
@@ -133,7 +140,8 @@ set(SOURCE_FILES
         src/Utils/SaveData.cpp src/Utils/SaveData.hpp
 
         src/Entities/Video.cpp src/Entities/Video.hpp
-        src/Entities/UI/EnterSkip.cpp src/Entities/UI/EnterSkip.hpp src/Entities/UI/PauseMenu/PauseMenu.cpp src/Entities/UI/PauseMenu/PauseMenu.hpp src/Entities/UI/PauseMenu/ResumeButton.cpp src/Entities/UI/PauseMenu/ResumeButton.hpp src/Entities/UI/PauseMenu/ExitToMenuButton.cpp src/Entities/UI/PauseMenu/ExitToMenuButton.hpp src/Entities/UI/PauseMenu/ControlDiagram.cpp src/Entities/UI/PauseMenu/ControlDiagram.hpp)
+
+        src/Entities/UI/EnterContinue.cpp src/Entities/UI/EnterContinue.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

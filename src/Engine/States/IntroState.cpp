@@ -5,7 +5,7 @@
 #include <sstream>
 #include <Levels/Level1.hpp>
 #include "IntroState.hpp"
-#include "LevelState.hpp"
+#include "ControlsState.hpp"
 
 void IntroState::init() {
     m_background_music = Mix_LoadMUS(audio_path("intro.wav"));
@@ -37,7 +37,7 @@ void IntroState::terminate() {
 void IntroState::update(float ms) {
     m_video.update(ms);
     if (m_video.isOver())
-        GameEngine::getInstance().changeState(new LevelState(Levels::level1, {INIT_LIVES,0,0}));
+        return changeState();
     m_skip.update(ms);
 }
 
@@ -87,6 +87,10 @@ void IntroState::draw() {
 void IntroState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
     if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER)
     {
-        GameEngine::getInstance().changeState(new LevelState(Levels::level1, {INIT_LIVES,0,0}));
+        return changeState();
     }
+}
+
+void IntroState::changeState() {
+    GameEngine::getInstance().changeState(new ControlsState());
 }

@@ -26,6 +26,8 @@ public:
 
     void on_mouse_button(GLFWwindow *window, int button, int action, int mods) override {};
 
+    void changeState();
+
 private:
     Video m_video;
     EnterSkip m_skip;
