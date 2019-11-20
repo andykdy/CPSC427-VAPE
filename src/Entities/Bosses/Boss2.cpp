@@ -450,19 +450,19 @@ void Boss2::draw(const mat3 &projection) {
     for (auto laser : projectiles)
         laser->draw(projection);
 
-    /*
-    // Vertex Debug Drawing
-    for (auto& vertex : m_vertices) {
-        transform->begin();
-        transform->translate(motion->position);
-        transform->scale(MESH_SCALE);
-        transform->rotate(motion->radians + 1.5708f);
-        transform->end();
+    if (GameEngine::getInstance().getM_debug_mode()){
+        // Vertex Debug Drawing
+        for (auto& vertex : m_vertices) {
+            transform->begin();
+            transform->translate(motion->position);
+            transform->scale(MESH_SCALE);
+            transform->rotate(motion->radians + 1.5708f);
+            transform->end();
 
-        vec3 pos = mul(transform->out, vec3{vertex.position.x, vertex.position.y, 1.0});
-        m_dot.draw(projection, {1.f,1.f,1.f}, {pos.x, pos.y}, 0);
+            vec3 pos = mul(transform->out, vec3{vertex.position.x, vertex.position.y, 1.0});
+            m_dot.draw(projection, {1.f,1.f,1.f}, {pos.x, pos.y}, 0);
+        }
     }
-     */
 
     m_healthbar->draw(projection);
 }
@@ -490,11 +490,13 @@ void Boss2::addDamage(int damage) {
 }
 
 bool Boss2::collidesWith(const Vamp& vamp) {
-    return checkCollision(vamp.get_position(), vamp.get_bounding_box());
+    vec2 bbox = vamp.get_bounding_box();
+    return checkCollision(vamp.get_position(), {bbox.x * 0.5f, bbox.y * 0.5f});
 }
 
 bool Boss2::collidesWith(const Player &player) {
-    return checkCollision(player.get_position(), player.get_bounding_box());
+    vec2 bbox = player.get_bounding_box();
+    return checkCollision(player.get_position(), {bbox.x * 0.9f, bbox.y * 0.9f});
 }
 
 bool Boss2::checkCollision(vec2 pos, vec2 box) const {

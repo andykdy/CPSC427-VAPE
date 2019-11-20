@@ -59,6 +59,7 @@ void BetweenLevelsState::draw() {
 
     m_continue.draw(projection_2D);
 
+
     //////////////////
     // Presenting
     glfwSwapBuffers(m_window);

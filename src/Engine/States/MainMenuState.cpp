@@ -164,20 +164,21 @@ void MainMenuState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
 
         if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER) {
             if (m_button_cursor >= 0 && m_button_cursor < m_buttons.size()) {
-                m_buttons[m_button_cursor]->doAction();
+                return m_buttons[m_button_cursor]->doAction();
             }
         }
     }
 
 
-
-    if (action == GLFW_RELEASE && key == GLFW_KEY_1)
-    {
-        GameEngine::getInstance().changeState(new LevelState(Levels::level1, {INIT_LIVES,0,0}));
-    }
-    if (action == GLFW_RELEASE && key == GLFW_KEY_2)
-    {
-        GameEngine::getInstance().changeState(new LevelState(Levels::level2, {INIT_LIVES,0,0}));
+    if (GameEngine::getInstance().getM_debug_mode()){
+        if (action == GLFW_RELEASE && key == GLFW_KEY_1)
+        {
+            return GameEngine::getInstance().changeState(new LevelState(Levels::level1, {INIT_LIVES,0,0}));
+        }
+        if (action == GLFW_RELEASE && key == GLFW_KEY_2)
+        {
+            return GameEngine::getInstance().changeState(new LevelState(Levels::level2, {INIT_LIVES,0,0}));
+        }
     }
 }
 
