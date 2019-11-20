@@ -51,6 +51,7 @@ set(SOURCE_FILES
         src/Engine/States/TutorialState.cpp src/Engine/States/TutorialState.hpp
         src/Engine/States/IntroState.cpp src/Engine/States/IntroState.hpp
         src/Engine/States/ControlsState.hpp
+        src/Engine/States/BetweenLevelsState.cpp src/Engine/States/BetweenLevelsState.hpp
 
 
         src/Engine/ECS/Component.hpp
@@ -93,6 +94,7 @@ set(SOURCE_FILES
         src/Entities/UI/MainMenu/ContinueButton.cpp src/Entities/UI/MainMenu/ContinueButton.hpp
         src/Entities/UI/MainMenu/TutorialButton.cpp src/Entities/UI/MainMenu/TutorialButton.hpp
         src/Entities/UI/EnterSkip.cpp src/Entities/UI/EnterSkip.hpp
+        src/Entities/UI/EnterContinue.cpp src/Entities/UI/EnterContinue.hpp
         src/Entities/UI/PauseMenu/PauseMenu.cpp src/Entities/UI/PauseMenu/PauseMenu.hpp
         src/Entities/UI/PauseMenu/ResumeButton.cpp src/Entities/UI/PauseMenu/ResumeButton.hpp
         src/Entities/UI/PauseMenu/ExitToMenuButton.cpp src/Entities/UI/PauseMenu/ExitToMenuButton.hpp
@@ -110,6 +112,10 @@ set(SOURCE_FILES
 
         src/Entities/Pickups/Pickup.hpp
         src/Entities/Pickups/TestPickup.cpp src/Entities/Pickups/TestPickup.hpp
+
+
+        src/Entities/Weapons/Weapon.hpp
+        src/Entities/Weapons/BulletStraightShot.cpp src/Entities/Weapons/BulletStraightShot.hpp
 
 
         src/Components/MotionComponent.hpp
@@ -141,7 +147,7 @@ set(SOURCE_FILES
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 
-        src/Entities/UI/EnterContinue.cpp src/Entities/UI/EnterContinue.hpp src/Entities/Weapons/Weapon.hpp src/Entities/Weapons/BulletStraightShot.cpp src/Entities/Weapons/BulletStraightShot.hpp)
+        )
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
