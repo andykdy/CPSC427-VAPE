@@ -8,29 +8,17 @@
 #include "stb_truetype.h"
 #include "common.hpp"
 
-class Font : public EntityOld {
+class Font {
 private:
+    std::string m_path;
     stbtt_bakedchar cdata[96]; // ASCII 32..126 is 95 glyphs
     GLuint m_tex = 0;
-    std::vector<TexturedVertex> vertices{};
-    std::vector<uint16_t> indices{};
-    vec3 m_color;
 public:
     explicit Font(const char* path);
 
-    void draw(const mat3& projection) override;
+    const GLuint getTexture() { return m_tex; };
 
-    void setText(const char* text, float z = -0.05f);
-
-    void setPosition(const vec2& pos) {
-        motion.position = pos;
-    }
-
-    void setColor(const vec3& color) {
-        m_color = color;
-    }
-
-    void clear();
+    const stbtt_bakedchar *getCdata() const { return cdata; }
 
     virtual ~Font();
 };

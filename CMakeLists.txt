@@ -79,6 +79,7 @@ set(SOURCE_FILES
         src/Entities/Enemies/EnemyGenericShooter.cpp src/Entities/Enemies/EnemyGenericShooter.hpp
         src/Entities/Enemies/EnemyTargettedShooter.cpp src/Entities/Enemies/EnemyTargettedShooter.hpp
 
+        src/Entities/UI/Text.cpp src/Entities/UI/Text.hpp
         src/Entities/UI/PlayerHealth/Health.cpp src/Entities/UI/PlayerHealth/Health.hpp
         src/Entities/UI/Dialogue/Dialogue.cpp src/Entities/UI/Dialogue/Dialogue.hpp
         src/Entities/UI/Dialogue/Continue.cpp src/Entities/UI/Dialogue/Continue.hpp
