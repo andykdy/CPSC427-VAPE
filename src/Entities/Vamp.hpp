@@ -7,7 +7,6 @@
 
 #include "common.hpp"
 #include "Entities/Enemies/Enemy.hpp"
-#include "fish.hpp"
 #include <Engine/ECS/Entity.hpp>
 
 class Enemy;
@@ -25,7 +24,7 @@ public:
     vec2 get_position()const;
 
     // Collision routines for turtles and fish
-    bool collides_with(const Enemy& turtle);
+    bool collides_with(const Enemy& enemy);
 
     // Returns the vamp mode's bounding box for collision detection, called by collides_with()
     vec2 get_bounding_box()const;

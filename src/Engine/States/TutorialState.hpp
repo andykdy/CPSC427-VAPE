@@ -30,6 +30,7 @@
 #include <Entities/Effects/Explosion.hpp>
 #include <Entities/UI/UIPanel/UIPanelBackground.hpp>
 #include <Entities/UI/UIPanel/UIPanel.hpp>
+#include <Entities/UI/PauseMenu/PauseMenu.hpp>
 
 enum Component {
 	initial,
@@ -64,6 +65,7 @@ public:
 	void on_mouse_button(GLFWwindow *window, int button, int action, int mods) override;
 
 private:
+	PauseMenu* m_pause;
 	void add_vamp_charge();
 
 	void lose_health(int damage);

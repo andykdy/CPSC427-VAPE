@@ -14,8 +14,6 @@ enum laserState {
     firing,
 };
 
-// TODO laser sweeping;
-
 class Laser : public Projectile {
     struct Particle {
         float life = 0.0f; // remove pebble when its life reaches 0

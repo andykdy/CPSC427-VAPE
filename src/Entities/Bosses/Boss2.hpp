@@ -14,7 +14,7 @@
 struct AttackPattern {
     bool lasers[6];
     float startRotations[6];
-    float targetRotations[6]; // TODO: vectors of targets for more complexity?
+    float targetRotations[6];
     float rotationSpeeds[6];
     float chargeTime[6];
     float fireTime[6];

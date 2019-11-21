@@ -15,8 +15,6 @@
 #include "common.hpp"
 #include "Entities/Player.hpp"
 #include "Entities/Enemies/turtle.hpp"
-//#include "Entities/Prototype.hpp"
-#include "Entities/fish.hpp"
 #include "Entities/Space.hpp"
 #include "Entities/Projectiles and Damaging/bullet.hpp"
 #include "Entities/UI/Dialogue/Dialogue.hpp"
@@ -37,6 +35,7 @@
 #include <Entities/UI/UIPanel/UIPanel.hpp>
 #include <Entities/Pickups/Pickup.hpp>
 #include <Utils/SaveData.hpp>
+#include <Entities/UI/PauseMenu/PauseMenu.hpp>
 
 const size_t INIT_LIVES = 5;
 
@@ -69,6 +68,8 @@ public:
 private:
     Levels::Level m_level;
 
+    PauseMenu* m_pause;
+
     void lose_health(int damage);
     void add_health(int heal);
 
@@ -95,7 +96,6 @@ private:
     Player* m_player;
     Boss* m_boss;
     std::vector<Pickup*> m_pickups; // TODO Maybe should be in a Pickup System eventuallyy
-    std::vector<Enemy*> *m_turtles;
 
     // UI
     UIPanelBackground* m_uiPanelBackground;
@@ -130,10 +130,6 @@ private:
     Mix_Chunk* m_player_eat_sound;
     Mix_Chunk* m_player_explosion;
     Mix_Chunk* m_player_charged;
-
-    // C++ rng
-    std::default_random_engine m_rng;
-    std::uniform_real_distribution<float> m_dist; // default 0..1
 };
 
 

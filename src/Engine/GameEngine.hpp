@@ -101,6 +101,8 @@ private:
 
     bool running{};
     GameState *state{};
+
+    bool changingState = false;
 };
 
 

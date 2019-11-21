@@ -11,6 +11,8 @@ set (CMAKE_CXX_STANDARD 11)
 # nice hierarchichal structure in MSVC
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+
 #Find OS
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(IS_OS_MAC 1)
@@ -27,6 +29,12 @@ endif()
 # Generate the shader folder location to the header
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp")
 
+
+# Download large assets like cutscenes from a remote server.
+include(${PROJECT_SOURCE_DIR}/cmake/Modules/assets-download.cmake)
+download_assets()
+
+
 # You can switch to use the file GLOB for simplicity but at your own risk
 # file(GLOB SOURCE_FILES src/*.cpp src/*.hpp)
 
@@ -42,6 +50,9 @@ set(SOURCE_FILES
         src/Engine/States/MainMenuState.cpp src/Engine/States/MainMenuState.hpp
         src/Engine/States/TutorialState.cpp src/Engine/States/TutorialState.hpp
         src/Engine/States/IntroState.cpp src/Engine/States/IntroState.hpp
+        src/Engine/States/ControlsState.hpp
+        src/Engine/States/BetweenLevelsState.cpp src/Engine/States/BetweenLevelsState.hpp
+
 
         src/Engine/ECS/Component.hpp
         src/Engine/ECS/Entity.hpp
@@ -50,11 +61,12 @@ set(SOURCE_FILES
         src/Engine/ECS/SystemManager.cpp src/Engine/ECS/SystemManager.hpp
         src/Engine/ECS/ECS.hpp
 
+        src/Engine/Graphics/VideoUtil.cpp src/Engine/Graphics/VideoUtil.hpp
+        src/Engine/Graphics/Font.cpp src/Engine/Graphics/Font.hpp
 
         src/Entities/Effects/Explosion.cpp src/Entities/Effects/Explosion.hpp
         src/Entities/Effects/VampParticleEmitter.cpp src/Entities/Effects/VampParticleEmitter.hpp
 
-        src/Entities/fish.cpp src/Entities/fish.hpp
         src/Entities/Player.cpp src/Entities/Player.hpp
         src/Entities/Space.cpp src/Entities/Space.hpp
         src/Entities/Vamp.cpp src/Entities/Vamp.hpp
@@ -67,6 +79,7 @@ set(SOURCE_FILES
         src/Entities/Enemies/EnemyGenericShooter.cpp src/Entities/Enemies/EnemyGenericShooter.hpp
         src/Entities/Enemies/EnemyTargettedShooter.cpp src/Entities/Enemies/EnemyTargettedShooter.hpp
 
+        src/Entities/UI/Text.cpp src/Entities/UI/Text.hpp
         src/Entities/UI/PlayerHealth/Health.cpp src/Entities/UI/PlayerHealth/Health.hpp
         src/Entities/UI/Dialogue/Dialogue.cpp src/Entities/UI/Dialogue/Dialogue.hpp
         src/Entities/UI/Dialogue/Continue.cpp src/Entities/UI/Dialogue/Continue.hpp
@@ -82,11 +95,18 @@ set(SOURCE_FILES
         src/Entities/UI/MainMenu/StartButton.cpp src/Entities/UI/MainMenu/StartButton.hpp
         src/Entities/UI/MainMenu/ContinueButton.cpp src/Entities/UI/MainMenu/ContinueButton.hpp
         src/Entities/UI/MainMenu/TutorialButton.cpp src/Entities/UI/MainMenu/TutorialButton.hpp
+        src/Entities/UI/EnterSkip.cpp src/Entities/UI/EnterSkip.hpp
+        src/Entities/UI/EnterContinue.cpp src/Entities/UI/EnterContinue.hpp
+        src/Entities/UI/PauseMenu/PauseMenu.cpp src/Entities/UI/PauseMenu/PauseMenu.hpp
+        src/Entities/UI/PauseMenu/ResumeButton.cpp src/Entities/UI/PauseMenu/ResumeButton.hpp
+        src/Entities/UI/PauseMenu/ExitToMenuButton.cpp src/Entities/UI/PauseMenu/ExitToMenuButton.hpp
+        src/Entities/UI/PauseMenu/ControlDiagram.cpp src/Entities/UI/PauseMenu/ControlDiagram.hpp
 
 
         "src/Entities/Projectiles and Damaging/Projectile.hpp"
         "src/Entities/Projectiles and Damaging/bullet.cpp" "src/Entities/Projectiles and Damaging/bullet.hpp"
         "src/Entities/Projectiles and Damaging/Laser/Laser.cpp" "src/Entities/Projectiles and Damaging/Laser/Laser.hpp"
+        "src/Entities/Projectiles and Damaging/Laser/LaserBeamSprite.cpp" "src/Entities/Projectiles and Damaging/Laser/LaserBeamSprite.hpp"
 
         src/Entities/Bosses/Boss.hpp
         src/Entities/Bosses/Boss1.cpp src/Entities/Bosses/Boss1.hpp
@@ -94,6 +114,10 @@ set(SOURCE_FILES
 
         src/Entities/Pickups/Pickup.hpp
         src/Entities/Pickups/TestPickup.cpp src/Entities/Pickups/TestPickup.hpp
+
+
+        src/Entities/Weapons/Weapon.hpp
+        src/Entities/Weapons/BulletStraightShot.cpp src/Entities/Weapons/BulletStraightShot.hpp
 
 
         src/Components/MotionComponent.hpp
@@ -123,7 +147,9 @@ set(SOURCE_FILES
 
         src/Utils/SaveData.cpp src/Utils/SaveData.hpp
 
-        "src/Entities/Projectiles and Damaging/Laser/LaserBeamSprite.cpp" "src/Entities/Projectiles and Damaging/Laser/LaserBeamSprite.hpp")
+        src/Entities/Video.cpp src/Entities/Video.hpp
+
+        src/Engine/States/OutroState.cpp src/Engine/States/OutroState.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
@@ -138,7 +164,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS 0)
 
 
 # External header-only libraries in the ext/
-
+target_include_directories(${PROJECT_NAME} PUBLIC ext/stb_truetype/)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/stb_image/)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/gl3w)
 
@@ -218,10 +244,43 @@ if (NOT GLFW_FOUND OR NOT SDL2_FOUND)
    endif()
 endif()
 
+add_subdirectory(ext/ffmpeg)
+if (IS_OS_WINDOWS)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${LIBAVCODEC_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/avcodec-58.dll")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${LIBAVFORMAT_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/avformat-58.dll")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${LIBAVFILTER_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/avfilter-7.dll")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${LIBAVDEVICE_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/avdevice-58.dll")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${LIBAVUTIL_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/avutil-56.dll")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${LIBSWRESAMPLE_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/swresample-3.dll")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${LIBSWSCALE_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/swscale-5.dll")
+endif()
+
 target_include_directories(${PROJECT_NAME} PUBLIC ${GLFW_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${SDL2_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PUBLIC ${FFMPEG_INCLUDE_DIRS})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES} ${FFMPEG_LIBRARIES})
 
 # Needed to add this
 if(IS_OS_LINUX)

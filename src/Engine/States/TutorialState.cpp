@@ -22,8 +22,6 @@ namespace
 	const size_t MAX_HEALTH = 75;
 	const size_t INIT_HEALTH = 50;
 	const size_t DAMAGE_ENEMY = 5;
-	const size_t DAMAGE_BOSS = 5;
-	const size_t BOSS_TIME = 30;
 	const size_t VAMP_HEAL = 2;
 	const size_t VAMP_KILLS_NEEDED = 3;
 }
@@ -57,7 +55,7 @@ void TutorialState::init() {
 	// Playing background music indefinitely
 	Mix_PlayMusic(m_background_music, -1);
 
-	fprintf(stderr, "Loaded music\n");
+	// fprintf(stderr, "Loaded music\n");
 
 	// Get screen size
 	int w, h;
@@ -65,6 +63,9 @@ void TutorialState::init() {
 	vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
 	GameEngine::getInstance().setM_current_speed(1.f);
+
+	m_pause = &GameEngine::getInstance().getEntityManager()->addEntity<PauseMenu>();
+	m_pause->init(screen);
 
 	m_player = &GameEngine::getInstance().getEntityManager()->addEntity<Player>();
 	m_player->init(screen, INIT_HEALTH);
@@ -98,7 +99,6 @@ void TutorialState::init() {
 }
 
 void TutorialState::terminate() {
-	// TODO entity + system cleanup
 	if (m_background_music != nullptr)
 		Mix_FreeMusic(m_background_music);
 	if (m_player_dead_sound != nullptr)
@@ -107,6 +107,8 @@ void TutorialState::terminate() {
 		Mix_FreeChunk(m_player_eat_sound);
 	if (m_player_explosion != nullptr)
 		Mix_FreeChunk(m_player_explosion);
+
+	m_pause->destroy();
 
 	m_player->destroy();
 	m_vamp.destroy();
@@ -124,6 +126,11 @@ void TutorialState::terminate() {
 }
 
 void TutorialState::update(float ms) {
+	if (m_pause->isPaused()) {
+		m_pause->update(ms, mouse_position, keyMap);
+		return;
+	}
+
 	int w, h;
 	glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
 	vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
@@ -171,7 +178,7 @@ void TutorialState::update(float ms) {
 		}
 	}
 
-	auto& playerBullets = m_player->bullets;
+	auto& playerBullets = m_player->projectiles;
 
 	// Checking Player Bullet - Enemy collisions
 	auto bullet_it = playerBullets.begin();
@@ -247,10 +254,6 @@ void TutorialState::update(float ms) {
 	if (m_current_cmp == vamp_2) {
 		m_vamp_mode_charge = 15;
 	}
-	if (keyMap[GLFW_KEY_ESCAPE]) {
-		GameEngine::getInstance().changeState(new MainMenuState());
-		return;
-	}
 
 	if (m_vamp_mode_charge == 15 && m_current_cmp == vamp_1) {
 		m_current_cmp = vamp_2;
@@ -276,20 +279,6 @@ void TutorialState::update(float ms) {
 			m_vamp_mode = false;
 			m_vamp.destroy();
 		}
-	}
-
-	// Removing out of screen bullets
-	// TODO move into player code? do same thing for boss/enemy bullets?
-	bullet_it = playerBullets.begin();
-	while (bullet_it != playerBullets.end()) {
-		if ((*bullet_it)->isOffScreen(screen))
-		{
-            (*bullet_it)->destroy();
-			bullet_it = playerBullets.erase(bullet_it);
-			continue;
-		}
-
-		++bullet_it;
 	}
 
 	// If salmon is dead, restart the game after the fading animation
@@ -351,6 +340,10 @@ void TutorialState::draw() {
     m_uiPanel->draw(projection_2D);
 	m_dialogue.draw(projection_2D);
     m_explosion.draw(projection_2D);
+
+
+
+	m_pause->draw(projection_2D);
 	//////////////////
 	// Presenting
 	glfwSwapBuffers(m_window);
@@ -426,11 +419,17 @@ void TutorialState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
 			m_continue_UI.set_activity(false);
 		}
 		if (m_current_cmp == clear) {
-			GameEngine::getInstance().changeState(new MainMenuState());
+			return GameEngine::getInstance().changeState(new MainMenuState());
 		}
 	}
 
-	// m_current_speed = fmax(0.f, m_current_speed);
+	if (action == GLFW_RELEASE && key == GLFW_KEY_ESCAPE)
+	{
+		return m_pause->toggle();
+	}
+
+
+	m_pause->on_key(wwindow, key, i, action, mod);
 }
 
 void TutorialState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
@@ -444,5 +443,5 @@ void TutorialState::on_mouse_button(GLFWwindow *window, int button, int action, 
 }
 
 void TutorialState::reset() {
-	GameEngine::getInstance().changeState(new TutorialState());
+	return GameEngine::getInstance().changeState(new TutorialState());
 }
