@@ -274,7 +274,7 @@ void LevelState::update(float ms) {
     }
 
     // Checking Player Bullet - Enemy collisions
-    auto& playerBullets = m_player->bullets;
+    auto& playerBullets = m_player->projectiles;
     auto bullet_it = playerBullets.begin();
     while (bullet_it != playerBullets.end())
     {
@@ -428,20 +428,6 @@ void LevelState::update(float ms) {
             }
         }
     }
-
-    // Removing out of screen bullets
-    bullet_it = playerBullets.begin();
-    while(bullet_it != playerBullets.end()) {
-        if ((*bullet_it)->isOffScreen(screen))
-        {
-            (*bullet_it)->destroy();
-            bullet_it = playerBullets.erase(bullet_it);
-            continue;
-        }
-
-        ++bullet_it;
-    }
-
 
     // Boss specific code
     if (m_boss_mode) {

@@ -178,7 +178,7 @@ void TutorialState::update(float ms) {
 		}
 	}
 
-	auto& playerBullets = m_player->bullets;
+	auto& playerBullets = m_player->projectiles;
 
 	// Checking Player Bullet - Enemy collisions
 	auto bullet_it = playerBullets.begin();
@@ -279,19 +279,6 @@ void TutorialState::update(float ms) {
 			m_vamp_mode = false;
 			m_vamp.destroy();
 		}
-	}
-
-	// Removing out of screen bullets
-	bullet_it = playerBullets.begin();
-	while (bullet_it != playerBullets.end()) {
-		if ((*bullet_it)->isOffScreen(screen))
-		{
-            (*bullet_it)->destroy();
-			bullet_it = playerBullets.erase(bullet_it);
-			continue;
-		}
-
-		++bullet_it;
 	}
 
 	// If salmon is dead, restart the game after the fading animation

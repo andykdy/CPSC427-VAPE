@@ -14,7 +14,7 @@
 #include <Components/BoundaryComponent.hpp>
 #include <Components/HealthComponent.hpp>
 #include <Engine/GameEngine.hpp>
-#include "Entities/Projectiles and Damaging/bullet.hpp"
+#include <Entities/Weapons/BulletStraightShot.hpp>
 
 // Same as static in c, local to compilation unit
 namespace
@@ -39,15 +39,6 @@ bool Player::init(vec2 screen, int hp)
 
 	addComponent<BoundaryComponent>(screenBuffer.x, screen.x - screenBuffer.x,
 									screenBuffer.y, screen.y*0.9f - screenBuffer.y);
-
-	// Load sound
-	m_player_bullet_sound = Mix_LoadWAV(audio_path("pow.wav"));
-	if ( m_player_bullet_sound == nullptr)
-	{
-		fprintf(stderr, "Failed to load sound player_bullet.wav\n %s\n make sure the data directory is present",
-				audio_path("player_bullet.wav"));
-		throw std::runtime_error("Failed to load sound player_bullet.wav");
-	}
 
 	m_vertices.clear();
 	m_indices.clear();
@@ -78,9 +69,11 @@ bool Player::init(vec2 screen, int hp)
 
 
 	m_light_up_countdown_ms = -1.f;
-	m_bullet_cooldown = -1.f;
 	health->m_health = hp;
 	m_iframe = 0.f;
+
+	weapon = new BulletStraightShot();
+	weapon->init();
 
 	return !gl_has_errors();
 
@@ -89,12 +82,11 @@ bool Player::init(vec2 screen, int hp)
 // Releases all graphics resources
 void Player::destroy()
 {
-	if (m_player_bullet_sound != nullptr)
-		Mix_FreeChunk(m_player_bullet_sound);
+	weapon->destroy();
 
-	for (auto bullet : bullets)
-		bullet->destroy();
-	bullets.clear();
+    for (auto projectile : projectiles)
+        projectile->destroy();
+    projectiles.clear();
 
 	auto* effect = getComponent<EffectComponent>();
 	auto* sprite = getComponent<SpriteComponent>();
@@ -107,35 +99,34 @@ void Player::destroy()
 // Called on each frame by World::update()
 void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 {
+    auto* motion = getComponent<MotionComponent>();
+
+    weapon->update(ms);
+	// Spawning player bullets
+	if (is_alive() && keyMap[GLFW_KEY_SPACE]) {
+		Projectile* p = weapon->fire(motion->position, motion->radians + 3.14f);
+		if (p != nullptr)
+			projectiles.emplace_back(p);
+	}
+
 	// Get screen size
 	int w, h;
 	glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
 	vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 
-    auto* motion = getComponent<MotionComponent>();
-
 	// Update bullets, removing out of screen bullets
-	auto bullet_it = bullets.begin();
-	while(bullet_it != bullets.end()) {
-		if ((*bullet_it)->isOffScreen(screen))
+	auto projectile_it = projectiles.begin();
+	while(projectile_it != projectiles.end()) {
+		if ((*projectile_it)->isOffScreen(screen))
 		{
-			(*bullet_it)->destroy();
-			bullet_it = bullets.erase(bullet_it);
+			(*projectile_it)->destroy();
+			projectile_it = projectiles.erase(projectile_it);
 			continue;
 		} else {
-			(*bullet_it)->update(ms);
+			(*projectile_it)->update(ms);
 		}
 
-		++bullet_it;
-	}
-
-
-	// Spawning player bullets
-	m_bullet_cooldown -= ms;
-	if (is_alive() && keyMap[GLFW_KEY_SPACE] && m_bullet_cooldown < 0.f) {
-		spawn_bullet();
-		m_bullet_cooldown = BULLET_COOLDOWN_MS;
-		Mix_PlayChannel(-1, m_player_bullet_sound, 0);
+		++projectile_it;
 	}
 
 	if (is_alive())
@@ -177,10 +168,8 @@ void Player::draw(const mat3& projection)
     auto* physics = getComponent<PhysicsComponent>();
     auto* sprite = getComponent<SpriteComponent>();
 
-    // Draw player bullets
-    for (auto bullet : bullets)
-        bullet->draw(projection);
-
+	for (auto projectile : projectiles)
+		projectile->draw(projection);
 
     transform->begin();
     transform->translate(motion->position);
@@ -257,16 +246,6 @@ void Player::gain_health(float amount)
 	getComponent<HealthComponent>()->gain_health(amount);
 }
 
-void Player::spawn_bullet() {
-    auto* motion = getComponent<MotionComponent>();
-	Bullet* bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
-	if (bullet->init(motion->position, motion->radians + 3.14f)) {
-		bullets.emplace_back(bullet);
-	} else {
-		throw std::runtime_error("Failed to spawn bullet");
-	}
-}
-
 vec2 Player::get_bounding_box() const {
     auto* physics = getComponent<PhysicsComponent>();
 
@@ -287,5 +266,11 @@ float Player::get_iframes()
 
 int Player::get_health() const {
 	return getComponent<HealthComponent>()->get_health();
+}
+
+void Player::changeWeapon(Weapon *newWeapon) {
+	weapon->destroy();
+	weapon = newWeapon;
+	weapon->init();
 }
 
