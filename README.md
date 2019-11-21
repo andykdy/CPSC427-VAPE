@@ -55,9 +55,11 @@ Once you complete the last level, you are returned to the main menu
     - Vulta - Crepuscule
 - Level 2 Boss:
     - Pertrubator - Versus
+- Outro:
+    - Magic Sword - Awakening
 
 # Video Credits:
-- Intro:
+- Intro/Outro:
     - Space Pirate Captain Harlock (2013)
 
 # Dependencies

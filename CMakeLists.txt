@@ -51,6 +51,7 @@ set(SOURCE_FILES
         src/Engine/States/TutorialState.cpp src/Engine/States/TutorialState.hpp
         src/Engine/States/IntroState.cpp src/Engine/States/IntroState.hpp
         src/Engine/States/ControlsState.hpp
+        src/Engine/States/BetweenLevelsState.cpp src/Engine/States/BetweenLevelsState.hpp
 
 
         src/Engine/ECS/Component.hpp
@@ -61,6 +62,7 @@ set(SOURCE_FILES
         src/Engine/ECS/ECS.hpp
 
         src/Engine/Graphics/VideoUtil.cpp src/Engine/Graphics/VideoUtil.hpp
+        src/Engine/Graphics/Font.cpp src/Engine/Graphics/Font.hpp
 
         src/Entities/Effects/Explosion.cpp src/Entities/Effects/Explosion.hpp
         src/Entities/Effects/VampParticleEmitter.cpp src/Entities/Effects/VampParticleEmitter.hpp
@@ -77,6 +79,7 @@ set(SOURCE_FILES
         src/Entities/Enemies/EnemyGenericShooter.cpp src/Entities/Enemies/EnemyGenericShooter.hpp
         src/Entities/Enemies/EnemyTargettedShooter.cpp src/Entities/Enemies/EnemyTargettedShooter.hpp
 
+        src/Entities/UI/Text.cpp src/Entities/UI/Text.hpp
         src/Entities/UI/PlayerHealth/Health.cpp src/Entities/UI/PlayerHealth/Health.hpp
         src/Entities/UI/Dialogue/Dialogue.cpp src/Entities/UI/Dialogue/Dialogue.hpp
         src/Entities/UI/Dialogue/Continue.cpp src/Entities/UI/Dialogue/Continue.hpp
@@ -93,6 +96,7 @@ set(SOURCE_FILES
         src/Entities/UI/MainMenu/ContinueButton.cpp src/Entities/UI/MainMenu/ContinueButton.hpp
         src/Entities/UI/MainMenu/TutorialButton.cpp src/Entities/UI/MainMenu/TutorialButton.hpp
         src/Entities/UI/EnterSkip.cpp src/Entities/UI/EnterSkip.hpp
+        src/Entities/UI/EnterContinue.cpp src/Entities/UI/EnterContinue.hpp
         src/Entities/UI/PauseMenu/PauseMenu.cpp src/Entities/UI/PauseMenu/PauseMenu.hpp
         src/Entities/UI/PauseMenu/ResumeButton.cpp src/Entities/UI/PauseMenu/ResumeButton.hpp
         src/Entities/UI/PauseMenu/ExitToMenuButton.cpp src/Entities/UI/PauseMenu/ExitToMenuButton.hpp
@@ -110,6 +114,10 @@ set(SOURCE_FILES
 
         src/Entities/Pickups/Pickup.hpp
         src/Entities/Pickups/TestPickup.cpp src/Entities/Pickups/TestPickup.hpp
+
+
+        src/Entities/Weapons/Weapon.hpp
+        src/Entities/Weapons/BulletStraightShot.cpp src/Entities/Weapons/BulletStraightShot.hpp
 
 
         src/Components/MotionComponent.hpp
@@ -141,7 +149,7 @@ set(SOURCE_FILES
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 
-        src/Entities/UI/EnterContinue.cpp src/Entities/UI/EnterContinue.hpp src/Entities/Weapons/Weapon.hpp src/Entities/Weapons/BulletStraightShot.cpp src/Entities/Weapons/BulletStraightShot.hpp)
+        src/Engine/States/OutroState.cpp src/Engine/States/OutroState.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
@@ -156,7 +164,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS 0)
 
 
 # External header-only libraries in the ext/
-
+target_include_directories(${PROJECT_NAME} PUBLIC ext/stb_truetype/)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/stb_image/)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/gl3w)
 

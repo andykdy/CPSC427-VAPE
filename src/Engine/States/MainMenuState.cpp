@@ -12,6 +12,8 @@
 #include "LevelState.hpp"
 #include "TutorialState.hpp"
 #include "IntroState.hpp"
+#include "BetweenLevelsState.hpp"
+#include "OutroState.hpp"
 
 void MainMenuState::init() {
     m_background_music = Mix_LoadMUS(audio_path("mainmenu.wav"));
@@ -164,20 +166,37 @@ void MainMenuState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
 
         if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER) {
             if (m_button_cursor >= 0 && m_button_cursor < m_buttons.size()) {
-                m_buttons[m_button_cursor]->doAction();
+                return m_buttons[m_button_cursor]->doAction();
             }
         }
     }
 
 
-
-    if (action == GLFW_RELEASE && key == GLFW_KEY_1)
-    {
-        GameEngine::getInstance().changeState(new LevelState(Levels::level1, {INIT_LIVES,0,0}));
-    }
-    if (action == GLFW_RELEASE && key == GLFW_KEY_2)
-    {
-        GameEngine::getInstance().changeState(new LevelState(Levels::level2, {INIT_LIVES,0,0}));
+    if (GameEngine::getInstance().getM_debug_mode()){
+        if (action == GLFW_RELEASE && key == GLFW_KEY_1)
+        {
+            return GameEngine::getInstance().changeState(new LevelState(Levels::level1, {INIT_LIVES,0,0}));
+        }
+        if (action == GLFW_RELEASE && key == GLFW_KEY_2)
+        {
+            return GameEngine::getInstance().changeState(new LevelState(Levels::level2, {INIT_LIVES,0,0}));
+        }
+        if (action == GLFW_RELEASE && key == GLFW_KEY_TAB)
+        {
+            return GameEngine::getInstance().changeState(new BetweenLevelsState(Levels::level1.nextLevel, 0, {
+                    5,
+                    100,
+                    Levels::level1.nextLevel->id
+            }));
+        }
+        if (action == GLFW_RELEASE && key == GLFW_KEY_0)
+        {
+            return GameEngine::getInstance().changeState(new OutroState({
+                    5,
+                    100,
+                    0
+            }));
+        }
     }
 }
 
