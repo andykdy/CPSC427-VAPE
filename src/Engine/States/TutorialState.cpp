@@ -419,7 +419,7 @@ void TutorialState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
 			m_continue_UI.set_activity(false);
 		}
 		if (m_current_cmp == clear) {
-			GameEngine::getInstance().changeState(new MainMenuState());
+			return GameEngine::getInstance().changeState(new MainMenuState());
 		}
 	}
 
@@ -443,5 +443,5 @@ void TutorialState::on_mouse_button(GLFWwindow *window, int button, int action, 
 }
 
 void TutorialState::reset() {
-	GameEngine::getInstance().changeState(new TutorialState());
+	return GameEngine::getInstance().changeState(new TutorialState());
 }
