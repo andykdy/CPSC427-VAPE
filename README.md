@@ -28,14 +28,16 @@
 
 
 # Content
-The game consists of the main menu a tutorial, and two levels.
+The game consists of the main menu a tutorial, intro/outo, and two levels.
+
+From the main menu, you can choose to continue a saved game (auto-saved at the start of each level / after you die. and cleared after beating the game), start a new game, play the tutorial, or exit the game.
 
 Upon entering the tutorial, you will be walked through each of the controls and basic gameplay mechanics.
 
-Upon entering the first level the game will spawn waves of basic enemies for about a minute, before spawning the boss.
-If you die, the level will restart. Once the boss is defeated, you will be move to the next level.
+When you start a new game, you will be presented with an into cutscene before moving to the first level. Upon entering the first level the game will spawn waves of basic enemies for about a minute, before spawning the boss.
+If you die, the level will restart and you will lose a life. Once all lives are lost you are returned to the main menu. Once the boss is defeated, you will be move to the next level.
 
-Once you complete the last level, you are returned to the main menu
+Once you complete the last level you are presented with an outro and credits, before being returned to the main menu.
 
 
 # Music Credits:
