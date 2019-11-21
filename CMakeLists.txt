@@ -149,7 +149,7 @@ set(SOURCE_FILES
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 
-        )
+        src/Engine/States/OutroState.cpp src/Engine/States/OutroState.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

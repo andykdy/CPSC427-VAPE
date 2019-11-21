@@ -9,14 +9,16 @@
 
 BetweenLevelsState::BetweenLevelsState(const Levels::Level *next_level, unsigned int prev_start_points, const PlayerData &player_data) :
         m_next_level(next_level), m_prev_start_points(prev_start_points), m_player_data(player_data), m_font(Font(font_path("spaceranger.ttf"))) {
-    m_text.emplace_back();
-    m_text.back().init(&m_font);
-    m_text.back().setText("Testing 0 1 2 3");
-    m_text.back().setPosition({200,200});
 }
 
 void BetweenLevelsState::init() {
     m_continue.init();
+
+    m_text.emplace_back();
+    m_text.back().init(&m_font);
+    m_text.back().setText("WIP");
+    m_text.back().setColor({0.5f, 0.1f, 0.8f});
+    m_text.back().setPosition({350,500});
 }
 
 void BetweenLevelsState::terminate() {

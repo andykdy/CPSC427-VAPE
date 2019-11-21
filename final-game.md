@@ -7,7 +7,7 @@ Had another crossplay session. TODO talk about changes
 Added an intro state to the game, which displays a cutscene introducing the character and universe.
 
 ## Closing Epilogue
-TODO
+Added an outro state to the game, which displays a cutscene and credits.
 
 ## Implement Scoring
 Basic scoring has been implemented since the start, and we've tracked leaderboard scores since last milestone.
@@ -67,11 +67,14 @@ Multiple adjustments to the tutorial were made to make mechanics and controls mo
 UI was changed to be much clearer, changing health to green and adding a heart icon, and vamp to red and adding a fangs icon.
 Boss healthbar was added, making it clear how far through the fight you are
 Scaling was changed, so that everything is smaller. Easier to react and dodge enemies.
-TODO
+A state was added between levels to give a bit of a breather, instead of going straight into the action of the next level.
+
 
 ## External Integration
 We integrated with FFmpeg/Libav to add video rendering. 
 The VideoUtil class can demux/decode video files and read frames into pixel data, which is utilized by the Video Entity to create its texture each frame.
+
+We also added text rendering using stb_truetype
 
 ## Advanced Graphics
 Multiple particle systems: Explosions, Vamp mode particles, Boss2 laser priming/warning

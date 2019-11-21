@@ -18,6 +18,7 @@
 #include "LevelState.hpp"
 #include "MainMenuState.hpp"
 #include "BetweenLevelsState.hpp"
+#include "OutroState.hpp"
 
 // Same as static in c, local to compilation unit
 namespace
@@ -510,8 +511,11 @@ void LevelState::update(float ms) {
             } else {
                 saveScore(m_points);
                 saveGameData({0,0,0}); // Clear savegame
-                // TODO go to Epilogue state
-                GameEngine::getInstance().changeState(new MainMenuState());
+                GameEngine::getInstance().changeState(new OutroState({
+                        m_lives,
+                        m_points,
+                        0
+                }));
             }
             return;
         }
