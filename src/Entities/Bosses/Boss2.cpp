@@ -450,19 +450,19 @@ void Boss2::draw(const mat3 &projection) {
     for (auto laser : projectiles)
         laser->draw(projection);
 
-    /*
-    // Vertex Debug Drawing
-    for (auto& vertex : m_vertices) {
-        transform->begin();
-        transform->translate(motion->position);
-        transform->scale(MESH_SCALE);
-        transform->rotate(motion->radians + 1.5708f);
-        transform->end();
+    if (GameEngine::getInstance().getM_debug_mode()) {
+        // Vertex Debug Drawing
+        for (auto &vertex : m_vertices) {
+            transform->begin();
+            transform->translate(motion->position);
+            transform->scale(MESH_SCALE);
+            transform->rotate(motion->radians + 1.5708f);
+            transform->end();
 
-        vec3 pos = mul(transform->out, vec3{vertex.position.x, vertex.position.y, 1.0});
-        m_dot.draw(projection, {1.f,1.f,1.f}, {pos.x, pos.y}, 0);
+            vec3 pos = mul(transform->out, vec3{vertex.position.x, vertex.position.y, 1.0});
+            m_dot.draw(projection, {1.f, 1.f, 1.f}, {pos.x, pos.y}, 0);
+        }
     }
-     */
 
     m_healthbar->draw(projection);
 }

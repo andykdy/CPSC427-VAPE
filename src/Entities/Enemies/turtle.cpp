@@ -34,7 +34,7 @@ bool Turtle::init()
 
 
 	if (!sprite->initTexture(&turtle_texture))
-		throw std::runtime_error("Failed to initialize health sprite");
+		throw std::runtime_error("Failed to initialize turtle sprite");
 
 	if (gl_has_errors())
 		return false;

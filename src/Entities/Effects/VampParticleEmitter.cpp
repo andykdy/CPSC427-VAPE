@@ -93,8 +93,6 @@ void VampParticleEmitter::update(float ms, vec2 player_position)
         if (particle_it->life > 400.f + m_dist(m_rng) * 150.f) {
             float rads = atan2((player_position.y-particle_it->position.y), (player_position.x-particle_it->position.x));
 
-            // particle_it->velocity = {0,0};
-
             vec2 newVel;
             newVel.x = 100 * particle_it->life / 50 * cos(rads);
             newVel.y = 100 * particle_it->life / 50 * sin(rads);

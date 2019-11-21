@@ -29,10 +29,12 @@ namespace
     const size_t VAMP_HEAL = 2;
     const size_t VAMP_DAMAGE_TIMER = 125;
     const size_t VAMP_DAMAGE_TIMER_BOSS = 400;
+    const size_t VAMP_DAMAGE_BOSS = 4;
     const size_t VAMP_TIME_PER_POINT = 200;
     const size_t VAMP_ACTIVATION_COOLDOWN = 300;
     const size_t MAX_VAMP_CHARGE = 15;
     const size_t VAMP_ACTIVATION_COST = 3;
+    const float VAMP_TIME_SLOWDOWN = 0.5f;
 
 }
 
@@ -314,7 +316,6 @@ void LevelState::update(float ms) {
     m_numVampParticles += m_vamp_particle_emitter.getCapturedParticles();
     // 6 is average of particles dropped per kill
     if (m_numVampParticles >= 6) {
-        //m_numVampParticles > 6
         add_health(VAMP_HEAL);
         m_numVampParticles = 0;
     }
@@ -328,17 +329,14 @@ void LevelState::update(float ms) {
             if (m_vamp.collides_with(**turtle_it)) {
                 // TODO - Re-add resetting vamp timer on leaving aura
                 (*turtle_it)->add_vamp_timer(ms);
-                 //std::cout << (*turtle_it)->get_vamp_timer() << std::endl;
 
                 if ((*turtle_it)->get_vamp_timer() >= VAMP_DAMAGE_TIMER) {
                     // std::cout << "Destroying enemy" << std::endl;
                     m_vamp_particle_emitter.spawn((*turtle_it)->get_position());
-
                     m_explosion.spawn((*turtle_it)->get_position());
                     Mix_PlayChannel(-1, m_player_explosion, 0);
                     (*turtle_it)->destroy();
                     turtle_it = m_turtles->erase(turtle_it);
-                    //add_health(VAMP_HEAL);
                     continue;
                 }
 
@@ -387,10 +385,6 @@ void LevelState::update(float ms) {
             m_vamp_mode_charge = MAX_VAMP_CHARGE;
         }
 
-        if (keyMap[GLFW_KEY_V]) {
-            m_player_invincibility = !m_player_invincibility;
-        }
-
         if (m_player_invincibility) {
             m_vamp_mode_charge = MAX_VAMP_CHARGE;
             add_health(MAX_HEALTH);
@@ -404,15 +398,16 @@ void LevelState::update(float ms) {
 
     bool end_vamp_mode = false;
 
+
     if (keyMap[GLFW_KEY_ENTER] && m_vamp_cooldown <= 0) {
         m_vamp_cooldown = VAMP_ACTIVATION_COOLDOWN;
 
-        if (!m_vamp_mode && m_vamp_mode_charge >= 4)
+        if (!m_vamp_mode && m_vamp_mode_charge >= VAMP_ACTIVATION_COST + 1)
         {
             m_vamp_mode = true;
             m_vamp_mode_charge -= VAMP_ACTIVATION_COST;
 
-            GameEngine::getInstance().setM_current_speed(0.5f);
+            GameEngine::getInstance().setM_current_speed(VAMP_TIME_SLOWDOWN);
             m_vamp_charge->setVampCharge(m_vamp_mode_charge);
             m_vamp.init(m_player->get_position());
         } else {
@@ -477,8 +472,7 @@ void LevelState::update(float ms) {
                 if (m_boss->get_vamp_timer() >= VAMP_DAMAGE_TIMER_BOSS) {
                     m_vamp_particle_emitter.spawn(m_boss->get_position());
                     m_vamp_particle_emitter.spawn(m_boss->get_position());
-                    m_boss->addDamage(4);
-                    //add_health(VAMP_HEAL);
+                    m_boss->addDamage(VAMP_DAMAGE_BOSS);
                     m_boss->reset_vamp_timer();
                 }
             }
@@ -653,6 +647,7 @@ void LevelState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod
     // Track which keys are being pressed or held
     (action == GLFW_PRESS || action == GLFW_REPEAT) ? keyMap[key] = true : keyMap[key] = false;
 
+
     // Resetting game
     if (action == GLFW_RELEASE && key == GLFW_KEY_R)
     {
@@ -664,6 +659,11 @@ void LevelState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod
     {
         GameEngine::getInstance().toggleM_debug_mode();
     }
+
+    if (action == GLFW_RELEASE && key == GLFW_KEY_V) {
+        m_player_invincibility = !m_player_invincibility;
+    }
+
 }
 
 void LevelState::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {

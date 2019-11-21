@@ -42,7 +42,7 @@ bool UIPanel::init(vec2 screen, float height, float width) {
     if (!sprite->initTexture(&UI_texture))
         throw std::runtime_error("Failed to initialize health sprite");
 
-    physics->scale = { 1.f, 1.f };
+    physics->scale = { 1.f, 1.f};
     motion->position = { width * .5f, height * 0.95f};
 //    motion->position = { height * 0.55f, width * .5f };
 
