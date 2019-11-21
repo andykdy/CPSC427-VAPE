@@ -12,6 +12,7 @@
 #include "LevelState.hpp"
 #include "TutorialState.hpp"
 #include "IntroState.hpp"
+#include "BetweenLevelsState.hpp"
 
 void MainMenuState::init() {
     m_background_music = Mix_LoadMUS(audio_path("mainmenu.wav"));
@@ -178,6 +179,14 @@ void MainMenuState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
         if (action == GLFW_RELEASE && key == GLFW_KEY_2)
         {
             return GameEngine::getInstance().changeState(new LevelState(Levels::level2, {INIT_LIVES,0,0}));
+        }
+        if (action == GLFW_RELEASE && key == GLFW_KEY_TAB)
+        {
+            return GameEngine::getInstance().changeState(new BetweenLevelsState(Levels::level1.nextLevel, 0, {
+                    5,
+                    100,
+                    Levels::level1.nextLevel->id
+            }));
         }
     }
 }

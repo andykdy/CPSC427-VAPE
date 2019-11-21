@@ -8,7 +8,10 @@
 
 
 BetweenLevelsState::BetweenLevelsState(const Levels::Level *next_level, unsigned int prev_start_points, const PlayerData &player_data) :
-        m_next_level(next_level), m_prev_start_points(prev_start_points), m_player_data(player_data) {}
+        m_next_level(next_level), m_prev_start_points(prev_start_points), m_player_data(player_data), m_text(Font(font_path("spaceranger.ttf"))) {
+    m_text.setText("Testing 0 1 2 3");
+    m_text.setPosition({200,200});
+}
 
 void BetweenLevelsState::init() {
     m_continue.init();
@@ -58,7 +61,7 @@ void BetweenLevelsState::draw() {
     mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
     m_continue.draw(projection_2D);
-
+    m_text.draw(projection_2D);
 
     //////////////////
     // Presenting

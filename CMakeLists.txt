@@ -62,6 +62,7 @@ set(SOURCE_FILES
         src/Engine/ECS/ECS.hpp
 
         src/Engine/Graphics/VideoUtil.cpp src/Engine/Graphics/VideoUtil.hpp
+        src/Engine/Graphics/Font.cpp src/Engine/Graphics/Font.hpp
 
         src/Entities/Effects/Explosion.cpp src/Entities/Effects/Explosion.hpp
         src/Entities/Effects/VampParticleEmitter.cpp src/Entities/Effects/VampParticleEmitter.hpp

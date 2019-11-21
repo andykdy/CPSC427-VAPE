@@ -9,6 +9,9 @@
 #include "Engine/GameEngine.hpp"
 #include "Engine/States/MainMenuState.hpp"
 
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "stb_truetype.h"
+
 using Clock = std::chrono::high_resolution_clock;
 
 int main(int argv, char** args) {

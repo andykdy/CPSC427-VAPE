@@ -10,6 +10,7 @@
 #include <Levels/Levels.hpp>
 #include <Utils/SaveData.hpp>
 #include <Entities/UI/EnterContinue.hpp>
+#include <Engine/Graphics/Font.hpp>
 
 class BetweenLevelsState : public GameState {
 private:
@@ -17,6 +18,7 @@ private:
     unsigned int m_prev_start_points;
     PlayerData m_player_data;
     EnterContinue m_continue;
+    Font m_text;
 public:
     BetweenLevelsState(const Levels::Level *m_next_level, unsigned int m_prev_start_points, const PlayerData &m_player_data);
 
