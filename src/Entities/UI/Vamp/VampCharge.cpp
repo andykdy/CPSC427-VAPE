@@ -42,9 +42,8 @@ bool VampCharge::init(vec2 position) {
     if (!sprite->initTexture(&vamp_charge_texture))
         throw std::runtime_error("Failed to initialize health sprite");
 
-    physics->scale = { 0.7f, 1.f };
+    physics->scale = { 0.7f, 1.0f };
     motion->position = { position.x, position.y };
-//    motion->position = { 100, 100 };
     charge = 0;
 
     return !gl_has_errors();
