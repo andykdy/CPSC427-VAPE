@@ -404,6 +404,9 @@ void LevelState::update(float ms) {
         }
     }
 
+    if (!m_player->is_alive()) {
+        end_vamp_mode = true;
+    }
 
     if (m_vamp_mode) {
         if (m_vamp_mode_charge <= 0 || end_vamp_mode) {
