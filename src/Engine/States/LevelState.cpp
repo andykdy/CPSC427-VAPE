@@ -14,6 +14,7 @@
 #include <iostream>
 #include <Systems/CollisionSystem.hpp>
 #include <Entities/Bosses/Boss2.hpp>
+#include <Systems/ProjectileSystem.hpp>
 
 #include "LevelState.hpp"
 #include "MainMenuState.hpp"
@@ -26,8 +27,7 @@ namespace
     const size_t VAMP_MODE_DURATION = 1500;
     const size_t MAX_HEALTH = 75;
     const size_t INIT_HEALTH = 50;
-    const size_t DAMAGE_ENEMY = 5;
-    const size_t DAMAGE_BOSS = 5;
+    const size_t DAMAGE_COLLIDE = 5;
     const size_t VAMP_HEAL = 2;
     const size_t VAMP_DAMAGE_TIMER = 125;
     const size_t VAMP_DAMAGE_TIMER_BOSS = 400;
@@ -123,6 +123,8 @@ void LevelState::init() {
     GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
     auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
     spawn.reset(m_level.timeline);
+    GameEngine::getInstance().getSystemManager()->addSystem<ProjectileSystem>();
+
     GameEngine::getInstance().setM_current_speed(1.f);
 
 
@@ -136,8 +138,11 @@ void LevelState::init() {
 }
 
 void LevelState::terminate() {
-    auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
+    auto & spawn = GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>();
     spawn.reset(m_level.timeline);
+
+    auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
+    projectiles.clear();
 
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
@@ -179,6 +184,7 @@ void LevelState::update(float ms) {
         m_pause->update(ms, mouse_position, keyMap);
         return;
     }
+    auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
     auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
     auto * enemies = spawn.getEnemies();
 
@@ -219,7 +225,7 @@ void LevelState::update(float ms) {
             if (m_player->is_alive()) {
                 if (m_player->get_iframes() <= 0.f) {
                     m_player->set_iframes(500.f);
-                    lose_health(DAMAGE_ENEMY);
+                    lose_health(DAMAGE_COLLIDE);
                     Mix_PlayChannel(-1, m_player_explosion, 0);
                     (*enemy_it)->destroy();
                     enemy_it = enemies->erase(enemy_it);
@@ -233,37 +239,22 @@ void LevelState::update(float ms) {
     }
 
     // Checking Enemy Bullet - Player collisions
-    for(auto& enemy: *enemies) {
-        auto& bullets = enemy->projectiles;
+    auto& bullets = projectiles.hostile_projectiles;
 
-        // Checking Enemy Bullet - Player collisions
-        auto bullet_it = bullets.begin();
-        while (bullet_it != bullets.end()) {
-            if ((*bullet_it)->collides_with(*m_player))
-            {
-                (*bullet_it)->destroy();
-                bullet_it = bullets.erase(bullet_it);
-                if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
-                    m_player->set_iframes(500.f);
-                    lose_health(DAMAGE_BOSS);
-                }
-                break;
-            } else {
-                ++bullet_it;
+    // Checking Enemy Bullet - Player collisions
+    auto bullet_it = bullets.begin();
+    while (bullet_it != bullets.end()) {
+        if ((*bullet_it)->collides_with(*m_player))
+        {
+            (*bullet_it)->destroy();
+            bullet_it = bullets.erase(bullet_it);
+            if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
+                m_player->set_iframes(500.f);
+                lose_health((*bullet_it)->getDamage());
             }
-        }
-
-        // Removing out of screen bullets
-        bullet_it = bullets.begin();
-        while(bullet_it != bullets.end()) {
-            if ((*bullet_it)->isOffScreen(screen))
-            {
-                (*bullet_it)->destroy();
-                bullet_it = bullets.erase(bullet_it);
-                continue;
-            } else {
-                ++bullet_it;
-            }
+            break;
+        } else {
+            ++bullet_it;
         }
     }
 
@@ -278,8 +269,8 @@ void LevelState::update(float ms) {
     }
 
     // Checking Player Bullet - Enemy collisions
-    auto& playerBullets = m_player->projectiles;
-    auto bullet_it = playerBullets.begin();
+    auto& playerBullets = projectiles.friendly_projectiles;
+    bullet_it = playerBullets.begin();
     while (bullet_it != playerBullets.end())
     {
         bool eraseBullet = false;
@@ -413,6 +404,9 @@ void LevelState::update(float ms) {
         }
     }
 
+    if (!m_player->is_alive()) {
+        end_vamp_mode = true;
+    }
 
     if (m_vamp_mode) {
         if (m_vamp_mode_charge <= 0 || end_vamp_mode) {
@@ -443,7 +437,7 @@ void LevelState::update(float ms) {
             // Player/Boss collision
             if (m_player->is_alive() && m_boss->collidesWith(*m_player) && m_player->get_iframes() <= 0.f) {
                 m_player->set_iframes(500.f);
-                lose_health(DAMAGE_ENEMY);
+                lose_health(DAMAGE_COLLIDE);
                 Mix_PlayChannel(-1, m_player_explosion, 0);
                 // TODO Knockback?
             }
@@ -475,7 +469,7 @@ void LevelState::update(float ms) {
                     }
                     if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
                         m_player->set_iframes(500.f);
-                        lose_health(DAMAGE_BOSS);
+                        lose_health((*boss_bullet_it)->getDamage());
                     }
                     break;
                 } else {
@@ -532,6 +526,7 @@ void LevelState::update(float ms) {
 }
 
 void LevelState::draw() {
+    auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
     auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
     auto * enemies = spawn.getEnemies();
     
@@ -572,8 +567,12 @@ void LevelState::draw() {
     m_space.draw(projection_2D);
 
     // Drawing entities
+    for (auto* projectile : projectiles.hostile_projectiles)
+        projectile->draw(projection_2D);
     for (auto& enemy : (*enemies))
         enemy->draw(projection_2D);
+    for (auto* projectile : projectiles.friendly_projectiles)
+        projectile->draw(projection_2D);
     m_player->draw(projection_2D);
     if (m_boss_mode) {
         m_boss->draw(projection_2D);

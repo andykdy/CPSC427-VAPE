@@ -18,6 +18,7 @@ namespace
     const size_t BULLET_COOLDOWN_MS = 100;
     const size_t DAMAGE_EFFECT_TIME = 100;
     const size_t DIRECTION_COOLDOWN_MS = 800;
+    const size_t BULLET_DAMAGE = 5;
     const size_t INIT_HEALTH = 100;
 }
 
@@ -211,7 +212,7 @@ vec2 Boss1::get_bounding_box() const {
 void Boss1::spawnBullet() {
     auto* motion = getComponent<MotionComponent>();
     Bullet* bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
-    if (bullet->init(motion->position, motion->radians+ 3.14f)) {
+    if (bullet->init(motion->position, motion->radians+ 3.14f, true, BULLET_DAMAGE)) {
         projectiles.emplace_back(bullet);
     } else {
         throw std::runtime_error("Failed to spawn bullet");

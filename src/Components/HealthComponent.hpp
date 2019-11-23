@@ -10,13 +10,16 @@
 class HealthComponent : public ECS::Component {
 public:
     float m_health = 0;
+    bool m_alive = true;
     float lose_health(float amount) {
         m_health -= amount;
         return m_health;
     }
 
     float gain_health(float amount) {
-        m_health += amount;
+        if (m_health > 0) {
+            m_health += amount;
+        }
         return m_health;
     }
 
@@ -25,7 +28,10 @@ public:
     }
 
     bool is_alive() {
-        return m_health > 0;
+        if (m_health <= 0) {
+            m_alive = false;
+        }
+        return m_alive;
     }
 
     void set_health(float init_health) {

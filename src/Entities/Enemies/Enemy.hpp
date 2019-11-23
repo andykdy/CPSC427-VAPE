@@ -21,7 +21,6 @@ public:
     inline void reset_vamp_timer() { vamp_timer = 0; };
     inline float get_vamp_timer() { return vamp_timer; };
 
-    std::vector<Projectile *> projectiles;
     vec2 player_position;
     float vamp_timer = 0;
 };

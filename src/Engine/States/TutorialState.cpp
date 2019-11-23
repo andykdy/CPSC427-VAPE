@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <Systems/EnemySpawnerSystem.hpp>
 #include <Systems/MotionSystem.hpp>
+#include <Systems/ProjectileSystem.hpp>
 
 #include "TutorialState.hpp"
 #include "MainMenuState.hpp"
@@ -21,7 +22,7 @@ namespace
 	const size_t VAMP_MODE_DURATION = 2000;
 	const size_t MAX_HEALTH = 75;
 	const size_t INIT_HEALTH = 50;
-	const size_t DAMAGE_ENEMY = 5;
+	const size_t DAMAGE_COLLIDE = 5;
 	const size_t VAMP_HEAL = 2;
 	const size_t VAMP_KILLS_NEEDED = 3;
 }
@@ -81,6 +82,7 @@ void TutorialState::init() {
 	m_vamp_mode_charge = 0;
 
 	GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
+	GameEngine::getInstance().getSystemManager()->addSystem<ProjectileSystem>();
 
     m_space.set_position({screen.x/2, 0});
 
@@ -99,6 +101,9 @@ void TutorialState::init() {
 }
 
 void TutorialState::terminate() {
+	auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
+	projectiles.clear();
+
 	if (m_background_music != nullptr)
 		Mix_FreeMusic(m_background_music);
 	if (m_player_dead_sound != nullptr)
@@ -131,6 +136,8 @@ void TutorialState::update(float ms) {
 		return;
 	}
 
+	auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
+
 	int w, h;
 	glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
 	vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
@@ -146,7 +153,7 @@ void TutorialState::update(float ms) {
 			if (m_player->is_alive()) {
 				if (m_player->get_iframes() <= 0.f) {
 					m_player->set_iframes(500.f);
-					lose_health(DAMAGE_ENEMY);
+					lose_health(DAMAGE_COLLIDE);
                     m_explosion.spawn(m_player->get_position());
                     Mix_PlayChannel(-1, m_player_explosion, 0);
 					(*turtle_it)->destroy();
@@ -178,7 +185,7 @@ void TutorialState::update(float ms) {
 		}
 	}
 
-	auto& playerBullets = m_player->projectiles;
+	auto& playerBullets = projectiles.friendly_projectiles;
 
 	// Checking Player Bullet - Enemy collisions
 	auto bullet_it = playerBullets.begin();
@@ -289,6 +296,8 @@ void TutorialState::update(float ms) {
 }
 
 void TutorialState::draw() {
+	auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
+
 	// Clearing error buffer
 	gl_flush_errors();
 
@@ -330,6 +339,8 @@ void TutorialState::draw() {
 	if (m_vamp_mode) {
 		m_vamp.draw(projection_2D);
 	}
+	for (auto* projectile: projectiles.friendly_projectiles)
+		projectile->draw(projection_2D);
 	m_player->draw(projection_2D);
 	m_uiPanelBackground->draw(projection_2D);
 	m_health->draw(projection_2D);

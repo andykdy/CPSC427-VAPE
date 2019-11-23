@@ -7,6 +7,7 @@
 #include <Components/PhysicsComponent.hpp>
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
+#include <Components/EnemyComponent.hpp>
 
 Texture Turtle::turtle_texture;
 
@@ -17,6 +18,7 @@ bool Turtle::init()
 	auto* physics = addComponent<PhysicsComponent>();
 	auto* motion = addComponent<MotionComponent>();
 	auto* transform = addComponent<TransformComponent>();
+	auto* enemy = addComponent<EnemyComponent>();
 
 	// Load shared texture
 	if (!turtle_texture.is_valid())

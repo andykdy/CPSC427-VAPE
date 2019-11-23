@@ -12,6 +12,8 @@
 #include <Components/TransformComponent.hpp>
 #include <Entities/Projectiles and Damaging/bullet.hpp>
 #include <Engine/GameEngine.hpp>
+#include <Components/EnemyComponent.hpp>
+#include <Systems/ProjectileSystem.hpp>
 
 Texture EnemyTargettedShooter::texture;
 using namespace std;
@@ -21,6 +23,7 @@ namespace
     const size_t BURST_COOLDOWN_MS = 600;
     const size_t BULLET_COOLDOWN_MS = 200;
     const size_t PAUSE_TIME_MS = 4000;
+    const size_t BULLET_DAMAGE = 5;
 }
 
 bool EnemyTargettedShooter::init() {
@@ -69,10 +72,6 @@ void EnemyTargettedShooter::destroy() {
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();
 
-    for (auto bullet : projectiles)
-        bullet->destroy();
-    projectiles.clear();
-
     effect->release();
     sprite->release();
     ECS::Entity::destroy();
@@ -108,10 +107,6 @@ void EnemyTargettedShooter::update(float ms) {
         motion->radians = M_PI;
     }
 
-    // Update bullets
-    for (auto bullet : projectiles)
-        bullet->update(ms);
-
     // shoot
     if (m_burst_cooldown > 0) {
         m_burst_cooldown -= ms;
@@ -133,15 +128,12 @@ void EnemyTargettedShooter::update(float ms) {
 }
 
 void EnemyTargettedShooter::draw(const mat3 &projection) {
-    // Draw bullets
-    for (auto bullet : projectiles)
-        bullet->draw(projection);
-
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
     auto* sprite = getComponent<SpriteComponent>();
+    auto* enemy = addComponent<EnemyComponent>();
 
     transform->begin();
     transform->translate(motion->position);
@@ -177,11 +169,12 @@ void EnemyTargettedShooter::set_velocity(vec2 velocity) {
 }
 
 void EnemyTargettedShooter::spawnBullet() {
+    auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
     auto *motion = getComponent<MotionComponent>();
     Bullet *bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
-    if (bullet->init(motion->position, motion->radians + M_PI)) {
+    if (bullet->init(motion->position, motion->radians + M_PI, true, BULLET_DAMAGE)) {
         bullet->set_speed_slow();
-        projectiles.emplace_back(bullet);
+        projectiles.hostile_projectiles.emplace_back(bullet);
     } else {
         throw std::runtime_error("Failed to spawn bullet");
     }

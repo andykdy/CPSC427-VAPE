@@ -22,7 +22,7 @@ class Laser : public Projectile {
         vec4 color {1.f,1.f,1.f,1.f};
     };
 public:
-    bool init(vec2 position, float rotation) override;
+    bool init(vec2 position, float rotation, bool hostile, int damage) override;
     void destroy() override;
     void update(float ms) override;
     void draw(const mat3& projection) override;
