@@ -20,11 +20,14 @@
 - Enter ->  Vamp Mode / Skip Cutscenes
 - Shift -> Continue (Dialogues)
 - Escape -> Return to main menu (saves game to start of current level)
-- [Debug]
+- [Debug] Shift+F to enter/exit debug mode
     - F -> Fill vamp mode
     - G -> Fill Health
+    - V -> Invincibility
     - 1 -> At main menu only, go straight to level 1
     - 2 -> At main menu only, go straight to level 2
+    - Tab -> At main menu only, go straight to the BetweenLevelState between level 1 and 2
+    - 0 -> At main menu only, go straight to outro
 
 
 # Content
