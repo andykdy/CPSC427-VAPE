@@ -52,6 +52,7 @@ set(SOURCE_FILES
         src/Engine/States/IntroState.cpp src/Engine/States/IntroState.hpp
         src/Engine/States/ControlsState.hpp
         src/Engine/States/BetweenLevelsState.cpp src/Engine/States/BetweenLevelsState.hpp
+        src/Engine/States/OutroState.cpp src/Engine/States/OutroState.hpp
 
 
         src/Engine/ECS/Component.hpp
@@ -136,6 +137,7 @@ set(SOURCE_FILES
         src/Systems/EnemySpawnerSystem.cpp src/Systems/EnemySpawnerSystem.hpp
         src/Systems/MotionSystem.cpp src/Systems/MotionSystem.hpp
         src/Systems/CollisionSystem.cpp src/Systems/CollisionSystem.hpp
+        src/Systems/ProjectileSystem.cpp src/Systems/ProjectileSystem.hpp
 
         src/Levels/Level.hpp
         src/Levels/Waves.hpp
@@ -149,7 +151,7 @@ set(SOURCE_FILES
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 
-        src/Engine/States/OutroState.cpp src/Engine/States/OutroState.hpp)
+        src/Components/PlayerComponent.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

@@ -23,6 +23,7 @@ namespace
     const size_t SPRITE_W = 264;
     const size_t SPRITE_H = 88;
     const size_t DAMAGE_EFFECT_TIME = 100;
+    const size_t LASER_DAMAGE = 10;
 
     const std::vector<vec2> hardpoints = {
             {44,76},
@@ -289,7 +290,7 @@ bool Boss2::init(vec2 screen) {
     // Initialize lasers
     for (vec2 hardpoint : hardpoints) {
         Laser* laser = &GameEngine::getInstance().getEntityManager()->addEntity<Laser>();
-        laser->init({0,0}, 0);
+        laser->init({0,0}, 0, true, LASER_DAMAGE);
         laser->setState(laserState::off);
 
         // In projectiles for levelstate to use, but also in m_lasers for us to do laser-specific functions

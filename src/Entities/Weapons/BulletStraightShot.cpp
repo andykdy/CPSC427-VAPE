@@ -26,7 +26,7 @@ void BulletStraightShot::init() {
 Projectile* BulletStraightShot::fire(const vec2 &origin_position, float origin_rotation) {
     if (m_bullet_cooldown < 0.f) {
         Bullet* bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
-        if (bullet->init(origin_position, origin_rotation)) {
+        if (bullet->init(origin_position, origin_rotation, false, 5)) {
             m_bullet_cooldown = BULLET_COOLDOWN_MS;
             Mix_PlayChannel(-1, m_bullet_sound, 0);
             return bullet;

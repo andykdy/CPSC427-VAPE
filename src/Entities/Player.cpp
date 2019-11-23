@@ -15,6 +15,8 @@
 #include <Components/HealthComponent.hpp>
 #include <Engine/GameEngine.hpp>
 #include <Entities/Weapons/BulletStraightShot.hpp>
+#include <Components/PlayerComponent.hpp>
+#include <Systems/ProjectileSystem.hpp>
 
 // Same as static in c, local to compilation unit
 namespace
@@ -35,6 +37,7 @@ bool Player::init(vec2 screen, int hp)
 	auto* physics = addComponent<PhysicsComponent>();
 	auto* motion = addComponent<MotionComponent>();
 	auto* transform = addComponent<TransformComponent>();
+	auto* player = addComponent<PlayerComponent>();
 	auto* health = addComponent<HealthComponent>();
 
 	addComponent<BoundaryComponent>(screenBuffer.x, screen.x - screenBuffer.x,
@@ -84,10 +87,6 @@ void Player::destroy()
 {
 	weapon->destroy();
 
-    for (auto projectile : projectiles)
-        projectile->destroy();
-    projectiles.clear();
-
 	auto* effect = getComponent<EffectComponent>();
 	auto* sprite = getComponent<SpriteComponent>();
 
@@ -99,6 +98,7 @@ void Player::destroy()
 // Called on each frame by World::update()
 void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 {
+	auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
     auto* motion = getComponent<MotionComponent>();
 
     weapon->update(ms);
@@ -106,27 +106,7 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 	if (is_alive() && keyMap[GLFW_KEY_SPACE]) {
 		Projectile* p = weapon->fire(motion->position, motion->radians + 3.14f);
 		if (p != nullptr)
-			projectiles.emplace_back(p);
-	}
-
-	// Get screen size
-	int w, h;
-	glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
-	vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
-
-	// Update bullets, removing out of screen bullets
-	auto projectile_it = projectiles.begin();
-	while(projectile_it != projectiles.end()) {
-		if ((*projectile_it)->isOffScreen(screen))
-		{
-			(*projectile_it)->destroy();
-			projectile_it = projectiles.erase(projectile_it);
-			continue;
-		} else {
-			(*projectile_it)->update(ms);
-		}
-
-		++projectile_it;
+			projectiles.friendly_projectiles.emplace_back(p);
 	}
 
 	if (is_alive())
@@ -167,9 +147,6 @@ void Player::draw(const mat3& projection)
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
     auto* sprite = getComponent<SpriteComponent>();
-
-	for (auto projectile : projectiles)
-		projectile->draw(projection);
 
     transform->begin();
     transform->translate(motion->position);

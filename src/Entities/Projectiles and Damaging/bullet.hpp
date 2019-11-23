@@ -12,7 +12,7 @@ class Bullet : public Projectile {
     static Texture bullet_texture;
 
 public:
-    bool init(vec2 position, float rotation) override;
+    bool init(vec2 position, float rotation, bool hostile, int damage) override;
     void destroy() override;
     void update(float ms) override;
     void draw(const mat3& projection) override;

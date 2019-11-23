@@ -19,7 +19,7 @@ Texture Bullet::bullet_texture;
 float BULLET_SPEED = 1250;
 float BULLET_SPEED_SLOW = 750;
 
-bool Bullet::init(vec2 position, float rotation) {
+bool Bullet::init(vec2 position, float rotation, bool hostile, int damage) {
     gl_flush_errors();
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
@@ -56,6 +56,9 @@ bool Bullet::init(vec2 position, float rotation) {
     motion->position.x = position.x + 100*sin(motion->radians);
     motion->position.y = position.y + 100*cos(motion->radians);
 
+    Projectile::m_hostile = hostile;
+    Projectile::m_damage = damage;
+    Projectile::m_erase_on_collide = true;
     return true;
 }
 

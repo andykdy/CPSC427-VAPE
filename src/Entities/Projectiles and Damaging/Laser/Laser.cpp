@@ -14,7 +14,7 @@ constexpr int NUM_SEGMENTS = 12;
 constexpr int MAX_PARTICLES = 5000;
 constexpr int LASER_WIDTH = 20;
 
-bool Laser::init(vec2 position, float rotation) {
+bool Laser::init(vec2 position, float rotation, bool hostile, int damage) {
     gl_flush_errors();
     auto* effect = addComponent<EffectComponent>();
 
@@ -63,12 +63,16 @@ bool Laser::init(vec2 position, float rotation) {
 
 
     m_origin = position;
-    m_erase_on_collide = false;
     m_rotation = rotation;
     m_rotationTarget = rotation;
     m_chargeTimer = 0;
     m_fireTimer = 0;
     m_state = laserState::off;
+
+    Projectile::m_hostile = hostile;
+    Projectile::m_damage = damage;
+    Projectile::m_erase_on_collide = false;
+
     return true;
 }
 
