@@ -12,7 +12,7 @@ bool MainMenu::init() {
     {
         if (!bg_texture.load_from_file(textures_path("mainmenu_bg_new.png")))
         {
-            fprintf(stderr, "Failed to load turtle texture!");
+            fprintf(stderr, "Failed to load main menu background texture!");
             return false;
         }
     }

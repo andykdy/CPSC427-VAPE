@@ -12,7 +12,7 @@ bool Space::init(const char* background) {
     {
         if (!bg_texture.load_from_file(background))
         {
-            fprintf(stderr, "Failed to load turtle texture!");
+            fprintf(stderr, "Failed to load background texture!");
             return false;
         }
     }

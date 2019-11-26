@@ -181,6 +181,10 @@ void MainMenuState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
         {
             return GameEngine::getInstance().changeState(new LevelState(Levels::level2, {INIT_LIVES,0,0}));
         }
+        if (action == GLFW_RELEASE && key == GLFW_KEY_3)
+        {
+            return GameEngine::getInstance().changeState(new LevelState(Levels::level3, {INIT_LIVES,0,0}));
+        }
         if (action == GLFW_RELEASE && key == GLFW_KEY_TAB)
         {
             return GameEngine::getInstance().changeState(new BetweenLevelsState(Levels::level1.nextLevel, 0, {

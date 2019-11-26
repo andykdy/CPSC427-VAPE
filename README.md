@@ -60,6 +60,10 @@ Once you complete the last level you are presented with an outro and credits, be
     - Vulta - Crepuscule
 - Level 2 Boss:
     - Pertrubator - Versus
+- Level 3 BGM:
+    - ROBORG - HATED
+- Level 3 Boss:
+    - TODO
 - Outro:
     - Magic Sword - Awakening
 

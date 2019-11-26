@@ -6,8 +6,6 @@ src/project_path.hpp
 *.mp4
 
 ## Ignore libraries
-*.dll
-*.lib
 *.a
 
 ## Ignore Visual Studio temporary files, build results, and
@@ -32,7 +30,7 @@ src/project_path.hpp
 x64/
 x86/
 bld/
-[Bb]in/
+/[Bb]in/
 [Oo]bj/
 [Ll]og/
 
