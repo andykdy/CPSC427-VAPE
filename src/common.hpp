@@ -13,7 +13,7 @@
 #include "project_path.hpp"
 
 #define shader_path(name) "../" "./shaders/" name
-#define data_path "./" "../data"
+#define data_path "../" "./data"
 #define textures_path(name)  data_path "/textures/" name
 #define audio_path(name) data_path  "/audio/" name
 #define mesh_path(name) data_path  "/meshes/" name
