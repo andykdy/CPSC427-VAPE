@@ -301,3 +301,5 @@ data/data.7z
 .DS_Store
 
 *.fla
+
+cmake-build-release/
