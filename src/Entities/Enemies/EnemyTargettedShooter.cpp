@@ -38,7 +38,7 @@ bool EnemyTargettedShooter::init() {
     {
         if (!texture.load_from_file(textures_path("turtle3.png")))
         {
-            fprintf(stderr, "Failed to load turtle texture!");
+            fprintf(stderr, "Failed to load targeted shooter texture!");
             return false;
         }
     }

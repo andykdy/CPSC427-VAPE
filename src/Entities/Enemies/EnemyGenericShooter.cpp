@@ -38,7 +38,7 @@ bool EnemyGenericShooter::init() {
     {
         if (!texture.load_from_file(textures_path("turtle2.png")))
         {
-            fprintf(stderr, "Failed to load turtle texture!");
+            fprintf(stderr, "Failed to load generic shooter texture!");
             return false;
         }
     }
