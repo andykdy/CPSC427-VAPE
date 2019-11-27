@@ -495,9 +495,77 @@ bool Boss2::collidesWith(const Vamp& vamp) {
     return checkCollision(vamp.get_position(), {bbox.x * 0.5f, bbox.y * 0.5f});
 }
 
-bool Boss2::collidesWith(const Player &player) {
-    vec2 bbox = player.get_bounding_box();
-    return checkCollision(player.get_position(), {bbox.x * 0.9f, bbox.y * 0.9f});
+bool Boss2::collidesWith(Player &player) {
+    auto* motion = getComponent<MotionComponent>();
+
+    vec2 player_box = player.get_bounding_box();
+    vec2 player_pos = player.get_position();
+
+    bool collides = checkCollision(player_pos, {player_box.x * 0.9f, player_box.y * 0.9f});
+    if (collides) {
+        auto* transform = getComponent<TransformComponent>();
+        // Find the larges x and y collisions
+        vec2 offset = {0,0};
+        for(auto vertex : m_vertices) {
+            transform->begin();
+            transform->translate(motion->position);
+            transform->scale(MESH_SCALE);
+            transform->rotate(motion->radians + 1.5708f);
+            transform->end();
+            vec3 vpos = mul(transform->out, vec3{vertex.position.x, vertex.position.y, 1.0});
+            float w = player_box.x/2;
+            float h = player_box.y/2;
+            if (vpos.x >= player_pos.x - w &&
+                vpos.x <= player_pos.x + w &&
+                vpos.y >= player_pos.y - h &&
+                vpos.y <= player_pos.y + h) {
+                // Vertex above player
+                if (vpos.y < player_pos.y) {
+                    float dif = std::fabs(vpos.y - (player_pos.y - h));
+                    if (dif > std::fabs(offset.y))
+                        offset.y = dif;
+                // Vertex below player
+                } else {
+                    /*
+                    float dif = std::fabs((player_pos.y + h) - vpos.y);
+                    if (dif > std::fabs(offset.y))
+                        offset.y = -dif;
+                    */
+                }
+                // Vertex left of player
+                if (vpos.x < player_pos.x) {
+                    float dif = std::fabs(vpos.x - (player_pos.x - w));
+                    if (dif > std::fabs(offset.x))
+                        offset.x = dif;
+                // Vertex right of player
+                } else {
+                    float dif = std::fabs((player_pos.x + w) - vpos.x);
+                    if (dif > std::fabs(offset.x))
+                        offset.x = -dif;
+                }
+            }
+        }
+        player_pos.x += offset.x;
+        player_pos.y += offset.y;
+        player.set_position(player_pos);
+
+        float player_r = std::max(player_box.x, player_box.y) * 0.4f;
+        float boss_r = std::max(get_bounding_box().x, get_bounding_box().y) * 0.4f;
+
+        float boss_mass = boss_r*1000;
+        float player_mass = player_r*100;
+
+        vec2 player_vel = player.get_velocity();
+        vec2 boss_vel = {0,0};
+
+        float vbp1 = 2*boss_mass/(player_mass+boss_mass);
+        float vbp2 = dot(sub(player_vel, boss_vel), sub(player_pos, motion->position)) / (float)pow(len(sub(player_pos, motion->position)), 2);
+        vec2 vb = sub(player_vel, mul(sub(player_pos, motion->position), vbp1*vbp2));
+
+        player.set_velocity(vb);
+        player.set_acceleration({0,0});
+    }
+    return collides;
 }
 
 bool Boss2::checkCollision(vec2 pos, vec2 box) const {

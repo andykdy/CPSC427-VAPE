@@ -64,6 +64,13 @@ public:
 
 	int get_health() const;
 
+	vec2 get_velocity() const;
+	void set_velocity(vec2 vel);
+
+	void set_acceleration(vec2 acc);
+
+	void set_position(vec2 pos);
+
 private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up
 	float m_iframe; // Used to indicate how long the player should be invulnerable for

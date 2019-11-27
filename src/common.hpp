@@ -1,7 +1,11 @@
 #pragma once
 
-#define NOMINMAX
-#define M_PI 3.14159f
+#ifndef M_PI
+	#define M_PI 3.14159265358979323846
+#endif
+#ifndef NOMINMAX
+	#define NOMINMAX
+#endif
 
 // stlib
 #include <fstream> // stdout, stderr..
