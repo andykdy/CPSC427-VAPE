@@ -93,5 +93,6 @@ Otherwise, you can always just comment out "download_assets()" in cmakelists.txt
 # Building a release
 
 - Build on the target platform with cmake, using release build type `-DCMAKE_BUILD_TYPE=Release`
-- There should now be a `bin` folder containing the executable and any necessary dlls if on Windows.
-- Zip up the `bin`, `data`, and `shaders` folders, along with the readme, and name appropriately indicating target platform.
+- ~~There should now be a `bin` folder containing the executable and any necessary dlls if on Windows.~~
+- ~~Zip up the `bin`, `data`, and `shaders` folders, along with the readme, and name appropriately indicating target platform.~~
+- The release should be packaged automatically into the `releases` folder
