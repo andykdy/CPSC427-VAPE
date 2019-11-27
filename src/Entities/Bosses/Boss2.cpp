@@ -495,7 +495,7 @@ bool Boss2::collidesWith(const Vamp& vamp) {
     return checkCollision(vamp.get_position(), {bbox.x * 0.5f, bbox.y * 0.5f});
 }
 
-bool Boss2::collidesWith(const Player &player) {
+bool Boss2::collidesWith(Player &player) {
     vec2 bbox = player.get_bounding_box();
     return checkCollision(player.get_position(), {bbox.x * 0.9f, bbox.y * 0.9f});
 }

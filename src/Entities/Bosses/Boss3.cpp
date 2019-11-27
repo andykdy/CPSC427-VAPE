@@ -43,7 +43,7 @@ bool Boss3::collidesWith(const Vamp &vamp) {
     return checkCollision(vamp.get_position(), vamp.get_bounding_box());
 }
 
-bool Boss3::collidesWith(const Player &player) {
+bool Boss3::collidesWith(Player &player) {
     return checkCollision(player.get_position(), player.get_bounding_box());
 }
 

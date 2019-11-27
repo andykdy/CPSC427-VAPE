@@ -251,3 +251,23 @@ void Player::changeWeapon(Weapon *newWeapon) {
 	weapon->init();
 }
 
+vec2 Player::get_velocity() const {
+	auto* motion = getComponent<MotionComponent>();
+	return motion->velocity;
+}
+
+void Player::set_velocity(vec2 vel) {
+	auto* motion = getComponent<MotionComponent>();
+	motion->velocity = vel;
+}
+
+void Player::set_acceleration(vec2 acc) {
+	auto* motion = getComponent<MotionComponent>();
+	motion->acceleration = acc;
+}
+
+void Player::set_position(vec2 pos) {
+	auto* motion = getComponent<MotionComponent>();
+	motion->position = pos;
+}
+

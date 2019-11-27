@@ -67,7 +67,7 @@ public:
 
     virtual bool collidesWith(const Vamp& vamp) = 0;
 
-    virtual bool collidesWith(const Player& player) = 0;
+    virtual bool collidesWith(Player& player) = 0;
 
     inline void add_vamp_timer(float ms) { vamp_timer += ms; };
 
