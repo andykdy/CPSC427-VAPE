@@ -1,5 +1,8 @@
 #pragma once
 
+#define NOMINMAX
+#define M_PI 3.14159f
+
 // stlib
 #include <fstream> // stdout, stderr..
 
