@@ -13,7 +13,6 @@ extern "C" {
     #include <libswresample/swresample.h>
     #include <libswscale/swscale.h>
     #include <libavutil/avutil.h>
-    #include <sys/time.h>
 }
 
 class VideoUtil {
