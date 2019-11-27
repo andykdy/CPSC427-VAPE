@@ -45,7 +45,7 @@ public:
 
     bool collidesWith(const Vamp& vamp) override;
 
-    bool collidesWith(const Player &player) override;
+    bool collidesWith(Player &player) override;
 
     bool checkCollision(vec2 pos, vec2 box) const override;
 

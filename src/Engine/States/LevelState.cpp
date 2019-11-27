@@ -461,15 +461,15 @@ void LevelState::update(float ms) {
             while (boss_bullet_it != bossBullets.end()) {
                 if ((*boss_bullet_it)->collides_with(*m_player))
                 {
+                    if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
+                        m_player->set_iframes(500.f);
+                        lose_health((*boss_bullet_it)->getDamage());
+                    }
                     if ((*boss_bullet_it)->shouldErase()){
                         (*boss_bullet_it)->destroy();
                         boss_bullet_it = bossBullets.erase(boss_bullet_it);
                     } else {
                         ++boss_bullet_it;
-                    }
-                    if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
-                        m_player->set_iframes(500.f);
-                        lose_health((*boss_bullet_it)->getDamage());
                     }
                     break;
                 } else {
