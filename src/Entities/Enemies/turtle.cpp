@@ -11,6 +11,10 @@
 
 Texture Turtle::turtle_texture;
 
+namespace {
+    const size_t POINTS_VAL = 100;
+}
+
 bool Turtle::init()
 {
 	auto* sprite = addComponent<SpriteComponent>();
@@ -47,6 +51,7 @@ bool Turtle::init()
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
 	physics->scale = { -0.28f, 0.28f };
+	points = POINTS_VAL;
 
 	return true;
 }

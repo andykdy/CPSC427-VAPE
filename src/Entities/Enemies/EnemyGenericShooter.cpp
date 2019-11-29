@@ -20,6 +20,7 @@ using namespace std;
 
 namespace
 {
+    const size_t POINTS_VAL = 250;
     const size_t BURST_COOLDOWN_MS = 1000;
     const size_t BULLET_COOLDOWN_MS = 200;
     const size_t BULLET_DAMAGE = 5;
@@ -64,6 +65,7 @@ bool EnemyGenericShooter::init() {
     m_burst_count = 0;
     m_burst_cooldown = BURST_COOLDOWN_MS;
     m_bullet_cooldown = 0;
+    points = POINTS_VAL;
 
     return true;
 }

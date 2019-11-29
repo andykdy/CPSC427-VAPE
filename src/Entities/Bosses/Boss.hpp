@@ -29,6 +29,7 @@ protected:
     int health = 1;
     bool m_is_alive = true;
     float vamp_timer = 0;
+    int points = 0;
 public:
     // Creates all the associated render resources and default transform
     virtual bool init(vec2 screen) = 0;
@@ -74,6 +75,8 @@ public:
     inline void reset_vamp_timer() { vamp_timer = 0; };
 
     inline float get_vamp_timer() { return vamp_timer; };
+
+    inline int get_points() { return points; };
 };
 
 #endif //VAPE_BOSS_HPP

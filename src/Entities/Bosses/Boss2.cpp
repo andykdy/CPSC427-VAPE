@@ -24,6 +24,7 @@ namespace
     const size_t SPRITE_H = 88;
     const size_t DAMAGE_EFFECT_TIME = 100;
     const size_t LASER_DAMAGE = 10;
+    const size_t POINTS_VAL = 15000;
 
     const std::vector<vec2> hardpoints = {
             {44,76},
@@ -286,6 +287,7 @@ bool Boss2::init(vec2 screen) {
 
     health = INIT_HEALTH;
     m_is_alive = true;
+    points = POINTS_VAL;
 
     // Initialize lasers
     for (vec2 hardpoint : hardpoints) {
