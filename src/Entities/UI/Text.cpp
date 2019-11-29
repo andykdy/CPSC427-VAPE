@@ -4,6 +4,11 @@
 
 #include "Text.hpp"
 
+namespace {
+    const size_t TEXT_SCROLL_SPEED = 100;
+    const size_t TEXT_LIFE = 1000;
+}
+
 bool Text::init(Font *font) {
     // Loading shaders
     if (!effect.load_from_file(shader_path("font.vs.glsl"), shader_path("font.fs.glsl")))
@@ -12,6 +17,7 @@ bool Text::init(Font *font) {
     m_font = font;
     setText("");
     m_color = {1.f,1.f,1.f};
+    m_life = TEXT_LIFE;
     return true;
 }
 
@@ -36,6 +42,13 @@ void Text::destroy() {
     glDeleteShader(effect.vertex);
     glDeleteShader(effect.fragment);
     glDeleteShader(effect.program);
+}
+
+void Text::scroll_up(float ms)
+{
+    float step = TEXT_SCROLL_SPEED * (ms / 1000);
+    motion.position.y -= step;
+    m_life -= ms;
 }
 
 void Text::draw(const mat3 &projection) {

@@ -20,6 +20,7 @@ using namespace std;
 
 namespace
 {
+    const size_t POINTS_VAL = 500;
     const size_t BURST_COOLDOWN_MS = 600;
     const size_t BULLET_COOLDOWN_MS = 200;
     const size_t PAUSE_TIME_MS = 4000;
@@ -64,6 +65,7 @@ bool EnemyTargettedShooter::init() {
     m_burst_count = 0;
     m_burst_cooldown = BURST_COOLDOWN_MS;
     m_bullet_cooldown = 0;
+    points = POINTS_VAL;
 
     return true;
 }

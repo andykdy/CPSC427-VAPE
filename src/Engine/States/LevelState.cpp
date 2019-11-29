@@ -45,7 +45,9 @@ LevelState::LevelState(Levels::Level level, PlayerData data) :
         m_level(level),
         m_points(data.points),
         m_starting_points(data.points),
-        m_lives(data.lives)
+        m_lives(data.lives),
+        m_font_ranger(Font(font_path("spaceranger.ttf")))
+
 {
 
     // Load leaderboard data
@@ -119,6 +121,8 @@ void LevelState::init() {
     m_boss->init(screen);
 
     m_space.set_position({screen.x/2, 0});
+    // TODO - remove
+    // m_font_ranger = Font(font_path("spaceranger.ttf"));
 
     GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
     auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
@@ -173,6 +177,10 @@ void LevelState::terminate() {
     if (m_boss != nullptr)
         m_boss->destroy();
     m_dialogue.destroy();
+
+    for (auto& text : m_text)
+        text.destroy();
+
     m_explosion.destroy();
     m_space.destroy();
 
@@ -280,13 +288,20 @@ void LevelState::update(float ms) {
             if ((*bullet_it)->collides_with(**enemy_it))
             {
                 eraseBullet = true;
+
+                m_text.emplace_back();
+                m_text.back().init(&m_font_ranger);
+                std::string s = std::to_string((*enemy_it)->get_points());
+                char const *pchar = s.c_str();
+                m_text.back().setText(pchar);
+                m_text.back().setColor({1.f, 0.8f, 0.0f});
+                m_text.back().setPosition((*enemy_it)->get_position());
+
                 m_explosion.spawn((*enemy_it)->get_position());
+                m_points += (*enemy_it)->get_points();
                 (*enemy_it)->destroy();
                 enemy_it = enemies->erase(enemy_it);
                 Mix_PlayChannel(-1,m_player_explosion,0);
-                // expl
-
-                ++m_points;
                 add_vamp_charge();
 
                 break;
@@ -327,8 +342,17 @@ void LevelState::update(float ms) {
 
                 if ((*enemy_it)->get_vamp_timer() >= VAMP_DAMAGE_TIMER) {
                     m_vamp_particle_emitter.spawn((*enemy_it)->get_position());
-
                     m_explosion.spawn((*enemy_it)->get_position());
+                    m_points += (*enemy_it)->get_points();
+
+                    m_text.emplace_back();
+                    m_text.back().init(&m_font_ranger);
+                    std::string s = std::to_string((*enemy_it)->get_points());
+                    char const *pchar = s.c_str();
+                    m_text.back().setText(pchar);
+                    m_text.back().setColor({1.f, 0.8f, 0.0f});
+                    m_text.back().setPosition((*enemy_it)->get_position());
+
                     Mix_PlayChannel(-1, m_player_explosion, 0);
                     (*enemy_it)->destroy();
                     enemy_it = enemies->erase(enemy_it);
@@ -342,6 +366,19 @@ void LevelState::update(float ms) {
     }
 
     m_space.update(ms);
+
+    auto text_it = m_text.begin();
+    while (text_it != m_text.end()) {
+        text_it->scroll_up(ms);
+        if (!text_it->is_alive()) {
+            (text_it)->destroy();
+            text_it = m_text.erase(text_it);
+            continue;
+        }
+        ++text_it;
+    }
+
+
     m_vamp_particle_emitter.update(ms, m_player->get_position());
     m_explosion.update(ms);
 
@@ -430,8 +467,9 @@ void LevelState::update(float ms) {
         // If boss drops below 0 health, set him as killed, award points, start timer
         if (m_boss->is_alive() && m_boss->getHealth() <= 0) {
             Mix_PlayMusic(m_victory_music, 0);
+            m_points += m_boss->get_points();
+            // m_points += 5000;
             m_boss->kill();
-            m_points += 100;
             m_space.set_boss_dead();
         } else if (m_boss->is_alive()) {
             // Player/Boss collision
@@ -589,6 +627,10 @@ void LevelState::draw() {
     m_vamp_charge->draw(projection_2D);
     m_uiPanel->draw(projection_2D);
     m_dialogue.draw(projection_2D);
+
+    for (auto& text : m_text) {
+        text.draw(projection_2D);
+    }
 
 
 
