@@ -167,6 +167,7 @@ set(SOURCE_FILES
 
         src/Utils/SaveData.cpp src/Utils/SaveData.hpp
         src/Utils/PhysFSHelpers.hpp src/Utils/PhysFSHelpers.cpp
+        src/Utils/PhysFSStream.cpp src/Utils/PhysFSStream.hpp
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 

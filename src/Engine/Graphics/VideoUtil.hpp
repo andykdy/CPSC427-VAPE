@@ -16,10 +16,11 @@ extern "C" {
 }
 
 #include <physfs.hpp>
+#include <Utils/PhysFSStream.hpp>
 
 class VideoUtil {
 private:
-    std::istream* m_file_stream;
+    PhysFSStream* m_file_stream;
     unsigned char* m_buffer;
     AVFormatContext * m_format_ctx;
     AVCodecContext * m_codec_ctx;

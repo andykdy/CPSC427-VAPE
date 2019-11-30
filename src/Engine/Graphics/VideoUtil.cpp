@@ -20,55 +20,28 @@ VideoUtil::VideoUtil() {
 }
 
 static int readFunction(void* opaque, uint8_t* buf, int buf_size) {
-    auto& me = *reinterpret_cast<std::istream*>(opaque);
-    me.read(reinterpret_cast<char*>(buf), buf_size);
-
-    if (me.good())
-        return (int)me.gcount();
-    else
-    {
-        if (me.eof())
-            return AVERROR_EOF;
-        else
-            return AVERROR_EXTERNAL;
-    }
+    auto& stream = *reinterpret_cast<PhysFSStream*>(opaque);
+    return (int)stream.read(buf, buf_size);
 }
 
-static int64_t seekFunction(void* ptr, int64_t pos, int whence) {
-    auto& me = *reinterpret_cast< std::istream*>(ptr);
-    switch (whence)
+static int64_t seekFunction(void* opaque, int64_t offset, int whence) {
+    auto& stream = *reinterpret_cast<PhysFSStream*>(opaque);
+    if (0x10000 == whence)
     {
-        case AVSEEK_SIZE:
-            return AVERROR_EXTERNAL;
-        case SEEK_SET:
-            me.seekg(pos, std::ios_base::beg);
-            return me.good() ? (int64_t)me.tellg() : AVERROR_EXTERNAL;
-        case SEEK_CUR:
-            me.seekg(pos, std::ios_base::cur);
-            return me.good() ? (int64_t)me.tellg() : AVERROR_EXTERNAL;
-        case SEEK_END:
-            me.seekg(pos, std::ios_base::end);
-            return me.good() ? (int64_t)me.tellg() : AVERROR_EXTERNAL;
-        default:
-            return AVERROR_EXTERNAL;
+        return stream.getSize();
     }
+    return stream.seek(offset);
 }
 
 bool VideoUtil::open(const char *filename) {
     // TODO cleanup on fails
 
-    av_log_set_level(AV_LOG_DEBUG); // TODO remove
-    if (!PhysFS::exists(filename))
-    {
-        std::cout << "Unable to find " << filename << std::endl;
-        return false; //file doesn't exist
-    }
+    // av_log_set_level(AV_LOG_DEBUG);
 
-    // A IStream - you choose where it comes from
-    m_file_stream = new PhysFS::ifstream(filename);
+    m_file_stream = new PhysFSStream(filename);
 
     // Alloc a buffer for the stream
-    const int ioBufferSize = 8192;
+    const int ioBufferSize = 32768;
     //const std::shared_ptr<unsigned char> buffer(reinterpret_cast<unsigned char*>(av_malloc(ioBufferSize + AV_INPUT_BUFFER_PADDING_SIZE)), &av_free);
     m_buffer = reinterpret_cast<unsigned char*>(av_malloc(ioBufferSize + AV_INPUT_BUFFER_PADDING_SIZE));
 
@@ -82,7 +55,7 @@ bool VideoUtil::open(const char *filename) {
             m_buffer,    // Buffer
             ioBufferSize,  // Buffer size
             0,                   // Buffer is only readable - set to 1 for read/write
-            reinterpret_cast<void*>(m_file_stream),      // User (your) specified data
+            m_file_stream,      // User (your) specified data
             &readFunction,      // Function - Reading Packets (see example)
             nullptr,                   // Function - Write Packets
             &seekFunction       // Function - Seek to position in stream (see example)
