@@ -318,6 +318,14 @@ if(IS_OS_LINUX)
   target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS})
 endif()
 
+
+# Package assets
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E tar cf ${PROJECT_SOURCE_DIR}/assets.vapepak --format=zip -- data shaders
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMENT "Packaging assets to ${PROJECT_SOURCE_DIR}/assets.vapepak this may take a minute...")
+
+
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     set(OUTPUT_DIR ./releases)
     file(MAKE_DIRECTORY ${OUTPUT_DIR})
