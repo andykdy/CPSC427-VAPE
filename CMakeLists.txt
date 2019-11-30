@@ -1,6 +1,19 @@
 cmake_minimum_required(VERSION 3.1)
 project(vape)
 
+# Get version
+file(READ version.txt versionFile)
+if (NOT versionFile)
+    message(FATAL_ERROR "version.txt missing, unable to determine version!")
+endif()
+string(STRIP "${versionFile}" TEST_VERSION)
+string(REPLACE "." ";" VERSION_LIST ${TEST_VERSION})
+list(GET VERSION_LIST 0 VERSION_MAJOR)
+list(GET VERSION_LIST 1 VERSION_MINOR)
+list(GET VERSION_LIST 2 VERSION_PATCH)
+
+message("version: ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+
 # Set c++11
 # https://stackoverflow.com/questions/10851247/how-to-activate-c-11-in-cmake
 if (POLICY CMP0025)
@@ -11,7 +24,10 @@ set (CMAKE_CXX_STANDARD 11)
 # nice hierarchichal structure in MSVC
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+if (MINGW)
+    set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static")
+endif()
 
 #Find OS
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -163,6 +179,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC src/)
 
 # Added this so policy CMP0065 doesn't scream
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS 0)
+set_target_properties(${name} PROPERTIES
+        VERSION   "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
+        SOVERSION ${VERSION_MAJOR}
+        )
 
 
 # External header-only libraries in the ext/
@@ -296,4 +316,29 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES}
 # Needed to add this
 if(IS_OS_LINUX)
   target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS})
+endif()
+
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(OUTPUT_DIR ./releases)
+    file(MAKE_DIRECTORY ${OUTPUT_DIR})
+    set(OUTPUT_ZIP ${OUTPUT_DIR}/Vape.zip)
+    if (IS_OS_WINDOWS)
+        set(OUTPUT_ZIP ${OUTPUT_DIR}/Vape-Windows.zip)
+    elseif (IS_OS_MAC)
+        set(OUTPUT_ZIP ${OUTPUT_DIR}/Vape-Mac.zip)
+    elseif (IS_OS_WINDOWS)
+        set(OUTPUT_ZIP ${OUTPUT_DIR}/Vape-Linux.zip)
+    endif()
+
+    set(ZIP_FILES
+            bin
+            data
+            shaders
+            README.md
+            version.txt)
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E tar cf ${OUTPUT_ZIP} --format=zip -- ${ZIP_FILES}
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+            COMMENT "Packaging Release ${OUTPUT_ZIP} this may take a minute...")
 endif()

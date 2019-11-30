@@ -88,3 +88,11 @@ If you need to download a new version of the zip, just delete /data/data.7z and 
 You may need to add an empty line to cmakelists.txt to force it to build.
 
 Otherwise, you can always just comment out "download_assets()" in cmakelists.txt and download manually from the [google drive folder](https://drive.google.com/file/d/1a3yCBgBnr--UWfNw-07EkQegSBvIE2ON/view?usp=sharing)
+
+
+# Building a release
+
+- Build on the target platform with cmake, using release build type `-DCMAKE_BUILD_TYPE=Release`
+- ~~There should now be a `bin` folder containing the executable and any necessary dlls if on Windows.~~
+- ~~Zip up the `bin`, `data`, and `shaders` folders, along with the readme, and name appropriately indicating target platform.~~
+- The release should be packaged automatically into the `releases` folder

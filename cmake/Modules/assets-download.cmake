@@ -11,4 +11,3 @@ function(download_assets)
                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data)
         endif()
 endfunction(download_assets)
-
