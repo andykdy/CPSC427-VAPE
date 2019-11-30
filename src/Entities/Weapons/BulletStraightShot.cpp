@@ -4,6 +4,7 @@
 
 #include <Entities/Projectiles and Damaging/bullet.hpp>
 #include <Engine/GameEngine.hpp>
+#include <Utils/PhysFSHelpers.hpp>
 #include "BulletStraightShot.hpp"
 
 namespace {
@@ -14,7 +15,7 @@ void BulletStraightShot::init() {
     m_bullet_cooldown = -1.f;
 
     // Load sound
-    m_bullet_sound = Mix_LoadWAV(audio_path("pow.wav"));
+    m_bullet_sound = Load_Wav(audio_path("pow.wav"));
     if ( m_bullet_sound == nullptr)
     {
         fprintf(stderr, "Failed to load sound pow.wav\n %s\n make sure the data directory is present",

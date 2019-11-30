@@ -8,6 +8,7 @@
 #include <Entities/UI/MainMenu/StartButton.hpp>
 #include <Entities/UI/MainMenu/TutorialButton.hpp>
 #include <Entities/UI/MainMenu/ExitButton.hpp>
+#include <Utils/PhysFSHelpers.hpp>
 #include "MainMenuState.hpp"
 #include "LevelState.hpp"
 #include "TutorialState.hpp"
@@ -16,7 +17,7 @@
 #include "OutroState.hpp"
 
 void MainMenuState::init() {
-    m_background_music = Mix_LoadMUS(audio_path("mainmenu.wav"));
+    m_background_music = Load_Music(audio_path("mainmenu.wav"));
 
     // Playing background music indefinitely
     Mix_PlayMusic(m_background_music, -1);

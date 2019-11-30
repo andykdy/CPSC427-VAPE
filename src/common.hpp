@@ -23,7 +23,7 @@
 #define data_path "../" "./data"
 #define pak_data_path "data"
 #define textures_path(name)  pak_data_path "/textures/" name
-#define audio_path(name) data_path  "/audio/" name
+#define audio_path(name) pak_data_path  "/audio/" name
 #define mesh_path(name) data_path  "/meshes/" name
 #define video_path(name) data_path "/videos/" name
 #define font_path(name) data_path "/fonts/" name

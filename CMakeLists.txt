@@ -128,6 +128,7 @@ set(SOURCE_FILES
         src/Entities/Bosses/Boss.hpp
         src/Entities/Bosses/Boss1.cpp src/Entities/Bosses/Boss1.hpp
         src/Entities/Bosses/Boss2.cpp src/Entities/Bosses/Boss2.hpp
+        src/Entities/Bosses/Boss3.cpp src/Entities/Bosses/Boss3.hpp
 
         src/Entities/Pickups/Pickup.hpp
         src/Entities/Pickups/TestPickup.cpp src/Entities/Pickups/TestPickup.hpp
@@ -148,6 +149,7 @@ set(SOURCE_FILES
         src/Components/BoundaryComponent.hpp
         src/Components/EnemyComponent.hpp
         src/Components/CollisionComponent.hpp
+        src/Components/PlayerComponent.hpp
 
 
         src/Systems/EnemySpawnerSystem.cpp src/Systems/EnemySpawnerSystem.hpp
@@ -161,13 +163,14 @@ set(SOURCE_FILES
         src/Levels/Levels.hpp
         src/Levels/Level1.hpp
         src/Levels/Level2.hpp
-        src/Levels/Level2.hpp
+        src/Levels/Level3.hpp
 
         src/Utils/SaveData.cpp src/Utils/SaveData.hpp
+        src/Utils/PhysFSHelpers.hpp src/Utils/PhysFSHelpers.cpp
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 
-        src/Components/PlayerComponent.hpp src/Entities/Bosses/Boss3.cpp src/Entities/Bosses/Boss3.hpp src/Levels/Level3.hpp)
+        )
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

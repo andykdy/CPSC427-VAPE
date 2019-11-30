@@ -15,6 +15,7 @@
 #include <Systems/CollisionSystem.hpp>
 #include <Entities/Bosses/Boss2.hpp>
 #include <Systems/ProjectileSystem.hpp>
+#include <Utils/PhysFSHelpers.hpp>
 
 #include "LevelState.hpp"
 #include "MainMenuState.hpp"
@@ -59,13 +60,13 @@ LevelState::LevelState(Levels::Level level, PlayerData data) :
 }
 
 void LevelState::init() {
-    m_background_music = Mix_LoadMUS(m_level.backgroundMusic);
-    m_boss_music = Mix_LoadMUS(m_level.bossMusic);
-    m_victory_music = Mix_LoadMUS(audio_path("music_victory.wav"));
-    m_player_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav"));
-    m_player_eat_sound = Mix_LoadWAV(audio_path("salmon_eat.wav"));
-    m_player_explosion = Mix_LoadWAV(audio_path("explosion.wav"));
-    m_player_charged = Mix_LoadWAV(audio_path("vamp_charge.wav"));
+    m_background_music = Load_Music(m_level.backgroundMusic);
+    m_boss_music = Load_Music(m_level.bossMusic);
+    m_victory_music = Load_Music(audio_path("music_victory.wav"));
+    m_player_dead_sound = Load_Wav(audio_path("salmon_dead.wav"));
+    m_player_eat_sound = Load_Wav(audio_path("salmon_eat.wav"));
+    m_player_explosion = Load_Wav(audio_path("explosion.wav"));
+    m_player_charged = Load_Wav(audio_path("vamp_charge.wav"));
 
 
     if (m_background_music == nullptr || m_boss_music == nullptr || m_victory_music == nullptr ||

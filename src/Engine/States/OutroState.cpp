@@ -3,6 +3,7 @@
 //
 
 #include <sstream>
+#include <Utils/PhysFSHelpers.hpp>
 #include "OutroState.hpp"
 #include "MainMenuState.hpp"
 
@@ -11,7 +12,7 @@ OutroState::OutroState(const PlayerData &player_data) : m_player_data(player_dat
 }
 
 void OutroState::init() {
-    m_background_music = Mix_LoadMUS(audio_path("outro.wav"));
+    m_background_music = Load_Music(audio_path("outro.wav"));
 
 
     if (m_background_music == nullptr)

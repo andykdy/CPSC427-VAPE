@@ -12,6 +12,7 @@
 #include <Systems/EnemySpawnerSystem.hpp>
 #include <Systems/MotionSystem.hpp>
 #include <Systems/ProjectileSystem.hpp>
+#include <Utils/PhysFSHelpers.hpp>
 
 #include "TutorialState.hpp"
 #include "MainMenuState.hpp"
@@ -38,11 +39,11 @@ TutorialState::TutorialState() :
 }
 
 void TutorialState::init() {
-	m_background_music = Mix_LoadMUS(audio_path("music_tutorial.wav"));
-	m_player_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav"));
-	m_player_eat_sound = Mix_LoadWAV(audio_path("salmon_eat.wav"));
-	m_player_explosion = Mix_LoadWAV(audio_path("explosion.wav"));
-	m_player_charged = Mix_LoadWAV(audio_path("vamp_charge.wav"));
+	m_background_music = Load_Music(audio_path("music_tutorial.wav"));
+	m_player_dead_sound = Load_Wav(audio_path("salmon_dead.wav"));
+	m_player_eat_sound = Load_Wav(audio_path("salmon_eat.wav"));
+	m_player_explosion = Load_Wav(audio_path("explosion.wav"));
+	m_player_charged = Load_Wav(audio_path("vamp_charge.wav"));
 
 	if (m_background_music == nullptr || m_player_dead_sound == nullptr || m_player_eat_sound == nullptr)
 	{

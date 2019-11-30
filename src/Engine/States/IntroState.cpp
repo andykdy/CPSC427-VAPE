@@ -4,11 +4,12 @@
 
 #include <sstream>
 #include <Levels/Level1.hpp>
+#include <Utils/PhysFSHelpers.hpp>
 #include "IntroState.hpp"
 #include "ControlsState.hpp"
 
 void IntroState::init() {
-    m_background_music = Mix_LoadMUS(audio_path("intro.wav"));
+    m_background_music = Load_Music(audio_path("intro.wav"));
 
 
     if (m_background_music == nullptr)
