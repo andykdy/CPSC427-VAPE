@@ -6,6 +6,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <physfs.h>
 #include "Engine/GameEngine.hpp"
 #include "Engine/States/MainMenuState.hpp"
 
@@ -15,12 +16,14 @@
 using Clock = std::chrono::high_resolution_clock;
 
 int main(int argv, char** args) {
+	PHYSFS_init(args[0]);
+
 	GameEngine& game = GameEngine::getInstance();
 	try {
 		game.init();
 	}
 	catch(std::runtime_error &e){
-//		printf(e.what());
+		printf(e.what());
         // Time to read the error message
         std::cout << "Press any key to exit" << std::endl;
         std::cin.get();

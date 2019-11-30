@@ -300,6 +300,6 @@ data/data.7z
 
 *.fla
 
-cmake-build-release/
+cmake-*/
 
-cmake-build-debug-vs/
+data.7z

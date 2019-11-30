@@ -178,6 +178,15 @@ if (OPENGL_FOUND)
    target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENGL_gl_LIBRARY})
 endif()
 
+
+# Get and build physfs
+include(${PROJECT_SOURCE_DIR}/cmake/Modules/physfs.cmake)
+
+fetch_physfs(
+        ${PROJECT_SOURCE_DIR}/cmake/Modules
+        ${PROJECT_BINARY_DIR}/physfs
+)
+
 # glfw, sdl could be precompiled (on windows) or installed by a package manager (on OSX and Linux)
 
 if (IS_OS_LINUX OR IS_OS_MAC)
@@ -282,7 +291,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${GLFW_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${SDL2_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${FFMPEG_INCLUDE_DIRS})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES} ${FFMPEG_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES} ${FFMPEG_LIBRARIES} physfs)
 
 # Needed to add this
 if(IS_OS_LINUX)
