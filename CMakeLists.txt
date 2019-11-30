@@ -320,10 +320,12 @@ endif()
 
 
 # Package assets
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E tar cf ${PROJECT_SOURCE_DIR}/assets.vapepak --format=zip -- data shaders
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-        COMMENT "Packaging assets to ${PROJECT_SOURCE_DIR}/assets.vapepak this may take a minute...")
+if (NOT EXISTS ${PROJECT_SOURCE_DIR}/assets.vapepak)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E tar cf ${PROJECT_SOURCE_DIR}/assets.vapepak --format=zip -- data shaders
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+            COMMENT "Packaging assets to ${PROJECT_SOURCE_DIR}/assets.vapepak this may take a minute...")
+endif()
 
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")

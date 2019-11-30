@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include <physfs.h>
 
 void gl_flush_errors()
 {
@@ -203,10 +204,35 @@ bool Texture::load_from_file(const char* path)
 {
 	if (path == nullptr) 
 		return false;
+	if (!PHYSFS_exists(path))
+	{
+		std::cout << "Unable to find " << path << std::endl;
+		return false; //file doesn't exist
+	}
 	Texture::path = std::string(path);
-	
-	stbi_uc* data = stbi_load(path, &width, &height, NULL, 4);
-	if (data == NULL)
+
+	PHYSFS_file* myfile = PHYSFS_openRead(path);
+
+	// Get the lenght of the file
+	auto m_size = PHYSFS_fileLength(myfile);
+
+	// Get the file data.
+	auto m_data = new uint8_t[m_size];
+
+	auto length_read = PHYSFS_readBytes(myfile, m_data, static_cast<PHYSFS_uint64>(m_size));
+
+	if (length_read != m_size)
+	{
+		std::cout << PHYSFS_getLastErrorCode() << std::endl;
+		delete [] m_data;
+		m_data = nullptr;
+		return false;
+	}
+
+	PHYSFS_close(myfile);
+
+	stbi_uc* data = stbi_load_from_memory(m_data, static_cast<int>(m_size), &width, &height, nullptr, 4);
+	if (data == nullptr)
 		return false;
 
 	gl_flush_errors();
