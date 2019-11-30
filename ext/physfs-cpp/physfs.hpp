@@ -99,7 +99,7 @@ namespace PhysFS {
 
     void setWriteDir(string const & newDir);
 
-    void removeFromSearchPath(string const & oldDir);
+    void unmount(string const & oldDir);
 
     StringList getSearchPath();
 
@@ -197,7 +197,7 @@ private:
 		if (PHYSFS_eof(file)) {
 			return traits_type::eof();
 		}
-		size_t bytesRead = PHYSFS_read(file, buffer, 1, bufferSize);
+		size_t bytesRead = PHYSFS_readBytes(file, buffer, bufferSize);
 		if (bytesRead < 1) {
 			return traits_type::eof();
 		}
@@ -242,11 +242,11 @@ private:
 		if (pptr() == pbase() && c == traits_type::eof()) {
 			return 0; // no-op
 		}
-		if (PHYSFS_write(file, pbase(), pptr() - pbase(), 1) < 1) {
+		if (PHYSFS_writeBytes(file, pbase(), pptr() - pbase()) < 1) {
 			return traits_type::eof();
 		}
 		if (c != traits_type::eof()) {
-			if (PHYSFS_write(file, &c, 1, 1) < 1) {
+			if (PHYSFS_writeBytes(file, &c, 1) < 1) {
 				return traits_type::eof();
 			}
 		}
@@ -389,8 +389,8 @@ void setWriteDir(const string& newDir) {
 	PHYSFS_setWriteDir(newDir.c_str());
 }
 
-void removeFromSearchPath(const string& oldDir) {
-	PHYSFS_removeFromSearchPath(oldDir.c_str());
+void unmount(const string& oldDir) {
+	PHYSFS_unmount(oldDir.c_str());
 }
 
 StringList getSearchPath() {

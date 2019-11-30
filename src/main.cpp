@@ -6,7 +6,7 @@
 
 #include <chrono>
 #include <iostream>
-#include <physfs.h>
+#include <physfs.hpp>
 #include "Engine/GameEngine.hpp"
 #include "Engine/States/MainMenuState.hpp"
 
