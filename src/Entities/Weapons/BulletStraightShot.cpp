@@ -15,7 +15,8 @@ void BulletStraightShot::init() {
     m_bullet_cooldown = -1.f;
 
     // Load sound
-    m_bullet_sound = Load_Wav(audio_path("pow.wav"));
+    m_bullet_sound_file.init(audio_path("pow.wav"));
+    m_bullet_sound = Load_Wav(m_bullet_sound_file);
     if ( m_bullet_sound == nullptr)
     {
         fprintf(stderr, "Failed to load sound pow.wav\n %s\n make sure the data directory is present",
@@ -45,4 +46,5 @@ void BulletStraightShot::update(float ms) {
 void BulletStraightShot::destroy() {
     if (m_bullet_sound != nullptr)
         Mix_FreeChunk(m_bullet_sound);
+    m_bullet_sound_file.destroy();
 }

@@ -7,9 +7,11 @@
 
 
 #include "Weapon.hpp"
+#include <Utils/PhysFSHelpers.hpp>
 
 class BulletStraightShot : public Weapon {
 private:
+    RWFile m_bullet_sound_file;
     Mix_Chunk* m_bullet_sound;
     float m_bullet_cooldown;
 public:

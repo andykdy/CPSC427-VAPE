@@ -237,6 +237,7 @@ bool Texture::load_from_file(const char* path)
 	stbi_uc* data = stbi_load_from_memory(m_data, static_cast<int>(m_size), &width, &height, nullptr, 4);
 	if (data == nullptr)
 		return false;
+	delete [] m_data;
 
 	gl_flush_errors();
 	glGenTextures(1, &id);

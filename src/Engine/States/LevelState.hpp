@@ -38,6 +38,7 @@
 #include <Entities/Pickups/Pickup.hpp>
 #include <Utils/SaveData.hpp>
 #include <Entities/UI/PauseMenu/PauseMenu.hpp>
+#include <Utils/PhysFSHelpers.hpp>
 
 const size_t INIT_LIVES = 5;
 
@@ -129,6 +130,14 @@ private:
     // Effects
     VampParticleEmitter m_vamp_particle_emitter;
     Explosion m_explosion;
+
+    RWFile m_background_music_file;
+    RWFile m_boss_music_file;
+    RWFile m_victory_music_file;
+    RWFile m_player_dead_sound_file;
+    RWFile m_player_eat_sound_file;
+    RWFile m_player_explosion_file;
+    RWFile m_player_charged_file;
 
     Mix_Music* m_background_music;
     Mix_Music* m_boss_music;

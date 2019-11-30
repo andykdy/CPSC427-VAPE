@@ -15,7 +15,6 @@
 #include <Systems/CollisionSystem.hpp>
 #include <Entities/Bosses/Boss2.hpp>
 #include <Systems/ProjectileSystem.hpp>
-#include <Utils/PhysFSHelpers.hpp>
 
 #include "LevelState.hpp"
 #include "MainMenuState.hpp"
@@ -60,13 +59,20 @@ LevelState::LevelState(Levels::Level level, PlayerData data) :
 }
 
 void LevelState::init() {
-    m_background_music = Load_Music(m_level.backgroundMusic);
-    m_boss_music = Load_Music(m_level.bossMusic);
-    m_victory_music = Load_Music(audio_path("music_victory.wav"));
-    m_player_dead_sound = Load_Wav(audio_path("salmon_dead.wav"));
-    m_player_eat_sound = Load_Wav(audio_path("salmon_eat.wav"));
-    m_player_explosion = Load_Wav(audio_path("explosion.wav"));
-    m_player_charged = Load_Wav(audio_path("vamp_charge.wav"));
+    m_background_music_file.init(m_level.backgroundMusic);
+    m_background_music = Load_Music(m_background_music_file);
+    m_boss_music_file.init(m_level.bossMusic);
+    m_boss_music = Load_Music(m_boss_music_file);
+    m_victory_music_file.init(audio_path("music_victory.wav"));
+    m_victory_music = Load_Music(m_victory_music_file);
+    m_player_dead_sound_file.init(audio_path("salmon_dead.wav"));
+    m_player_dead_sound = Load_Wav(m_player_dead_sound_file);
+    m_player_eat_sound_file.init(audio_path("salmon_eat.wav"));
+    m_player_eat_sound = Load_Wav(m_player_eat_sound_file);
+    m_player_explosion_file.init(audio_path("explosion.wav"));
+    m_player_explosion = Load_Wav(m_player_explosion_file);
+    m_player_charged_file.init(audio_path("vamp_charge.wav"));
+    m_player_charged = Load_Wav(m_player_charged_file);
 
 
     if (m_background_music == nullptr || m_boss_music == nullptr || m_victory_music == nullptr ||
@@ -151,16 +157,22 @@ void LevelState::terminate() {
 
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
+    m_background_music_file.destroy();
     if (m_boss_music != nullptr)
         Mix_FreeMusic(m_boss_music);
+    m_boss_music_file.destroy();
     if (m_victory_music != nullptr)
         Mix_FreeMusic(m_victory_music);
+    m_victory_music_file.destroy();
     if (m_player_dead_sound != nullptr)
         Mix_FreeChunk(m_player_dead_sound);
+    m_player_dead_sound_file.destroy();
     if (m_player_eat_sound != nullptr)
         Mix_FreeChunk(m_player_eat_sound);
+    m_player_eat_sound_file.destroy();
     if (m_player_explosion != nullptr)
         Mix_FreeChunk(m_player_explosion);
+    m_player_explosion_file.destroy();
 
     m_pause->destroy();
 

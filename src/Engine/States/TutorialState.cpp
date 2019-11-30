@@ -12,7 +12,6 @@
 #include <Systems/EnemySpawnerSystem.hpp>
 #include <Systems/MotionSystem.hpp>
 #include <Systems/ProjectileSystem.hpp>
-#include <Utils/PhysFSHelpers.hpp>
 
 #include "TutorialState.hpp"
 #include "MainMenuState.hpp"
@@ -39,11 +38,16 @@ TutorialState::TutorialState() :
 }
 
 void TutorialState::init() {
-	m_background_music = Load_Music(audio_path("music_tutorial.wav"));
-	m_player_dead_sound = Load_Wav(audio_path("salmon_dead.wav"));
-	m_player_eat_sound = Load_Wav(audio_path("salmon_eat.wav"));
-	m_player_explosion = Load_Wav(audio_path("explosion.wav"));
-	m_player_charged = Load_Wav(audio_path("vamp_charge.wav"));
+	m_background_music_file.init(audio_path("music_tutorial.wav"));
+	m_background_music = Load_Music(m_background_music_file);
+	m_player_dead_sound_file.init(audio_path("salmon_dead.wav"));
+	m_player_dead_sound = Load_Wav(m_player_dead_sound_file);
+	m_player_eat_sound_file.init(audio_path("salmon_eat.wav"));
+	m_player_eat_sound = Load_Wav(m_player_eat_sound_file);
+	m_player_explosion_file.init(audio_path("explosion.wav"));
+	m_player_explosion = Load_Wav(m_player_explosion_file);
+	m_player_charged_file.init(audio_path("vamp_charge.wav"));
+	m_player_charged = Load_Wav(m_player_charged_file);
 
 	if (m_background_music == nullptr || m_player_dead_sound == nullptr || m_player_eat_sound == nullptr)
 	{
@@ -107,12 +111,16 @@ void TutorialState::terminate() {
 
 	if (m_background_music != nullptr)
 		Mix_FreeMusic(m_background_music);
+	m_background_music_file.destroy();
 	if (m_player_dead_sound != nullptr)
 		Mix_FreeChunk(m_player_dead_sound);
+	m_player_dead_sound_file.destroy();
 	if (m_player_eat_sound != nullptr)
 		Mix_FreeChunk(m_player_eat_sound);
+	m_player_eat_sound_file.destroy();
 	if (m_player_explosion != nullptr)
 		Mix_FreeChunk(m_player_explosion);
+	m_player_explosion_file.destroy();
 
 	m_pause->destroy();
 

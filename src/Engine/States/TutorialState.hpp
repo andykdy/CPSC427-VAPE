@@ -31,6 +31,7 @@
 #include <Entities/UI/UIPanel/UIPanelBackground.hpp>
 #include <Entities/UI/UIPanel/UIPanel.hpp>
 #include <Entities/UI/PauseMenu/PauseMenu.hpp>
+#include <Utils/PhysFSHelpers.hpp>
 
 enum Component {
 	initial,
@@ -114,10 +115,15 @@ private:
     float m_vamp_cooldown;
     Explosion m_explosion;
 
-    Mix_Music* m_background_music;
+	RWFile m_background_music_file;
+	Mix_Music* m_background_music;
+	RWFile m_player_dead_sound_file;
 	Mix_Chunk* m_player_dead_sound;
+	RWFile m_player_eat_sound_file;
 	Mix_Chunk* m_player_eat_sound;
+	RWFile m_player_explosion_file;
 	Mix_Chunk* m_player_explosion;
+	RWFile m_player_charged_file;
 	Mix_Chunk* m_player_charged;
 
 	// C++ rng
