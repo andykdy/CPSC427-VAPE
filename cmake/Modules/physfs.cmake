@@ -44,11 +44,4 @@ macro(fetch_physfs _download_module_path _download_root)
 
     target_include_directories(${PROJECT_NAME} PUBLIC  ${_download_root}/physfs-src/src)
 
-    if (IS_OS_WINDOWS)
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${_download_root}/physfs-build/libphysfs.dll"
-                "$<TARGET_FILE_DIR:${PROJECT_NAME}>/libphysfs.dll")
-    endif()
-
 endmacro()

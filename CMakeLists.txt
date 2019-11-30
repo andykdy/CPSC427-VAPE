@@ -192,6 +192,7 @@ set_target_properties(${name} PROPERTIES
 target_include_directories(${PROJECT_NAME} PUBLIC ext/stb_truetype/)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/stb_image/)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/gl3w)
+target_include_directories(${PROJECT_NAME} PUBLIC ext/physfs-cpp/)
 
 # Find OpenGL
 find_package(OpenGL REQUIRED)

@@ -3,6 +3,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../ext/stb_image/stb_image.h"
 
+#define PHYFSPP_IMPL
+#include "physfs.hpp"
+
 // stlib
 #include <vector>
 #include <iostream>
