@@ -268,11 +268,12 @@ void LevelState::update(float ms) {
         if ((*bullet_it)->collides_with(*m_player))
         {
             (*bullet_it)->destroy();
-            bullet_it = bullets.erase(bullet_it);
             if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
                 m_player->set_iframes(500.f);
                 lose_health((*bullet_it)->getDamage());
             }
+
+            bullet_it = bullets.erase(bullet_it);
             break;
         } else {
             ++bullet_it;
