@@ -219,8 +219,9 @@ void LevelState::update(float ms) {
     m_health->setHealth(m_player->get_health());
     m_vamp_charge->setVampCharge(m_vamp_mode_charge);
 
-    // Update the player's position for the enemies
+    // Update the player's position and screen size for the enemies
     for(auto& enemy: *enemies) {
+        enemy->screen_size = screen;
         enemy->player_position = m_player->get_position();
     }
 

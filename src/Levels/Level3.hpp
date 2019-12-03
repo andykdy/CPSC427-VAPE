@@ -12,7 +12,7 @@ namespace Levels {
     const Timeline level3Timeline = {
             { 1500, TLExplosiveSingle },
 
-            { 4500, TMSpeedsterSingle }
+            { 4500, LRM2Speedster }
     };
 
     const Level level3 = Level(

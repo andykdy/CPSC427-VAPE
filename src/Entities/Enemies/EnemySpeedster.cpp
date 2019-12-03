@@ -64,7 +64,7 @@ bool EnemySpeedster::init() {
     physics->scale = { -0.35f, 0.35f };
 
     m_stationary_cooldown_ms = STATIONARY_TIME_MS;
-    m_was_stationed = false;
+    m_direction = from_top;
     m_rotation_direction = 1.0;
     points = POINTS_VAL;
 
@@ -92,12 +92,50 @@ void EnemySpeedster::update(float ms) {
         float step = 180.f * (ms / 1000);
         motion->radians += m_rotation_direction * step * 0.02;
 
-        if(motion->position.y > 100) {
-            motion->velocity = {0.f, 0.f};
+        switch (m_direction) {
+            case from_top:
+                if(motion->position.y > 70) {
+                    motion->velocity = {0.f, 0.f};
+                }
+                break;
+            case from_bottom:
+                if(motion->position.y < screen_size.y - 70) {
+                    motion->velocity = {0.f, 0.f};
+                }
+                break;
+            case from_left:
+                if(motion->position.x > 70) {
+                    motion->velocity = {0.f, 0.f};
+                }
+                break;
+            case from_right:
+                if(motion->position.x < screen_size.x - 70) {
+                    motion->velocity = {0.f, 0.f};
+                }
+                break;
         }
     } else {
         motion->radians = M_PI;
         motion->velocity = {0.f, MAX_SPEED};
+
+        switch (m_direction) {
+            case from_top:
+                motion->radians = M_PI;
+                motion->velocity = {0.f, MAX_SPEED};
+                break;
+            case from_bottom:
+                motion->radians = 0;
+                motion->velocity = {0.f, static_cast<float>(-MAX_SPEED)};
+                break;
+            case from_left:
+                motion->radians = -(M_PI / 2);
+                motion->velocity = {MAX_SPEED, 0};
+                break;
+            case from_right:
+                motion->radians = (M_PI / 2);
+                motion->velocity = {static_cast<float>(-MAX_SPEED), 0};
+                break;
+        }
     }
 
 
@@ -143,4 +181,22 @@ void EnemySpeedster::set_velocity(vec2 velocity) {
     auto* motion = getComponent<MotionComponent>();
     motion->velocity.x = velocity.x;
     motion->velocity.y = velocity.y;
+
+    if(velocity.x == 0.f) {
+        if(velocity.y > 0.f) {
+            m_direction = from_top;
+            motion->radians = M_PI;
+        } else {
+            m_direction = from_bottom;
+            motion->radians = 0;
+        }
+    } else {
+        if(velocity.x > 0.f) {
+            m_direction = from_left;
+            motion->radians = -(M_PI / 2);
+        } else {
+            m_direction = from_right;
+            motion->radians = (M_PI / 2);
+        }
+    }
 }

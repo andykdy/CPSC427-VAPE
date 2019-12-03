@@ -39,7 +39,9 @@ public:
 
 private:
     float m_stationary_cooldown_ms;
-    bool m_was_stationed;
+
+    enum direction {from_top, from_bottom, from_left, from_right};
+    direction m_direction;
 
     float m_rotate_cooldown_ms;
     float m_rotation_direction;
