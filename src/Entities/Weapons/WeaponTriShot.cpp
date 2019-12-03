@@ -37,7 +37,7 @@ void WeaponTriShot::fire(const vec2 &origin_position, float origin_rotation) {
         }
 
         Bullet* bullet2 = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
-        if (bullet2->init(origin_position, origin_rotation, false, 5)) {
+        if (bullet2->init(origin_position, origin_rotation + (M_PI/ 4), false, 5)) {
             m_bullet_cooldown = BULLET_COOLDOWN_MS;
             Mix_PlayChannel(-1, m_bullet_sound, 0);
             projectiles.friendly_projectiles.emplace_back(bullet2);
@@ -46,7 +46,7 @@ void WeaponTriShot::fire(const vec2 &origin_position, float origin_rotation) {
         }
 
         Bullet* bullet3 = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
-        if (bullet3->init(origin_position, origin_rotation, false, 5)) {
+        if (bullet3->init(origin_position, origin_rotation - (M_PI/ 4), false, 5)) {
             m_bullet_cooldown = BULLET_COOLDOWN_MS;
             Mix_PlayChannel(-1, m_bullet_sound, 0);
             projectiles.friendly_projectiles.emplace_back(bullet3);
