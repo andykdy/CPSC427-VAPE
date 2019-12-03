@@ -15,7 +15,7 @@ private:
 public:
     void init() override;
 
-    Projectile* fire(const vec2 &origin_position, float origin_rotation) override;
+    void fire(const vec2 &origin_position, float origin_rotation) override;
 
     void update(float ms) override;
 

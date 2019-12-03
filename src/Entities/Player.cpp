@@ -98,15 +98,12 @@ void Player::destroy()
 // Called on each frame by World::update()
 void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 {
-	auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
     auto* motion = getComponent<MotionComponent>();
 
     weapon->update(ms);
 	// Spawning player bullets
 	if (is_alive() && keyMap[GLFW_KEY_SPACE]) {
-		Projectile* p = weapon->fire(motion->position, motion->radians + 3.14f);
-		if (p != nullptr)
-			projectiles.friendly_projectiles.emplace_back(p);
+		weapon->fire(motion->position, motion->radians + 3.14f);
 	}
 
 	if (is_alive())

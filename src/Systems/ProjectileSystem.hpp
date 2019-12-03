@@ -7,6 +7,9 @@
 
 
 #include <Engine/ECS/System.hpp>
+#include <Entities/Projectiles and Damaging/Projectile.hpp>
+
+class Projectile;
 
 class ProjectileSystem : public ECS::System {
 public:
