@@ -167,7 +167,7 @@ set(SOURCE_FILES
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 
-        src/Components/PlayerComponent.hpp src/Entities/Bosses/Boss3.cpp src/Entities/Bosses/Boss3.hpp src/Levels/Level3.hpp src/Entities/Enemies/EnemyExplosivePayload.cpp src/Entities/Enemies/EnemyExplosivePayload.hpp src/Entities/Enemies/EnemySpeedster.cpp src/Entities/Enemies/EnemySpeedster.hpp src/Entities/Weapons/WeaponTriShot.cpp src/Entities/Weapons/WeaponTriShot.hpp)
+        src/Components/PlayerComponent.hpp src/Entities/Bosses/Boss3.cpp src/Entities/Bosses/Boss3.hpp src/Levels/Level3.hpp src/Entities/Enemies/EnemyExplosivePayload.cpp src/Entities/Enemies/EnemyExplosivePayload.hpp src/Entities/Enemies/EnemySpeedster.cpp src/Entities/Enemies/EnemySpeedster.hpp src/Entities/Weapons/WeaponTriShot.cpp src/Entities/Weapons/WeaponTriShot.hpp src/Entities/Weapons/WeaponMachineGun.cpp src/Entities/Weapons/WeaponMachineGun.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

@@ -16,6 +16,7 @@
 #include <Engine/GameEngine.hpp>
 #include <Entities/Weapons/BulletStraightShot.hpp>
 #include "Entities/Weapons/WeaponTriShot.hpp"
+#include "Entities/Weapons/WeaponMachineGun.hpp"
 #include <Components/PlayerComponent.hpp>
 #include <Systems/ProjectileSystem.hpp>
 
@@ -77,7 +78,7 @@ bool Player::init(vec2 screen, int hp)
 	m_iframe = 0.f;
 
 	// weapon = new WeaponTriShot();
-	weapon = new BulletStraightShot();
+	weapon = new WeaponMachineGun();
 	weapon->init();
 
 	return !gl_has_errors();
