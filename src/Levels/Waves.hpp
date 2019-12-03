@@ -189,5 +189,12 @@ namespace Levels {
     const Wave TLTargetSingle = {genSpawn(spawn < EnemyTargettedShooter > , {100, -100}, TD, 0.f)};
     const Wave TRTargetSingle = {genSpawn(spawn <EnemyTargettedShooter>, {SW-100, -100}, TD, 0.f)};
     const Wave TMTargetSingle = {genSpawn(spawn <EnemyTargettedShooter>, {SW/2, -100}, TD, 0.f)};
+
+    /*
+     *
+     * Explosive Payload Waves
+     *
+     */
+    const Wave TLExplosiveSingle = {genSpawn(spawn < EnemyExplosivePlayload > , {100, -100}, TD, 0.f)};
 }
 #endif //VAPE_WAVES_HPP
