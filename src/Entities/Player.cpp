@@ -78,7 +78,7 @@ bool Player::init(vec2 screen, int hp)
 	m_iframe = 0.f;
 
 	// weapon = new WeaponTriShot();
-	weapon = new WeaponMachineGun();
+	weapon = new BulletStraightShot();
 	weapon->init();
 
 	return !gl_has_errors();
