@@ -78,6 +78,7 @@ bool Player::init(vec2 screen, int hp)
 	m_iframe = 0.f;
 
 	// weapon = new WeaponTriShot();
+    // weapon = new WeaponMachineGun();
 	weapon = new BulletStraightShot();
 	weapon->init();
 
@@ -110,8 +111,7 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 	}
 
 	if(weapon->amo < 0) {
-	    weapon->destroy();
-	    weapon = new BulletStraightShot();
+	    changeWeapon(new BulletStraightShot());
 	}
 
 	if (is_alive())
