@@ -13,6 +13,7 @@
 #include "Entities/Enemies/EnemyGenericShooter.hpp"
 #include "Entities/Enemies/EnemyTargettedShooter.hpp"
 #include "Entities/Enemies/EnemyExplosivePayload.hpp"
+#include "Entities/Enemies/EnemySpeedster.hpp"
 
 namespace Levels {
     typedef Boss* BossSpawner(ECS::EntityManager *e);
