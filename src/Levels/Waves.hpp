@@ -196,5 +196,18 @@ namespace Levels {
      *
      */
     const Wave TLExplosiveSingle = {genSpawn(spawn < EnemyExplosivePlayload > , {100, -100}, TD, 0.f)};
+
+    /*
+     *
+     * Speedster Waves
+     *
+     */
+    const Wave TMSpeedsterSingle = {genSpawn(spawn <EnemySpeedster>, {SW/2, -100}, TD, 0.f)};
+
+    const Wave LM2Speedster = {genSpawn(spawn < EnemySpeedster > , {-100, 200}, TR, 0.f),
+                              genSpawn(spawn < EnemySpeedster > , {-150, 400}, TR, 0.f),};
+
+    const Wave LRM2Speedster = {genSpawn(spawn < EnemySpeedster > , {-100, 200}, TR, 0.f),
+                                genSpawn(spawn < EnemySpeedster > , {SW + 150, 500}, TL, 0.f),};
 }
 #endif //VAPE_WAVES_HPP
