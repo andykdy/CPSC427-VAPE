@@ -24,7 +24,7 @@ namespace
     const size_t BULLET_DAMAGE = 5;
     const size_t ROTATE_COOLDOWN_MS = 100;
     const size_t PAYLOAD_BULLET_COUNT = 20;
-    const size_t EXPLOSVE_TIME_MS = 2500;
+    const size_t EXPLOSVE_TIME_MS = 3000;
 }
 
 bool EnemyExplosivePlayload::init() {
@@ -95,8 +95,16 @@ void EnemyExplosivePlayload::update(float ms) {
     if (m_explosive_cooldown_ms > 0.f) {
         float step = 180.f * (ms / 1000);
         motion->radians += m_rotation_direction * step * 0.02;
+
+        float dy = player_position.y - motion->position.y;
+        float dx = player_position.x - motion->position.x;
+
+        float angle = atan2(dx, dy);
+
+        motion->velocity = {180.f * sin(angle), 180.f * cos(angle)};
     } else {
         motion->radians = M_PI;
+        motion->velocity = {0.f, 180.f};
     }
 
 
