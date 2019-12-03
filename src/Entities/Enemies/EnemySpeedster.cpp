@@ -99,7 +99,7 @@ void EnemySpeedster::update(float ms) {
                 }
                 break;
             case from_bottom:
-                if(motion->position.y < screen_size.y - 70) {
+                if(motion->position.y < (screen_size.y * 0.9) - 70) {
                     motion->velocity = {0.f, 0.f};
                 }
                 break;
