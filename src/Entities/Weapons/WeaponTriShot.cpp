@@ -8,6 +8,7 @@
 
 namespace {
     const size_t BULLET_COOLDOWN_MS = 300;
+    const size_t TOTAL_AMO = 10;
 }
 
 void WeaponTriShot::init() {
@@ -21,12 +22,16 @@ void WeaponTriShot::init() {
                 audio_path("pow.wav"));
         throw std::runtime_error("Failed to load sound pow.wav");
     }
+
+    amo = TOTAL_AMO;
 }
 
 void WeaponTriShot::fire(const vec2 &origin_position, float origin_rotation) {
     auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
 
     if (m_bullet_cooldown < 0.f) {
+        amo -= 1;
+
         Bullet* bullet1 = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
         if (bullet1->init(origin_position, origin_rotation, false, 5)) {
             m_bullet_cooldown = BULLET_COOLDOWN_MS;
@@ -37,7 +42,7 @@ void WeaponTriShot::fire(const vec2 &origin_position, float origin_rotation) {
         }
 
         Bullet* bullet2 = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
-        if (bullet2->init(origin_position, origin_rotation + (M_PI/ 4), false, 5)) {
+        if (bullet2->init(origin_position, origin_rotation + (M_PI/ 6), false, 5)) {
             m_bullet_cooldown = BULLET_COOLDOWN_MS;
             Mix_PlayChannel(-1, m_bullet_sound, 0);
             projectiles.friendly_projectiles.emplace_back(bullet2);
@@ -46,7 +51,7 @@ void WeaponTriShot::fire(const vec2 &origin_position, float origin_rotation) {
         }
 
         Bullet* bullet3 = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
-        if (bullet3->init(origin_position, origin_rotation - (M_PI/ 4), false, 5)) {
+        if (bullet3->init(origin_position, origin_rotation - (M_PI/ 6), false, 5)) {
             m_bullet_cooldown = BULLET_COOLDOWN_MS;
             Mix_PlayChannel(-1, m_bullet_sound, 0);
             projectiles.friendly_projectiles.emplace_back(bullet3);

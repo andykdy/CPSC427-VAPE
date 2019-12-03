@@ -15,6 +15,7 @@
 #include <Components/HealthComponent.hpp>
 #include <Engine/GameEngine.hpp>
 #include <Entities/Weapons/BulletStraightShot.hpp>
+#include "Entities/Weapons/WeaponTriShot.hpp"
 #include <Components/PlayerComponent.hpp>
 #include <Systems/ProjectileSystem.hpp>
 
@@ -75,6 +76,7 @@ bool Player::init(vec2 screen, int hp)
 	health->m_health = hp;
 	m_iframe = 0.f;
 
+	// weapon = new WeaponTriShot();
 	weapon = new BulletStraightShot();
 	weapon->init();
 
@@ -105,6 +107,12 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 	if (is_alive() && keyMap[GLFW_KEY_SPACE]) {
 		weapon->fire(motion->position, motion->radians + 3.14f);
 	}
+
+	// TODO: switch weapon when amo ran out
+//	if(weapon->amo < 0) {
+//	    weapon->destroy();
+//	    weapon = new BulletStraightShot();
+//	}
 
 	if (is_alive())
 	{

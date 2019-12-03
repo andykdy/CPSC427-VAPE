@@ -5,6 +5,7 @@
 #include <Entities/Projectiles and Damaging/bullet.hpp>
 #include <Engine/GameEngine.hpp>
 #include "BulletStraightShot.hpp"
+#include <math.h>
 
 namespace {
     const size_t BULLET_COOLDOWN_MS = 300;
@@ -21,6 +22,8 @@ void BulletStraightShot::init() {
                 audio_path("pow.wav"));
         throw std::runtime_error("Failed to load sound pow.wav");
     }
+
+    amo = 1.f;
 }
 
 void BulletStraightShot::fire(const vec2 &origin_position, float origin_rotation) {

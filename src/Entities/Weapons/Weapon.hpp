@@ -12,6 +12,8 @@ class Projectile;
 
 class Weapon {
 public:
+    float amo;
+
     virtual void init() {};
 
     virtual void fire(const vec2& origin_position, float origin_rotation) = 0;
