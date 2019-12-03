@@ -24,7 +24,7 @@ namespace
     const size_t BULLET_DAMAGE = 5;
     const size_t ROTATE_COOLDOWN_MS = 50;
     const size_t STATIONARY_TIME_MS = 3000;
-    const size_t MAX_SPEED = 700;
+    const float MAX_SPEED = 700.f;
 }
 
 bool EnemySpeedster::init() {
@@ -125,7 +125,7 @@ void EnemySpeedster::update(float ms) {
                 break;
             case from_bottom:
                 motion->radians = 0;
-                motion->velocity = {0.f, static_cast<float>(-MAX_SPEED)};
+                motion->velocity = {0.f, -MAX_SPEED};
                 break;
             case from_left:
                 motion->radians = -(M_PI / 2);
@@ -133,7 +133,7 @@ void EnemySpeedster::update(float ms) {
                 break;
             case from_right:
                 motion->radians = (M_PI / 2);
-                motion->velocity = {static_cast<float>(-MAX_SPEED), 0};
+                motion->velocity = {-MAX_SPEED, 0};
                 break;
         }
     }

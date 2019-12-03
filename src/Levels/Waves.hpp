@@ -208,6 +208,6 @@ namespace Levels {
                               genSpawn(spawn < EnemySpeedster > , {-150, 400}, TR, 0.f),};
 
     const Wave LRM2Speedster = {genSpawn(spawn < EnemySpeedster > , {-100, 200}, TR, 0.f),
-                                genSpawn(spawn < EnemySpeedster > , {-150, 400}, TL, 0.f),};
+                                genSpawn(spawn < EnemySpeedster > , {SW + 150, 500}, TL, 0.f),};
 }
 #endif //VAPE_WAVES_HPP
