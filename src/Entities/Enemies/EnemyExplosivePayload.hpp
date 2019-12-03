@@ -38,6 +38,7 @@ public:
     void set_velocity(vec2 velocity) override;
 
 private:
+    float m_explosive_cooldown_ms;
     float m_rotate_cooldown_ms;
     float m_rotation_direction;
 

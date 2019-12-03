@@ -24,6 +24,7 @@ namespace
     const size_t BULLET_DAMAGE = 5;
     const size_t ROTATE_COOLDOWN_MS = 100;
     const size_t PAYLOAD_BULLET_COUNT = 20;
+    const size_t EXPLOSVE_TIME_MS = 2500;
 }
 
 bool EnemyExplosivePlayload::init() {
@@ -62,6 +63,7 @@ bool EnemyExplosivePlayload::init() {
     // 1.0 would be as big as the original texture.
     physics->scale = { -0.28f, 0.28f };
 
+    m_explosive_cooldown_ms = EXPLOSVE_TIME_MS;
     m_rotation_direction = 1.0;
     points = POINTS_VAL;
 
@@ -69,7 +71,9 @@ bool EnemyExplosivePlayload::init() {
 }
 
 void EnemyExplosivePlayload::destroy() {
-    spawnPayloadBullets();
+    if (m_explosive_cooldown_ms > 0.f) {
+        spawnPayloadBullets();
+    }
 
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();
@@ -88,10 +92,16 @@ void EnemyExplosivePlayload::update(float ms) {
         m_rotate_cooldown_ms = ROTATE_COOLDOWN_MS;
     }
 
-    float step = 180.f * (ms / 1000);
-    motion->radians += m_rotation_direction * step * 0.02;
+    if (m_explosive_cooldown_ms > 0.f) {
+        float step = 180.f * (ms / 1000);
+        motion->radians += m_rotation_direction * step * 0.02;
+    } else {
+        motion->radians = M_PI;
+    }
+
 
     m_rotate_cooldown_ms -= ms;
+    m_explosive_cooldown_ms -= ms;
 }
 
 
