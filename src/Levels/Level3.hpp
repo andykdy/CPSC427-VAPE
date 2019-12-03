@@ -10,7 +10,7 @@
 
 namespace Levels {
     const Timeline level3Timeline = {
-            // TODO
+            { 1500, TLExplosiveSingle }
     };
 
     const Level level3 = Level(
