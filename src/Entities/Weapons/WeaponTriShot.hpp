@@ -5,7 +5,7 @@
 #ifndef VAPE_WEAPONTRISHOT_HPP
 #define VAPE_WEAPONTRISHOT_HPP
 
-#include <SDL2/SDL_mixer.h>
+#include <SDL_mixer.h>
 #include "Weapon.hpp"
 
 class WeaponTriShot: public Weapon {

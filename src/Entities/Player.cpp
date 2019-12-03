@@ -107,7 +107,7 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 	if (is_alive() && keyMap[GLFW_KEY_SPACE]) {
 		weapon->fire(motion->position, motion->radians + 3.14f);
 	}
-	
+
 	if(weapon->amo < 0) {
 	    weapon->destroy();
 	    weapon = new BulletStraightShot();
