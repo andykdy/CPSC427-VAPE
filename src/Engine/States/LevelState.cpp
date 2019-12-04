@@ -15,6 +15,7 @@
 #include <Systems/CollisionSystem.hpp>
 #include <Entities/Bosses/Boss2.hpp>
 #include <Systems/ProjectileSystem.hpp>
+#include <Systems/PickupSystem.hpp>
 
 #include "LevelState.hpp"
 #include "MainMenuState.hpp"
@@ -128,6 +129,7 @@ void LevelState::init() {
     auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
     spawn.reset(m_level.timeline);
     GameEngine::getInstance().getSystemManager()->addSystem<ProjectileSystem>();
+	GameEngine::getInstance().getSystemManager()->addSystem<PickupSystem>();
 
     GameEngine::getInstance().setM_current_speed(1.f);
 
@@ -144,6 +146,9 @@ void LevelState::init() {
 void LevelState::terminate() {
     auto & spawn = GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>();
     spawn.reset(m_level.timeline);
+
+	auto& pickups = GameEngine::getInstance().getSystemManager()->getSystem<PickupSystem>();
+	pickups.clear();
 
     auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
     projectiles.clear();
@@ -165,15 +170,10 @@ void LevelState::terminate() {
 
     m_player->destroy();
 
-    for (auto& pickup : m_pickups) {
-        pickup->destroy();
-    }
-
     m_uiPanelBackground->destroy();
     m_uiPanel->destroy();
     m_health->destroy();
     m_vamp_charge->destroy();
-    m_pickups.clear();
     if (m_boss != nullptr)
         m_boss->destroy();
     m_dialogue.destroy();
@@ -194,6 +194,8 @@ void LevelState::update(float ms) {
     }
     auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
     auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
+	auto & pickup_sys = GameEngine::getInstance().getSystemManager()->getSystem<PickupSystem>();
+	auto * pickups = pickup_sys.getPickups();
     auto * enemies = spawn.getEnemies();
 
     int w, h;
@@ -269,14 +271,14 @@ void LevelState::update(float ms) {
     }
 
     // Check Pickup Collisions
-    auto pickup_it = m_pickups.begin();
-    while (pickup_it != m_pickups.end()) {
+    auto pickup_it = pickups->begin();
+    /*while (pickup_it != pickups->end()) {
         if ((*pickup_it)->collides_with(*m_player)) {
             (*pickup_it)->applyEffect(*this);
             (*pickup_it)->destroy();
-            pickup_it = m_pickups.erase(pickup_it);
+            pickup_it = pickups->erase(pickup_it);
         }
-    }
+    }*/
 
     // Checking Player Bullet - Enemy collisions
     auto& playerBullets = projectiles.friendly_projectiles;
@@ -386,8 +388,10 @@ void LevelState::update(float ms) {
 
 
     m_player->update(ms, keyMap, mouse_position);
-    for (auto& enemy : *enemies)
-        enemy->update(ms);
+	for (auto& enemy : *enemies)
+		enemy->update(ms);
+	for (auto& pkup : *pickups)
+		pkup->update(ms);
 
     // Removing out of screen enemies
     enemy_it = enemies->begin();
@@ -568,6 +572,8 @@ void LevelState::update(float ms) {
 void LevelState::draw() {
     auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
     auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
+	auto & pickup_system = GameEngine::getInstance().getSystemManager()->getSystem<PickupSystem>();
+	auto * pickups = pickup_system.getPickups();
     auto * enemies = spawn.getEnemies();
     
     // Clearing error buffer
@@ -609,8 +615,10 @@ void LevelState::draw() {
     // Drawing entities
     for (auto* projectile : projectiles.hostile_projectiles)
         projectile->draw(projection_2D);
-    for (auto& enemy : (*enemies))
-        enemy->draw(projection_2D);
+	for (auto& enemy : (*enemies))
+		enemy->draw(projection_2D);
+	for (auto& pickup : (*pickups))
+		pickup->draw(projection_2D);
     for (auto* projectile : projectiles.friendly_projectiles)
         projectile->draw(projection_2D);
     m_player->draw(projection_2D);

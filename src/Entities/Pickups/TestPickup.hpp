@@ -8,7 +8,8 @@
 
 #include "Pickup.hpp"
 
-class TestPickup : Pickup {
+class TestPickup : public Pickup {
+	static Texture pickup_texture;
 public:
     bool init(vec2 position) override;
     void update(float ms) override;
