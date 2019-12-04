@@ -2,6 +2,7 @@
 
 #include <Entities/Enemies/Enemy.hpp>
 #include "common.hpp"
+#include <random>
 
 // Player enemy
 class PickupEnemy : public Enemy{
@@ -31,4 +32,9 @@ public:
 	vec2 get_bounding_box() const override;
 
 	void set_velocity(vec2 velocity) override;
+
+	void spawn_pickup();
+
+private:
+	std::default_random_engine m_rand;
 };

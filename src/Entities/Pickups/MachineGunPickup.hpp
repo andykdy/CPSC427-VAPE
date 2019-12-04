@@ -1,14 +1,14 @@
 //
-// Created by Cody on 11/10/2019.
+// Created by Andy on 12/03/2019.
 //
 
-#ifndef VAPE_TESTPICKUP_HPP
-#define VAPE_TESTPICKUP_HPP
+#ifndef VAPE_MACHINEGUNPICKUP_HPP
+#define VAPE_MACHINEGUNPICKUP_HPP
 
 
 #include "Pickup.hpp"
 
-class TestPickup : public Pickup {
+class MachineGunPickup : public Pickup {
 	static Texture pickup_texture;
 public:
     bool init(vec2 position) override;
@@ -26,4 +26,4 @@ private:
 };
 
 
-#endif //VAPE_TESTPICKUP_HPP
+#endif //VAPE_MACHINEGUNPICKUP_HPP

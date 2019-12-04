@@ -16,7 +16,6 @@ public:
 	std::vector<Pickup*> pickups;
 	void update(float ms) override;
 	std::vector<Pickup*> *getPickups();
-	void pushPickup(Pickup* pkup);
 	void clear();
 };
 

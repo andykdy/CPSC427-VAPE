@@ -1,8 +1,8 @@
 //
-// Created by Cody on 11/10/2019.
+// Created by Andy on 12/03/2019.
 //
 
-#include "TestPickup.hpp"
+#include "MachineGunPickup.hpp"
 
 #include <cmath>
 #include <Components/SpriteComponent.hpp>
@@ -11,11 +11,12 @@
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
 #include <Components/EnemyComponent.hpp>
-#include <Entities/Weapons/WeaponTriShot.hpp>
+#include <Entities/Weapons/Weapon.hpp>
+#include <Entities/Weapons/WeaponMachineGun.hpp>
 
-Texture TestPickup::pickup_texture;
+Texture MachineGunPickup::pickup_texture;
 
-bool TestPickup::init(vec2 position) {
+bool MachineGunPickup::init(vec2 position) {
 	auto* sprite = addComponent<SpriteComponent>();
 	auto* effect = addComponent<EffectComponent>();
 	auto* physics = addComponent<PhysicsComponent>();
@@ -47,17 +48,17 @@ bool TestPickup::init(vec2 position) {
 	motion->radians = 0.f;
 	motion->velocity = { 0.f, 20.f };
 	motion->position = position;
-	weapon = new WeaponTriShot();
+	weapon = new WeaponMachineGun();
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
 	physics->scale = { -0.08f, 0.08f };
 }
 
-void TestPickup::update(float ms) {
+void MachineGunPickup::update(float ms) {
 }
 
-void TestPickup::draw(const mat3 &projection) {
+void MachineGunPickup::draw(const mat3 &projection) {
 	auto* transform = getComponent<TransformComponent>();
 	auto* effect = getComponent<EffectComponent>();
 	auto* motion = getComponent<MotionComponent>();
@@ -73,7 +74,7 @@ void TestPickup::draw(const mat3 &projection) {
 	sprite->draw(projection, transform->out, effect->program);
 }
 
-void TestPickup::destroy() {
+void MachineGunPickup::destroy() {
 	auto* effect = getComponent<EffectComponent>();
 	auto* sprite = getComponent<SpriteComponent>();
 
@@ -82,12 +83,12 @@ void TestPickup::destroy() {
 	ECS::Entity::destroy();
 }
 
-vec2 TestPickup::get_position() const {
+vec2 MachineGunPickup::get_position() const {
 	auto* motion = getComponent<MotionComponent>();
     return motion->position;
 }
 
-bool TestPickup::collides_with(const Player &player) {
+bool MachineGunPickup::collides_with(const Player &player) {
 	auto* physics = getComponent<PhysicsComponent>();
 	auto* motion = getComponent<MotionComponent>();
 
@@ -103,11 +104,11 @@ bool TestPickup::collides_with(const Player &player) {
 	return false;
 }
 
-void TestPickup::applyEffect(Player& player) {
+void MachineGunPickup::applyEffect(Player& player) {
 	player.changeWeapon(weapon);
 }
 
-vec2 TestPickup::get_bounding_box() const
+vec2 MachineGunPickup::get_bounding_box() const
 {
 	auto* physics = getComponent<PhysicsComponent>();
 
@@ -116,7 +117,7 @@ vec2 TestPickup::get_bounding_box() const
 	return { std::fabs(physics->scale.x) * pickup_texture.width, std::fabs(physics->scale.y) * pickup_texture.height };
 }
 
-bool TestPickup::isOffScreen(const vec2& screen) {
+bool MachineGunPickup::isOffScreen(const vec2& screen) {
 	float h = get_bounding_box().y / 2;
 	return (get_position().y - h > screen.y);
 }

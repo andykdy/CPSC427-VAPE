@@ -3,15 +3,16 @@
 
 #include <Engine/GameEngine.hpp>
 #include <cmath>
+#include <random>
 #include <Components/SpriteComponent.hpp>
 #include <Components/EffectComponent.hpp>
 #include <Components/PhysicsComponent.hpp>
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
 #include <Components/EnemyComponent.hpp>
-#include <Components/PickupComponent.hpp>
 #include <Entities/Pickups/Pickup.hpp>
-#include <Entities/Pickups/TestPickup.hpp>
+#include <Entities/Pickups/TriShotPickup.hpp>
+#include <Entities/Pickups/MachineGunPickup.hpp>
 #include <Systems/PickupSystem.hpp>
 
 
@@ -67,15 +68,8 @@ void PickupEnemy::destroy()
 {
 	auto* effect = getComponent<EffectComponent>();
 	auto* sprite = getComponent<SpriteComponent>();
-	auto* pickup = getComponent<PickupComponent>();
-	auto* motion = getComponent<MotionComponent>();
-	auto & ps = GameEngine::getInstance().getSystemManager()->getSystem<PickupSystem>();
-
-	ECS::EntityManager *e = GameEngine::getInstance().getEntityManager();
-	Pickup* p = &e->addEntity<TestPickup>();
-	p->init(motion->position);
-	ps.pickups.emplace_back(p);
-	//ps.pushPickup(p);
+	spawn_pickup();
+	
 
 	effect->release();
 	sprite->release();
@@ -132,4 +126,21 @@ void PickupEnemy::set_velocity(vec2 velocity) {
 	auto* motion = getComponent<MotionComponent>();
 	motion->velocity.x = velocity.x;
 	motion->velocity.y = velocity.y;
+}
+
+void PickupEnemy::spawn_pickup() {
+	auto* motion = getComponent<MotionComponent>();
+	auto& ps = GameEngine::getInstance().getSystemManager()->getSystem<PickupSystem>();
+
+	ECS::EntityManager* e = GameEngine::getInstance().getEntityManager();
+	std::random_device rd;
+	m_rand = std::default_random_engine(rd());
+	std::uniform_real_distribution<float> distribution(0.0, 1.0);
+	float foobar = distribution(m_rand);
+	auto* p = &e->addEntity<MachineGunPickup>();
+	if (foobar > 0.5f)
+		auto* p = &e->addEntity<TriShotPickup>();
+		
+	p->init(motion->position);
+	ps.pickups.emplace_back(p);
 }

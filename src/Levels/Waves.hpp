@@ -216,7 +216,7 @@ namespace Levels {
 	 *
 	 */
 
-	const Wave TMPickupSingle = { genSpawn(spawn <PickupEnemy>, {SW / 2, -100}, TD, 0.f) };
+	const Wave TMPickupSingle = { genSpawn(spawn <PickupEnemy>, {100, -100}, TD, 0.f) };
 
 }
 #endif //VAPE_WAVES_HPP

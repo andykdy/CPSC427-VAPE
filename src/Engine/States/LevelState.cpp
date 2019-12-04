@@ -147,8 +147,8 @@ void LevelState::terminate() {
     auto & spawn = GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>();
     spawn.reset(m_level.timeline);
 
-	auto& pickups = GameEngine::getInstance().getSystemManager()->getSystem<PickupSystem>();
-	pickups.clear();
+	auto& pickup_sys = GameEngine::getInstance().getSystemManager()->getSystem<PickupSystem>();
+	pickup_sys.clear();
 
     auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
     projectiles.clear();
@@ -392,8 +392,8 @@ void LevelState::update(float ms) {
     m_player->update(ms, keyMap, mouse_position);
 	for (auto& enemy : *enemies)
 		enemy->update(ms);
-	for (auto& pkup : *pickups)
-		pkup->update(ms);
+	/*for (auto& pkup : *pickups)
+		pkup->update(ms);*/
 
     // Removing out of screen enemies
     enemy_it = enemies->begin();
