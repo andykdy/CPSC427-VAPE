@@ -71,6 +71,8 @@ public:
 
 	void set_position(vec2 pos);
 
+	void changeWeapon(Weapon* newWeapon);
+
 private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up
 	float m_iframe; // Used to indicate how long the player should be invulnerable for
@@ -80,5 +82,4 @@ private:
 
 	Weapon* weapon;
 
-	void changeWeapon(Weapon* newWeapon);
 };

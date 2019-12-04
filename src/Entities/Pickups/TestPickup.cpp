@@ -11,6 +11,7 @@
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
 #include <Components/EnemyComponent.hpp>
+#include <Entities/Weapons/WeaponTriShot.hpp>
 
 Texture TestPickup::pickup_texture;
 
@@ -43,20 +44,17 @@ bool TestPickup::init(vec2 position) {
 	if (gl_has_errors())
 		return false;
 
-	motion->radians = (rand() % 4) * 3.14f / 4;
-	motion->velocity = { 0.f, 90.f };
+	motion->radians = 0.f;
+	motion->velocity = { 0.f, 20.f };
 	motion->position = position;
+	weapon = new WeaponTriShot();
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
-	physics->scale = { -0.28f, 0.28f };
+	physics->scale = { -0.08f, 0.08f };
 }
 
 void TestPickup::update(float ms) {
-	auto* motion = getComponent<MotionComponent>();
-
-	float step = 180.f * (ms / 1000);
-	motion->radians += step * 0.02;
 }
 
 void TestPickup::draw(const mat3 &projection) {
@@ -85,17 +83,40 @@ void TestPickup::destroy() {
 }
 
 vec2 TestPickup::get_position() const {
-    return vec2();
+	auto* motion = getComponent<MotionComponent>();
+    return motion->position;
 }
 
 bool TestPickup::collides_with(const Player &player) {
-    return false;
+	auto* physics = getComponent<PhysicsComponent>();
+	auto* motion = getComponent<MotionComponent>();
+
+	float dx = motion->position.x - player.get_position().x;
+	float dy = motion->position.y - player.get_position().y;
+	float d_sq = dx * dx + dy * dy;
+	float other_r = std::max(player.get_bounding_box().x, player.get_bounding_box().y);
+	float my_r = std::max(pickup_texture.width * physics->scale.x * 0.55f, pickup_texture.height * physics->scale.y * 0.55f);
+	float r = std::max(other_r, my_r);
+	r *= 0.65f;
+	if (d_sq < r * r)
+		return true;
+	return false;
 }
 
-void TestPickup::applyEffect(LevelState& level) {
-
+void TestPickup::applyEffect(Player& player) {
+	player.changeWeapon(weapon);
 }
 
-bool TestPickup::isOffScreen(const vec2 &screen) {
-    return false;
+vec2 TestPickup::get_bounding_box() const
+{
+	auto* physics = getComponent<PhysicsComponent>();
+
+	// Returns the local bounding coordinates scaled by the current size of the turtle 
+	// fabs is to avoid negative scale due to the facing direction.
+	return { std::fabs(physics->scale.x) * pickup_texture.width, std::fabs(physics->scale.y) * pickup_texture.height };
+}
+
+bool TestPickup::isOffScreen(const vec2& screen) {
+	float h = get_bounding_box().y / 2;
+	return (get_position().y - h > screen.y);
 }

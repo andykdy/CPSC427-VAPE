@@ -272,13 +272,15 @@ void LevelState::update(float ms) {
 
     // Check Pickup Collisions
     auto pickup_it = pickups->begin();
-    /*while (pickup_it != pickups->end()) {
+    while (pickup_it != pickups->end()) {
         if ((*pickup_it)->collides_with(*m_player)) {
-            (*pickup_it)->applyEffect(*this);
+            (*pickup_it)->applyEffect(*m_player);
             (*pickup_it)->destroy();
             pickup_it = pickups->erase(pickup_it);
+			break;
         }
-    }*/
+		pickup_it++;
+    }
 
     // Checking Player Bullet - Enemy collisions
     auto& playerBullets = projectiles.friendly_projectiles;

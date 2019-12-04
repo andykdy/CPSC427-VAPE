@@ -18,8 +18,11 @@ public:
 
     vec2 get_position() const override;
     bool collides_with(const Player &player) override;
-    void applyEffect(LevelState& level) override;
+    void applyEffect(Player& player) override;
+	vec2 get_bounding_box() const override;
     bool isOffScreen(const vec2 &screen) override;
+private:
+	Weapon* weapon;
 };
 
 
