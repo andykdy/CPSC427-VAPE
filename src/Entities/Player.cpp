@@ -89,7 +89,10 @@ bool Player::init(vec2 screen, int hp)
 // Releases all graphics resources
 void Player::destroy()
 {
-	weapon->destroy();
+    if (weapon != nullptr) {
+        weapon->destroy();
+        delete weapon;
+    }
 
 	auto* effect = getComponent<EffectComponent>();
 	auto* sprite = getComponent<SpriteComponent>();
@@ -104,15 +107,17 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 {
     auto* motion = getComponent<MotionComponent>();
 
-    weapon->update(ms);
-	// Spawning player bullets
-	if (is_alive() && keyMap[GLFW_KEY_SPACE]) {
-		weapon->fire(motion->position, motion->radians + 3.14f);
-	}
+    if (weapon != nullptr) {
+        weapon->update(ms);
+        // Spawning player bullets
+        if (is_alive() && keyMap[GLFW_KEY_SPACE]) {
+            weapon->fire(motion->position, motion->radians + 3.14f);
+        }
 
-	if(weapon->amo < 0) {
-	    changeWeapon(new BulletStraightShot());
-	}
+        if(weapon->amo < 0) {
+            changeWeapon(new BulletStraightShot());
+        }
+    }
 
 	if (is_alive())
 	{
@@ -251,7 +256,10 @@ int Player::get_health() const {
 }
 
 void Player::changeWeapon(Weapon *newWeapon) {
-	weapon->destroy();
+    if (weapon != nullptr) {
+        weapon->destroy();
+        delete weapon;
+    }
 	weapon = newWeapon;
 	weapon->init();
 }

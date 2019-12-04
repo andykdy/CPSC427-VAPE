@@ -47,11 +47,12 @@ bool TriShotPickup::init(vec2 position) {
 	motion->radians = 0.f;
 	motion->velocity = { 0.f, 20.f };
 	motion->position = position;
-	weapon = new WeaponTriShot();
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
 	physics->scale = { -0.08f, 0.08f };
+
+	return true;
 }
 
 void TriShotPickup::update(float ms) {
@@ -104,7 +105,7 @@ bool TriShotPickup::collides_with(const Player &player) {
 }
 
 void TriShotPickup::applyEffect(Player& player) {
-	player.changeWeapon(weapon);
+	player.changeWeapon(new WeaponTriShot());
 }
 
 vec2 TriShotPickup::get_bounding_box() const
