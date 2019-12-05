@@ -133,13 +133,7 @@ void PickupEnemy::spawn_pickup() {
 	auto& ps = GameEngine::getInstance().getSystemManager()->getSystem<PickupSystem>();
 
 	ECS::EntityManager* e = GameEngine::getInstance().getEntityManager();
-	std::random_device rd;
-	m_rand = std::default_random_engine(rd());
-	std::uniform_real_distribution<float> distribution(0.0, 1.0);
-	float foobar = distribution(m_rand);
 	auto* p = &e->addEntity<MachineGunPickup>();
-	if (foobar > 0.5f)
-		auto* p = &e->addEntity<TriShotPickup>();
 		
 	p->init(motion->position);
 	ps.pickups.emplace_back(p);
