@@ -22,7 +22,6 @@ public:
 	vec2 get_bounding_box() const override;
     bool isOffScreen(const vec2 &screen) override;
 private:
-	Weapon* weapon;
 };
 
 
