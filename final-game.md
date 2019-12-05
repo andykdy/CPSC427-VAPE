@@ -76,7 +76,7 @@ The VideoUtil class can demux/decode video files and read frames into pixel data
 
 We also added text rendering using stb_truetype.
 
-Also integrated PhysFS to load assets from packages
+Also integrated PhysFS to load assets from a package file. 
 
 ## Advanced Graphics
 Multiple particle systems: Explosions, Vamp mode particles, Boss2 laser priming/warning
