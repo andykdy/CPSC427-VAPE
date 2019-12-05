@@ -329,11 +329,12 @@ endif()
 
 
 # Package assets
-if (NOT EXISTS ${PROJECT_SOURCE_DIR}/assets.vapepak)
+set(ASSET_FILE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets.vapepak)
+if (NOT EXISTS ${ASSET_FILE})
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E tar cf ${PROJECT_SOURCE_DIR}/assets.vapepak --format=zip -- data shaders
+            COMMAND ${CMAKE_COMMAND} -E tar cf ${ASSET_FILE} --format=zip -- data shaders
             WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-            COMMENT "Packaging assets to ${PROJECT_SOURCE_DIR}/assets.vapepak this may take a minute...")
+            COMMENT "Packaging assets to ${ASSET_FILE} this may take a minute...")
 endif()
 
 
@@ -350,9 +351,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     endif()
 
     set(ZIP_FILES
-            bin
-            data
-            shaders
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
             README.md
             version.txt)
 
