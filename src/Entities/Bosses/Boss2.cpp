@@ -244,10 +244,9 @@ bool Boss2::init(vec2 screen) {
     // Load shared texture
     if (!boss2_texture.is_valid())
     {
-        if (!boss2_texture.load_from_file(textures_path("boss2.png")))
+        if (!boss2_texture.load_from_file(textures_path("Boss2.png")))
         {
-            fprintf(stderr, "Failed to load Boss1 texture!");
-            return false;
+            throw std::runtime_error("Failed to load Boss2 texture!");
         }
     }
 
