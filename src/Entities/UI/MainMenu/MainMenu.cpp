@@ -53,7 +53,7 @@ bool MainMenu::init() {
         return false;
 
     // Loading shaders
-    if (!effect.load_from_file(shader_path("vamp.vs.glsl"), shader_path("vamp.fs.glsl")))
+    if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
 
     // Setting initial values, scale is negative to make it face the opposite way
