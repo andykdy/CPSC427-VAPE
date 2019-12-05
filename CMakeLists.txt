@@ -138,6 +138,7 @@ set(SOURCE_FILES
         src/Entities/Pickups/TriShotPickup.cpp src/Entities/Pickups/TriShotPickup.hpp
 
 
+
         src/Entities/Weapons/Weapon.hpp
         src/Entities/Weapons/BulletStraightShot.cpp src/Entities/Weapons/BulletStraightShot.hpp
         src/Entities/Weapons/WeaponTriShot.cpp src/Entities/Weapons/WeaponTriShot.hpp
