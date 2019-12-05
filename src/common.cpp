@@ -317,10 +317,10 @@ bool EntityOld::Effect::load_from_file(const char* vs_path, const char* fs_path)
 	gl_flush_errors();
 
 	// Opening files
-	std::ifstream vs_is(vs_path);
-	std::ifstream fs_is(fs_path);
+	auto* vs_is = new PhysFS::ifstream(vs_path);
+	auto* fs_is = new PhysFS::ifstream(fs_path);
 
-	if (!vs_is.good() || !fs_is.good())
+	if (!vs_is->good() || !fs_is->good())
 	{
 		fprintf(stderr, "Failed to load shader files %s, %s", vs_path, fs_path);
 		return false;
@@ -328,8 +328,10 @@ bool EntityOld::Effect::load_from_file(const char* vs_path, const char* fs_path)
 
 	// Reading sources
 	std::stringstream vs_ss, fs_ss;
-	vs_ss << vs_is.rdbuf();
-	fs_ss << fs_is.rdbuf();
+	vs_ss << vs_is->rdbuf();
+	fs_ss << fs_is->rdbuf();
+	delete vs_is;
+	delete fs_is;
 	std::string vs_str = vs_ss.str();
 	std::string fs_str = fs_ss.str();
 	const char* vs_src = vs_str.c_str();
@@ -381,14 +383,32 @@ bool EntityOld::Effect::load_from_file(const char* vs_path, const char* fs_path)
 		return false;
 	}
 
+    if (vertex != 0) {
+        glDeleteShader(vertex);
+        vertex = 0;
+    }
+    if (fragment != 0) {
+        glDeleteShader(fragment);
+        fragment = 0;
+    }
+
 	return true;
 }
 
 void EntityOld::Effect::release()
 {
-	glDeleteProgram(program);
-	glDeleteShader(vertex);
-	glDeleteShader(fragment);
+    if (program != 0) {
+        glDeleteProgram(program);
+        program = 0;
+    }
+    if (vertex != 0) {
+        glDeleteShader(vertex);
+        vertex = 0;
+    }
+    if (fragment != 0) {
+        glDeleteShader(fragment);
+        fragment = 0;
+    }
 }
 
 void EntityOld::Transform::begin()

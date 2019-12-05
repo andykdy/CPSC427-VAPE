@@ -19,7 +19,7 @@
 // Get defintion of PROJECT_SOURCE_DIR from:
 #include "project_path.hpp"
 
-#define shader_path(name) "../" "./shaders/" name
+#define shader_path(name) "shaders/" name
 #define data_path "../" "./data"
 #define pak_data_path "data"
 #define textures_path(name)  pak_data_path "/textures/" name

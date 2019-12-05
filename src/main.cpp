@@ -15,6 +15,12 @@
 
 using Clock = std::chrono::high_resolution_clock;
 
+static int printDir(void *data, const char *origdir, const char *fname)
+{
+	printf(" * We've got [%s] in [%s].\n", fname, origdir);
+	return 1;  // give me more data, please.
+}
+
 int main(int argv, char** args) {
 	PHYSFS_init(args[0]);
 	if (!PHYSFS_mount("../assets.vapepak", "", 1)){
