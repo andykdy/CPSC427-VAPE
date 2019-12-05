@@ -287,7 +287,7 @@ void TutorialState::update(float ms) {
 
 	if (m_vamp_mode_timer > 0.f) {
 		m_vamp_mode_timer -= ms;
-		m_vamp.update(ms, m_player->get_position());
+		m_vamp.update(ms, m_player->get_position(), m_vamp_mode_charge);
 
 
 		if (m_vamp_mode_timer <= 0.f) {

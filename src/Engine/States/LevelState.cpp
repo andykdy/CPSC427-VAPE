@@ -35,7 +35,7 @@ namespace
     const size_t VAMP_TIME_PER_POINT = 200;
     const size_t VAMP_ACTIVATION_COOLDOWN = 300;
     const size_t MAX_VAMP_CHARGE = 15;
-    const size_t VAMP_ACTIVATION_COST = 3;
+    const size_t VAMP_ACTIVATION_COST = 0;
     const float VAMP_TIME_SLOWDOWN = 0.5f;
 
 }
@@ -466,7 +466,7 @@ void LevelState::update(float ms) {
             m_vamp_mode = false;
             m_vamp.destroy();
         } else {
-            m_vamp.update(ms, m_player->get_position());
+            m_vamp.update(ms, m_player->get_position(), m_vamp_mode_charge);
             m_vamp_mode_timer += ms;
             if (m_vamp_mode_timer >= VAMP_TIME_PER_POINT) {
                 m_vamp_mode_charge -= 1;
