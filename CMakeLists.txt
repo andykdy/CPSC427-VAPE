@@ -95,6 +95,8 @@ set(SOURCE_FILES
         src/Entities/Enemies/turtle.cpp src/Entities/Enemies/turtle.hpp
         src/Entities/Enemies/EnemyGenericShooter.cpp src/Entities/Enemies/EnemyGenericShooter.hpp
         src/Entities/Enemies/EnemyTargettedShooter.cpp src/Entities/Enemies/EnemyTargettedShooter.hpp
+        src/Entities/Enemies/EnemyExplosivePayload.cpp src/Entities/Enemies/EnemyExplosivePayload.hpp
+        src/Entities/Enemies/EnemySpeedster.cpp src/Entities/Enemies/EnemySpeedster.hpp
 
         src/Entities/UI/Text.cpp src/Entities/UI/Text.hpp
         src/Entities/UI/PlayerHealth/Health.cpp src/Entities/UI/PlayerHealth/Health.hpp
@@ -136,6 +138,8 @@ set(SOURCE_FILES
 
         src/Entities/Weapons/Weapon.hpp
         src/Entities/Weapons/BulletStraightShot.cpp src/Entities/Weapons/BulletStraightShot.hpp
+        src/Entities/Weapons/WeaponTriShot.cpp src/Entities/Weapons/WeaponTriShot.hpp
+        src/Entities/Weapons/WeaponMachineGun.cpp src/Entities/Weapons/WeaponMachineGun.hpp
 
 
         src/Components/MotionComponent.hpp

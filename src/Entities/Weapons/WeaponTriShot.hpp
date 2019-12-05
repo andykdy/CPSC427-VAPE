@@ -1,17 +1,15 @@
 //
-// Created by Cody on 11/20/2019.
+// Created by Tanha Kabir on 2019-12-02.
 //
 
-#ifndef VAPE_BULLETSTRAIGHTSHOT_HPP
-#define VAPE_BULLETSTRAIGHTSHOT_HPP
+#ifndef VAPE_WEAPONTRISHOT_HPP
+#define VAPE_WEAPONTRISHOT_HPP
 
-
+#include <SDL_mixer.h>
 #include "Weapon.hpp"
-#include <Utils/PhysFSHelpers.hpp>
 
-class BulletStraightShot : public Weapon {
+class WeaponTriShot: public Weapon {
 private:
-    RWFile m_bullet_sound_file;
     Mix_Chunk* m_bullet_sound;
     float m_bullet_cooldown;
 public:
@@ -25,4 +23,4 @@ public:
 };
 
 
-#endif //VAPE_BULLETSTRAIGHTSHOT_HPP
+#endif //VAPE_WEAPONTRISHOT_HPP

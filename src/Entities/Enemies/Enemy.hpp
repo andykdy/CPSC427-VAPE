@@ -22,6 +22,7 @@ public:
     inline float get_vamp_timer() { return vamp_timer; };
     inline int get_points() { return points; };
 
+    vec2 screen_size = {0, 0};
     vec2 player_position = {0,0,};
     float vamp_timer = 0;
     int points = 0;

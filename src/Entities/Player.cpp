@@ -15,6 +15,8 @@
 #include <Components/HealthComponent.hpp>
 #include <Engine/GameEngine.hpp>
 #include <Entities/Weapons/BulletStraightShot.hpp>
+#include "Entities/Weapons/WeaponTriShot.hpp"
+#include "Entities/Weapons/WeaponMachineGun.hpp"
 #include <Components/PlayerComponent.hpp>
 #include <Systems/ProjectileSystem.hpp>
 
@@ -75,6 +77,8 @@ bool Player::init(vec2 screen, int hp)
 	health->m_health = hp;
 	m_iframe = 0.f;
 
+	// weapon = new WeaponTriShot();
+    // weapon = new WeaponMachineGun();
 	weapon = new BulletStraightShot();
 	weapon->init();
 
@@ -98,15 +102,16 @@ void Player::destroy()
 // Called on each frame by World::update()
 void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 {
-	auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
     auto* motion = getComponent<MotionComponent>();
 
     weapon->update(ms);
 	// Spawning player bullets
 	if (is_alive() && keyMap[GLFW_KEY_SPACE]) {
-		Projectile* p = weapon->fire(motion->position, motion->radians + 3.14f);
-		if (p != nullptr)
-			projectiles.friendly_projectiles.emplace_back(p);
+		weapon->fire(motion->position, motion->radians + 3.14f);
+	}
+
+	if(weapon->amo < 0) {
+	    changeWeapon(new BulletStraightShot());
 	}
 
 	if (is_alive())
