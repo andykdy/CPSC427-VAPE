@@ -95,6 +95,9 @@ set(SOURCE_FILES
         src/Entities/Enemies/turtle.cpp src/Entities/Enemies/turtle.hpp
         src/Entities/Enemies/EnemyGenericShooter.cpp src/Entities/Enemies/EnemyGenericShooter.hpp
         src/Entities/Enemies/EnemyTargettedShooter.cpp src/Entities/Enemies/EnemyTargettedShooter.hpp
+        src/Entities/Enemies/EnemyExplosivePayload.cpp src/Entities/Enemies/EnemyExplosivePayload.hpp
+        src/Entities/Enemies/EnemySpeedster.cpp src/Entities/Enemies/EnemySpeedster.hpp
+        src/Entities/Enemies/PickupEnemy.cpp src/Entities/Enemies/PickupEnemy.hpp
 
         src/Entities/UI/Text.cpp src/Entities/UI/Text.hpp
         src/Entities/UI/PlayerHealth/Health.cpp src/Entities/UI/PlayerHealth/Health.hpp
@@ -128,13 +131,18 @@ set(SOURCE_FILES
         src/Entities/Bosses/Boss.hpp
         src/Entities/Bosses/Boss1.cpp src/Entities/Bosses/Boss1.hpp
         src/Entities/Bosses/Boss2.cpp src/Entities/Bosses/Boss2.hpp
+        src/Entities/Bosses/Boss3.cpp src/Entities/Bosses/Boss3.hpp
 
         src/Entities/Pickups/Pickup.hpp
-        src/Entities/Pickups/TestPickup.cpp src/Entities/Pickups/TestPickup.hpp
+        src/Entities/Pickups/MachineGunPickup.cpp src/Entities/Pickups/MachineGunPickup.hpp
+        src/Entities/Pickups/TriShotPickup.cpp src/Entities/Pickups/TriShotPickup.hpp
+
 
 
         src/Entities/Weapons/Weapon.hpp
         src/Entities/Weapons/BulletStraightShot.cpp src/Entities/Weapons/BulletStraightShot.hpp
+        src/Entities/Weapons/WeaponTriShot.cpp src/Entities/Weapons/WeaponTriShot.hpp
+        src/Entities/Weapons/WeaponMachineGun.cpp src/Entities/Weapons/WeaponMachineGun.hpp
 
 
         src/Components/MotionComponent.hpp
@@ -148,12 +156,13 @@ set(SOURCE_FILES
         src/Components/BoundaryComponent.hpp
         src/Components/EnemyComponent.hpp
         src/Components/CollisionComponent.hpp
-
+        src/Components/PlayerComponent.hpp
 
         src/Systems/EnemySpawnerSystem.cpp src/Systems/EnemySpawnerSystem.hpp
         src/Systems/MotionSystem.cpp src/Systems/MotionSystem.hpp
         src/Systems/CollisionSystem.cpp src/Systems/CollisionSystem.hpp
         src/Systems/ProjectileSystem.cpp src/Systems/ProjectileSystem.hpp
+        src/Systems/PickupSystem.cpp src/Systems/PickupSystem.hpp
 
         src/Levels/Level.hpp
         src/Levels/Waves.hpp
@@ -162,12 +171,13 @@ set(SOURCE_FILES
         src/Levels/Level1.hpp
         src/Levels/Level2.hpp
         src/Levels/Level2.hpp
+        src/Levels/Level3.hpp
 
         src/Utils/SaveData.cpp src/Utils/SaveData.hpp
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 
-        src/Components/PlayerComponent.hpp src/Entities/Bosses/Boss3.cpp src/Entities/Bosses/Boss3.hpp src/Levels/Level3.hpp src/Entities/Enemies/EnemyExplosivePayload.cpp src/Entities/Enemies/EnemyExplosivePayload.hpp src/Entities/Enemies/EnemySpeedster.cpp src/Entities/Enemies/EnemySpeedster.hpp src/Entities/Weapons/WeaponTriShot.cpp src/Entities/Weapons/WeaponTriShot.hpp src/Entities/Weapons/WeaponMachineGun.cpp src/Entities/Weapons/WeaponMachineGun.hpp)
+           )
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
