@@ -12,7 +12,7 @@
 #include <Components/SpriteComponent.hpp>
 #include <Engine/GameEngine.hpp>
 
-bool Score::init(vec2 position, Font font) {
+bool Score::init(vec2 position, Font* font) {
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
     auto* physics = addComponent<PhysicsComponent>();
@@ -24,6 +24,7 @@ bool Score::init(vec2 position, Font font) {
         throw std::runtime_error("Failed to load texture shaders");
 
     score_font = font;
+    score_text.init(score_font);
 
 //    physics->scale = { 0.7f, 1.f };
     motion->position = { position.x, position.y };
@@ -44,7 +45,6 @@ void Score::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
 
-    score_text.init(&score_font);
     std::string score_str = std::to_string(score);
     std::string padded_score = std::string(7 - score_str.length(), '0') + score_str;
     // add zeros to score to fill it out
@@ -57,6 +57,7 @@ void Score::draw(const mat3 &projection) {
 }
 
 void Score::destroy() {
+    score_text.destroy();
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();
 
