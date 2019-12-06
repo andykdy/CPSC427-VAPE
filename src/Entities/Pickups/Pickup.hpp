@@ -7,7 +7,6 @@
 
 #include <Engine/ECS/Entity.hpp>
 #include <Entities/Player.hpp>
-#include <Engine/States/LevelState.hpp>
 
 // Forward declarations
 class Player;

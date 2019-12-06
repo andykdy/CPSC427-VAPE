@@ -100,6 +100,8 @@ void LevelState::init() {
     m_debug_mode = false;
     m_player_invincibility = false;
 
+    aiGrid.init(screen.x, screen.y, 32);
+
     m_pause = &GameEngine::getInstance().getEntityManager()->addEntity<PauseMenu>();
     m_pause->init(screen);
 
@@ -165,6 +167,8 @@ void LevelState::terminate() {
         Mix_FreeChunk(m_player_eat_sound);
     if (m_player_explosion != nullptr)
         Mix_FreeChunk(m_player_explosion);
+
+    aiGrid.destroy();
 
     m_pause->destroy();
 
@@ -569,6 +573,23 @@ void LevelState::update(float ms) {
             GameEngine::getInstance().changeState(new MainMenuState()); // TODO game over state
         }
     }
+
+    aiGrid.clear();
+    for (auto enemy : *enemies)
+        aiGrid.addToGrid(*enemy);
+    for (auto projectile : projectiles.hostile_projectiles)
+        aiGrid.addToGrid(*projectile);
+    if (m_vamp_mode)
+        aiGrid.addToGrid(m_vamp);
+    aiGrid.addToGrid(*m_player);
+    for (auto projectile : projectiles.friendly_projectiles)
+        aiGrid.addToGrid(*projectile);
+    for (auto pickup : *pickups)
+        aiGrid.addToGrid(*pickup);
+    if (m_boss_mode){
+        aiGrid.addToGrid(*m_boss);
+        // TODO boss clones?
+    }
 }
 
 void LevelState::draw() {
@@ -613,6 +634,10 @@ void LevelState::draw() {
     mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
     m_space.draw(projection_2D);
+
+    if (m_debug_mode) {
+        aiGrid.draw(projection_2D);
+    }
 
     // Drawing entities
     for (auto* projectile : projectiles.hostile_projectiles)

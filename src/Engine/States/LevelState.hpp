@@ -35,16 +35,16 @@
 #include <Entities/UI/Vamp/VampCharge.hpp>
 #include <Entities/UI/UIPanel/UIPanelBackground.hpp>
 #include <Entities/UI/UIPanel/UIPanel.hpp>
-#include <Entities/Pickups/Pickup.hpp>
 #include <Utils/SaveData.hpp>
 #include <Entities/UI/PauseMenu/PauseMenu.hpp>
+#include <Entities/EntityGrid.hpp>
 
 const size_t INIT_LIVES = 5;
 
-class Pickup;
+class EntityGrid;
 
 class LevelState : public GameState {
-    friend class Pickup;
+    friend class EntityGrid;
 public:
     //! Constructor, taking in gameplay options
     explicit LevelState(Levels::Level level, PlayerData data);
@@ -69,6 +69,8 @@ public:
 
 private:
     Levels::Level m_level;
+
+    EntityGrid aiGrid;
 
     PauseMenu* m_pause;
 
