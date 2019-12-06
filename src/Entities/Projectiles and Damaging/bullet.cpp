@@ -92,7 +92,11 @@ void Bullet::draw(const mat3 &projection) {
     transform->rotate(-motion->radians - 3.14f);
     transform->end();
 
-    sprite->draw(projection, transform->out, effect->program);
+    if (m_hostile) {
+        sprite->draw(projection, transform->out, effect->program, {1.0f, 0.5f, 0.5f });
+    } else {
+        sprite->draw(projection, transform->out, effect->program);
+    }
 }
 
 vec2 Bullet::get_position()const
