@@ -98,7 +98,6 @@ private:
     // Game entities
     Player* m_player;
     Boss* m_boss;
-    std::vector<Pickup*> m_pickups; // TODO Maybe should be in a Pickup System eventuallyy
 
     // UI
     UIPanelBackground* m_uiPanelBackground;

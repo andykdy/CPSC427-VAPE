@@ -209,5 +209,14 @@ namespace Levels {
 
     const Wave LRM2Speedster = {genSpawn(spawn < EnemySpeedster > , {-100, 200}, TR, 0.f),
                                 genSpawn(spawn < EnemySpeedster > , {SW + 150, 500}, TL, 0.f),};
+
+	/*
+	 *
+	 * Pickup Enemy Waves
+	 *
+	 */
+
+	const Wave TMPickupSingle = { genSpawn(spawn <PickupEnemy>, {100, -100}, TD, 0.f) };
+
 }
 #endif //VAPE_WAVES_HPP
