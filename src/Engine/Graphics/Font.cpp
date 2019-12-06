@@ -26,8 +26,7 @@ Font::Font(const char *path) {
         ss << PHYSFS_getLastErrorCode() << std::endl;
         throw std::runtime_error(ss.str().c_str());
     }
-
-    fread(fontdata, 1, 1<<20, fopen(path, "rb"));
+    
     PHYSFS_close(myfile);
     stbtt_BakeFontBitmap(fontdata,stbtt_GetFontOffsetForIndex(fontdata, 0), 32.0, temp_bitmap,512,512, 32,96, cdata);
     // can free ttf_buffer at this point
