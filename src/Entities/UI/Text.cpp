@@ -2,6 +2,9 @@
 // Created by Cody on 11/20/2019.
 //
 
+#include <limits>
+#include <cmath>
+#include <iostream>
 #include "Text.hpp"
 
 namespace {
@@ -140,4 +143,27 @@ void Text::setText(const char *text, float z) {
     glGenVertexArrays(1, &mesh.vao);
     if (gl_has_errors())
         throw std::runtime_error("Failed to set text");
+}
+
+vec2 Text::getBoundingBox() {
+    const float max = std::numeric_limits<float>::max();
+    const float min = std::numeric_limits<float>::min();
+    float xmin = max;
+    float xmax = min;
+    float ymin = max;
+    float ymax = min;
+
+    // For each vertex, check if within the area
+    for(auto vertex : vertices) {
+        if (vertex.position.x > xmax)
+            xmax = vertex.position.x;
+        else if (vertex.position.x < xmin)
+            xmin = vertex.position.x;
+        if (vertex.position.y > ymax)
+            ymax = vertex.position.y;
+        else if (vertex.position.y < ymin)
+            ymin = vertex.position.y;
+    }
+    std::cout << xmax-xmin << ", " << ymax-ymin << std::endl;
+    return {std::fabs((xmax-xmin) * 1), std::fabs((ymax-ymin)*1)};
 }

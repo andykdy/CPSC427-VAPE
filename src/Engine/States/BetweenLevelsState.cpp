@@ -5,20 +5,27 @@
 #include <sstream>
 #include "BetweenLevelsState.hpp"
 #include "LevelState.hpp"
+#include "MainMenuState.hpp"
 
 
-BetweenLevelsState::BetweenLevelsState(const Levels::Level *next_level, unsigned int prev_start_points, const PlayerData &player_data) :
-        m_next_level(next_level), m_prev_start_points(prev_start_points), m_player_data(player_data), m_font(Font(font_path("spaceranger.ttf"))) {
+BetweenLevelsState::BetweenLevelsState(const Levels::Level prev_level, unsigned int prev_start_points, const PlayerData &player_data) :
+        m_prev_level(prev_level), m_prev_start_points(prev_start_points), m_player_data(player_data), m_font(Font(font_path("spaceranger.ttf"))) {
 }
 
 void BetweenLevelsState::init() {
     m_continue.init();
 
+    int w, h;
+    glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
+    vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
+
     m_text.emplace_back();
     m_text.back().init(&m_font);
-    m_text.back().setText("WIP");
+    std::stringstream ss;
+    ss << "Level " << m_prev_level.id <<" Completed!" << std::endl;
+    m_text.back().setText(ss.str().c_str());
     m_text.back().setColor({0.5f, 0.1f, 0.8f});
-    m_text.back().setPosition({350,500});
+    m_text.back().setPosition({screen.x/2 - m_text.back().getBoundingBox().x/2, screen.y/2});
 }
 
 void BetweenLevelsState::terminate() {
@@ -80,7 +87,15 @@ void BetweenLevelsState::draw() {
 void BetweenLevelsState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
     if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER)
     {
-        GameEngine::getInstance().changeState(new LevelState(*m_next_level, m_player_data));
+        if (m_prev_level.nextLevel) {
+            GameEngine::getInstance().changeState(new LevelState(*m_prev_level.nextLevel, m_player_data));
+            return;
+        } else {
+            // This shouldn't normally be reached, but added in case
+            GameEngine::getInstance().changeState(new MainMenuState());
+            return;
+        }
+
     }
 }
 

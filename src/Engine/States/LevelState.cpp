@@ -540,7 +540,7 @@ void LevelState::update(float ms) {
         } else if (m_boss->getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
         {
             if (m_level.nextLevel != nullptr) {
-                GameEngine::getInstance().changeState(new BetweenLevelsState(m_level.nextLevel, m_starting_points, {
+                GameEngine::getInstance().changeState(new BetweenLevelsState(m_level, m_starting_points, {
                         m_lives,
                         m_points,
                         m_level.nextLevel->id
