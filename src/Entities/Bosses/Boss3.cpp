@@ -1,5 +1,5 @@
 //
-// Created by Cody on 11/26/2019.
+// Created by Andy Kim on 12/05/2019.
 //
 
 #include "Boss3.hpp"
@@ -18,7 +18,7 @@ namespace
 	const size_t DAMAGE_EFFECT_TIME = 100;
 	const size_t DIRECTION_COOLDOWN_MS = 800;
 	const size_t BULLET_DAMAGE = 5;
-	const size_t INIT_HEALTH = 100;
+	const size_t INIT_HEALTH = 25;
 	const size_t POINTS_VAL = 5000;
 	const size_t ROAM_VELOCITY = 120;
 	const size_t COOLDOWN_TIME_MS = 1000;
@@ -120,7 +120,7 @@ void Boss3::update(float ms) {
 		motion->velocity = { 0.f,0.f };
 		auto clone_it = clones.begin();
 		while (clone_it != clones.end()) {
-			(*clone_it)->set_velocity({ 0.f,0.f });
+			(*clone_it)->shutdown(ms, motion->position);
 			clone_it++;
 		}
 	}
@@ -150,8 +150,9 @@ void Boss3::state1Update(float ms) {
 			motion->velocity = { 0.f,0.f };
 			m_curr_state = Boss3State::cooldown;
 		} else  {
-			motion->velocity.x = m_target.x / 1.5f;
-			motion->velocity.y = m_target.y / 1.5f;
+			float angle = atan2(m_target.y, m_target.x);
+			motion->velocity.x = 360.f * cos(angle);
+			motion->velocity.y = 360.f * sin(angle);
 			m_charge_timer -= ms;
 		}
 	}
@@ -170,7 +171,8 @@ void Boss3::state1Update(float ms) {
 void Boss3::state2Update(float ms) {
 	auto* motion = getComponent<MotionComponent>();
 	if (motion->position.y > 200.f) {
-		motion->velocity.y = ms * -5.f;
+		motion->velocity = { 0.f, ms * -15.f };
+		motion->radians = 0.f;
 	}
 	else {
 		if (!m_is_cloned) {
@@ -179,7 +181,6 @@ void Boss3::state2Update(float ms) {
 			motion->velocity.x = ms * ROAM_VELOCITY / 10.f;
 			motion->velocity.y = 0.f;
 			motion->radians = 3 * M_PI / 2;
-
 		}
 		else {
 			if (motion->position.x < 100.f) {

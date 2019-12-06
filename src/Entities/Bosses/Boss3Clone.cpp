@@ -61,6 +61,7 @@ bool Boss3Clone::init(vec2 pos, vec2 disp) {
 	m_curr_state = CloneState::moving;
 	m_prev_state = CloneState::moving;
 	target_pos = disp;
+	m_is_active = true;
 
     // Setting initial values, scale is negative to make it face the opposite way
     // 1.0 would be as big as the original texture.
@@ -86,6 +87,9 @@ void Boss3Clone::destroy() {
 void Boss3Clone::update(float ms) {
 	auto* motion = getComponent<MotionComponent>();
 	float step = ms * 90.f / 10000.f;
+	if (!m_is_active) {
+		return;
+	}
 	if (m_curr_state == CloneState::moving) {
 		vec2 displacement = move_to(ms, target_pos,120.f);
 		if (displacement.x < 1.f && displacement.y < 1.f) {
@@ -130,7 +134,10 @@ void Boss3Clone::update(float ms) {
 			motion->velocity = { 0.f,0.f };
 			motion->radians = M_PI;
 		} else {
-			motion->velocity = { 0.f,-110.f };
+			if (motion->position.y > 0.f) 
+				motion->velocity = { 0.f,-110.f };
+			else 
+				m_stun_duration = 0.f;
 			motion->radians += 0.1f;
 			m_stun_duration -= ms;
 		}
@@ -172,11 +179,13 @@ vec2 Boss3Clone::get_bounding_box() const {
     return { std::fabs(physics->scale.x) * texture.width, std::fabs(physics->scale.y) * texture.height };
 }
 bool Boss3Clone::collidesWith(Player& player) {
-	auto* motion = getComponent<MotionComponent>();
-
-	vec2 playerbox = player.get_bounding_box();
-
-	bool collides = checkCollision(player.get_position(), playerbox);
+	bool collides = checkCollision(player.get_position(), player.get_bounding_box());
+	if (collides)
+		stun();
+	return collides;
+}
+bool Boss3Clone::collidesWith(Vamp& vamp) {
+	bool collides = checkCollision(vamp.get_position(), vamp.get_bounding_box());
 	if (collides)
 		stun();
 	return collides;
@@ -238,4 +247,9 @@ void Boss3Clone::stun() {
 
 void Boss3Clone::set_lead() {
 	m_is_lead = true;
+}
+
+void Boss3Clone::shutdown(float ms, vec2 master_pos) {
+	m_is_active = false;
+	move_to(ms, master_pos, 120.f);
 }

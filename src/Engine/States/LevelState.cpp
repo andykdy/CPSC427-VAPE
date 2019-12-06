@@ -379,7 +379,6 @@ void LevelState::update(float ms) {
                 }
 
             }
-
             ++enemy_it;
         }
     }
@@ -516,15 +515,32 @@ void LevelState::update(float ms) {
             }
 
             // Vamp/Boss collision
-            if (m_vamp_mode && m_boss->collidesWith(m_vamp)) {
-                m_boss->add_vamp_timer(ms);
+            if (m_vamp_mode) {
+				if (m_boss->collidesWith(m_vamp)) {
+					m_boss->add_vamp_timer(ms);
 
-                if (m_boss->get_vamp_timer() >= VAMP_DAMAGE_TIMER_BOSS) {
-                    m_vamp_particle_emitter.spawn(m_boss->get_position());
-                    m_vamp_particle_emitter.spawn(m_boss->get_position());
-                    m_boss->addDamage(VAMP_DAMAGE_BOSS);
-                    m_boss->reset_vamp_timer();
-                }
+					if (m_boss->get_vamp_timer() >= VAMP_DAMAGE_TIMER_BOSS) {
+						m_vamp_particle_emitter.spawn(m_boss->get_position());
+						m_vamp_particle_emitter.spawn(m_boss->get_position());
+						m_boss->addDamage(VAMP_DAMAGE_BOSS);
+						m_boss->reset_vamp_timer();
+					}
+				}
+				if (m_boss->hasClones()) {
+					auto& clones = m_boss->clones;
+					auto clone_it = clones.begin();
+					while (clone_it != clones.end()) {
+						if ((*clone_it)->collidesWith(m_vamp)) {
+							(*clone_it)->add_vamp_timer(ms);
+							if ((*clone_it)->get_vamp_timer() > VAMP_DAMAGE_TIMER_BOSS) {
+								m_vamp_particle_emitter.spawn((*clone_it)->get_position());
+								m_vamp_particle_emitter.spawn((*clone_it)->get_position());
+								(*clone_it)->reset_vamp_timer();
+							}
+						}
+						clone_it++;
+					}
+				}
             }
 
             auto& bossBullets = m_boss->projectiles;

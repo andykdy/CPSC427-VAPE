@@ -38,7 +38,8 @@ public:
 
     // Returns the turtle' bounding box for collision detection, called by collides_with()
     vec2 get_bounding_box() const override;
-	bool collidesWith(Player& player) override; 
+	bool collidesWith(Player& player) override;
+	bool collidesWith(Vamp& vamp) override;
 	bool checkCollision(vec2 pos, vec2 box) const override;
 
     void set_velocity(vec2 velocity) override;
@@ -46,17 +47,18 @@ public:
 	void set_lead();
 	vec2 move_to(float ms, vec2 target, float speed);
 	void stun() override;
+	void shutdown(float ms, vec2 master_pos) override;
 private:
     float m_bullet_cooldown;
     unsigned int m_burst_count;
     float m_burst_cooldown;
 	float m_stun_duration;
-	vec2 m_master_pos;
 	vec2 target_pos;
 	CloneState m_curr_state;
 	CloneState m_prev_state;
 	float m_speed;
 	bool m_is_lead;
+	bool m_is_active;
 
 
     void spawnBullet();
