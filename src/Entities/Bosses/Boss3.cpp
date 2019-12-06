@@ -18,7 +18,7 @@ namespace
 	const size_t DAMAGE_EFFECT_TIME = 100;
 	const size_t DIRECTION_COOLDOWN_MS = 800;
 	const size_t BULLET_DAMAGE = 5;
-	const size_t INIT_HEALTH = 25;
+	const size_t INIT_HEALTH = 150;
 	const size_t POINTS_VAL = 5000;
 	const size_t ROAM_VELOCITY = 120;
 	const size_t COOLDOWN_TIME_MS = 1000;
@@ -114,7 +114,7 @@ void Boss3::update(float ms) {
 		bullet->update(ms);
 
 	// Simple health based states, only two states for this first boss
-	if (health > 95) state1Update(ms);
+	if (health > 90) state1Update(ms);
 	else if (health > 0) state2Update(ms);
 	else {
 		motion->velocity = { 0.f,0.f };
