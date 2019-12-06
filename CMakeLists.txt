@@ -89,6 +89,8 @@ set(SOURCE_FILES
         src/Entities/Vamp.cpp src/Entities/Vamp.hpp
         src/Entities/Intro.cpp src/Entities/Intro.hpp
 
+        src/Entities/EntityGrid.cpp src/Entities/EntityGrid.hpp
+
         src/Entities/Debugging/DebugDot.cpp src/Entities/Debugging/DebugDot.hpp
 
         src/Entities/Enemies/Enemy.hpp
@@ -177,7 +179,7 @@ set(SOURCE_FILES
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 
-           )
+        )
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
