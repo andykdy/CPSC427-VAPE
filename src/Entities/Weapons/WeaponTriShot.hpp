@@ -6,10 +6,12 @@
 #define VAPE_WEAPONTRISHOT_HPP
 
 #include <SDL_mixer.h>
+#include <Utils/PhysFSHelpers.hpp>
 #include "Weapon.hpp"
 
 class WeaponTriShot: public Weapon {
 private:
+    RWFile m_bullet_sound_file;
     Mix_Chunk* m_bullet_sound;
     float m_bullet_cooldown;
 public:
