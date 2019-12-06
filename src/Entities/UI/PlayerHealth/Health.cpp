@@ -57,7 +57,7 @@ void Health::draw(const mat3 &projection) {
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     for (int i = 0; i < health; i++) {
         transform->begin();
-        vec2 offset = {i * 3.55f, 0.f};
+        vec2 offset = {i * 3.75f, 0.f};
         offset.x += motion->position.x;
         offset.y += motion->position.y;
         transform->translate(offset);

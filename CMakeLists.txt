@@ -177,7 +177,7 @@ set(SOURCE_FILES
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 
-           )
+        src/Entities/UI/ScoreText.cpp src/Entities/UI/ScoreText.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

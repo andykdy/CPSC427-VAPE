@@ -11,14 +11,14 @@
 
 class Text : public EntityOld {
 private:
-    Font* m_font;
     std::string m_text;
-    vec3 m_color;
-    float m_life;
     std::vector<TexturedVertex> vertices{};
     std::vector<uint16_t> indices{};
+protected:
+    Font* m_font;
+    vec3 m_color;
 public:
-    bool init(Font* font);
+    virtual bool init(Font* font);
     void clear();
     void destroy();
     void draw(const mat3& projection);
@@ -32,11 +32,6 @@ public:
         m_color = color;
     }
 
-    bool is_alive() {
-        return m_life > 0;
-    }
-
-    void scroll_up(float ms);
 };
 
 

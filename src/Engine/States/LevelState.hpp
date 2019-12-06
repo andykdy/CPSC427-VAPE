@@ -38,6 +38,7 @@
 #include <Entities/Pickups/Pickup.hpp>
 #include <Utils/SaveData.hpp>
 #include <Entities/UI/PauseMenu/PauseMenu.hpp>
+#include <Entities/UI/ScoreText.hpp>
 
 const size_t INIT_LIVES = 5;
 
@@ -76,7 +77,7 @@ private:
     void add_health(int heal);
 
     void add_vamp_charge();
-
+    void spawn_score_text(int pts, vec2 position);
     void reset();
 
     // Tracks keys being pressed
@@ -109,6 +110,7 @@ private:
     Font m_font_ranger;
     // Font m_font_scoring;
     std::vector<Text> m_text;
+    std::vector<ScoreText> m_score_text;
 
     float m_level_time;
     bool m_debug_mode;
