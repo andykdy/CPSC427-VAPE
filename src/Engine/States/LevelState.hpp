@@ -39,6 +39,7 @@
 #include <Utils/SaveData.hpp>
 #include <Entities/UI/PauseMenu/PauseMenu.hpp>
 #include <Entities/UI/ScoreText.hpp>
+#include <Entities/UI/PlayerScore/Score.hpp>
 
 const size_t INIT_LIVES = 5;
 
@@ -104,6 +105,7 @@ private:
     UIPanel* m_uiPanel;
     Health* m_health;
     VampCharge* m_vamp_charge;
+    Score* m_score_ui;
 	Dialogue m_dialogue;
 
 	// Text rendering

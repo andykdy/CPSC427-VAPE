@@ -111,6 +111,8 @@ void LevelState::init() {
     m_health->init({22, screen.y-50});
     m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
     m_vamp_charge->init({screen.x-21, screen.y-50});
+    m_score_ui = &GameEngine::getInstance().getEntityManager()->addEntity<Score>();
+    m_score_ui->init({100,100}, m_font_ranger);
     m_vamp_particle_emitter.init();
     m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
     m_uiPanel->init(screen, screen.y, screen.x);
@@ -173,6 +175,7 @@ void LevelState::terminate() {
     m_uiPanelBackground->destroy();
     m_uiPanel->destroy();
     m_health->destroy();
+    m_score_ui->destroy();
     m_vamp_charge->destroy();
     if (m_boss != nullptr)
         m_boss->destroy();
@@ -223,6 +226,9 @@ void LevelState::update(float ms) {
 
     m_health->setHealth(m_player->get_health());
     m_vamp_charge->setVampCharge(m_vamp_mode_charge);
+    m_score_ui->setScore(m_points);
+
+
 
     // Update the player's position and screen size for the enemies
     for(auto& enemy: *enemies) {
@@ -549,7 +555,7 @@ void LevelState::update(float ms) {
         }
     }
 
-    // If salmon is dead, restart the game after the fading animation
+    // If player is dead, restart the game after the fading animation
     if (!m_player->is_alive() &&
         m_space.get_salmon_dead_time() > 5) {
         if (m_lives > 0){
