@@ -483,6 +483,7 @@ void LevelState::update(float ms) {
             // m_points += 5000;
             m_boss->kill();
             m_space.set_boss_dead();
+            m_explosion.spawnBossExplosion((*m_boss).get_position());
         } else if (m_boss->is_alive()) {
             // Player/Boss collision
             if (m_player->is_alive() && m_boss->collidesWith(*m_player) && m_player->get_iframes() <= 0.f) {
@@ -541,24 +542,27 @@ void LevelState::update(float ms) {
             }
 
             // If boss dies, continue to next level or main menu
-        } else if (m_boss->getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
-        {
-            if (m_level.nextLevel != nullptr) {
-                GameEngine::getInstance().changeState(new BetweenLevelsState(m_level, m_starting_points, {
-                        m_lives,
-                        m_points,
-                        m_level.nextLevel->id
-                }));
-            } else {
-                saveScore(m_points);
-                saveGameData({0,0,0}); // Clear savegame
-                GameEngine::getInstance().changeState(new OutroState({
-                        m_lives,
-                        m_points,
-                        0
-                }));
-            }
+        } else if (m_boss->getHealth() <= 0){
+            m_explosion.spawnBossExplosion((*m_boss).get_position());
+             if (m_space.get_boss_dead_time() > 5)
+            {
+                if (m_level.nextLevel != nullptr) {
+                    GameEngine::getInstance().changeState(new BetweenLevelsState(m_level, m_starting_points, {
+                            m_lives,
+                            m_points,
+                            m_level.nextLevel->id
+                    }));
+                } else {
+                    saveScore(m_points);
+                    saveGameData({0,0,0}); // Clear savegame
+                    GameEngine::getInstance().changeState(new OutroState({
+                            m_lives,
+                            m_points,
+                            0
+                    }));
+                }
             return;
+            }
         }
     }
 
