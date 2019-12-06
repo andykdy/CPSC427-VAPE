@@ -15,14 +15,14 @@
 
 class BetweenLevelsState : public GameState {
 private:
-    const Levels::Level* m_next_level;
+    const Levels::Level m_prev_level;
     unsigned int m_prev_start_points;
     PlayerData m_player_data;
     EnterContinue m_continue;
     Font m_font;
     std::vector<Text> m_text;
 public:
-    BetweenLevelsState(const Levels::Level *m_next_level, unsigned int m_prev_start_points, const PlayerData &m_player_data);
+    BetweenLevelsState(const Levels::Level m_prev_level, unsigned int m_prev_start_points, const PlayerData &m_player_data);
 
     void init() override;
 
