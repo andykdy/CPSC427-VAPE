@@ -11,16 +11,16 @@
 namespace Levels {
     const Timeline level3Timeline = {
 			//{ 1500, TLExplosiveSingle },
-			{ 1500, TMPickupSingle },
+			/*{ 1500, TMPickupSingle },
 
-            { 4500, TLExplosiveSingle }
+            { 4500, TLExplosiveSingle }*/
     };
 
     const Level level3 = Level(
             3,
             level3Timeline,
             spawnBoss<Boss3>,
-            10000,
+            5000,
             textures_path("space_bg3.png"),
             audio_path("music_level3.wav"),
             audio_path("music_boss3.wav"),

@@ -5,7 +5,10 @@
 #ifndef VAPE_BOSS3_HPP
 #define VAPE_BOSS3_HPP
 
-
+#include <Engine/GameEngine.hpp>
+#include <Entities/Projectiles and Damaging/bullet.hpp>
+#include <Entities/Bosses/Boss3Clone.hpp>
+#include <vector>
 #include <common.hpp>
 #include "Boss.hpp"
 
@@ -44,6 +47,12 @@ public:
     bool checkCollision(vec2 pos, vec2 box) const override;
 
 private:
+	float m_damage_effect_cooldown;
+	bool m_is_cloned;
+
+	void state1Update(float ms);
+	void state2Update(float ms);
+	void spawnClones();
 };
 
 

@@ -3,40 +3,189 @@
 //
 
 #include "Boss3.hpp"
+#include <cmath>
+#include <iostream>
+#include <Components/SpriteComponent.hpp>
+#include <Components/EffectComponent.hpp>
+#include <Components/PhysicsComponent.hpp>
+#include <Components/MotionComponent.hpp>
+#include <Components/TransformComponent.hpp>
+
+namespace
+{
+	const size_t BURST_COOLDOWN_MS = 800;
+	const size_t BULLET_COOLDOWN_MS = 100;
+	const size_t DAMAGE_EFFECT_TIME = 100;
+	const size_t DIRECTION_COOLDOWN_MS = 800;
+	const size_t BULLET_DAMAGE = 5;
+	const size_t INIT_HEALTH = 200;
+	const size_t POINTS_VAL = 5000;
+}
+
+
+Texture Boss3::boss3_texture;
 
 bool Boss3::init(vec2 screen) {
-    // TODO
-    Boss::addDamage(1000); // TODO remove
-    return true;
+	m_healthbar = &GameEngine::getInstance().getEntityManager()->addEntity<BossHealth>();
+	m_healthbar->init(screen, INIT_HEALTH);
+
+	gl_flush_errors();
+	auto* sprite = addComponent<SpriteComponent>();
+	auto* effect = addComponent<EffectComponent>();
+	auto* physics = addComponent<PhysicsComponent>();
+	auto* motion = addComponent<MotionComponent>();
+	auto* transform = addComponent<TransformComponent>();
+
+	// Load shared texture
+	if (!boss3_texture.is_valid())
+	{
+		if (!boss3_texture.load_from_file(textures_path("boss3.png")))
+		{
+			fprintf(stderr, "Failed to load Boss1 texture!");
+			return false;
+		}
+	}
+
+	// Loading shaders
+	if (!effect->load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
+		return false;
+
+	if (!sprite->initTexture(&boss3_texture))
+		throw std::runtime_error("Failed to initialize bullet sprite");
+
+	if (gl_has_errors())
+		return false;
+	motion->position = { screen.x/2, 200.f };
+	motion->radians = 3.14;
+	motion->velocity = { 0.f, 0.f };
+
+
+	// Setting initial values, scale is negative to make it face the opposite way
+	// 1.0 would be as big as the original texture.
+	physics->scale = { -0.35f, 0.35f };
+
+	health = INIT_HEALTH;
+	m_is_alive = true;
+	m_is_cloned = false;
+	points = POINTS_VAL;
+
+	return true;
 }
 
 void Boss3::destroy() {
-    // TODO
-    ECS::Entity::destroy();
+	m_healthbar->destroy();
+
+	for (auto bullet : projectiles)
+		bullet->destroy();
+	projectiles.clear();
+
+	auto* effect = getComponent<EffectComponent>();
+	auto* sprite = getComponent<SpriteComponent>();
+
+	effect->release();
+	sprite->release();
+	ECS::Entity::destroy();
 }
 
 void Boss3::update(float ms) {
-    // TODO
+	m_healthbar->setHealth(health);
+	for (auto clone : clones)
+		clone->update(ms);
+	if (m_damage_effect_cooldown > 0)
+		m_damage_effect_cooldown -= ms;
+
+	// Update bullets
+	for (auto bullet : projectiles)
+		bullet->update(ms);
+
+	// Simple health based states, only two states for this first boss
+	if (health > 195) state1Update(ms);
+	else if (health > 0) state2Update(ms);
+	else {
+		// death?
+	}
+}
+
+void Boss3::state1Update(float ms) {
+	if (!m_is_cloned) {
+		spawnClones();
+		m_is_cloned = true;
+	}
+
+}
+
+void Boss3::state2Update(float ms) {
+	auto* motion = getComponent<MotionComponent>();
+
+	int w, h;
+	glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
+	vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
+
+}
+
+void Boss3::spawnClones() {
+	auto* motion = getComponent<MotionComponent>();
+	vec2 master_pos = motion->position;
+	Boss3Clone* clone1 = &GameEngine::getInstance().getEntityManager()->addEntity<Boss3Clone>();
+	clone1->init({ master_pos.x, master_pos.y - 100.f });
+	Boss3Clone* clone2 = &GameEngine::getInstance().getEntityManager()->addEntity<Boss3Clone>();
+	clone2->init({ master_pos.x - 100.f, master_pos.y + 100.f });
+	Boss3Clone* clone3 = &GameEngine::getInstance().getEntityManager()->addEntity<Boss3Clone>();
+	clone3->init({ master_pos.x + 100.f, master_pos.y + 100.f });
+	clones.emplace_back(clone1);
+	clones.emplace_back(clone2);
+	clones.emplace_back(clone3);
 }
 
 void Boss3::draw(const mat3 &projection) {
-    // TODO
+	// Draw boss' bullets
+	for (auto bullet : projectiles)
+		bullet->draw(projection);
+	if (m_is_cloned) {
+		for (auto clone : clones)
+			clone->draw(projection);
+	}
+
+	auto* transform = getComponent<TransformComponent>();
+	auto* effect = getComponent<EffectComponent>();
+	auto* motion = getComponent<MotionComponent>();
+	auto* physics = getComponent<PhysicsComponent>();
+	auto* sprite = getComponent<SpriteComponent>();
+
+	transform->begin();
+	transform->translate(motion->position);
+	transform->scale(physics->scale);
+	transform->rotate(motion->radians);
+	transform->end();
+
+	float mod = 1;
+	if (m_damage_effect_cooldown > 0)
+		mod = 1 / m_damage_effect_cooldown;
+
+	sprite->draw(projection, transform->out, effect->program, { 1.f, mod * 1.f,mod * 1.f });
+
+	m_healthbar->draw(projection);
 }
 
 vec2 Boss3::get_position() const {
-    return vec2(); // TODO
+	auto* motion = getComponent<MotionComponent>();
+	return motion->position;
 }
 
 void Boss3::set_position(vec2 position) {
-    // TODO
+	auto* motion = getComponent<MotionComponent>();
+	motion->position = position;
 }
 
 vec2 Boss3::get_bounding_box() const {
-    return vec2();
+	auto* physics = getComponent<PhysicsComponent>();
+
+	return { std::fabs(physics->scale.x) * boss3_texture.width * 0.6f, std::fabs(physics->scale.y) * boss3_texture.height * 0.6f };
 }
 
 void Boss3::addDamage(int damage) {
-    Boss::addDamage(damage);
+	m_damage_effect_cooldown = DAMAGE_EFFECT_TIME;
+	Boss::addDamage(damage);
 }
 
 bool Boss3::collidesWith(const Vamp &vamp) {
@@ -44,10 +193,50 @@ bool Boss3::collidesWith(const Vamp &vamp) {
 }
 
 bool Boss3::collidesWith(Player &player) {
-    return checkCollision(player.get_position(), player.get_bounding_box());
+	auto* motion = getComponent<MotionComponent>();
+
+	vec2 playerbox = player.get_bounding_box();
+
+	bool collides = checkCollision(player.get_position(), playerbox);
+	if (collides) {
+		vec2 player_pos = player.get_position();
+		float player_r = std::max(playerbox.x, playerbox.y) * 0.4f;
+		float boss_r = std::max(get_bounding_box().x, get_bounding_box().y) * 0.4f;
+
+		auto dist = std::sqrt((float)pow(player_pos.x - motion->position.x, 2) + (float)pow(player_pos.y - motion->position.y, 2));
+		float overlap = (dist - player_r - boss_r);
+		float dx = (player_pos.x - motion->position.x) / dist;
+		float dy = (player_pos.y - motion->position.y) / dist;
+		player_pos.x -= overlap * dx;
+		player_pos.y -= overlap * dy;
+		player.set_position(player_pos);
+
+
+		float boss_mass = boss_r * 200;
+		float player_mass = player_r * 100;
+
+		vec2 player_vel = player.get_velocity();
+		
+		float vbp1 = 2 * boss_mass / (player_mass + boss_mass);
+		float vbp2 = dot(player_vel, sub(player_pos, motion->position)) / (float)pow(len(sub(player_pos, motion->position)), 2);
+		vec2 vb = sub(player_vel, mul(sub(player_pos, motion->position), vbp1 * vbp2));
+
+		player.set_velocity(vb);
+		player.set_acceleration({ 0,0 });
+	}
+	return collides;
 }
 
 bool Boss3::checkCollision(vec2 pos, vec2 box) const {
-    // TODO
-    return false;
+	auto* motion = getComponent<MotionComponent>();
+	auto* physics = getComponent<PhysicsComponent>();
+
+	vec2 bbox = this->get_bounding_box();
+
+	float dx = motion->position.x - pos.x;
+	float dy = motion->position.y - pos.y;
+	float d_sq = dx * dx + dy * dy;
+	float dr = (std::max(bbox.x, bbox.y) * 0.4f) + (std::max(box.x, box.y) * 0.4f);
+	float r_sq = dr * dr;
+	return d_sq < r_sq;
 }
