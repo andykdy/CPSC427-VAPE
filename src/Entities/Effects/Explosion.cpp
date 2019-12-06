@@ -113,8 +113,8 @@ void Explosion::spawnBossExplosion(vec2 position)
     for (int i = 0; i < 120; i++){
         Explosion::Particle p = Particle();
         p.life = 30.f;
-        p.position = {position.x - 10 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(20)))
-                      ,position.y - 10 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(20)))};
+        p.position = {position.x - 100 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(200)))
+                      ,position.y - 50 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(100)))};
         float radius = 0.8f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(2.2f)));
         float xvel = -1.f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(2)));
         float yvel = -1.f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(2)));
