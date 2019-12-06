@@ -1,21 +1,28 @@
 // Header
-#include "Entities/Enemies/turtle.hpp"
+#include "Entities/Enemies/PickupEnemy.hpp"
 
+#include <Engine/GameEngine.hpp>
 #include <cmath>
+#include <random>
 #include <Components/SpriteComponent.hpp>
 #include <Components/EffectComponent.hpp>
 #include <Components/PhysicsComponent.hpp>
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
 #include <Components/EnemyComponent.hpp>
+#include <Entities/Pickups/Pickup.hpp>
+#include <Entities/Pickups/TriShotPickup.hpp>
+#include <Entities/Pickups/MachineGunPickup.hpp>
+#include <Systems/PickupSystem.hpp>
 
-Texture Turtle::turtle_texture;
+
+Texture PickupEnemy::enemy_texture;
 
 namespace {
-    const size_t POINTS_VAL = 100;
+    const size_t POINTS_VAL = 50;
 }
 
-bool Turtle::init()
+bool PickupEnemy::init()
 {
 	auto* sprite = addComponent<SpriteComponent>();
 	auto* effect = addComponent<EffectComponent>();
@@ -25,11 +32,11 @@ bool Turtle::init()
 	auto* enemy = addComponent<EnemyComponent>();
 
 	// Load shared texture
-	if (!turtle_texture.is_valid())
+	if (!enemy_texture.is_valid())
 	{
-		if (!turtle_texture.load_from_file(textures_path("turtle.png")))
+		if (!enemy_texture.load_from_file(textures_path("pickup_enemy.png")))
 		{
-			fprintf(stderr, "Failed to load turtle texture!");
+			fprintf(stderr, "Failed to load pickup enemy texture!");
 			return false;
 		}
 	}
@@ -39,35 +46,37 @@ bool Turtle::init()
 		return false;
 
 
-	if (!sprite->initTexture(&turtle_texture))
+	if (!sprite->initTexture(&enemy_texture))
 		throw std::runtime_error("Failed to initialize turtle sprite");
 
 	if (gl_has_errors())
 		return false;
 
 	motion->radians = (rand() % 4) * 3.14f / 4;
-	motion->velocity = {0.f, 180.f};
+	motion->velocity = {0.f, 90.f};
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
-	physics->scale = { -0.28f, 0.28f };
+	physics->scale = { -0.14f, 0.14f };
 	points = POINTS_VAL;
 
 	return true;
 }
 
 // Releases all graphics resources
-void Turtle::destroy()
+void PickupEnemy::destroy()
 {
 	auto* effect = getComponent<EffectComponent>();
 	auto* sprite = getComponent<SpriteComponent>();
+	spawn_pickup();
+	
 
 	effect->release();
 	sprite->release();
 	ECS::Entity::destroy();
 }
 
-void Turtle::update(float ms)
+void PickupEnemy::update(float ms)
 {
 	auto* motion = getComponent<MotionComponent>();
 
@@ -75,7 +84,7 @@ void Turtle::update(float ms)
 	motion->radians += step * 0.02;
 }
 
-void Turtle::draw(const mat3& projection)
+void PickupEnemy::draw(const mat3& projection)
 {
 	auto* transform = getComponent<TransformComponent>();
 	auto* effect = getComponent<EffectComponent>();
@@ -92,29 +101,40 @@ void Turtle::draw(const mat3& projection)
 	sprite->draw(projection, transform->out, effect->program);
 }
 
-vec2 Turtle::get_position()const
+vec2 PickupEnemy::get_position()const
 {
 	auto* motion = getComponent<MotionComponent>();
 	return motion->position;
 }
 
-void Turtle::set_position(vec2 position)
+void PickupEnemy::set_position(vec2 position)
 {
 	auto* motion = getComponent<MotionComponent>();
 	motion->position = position;
 }
 
-vec2 Turtle::get_bounding_box() const
+vec2 PickupEnemy::get_bounding_box() const
 {
 	auto* physics = getComponent<PhysicsComponent>();
 
 	// Returns the local bounding coordinates scaled by the current size of the turtle 
 	// fabs is to avoid negative scale due to the facing direction.
-	return { std::fabs(physics->scale.x) * turtle_texture.width, std::fabs(physics->scale.y) * turtle_texture.height };
+	return { std::fabs(physics->scale.x) * enemy_texture.width, std::fabs(physics->scale.y) * enemy_texture.height };
 }
 
-void Turtle::set_velocity(vec2 velocity) {
+void PickupEnemy::set_velocity(vec2 velocity) {
 	auto* motion = getComponent<MotionComponent>();
 	motion->velocity.x = velocity.x;
 	motion->velocity.y = velocity.y;
+}
+
+void PickupEnemy::spawn_pickup() {
+	auto* motion = getComponent<MotionComponent>();
+	auto& ps = GameEngine::getInstance().getSystemManager()->getSystem<PickupSystem>();
+
+	ECS::EntityManager* e = GameEngine::getInstance().getEntityManager();
+	auto* p = &e->addEntity<MachineGunPickup>();
+		
+	p->init(motion->position);
+	ps.pickups.emplace_back(p);
 }

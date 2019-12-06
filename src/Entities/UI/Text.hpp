@@ -14,6 +14,7 @@ private:
     Font* m_font;
     std::string m_text;
     vec3 m_color;
+    float m_life;
     std::vector<TexturedVertex> vertices{};
     std::vector<uint16_t> indices{};
 public:
@@ -30,6 +31,14 @@ public:
     void setColor(const vec3& color) {
         m_color = color;
     }
+
+    bool is_alive() {
+        return m_life > 0;
+    }
+
+    void scroll_up(float ms);
+
+    vec2 getBoundingBox();
 };
 
 

@@ -6,8 +6,19 @@
 #include <algorithm>
 #include "Vamp.hpp"
 #include <Engine/ECS/Entity.hpp>
+#include <iostream>
 
 Texture Vamp::vamp_texture;
+
+namespace
+{
+    const float VAMP_SCALE = 0.6f;
+    const size_t VAMP_SPEED = 360;
+    const float ROTATION_SPEED = 0.015;
+    const float VAMP_ALPHA = 0.8f;
+    const float VAMP_CHARGE_ALPHA = 7.f;
+
+}
 
 
 bool Vamp::init(vec2 position) {
@@ -60,14 +71,16 @@ bool Vamp::init(vec2 position) {
     if (!effect.load_from_file(shader_path("vamp.vs.glsl"), shader_path("vamp.fs.glsl")))
         return false;
     
-    m_scale.x = 0.6f;
-    m_scale.y = 0.6f;
+    m_scale.x = VAMP_SCALE;
+    m_scale.y = VAMP_SCALE;
 
-    motion.radians = 3.14f;
-    motion.speed = 360.f;
+    motion.radians = 0.f;
+    motion.speed = VAMP_SPEED;
 
     m_position.x = position.x;
     m_position.y = position.y;
+
+    m_alpha = VAMP_ALPHA;
 
     return true;
 }
@@ -82,11 +95,17 @@ void Vamp::destroy() {
     glDeleteShader(effect.program);
 }
 
-void Vamp::update(float ms, vec2 player_position) {
+void Vamp::update(float ms, vec2 player_position, int vamp_charge) {
     float step = motion.speed * (ms / 1000);
     m_position.x = player_position.x;
     m_position.y = player_position.y;
-    motion.radians -= step * 0.015;
+    motion.radians -= step * ROTATION_SPEED;
+
+    if (vamp_charge < VAMP_CHARGE_ALPHA) {
+        m_alpha = VAMP_ALPHA * ( vamp_charge / VAMP_CHARGE_ALPHA) + 0.1;
+    } else {
+        m_alpha = VAMP_ALPHA;
+    }
 }
 
 void Vamp::draw(const mat3 &projection) {
@@ -108,6 +127,7 @@ void Vamp::draw(const mat3 &projection) {
     // Getting uniform locations for glUniform* calls
     GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
     GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
+    GLint alpha_uloc = glGetUniformLocation(effect.program, "falpha");
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
     // Setting vertices and indices
@@ -129,8 +149,9 @@ void Vamp::draw(const mat3 &projection) {
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
-    float color[] = { 1.f, 1.f, 1.f, 0.2f };
+    float color[] = {1.f, 1.f, 1.f, 0.2f};
     glUniform3fv(color_uloc, 1, color);
+    glUniform1f(alpha_uloc, m_alpha);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
     // Drawing!

@@ -22,6 +22,8 @@
 #include "Entities/Effects/Explosion.hpp"
 #include "Entities/Effects/VampParticleEmitter.hpp"
 #include "Levels/Level.hpp"
+#include <Engine/Graphics/Font.hpp>
+#include <Entities/UI/Text.hpp>
 
 // stlib
 #include <vector>
@@ -95,7 +97,6 @@ private:
     // Game entities
     Player* m_player;
     Boss* m_boss;
-    std::vector<Pickup*> m_pickups; // TODO Maybe should be in a Pickup System eventuallyy
 
     // UI
     UIPanelBackground* m_uiPanelBackground;
@@ -103,6 +104,11 @@ private:
     Health* m_health;
     VampCharge* m_vamp_charge;
 	Dialogue m_dialogue;
+
+	// Text rendering
+    Font m_font_ranger;
+    // Font m_font_scoring;
+    std::vector<Text> m_text;
 
     float m_level_time;
     bool m_debug_mode;

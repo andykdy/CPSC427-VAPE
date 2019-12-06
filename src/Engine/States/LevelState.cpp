@@ -15,6 +15,7 @@
 #include <Systems/CollisionSystem.hpp>
 #include <Entities/Bosses/Boss2.hpp>
 #include <Systems/ProjectileSystem.hpp>
+#include <Systems/PickupSystem.hpp>
 
 #include "LevelState.hpp"
 #include "MainMenuState.hpp"
@@ -35,7 +36,7 @@ namespace
     const size_t VAMP_TIME_PER_POINT = 200;
     const size_t VAMP_ACTIVATION_COOLDOWN = 300;
     const size_t MAX_VAMP_CHARGE = 15;
-    const size_t VAMP_ACTIVATION_COST = 3;
+    const size_t VAMP_ACTIVATION_COST = 0;
     const float VAMP_TIME_SLOWDOWN = 0.5f;
 
 }
@@ -45,7 +46,9 @@ LevelState::LevelState(Levels::Level level, PlayerData data) :
         m_level(level),
         m_points(data.points),
         m_starting_points(data.points),
-        m_lives(data.lives)
+        m_lives(data.lives),
+        m_font_ranger(Font(font_path("spaceranger.ttf")))
+
 {
 
     // Load leaderboard data
@@ -119,11 +122,14 @@ void LevelState::init() {
     m_boss->init(screen);
 
     m_space.set_position({screen.x/2, 0});
+    // TODO - remove
+    // m_font_ranger = Font(font_path("spaceranger.ttf"));
 
     GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
     auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
     spawn.reset(m_level.timeline);
     GameEngine::getInstance().getSystemManager()->addSystem<ProjectileSystem>();
+	GameEngine::getInstance().getSystemManager()->addSystem<PickupSystem>();
 
     GameEngine::getInstance().setM_current_speed(1.f);
 
@@ -140,6 +146,9 @@ void LevelState::init() {
 void LevelState::terminate() {
     auto & spawn = GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>();
     spawn.reset(m_level.timeline);
+
+	auto& pickup_sys = GameEngine::getInstance().getSystemManager()->getSystem<PickupSystem>();
+	pickup_sys.clear();
 
     auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
     projectiles.clear();
@@ -161,18 +170,17 @@ void LevelState::terminate() {
 
     m_player->destroy();
 
-    for (auto& pickup : m_pickups) {
-        pickup->destroy();
-    }
-
     m_uiPanelBackground->destroy();
     m_uiPanel->destroy();
     m_health->destroy();
     m_vamp_charge->destroy();
-    m_pickups.clear();
     if (m_boss != nullptr)
         m_boss->destroy();
     m_dialogue.destroy();
+
+    for (auto& text : m_text)
+        text.destroy();
+
     m_explosion.destroy();
     m_space.destroy();
 
@@ -186,6 +194,8 @@ void LevelState::update(float ms) {
     }
     auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
     auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
+	auto & pickup_sys = GameEngine::getInstance().getSystemManager()->getSystem<PickupSystem>();
+	auto * pickups = pickup_sys.getPickups();
     auto * enemies = spawn.getEnemies();
 
     int w, h;
@@ -211,8 +221,9 @@ void LevelState::update(float ms) {
     m_health->setHealth(m_player->get_health());
     m_vamp_charge->setVampCharge(m_vamp_mode_charge);
 
-    // Update the player's position for the enemies
+    // Update the player's position and screen size for the enemies
     for(auto& enemy: *enemies) {
+        enemy->screen_size = screen;
         enemy->player_position = m_player->get_position();
     }
 
@@ -247,11 +258,12 @@ void LevelState::update(float ms) {
         if ((*bullet_it)->collides_with(*m_player))
         {
             (*bullet_it)->destroy();
-            bullet_it = bullets.erase(bullet_it);
             if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
                 m_player->set_iframes(500.f);
                 lose_health((*bullet_it)->getDamage());
             }
+
+            bullet_it = bullets.erase(bullet_it);
             break;
         } else {
             ++bullet_it;
@@ -259,13 +271,15 @@ void LevelState::update(float ms) {
     }
 
     // Check Pickup Collisions
-    auto pickup_it = m_pickups.begin();
-    while (pickup_it != m_pickups.end()) {
+    auto pickup_it = pickups->begin();
+    while (pickup_it != pickups->end()) {
         if ((*pickup_it)->collides_with(*m_player)) {
-            (*pickup_it)->applyEffect(*this);
+            (*pickup_it)->applyEffect(*m_player);
             (*pickup_it)->destroy();
-            pickup_it = m_pickups.erase(pickup_it);
+            pickup_it = pickups->erase(pickup_it);
+			break;
         }
+		pickup_it++;
     }
 
     // Checking Player Bullet - Enemy collisions
@@ -280,13 +294,20 @@ void LevelState::update(float ms) {
             if ((*bullet_it)->collides_with(**enemy_it))
             {
                 eraseBullet = true;
+
+                m_text.emplace_back();
+                m_text.back().init(&m_font_ranger);
+                std::string s = std::to_string((*enemy_it)->get_points());
+                char const *pchar = s.c_str();
+                m_text.back().setText(pchar);
+                m_text.back().setColor({1.f, 0.8f, 0.0f});
+                m_text.back().setPosition((*enemy_it)->get_position());
+
                 m_explosion.spawn((*enemy_it)->get_position());
+                m_points += (*enemy_it)->get_points();
                 (*enemy_it)->destroy();
                 enemy_it = enemies->erase(enemy_it);
                 Mix_PlayChannel(-1,m_player_explosion,0);
-                // expl
-
-                ++m_points;
                 add_vamp_charge();
 
                 break;
@@ -327,8 +348,17 @@ void LevelState::update(float ms) {
 
                 if ((*enemy_it)->get_vamp_timer() >= VAMP_DAMAGE_TIMER) {
                     m_vamp_particle_emitter.spawn((*enemy_it)->get_position());
-
                     m_explosion.spawn((*enemy_it)->get_position());
+                    m_points += (*enemy_it)->get_points();
+
+                    m_text.emplace_back();
+                    m_text.back().init(&m_font_ranger);
+                    std::string s = std::to_string((*enemy_it)->get_points());
+                    char const *pchar = s.c_str();
+                    m_text.back().setText(pchar);
+                    m_text.back().setColor({1.f, 0.8f, 0.0f});
+                    m_text.back().setPosition((*enemy_it)->get_position());
+
                     Mix_PlayChannel(-1, m_player_explosion, 0);
                     (*enemy_it)->destroy();
                     enemy_it = enemies->erase(enemy_it);
@@ -342,13 +372,28 @@ void LevelState::update(float ms) {
     }
 
     m_space.update(ms);
+
+    auto text_it = m_text.begin();
+    while (text_it != m_text.end()) {
+        text_it->scroll_up(ms);
+        if (!text_it->is_alive()) {
+            (text_it)->destroy();
+            text_it = m_text.erase(text_it);
+            continue;
+        }
+        ++text_it;
+    }
+
+
     m_vamp_particle_emitter.update(ms, m_player->get_position());
     m_explosion.update(ms);
 
 
     m_player->update(ms, keyMap, mouse_position);
-    for (auto& enemy : *enemies)
-        enemy->update(ms);
+	for (auto& enemy : *enemies)
+		enemy->update(ms);
+	/*for (auto& pkup : *pickups)
+		pkup->update(ms);*/
 
     // Removing out of screen enemies
     enemy_it = enemies->begin();
@@ -414,7 +459,7 @@ void LevelState::update(float ms) {
             m_vamp_mode = false;
             m_vamp.destroy();
         } else {
-            m_vamp.update(ms, m_player->get_position());
+            m_vamp.update(ms, m_player->get_position(), m_vamp_mode_charge);
             m_vamp_mode_timer += ms;
             if (m_vamp_mode_timer >= VAMP_TIME_PER_POINT) {
                 m_vamp_mode_charge -= 1;
@@ -430,8 +475,9 @@ void LevelState::update(float ms) {
         // If boss drops below 0 health, set him as killed, award points, start timer
         if (m_boss->is_alive() && m_boss->getHealth() <= 0) {
             Mix_PlayMusic(m_victory_music, 0);
+            m_points += m_boss->get_points();
+            // m_points += 5000;
             m_boss->kill();
-            m_points += 100;
             m_space.set_boss_dead();
             m_explosion.spawnBossExplosion((*m_boss).get_position());
         } else if (m_boss->is_alive()) {
@@ -532,6 +578,8 @@ void LevelState::update(float ms) {
 void LevelState::draw() {
     auto & projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
     auto & spawn = GameEngine::getInstance().getSystemManager()->addSystem<EnemySpawnerSystem>();
+	auto & pickup_system = GameEngine::getInstance().getSystemManager()->getSystem<PickupSystem>();
+	auto * pickups = pickup_system.getPickups();
     auto * enemies = spawn.getEnemies();
     
     // Clearing error buffer
@@ -573,8 +621,10 @@ void LevelState::draw() {
     // Drawing entities
     for (auto* projectile : projectiles.hostile_projectiles)
         projectile->draw(projection_2D);
-    for (auto& enemy : (*enemies))
-        enemy->draw(projection_2D);
+	for (auto& enemy : (*enemies))
+		enemy->draw(projection_2D);
+	for (auto& pickup : (*pickups))
+		pickup->draw(projection_2D);
     for (auto* projectile : projectiles.friendly_projectiles)
         projectile->draw(projection_2D);
     m_player->draw(projection_2D);
@@ -593,6 +643,10 @@ void LevelState::draw() {
     m_vamp_charge->draw(projection_2D);
     m_uiPanel->draw(projection_2D);
     m_dialogue.draw(projection_2D);
+
+    for (auto& text : m_text) {
+        text.draw(projection_2D);
+    }
 
 
 

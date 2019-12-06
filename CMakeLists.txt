@@ -1,6 +1,19 @@
 cmake_minimum_required(VERSION 3.1)
 project(vape)
 
+# Get version
+file(READ version.txt versionFile)
+if (NOT versionFile)
+    message(FATAL_ERROR "version.txt missing, unable to determine version!")
+endif()
+string(STRIP "${versionFile}" TEST_VERSION)
+string(REPLACE "." ";" VERSION_LIST ${TEST_VERSION})
+list(GET VERSION_LIST 0 VERSION_MAJOR)
+list(GET VERSION_LIST 1 VERSION_MINOR)
+list(GET VERSION_LIST 2 VERSION_PATCH)
+
+message("version: ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+
 # Set c++11
 # https://stackoverflow.com/questions/10851247/how-to-activate-c-11-in-cmake
 if (POLICY CMP0025)
@@ -11,7 +24,10 @@ set (CMAKE_CXX_STANDARD 11)
 # nice hierarchichal structure in MSVC
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+if (MINGW)
+    set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static")
+endif()
 
 #Find OS
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -79,6 +95,9 @@ set(SOURCE_FILES
         src/Entities/Enemies/turtle.cpp src/Entities/Enemies/turtle.hpp
         src/Entities/Enemies/EnemyGenericShooter.cpp src/Entities/Enemies/EnemyGenericShooter.hpp
         src/Entities/Enemies/EnemyTargettedShooter.cpp src/Entities/Enemies/EnemyTargettedShooter.hpp
+        src/Entities/Enemies/EnemyExplosivePayload.cpp src/Entities/Enemies/EnemyExplosivePayload.hpp
+        src/Entities/Enemies/EnemySpeedster.cpp src/Entities/Enemies/EnemySpeedster.hpp
+        src/Entities/Enemies/PickupEnemy.cpp src/Entities/Enemies/PickupEnemy.hpp
 
         src/Entities/UI/Text.cpp src/Entities/UI/Text.hpp
         src/Entities/UI/PlayerHealth/Health.cpp src/Entities/UI/PlayerHealth/Health.hpp
@@ -112,13 +131,18 @@ set(SOURCE_FILES
         src/Entities/Bosses/Boss.hpp
         src/Entities/Bosses/Boss1.cpp src/Entities/Bosses/Boss1.hpp
         src/Entities/Bosses/Boss2.cpp src/Entities/Bosses/Boss2.hpp
+        src/Entities/Bosses/Boss3.cpp src/Entities/Bosses/Boss3.hpp
 
         src/Entities/Pickups/Pickup.hpp
-        src/Entities/Pickups/TestPickup.cpp src/Entities/Pickups/TestPickup.hpp
+        src/Entities/Pickups/MachineGunPickup.cpp src/Entities/Pickups/MachineGunPickup.hpp
+        src/Entities/Pickups/TriShotPickup.cpp src/Entities/Pickups/TriShotPickup.hpp
+
 
 
         src/Entities/Weapons/Weapon.hpp
         src/Entities/Weapons/BulletStraightShot.cpp src/Entities/Weapons/BulletStraightShot.hpp
+        src/Entities/Weapons/WeaponTriShot.cpp src/Entities/Weapons/WeaponTriShot.hpp
+        src/Entities/Weapons/WeaponMachineGun.cpp src/Entities/Weapons/WeaponMachineGun.hpp
 
 
         src/Components/MotionComponent.hpp
@@ -132,12 +156,13 @@ set(SOURCE_FILES
         src/Components/BoundaryComponent.hpp
         src/Components/EnemyComponent.hpp
         src/Components/CollisionComponent.hpp
-
+        src/Components/PlayerComponent.hpp
 
         src/Systems/EnemySpawnerSystem.cpp src/Systems/EnemySpawnerSystem.hpp
         src/Systems/MotionSystem.cpp src/Systems/MotionSystem.hpp
         src/Systems/CollisionSystem.cpp src/Systems/CollisionSystem.hpp
         src/Systems/ProjectileSystem.cpp src/Systems/ProjectileSystem.hpp
+        src/Systems/PickupSystem.cpp src/Systems/PickupSystem.hpp
 
         src/Levels/Level.hpp
         src/Levels/Waves.hpp
@@ -146,12 +171,13 @@ set(SOURCE_FILES
         src/Levels/Level1.hpp
         src/Levels/Level2.hpp
         src/Levels/Level2.hpp
+        src/Levels/Level3.hpp
 
         src/Utils/SaveData.cpp src/Utils/SaveData.hpp
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 
-        src/Components/PlayerComponent.hpp src/Entities/Bosses/Boss3.cpp src/Entities/Bosses/Boss3.hpp src/Levels/Level3.hpp)
+           )
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
@@ -163,6 +189,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC src/)
 
 # Added this so policy CMP0065 doesn't scream
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS 0)
+set_target_properties(${name} PROPERTIES
+        VERSION   "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
+        SOVERSION ${VERSION_MAJOR}
+        )
 
 
 # External header-only libraries in the ext/
@@ -287,4 +317,29 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES}
 # Needed to add this
 if(IS_OS_LINUX)
   target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS})
+endif()
+
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(OUTPUT_DIR ./releases)
+    file(MAKE_DIRECTORY ${OUTPUT_DIR})
+    set(OUTPUT_ZIP ${OUTPUT_DIR}/Vape.zip)
+    if (IS_OS_WINDOWS)
+        set(OUTPUT_ZIP ${OUTPUT_DIR}/Vape-Windows.zip)
+    elseif (IS_OS_MAC)
+        set(OUTPUT_ZIP ${OUTPUT_DIR}/Vape-Mac.zip)
+    elseif (IS_OS_WINDOWS)
+        set(OUTPUT_ZIP ${OUTPUT_DIR}/Vape-Linux.zip)
+    endif()
+
+    set(ZIP_FILES
+            bin
+            data
+            shaders
+            README.md
+            version.txt)
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E tar cf ${OUTPUT_ZIP} --format=zip -- ${ZIP_FILES}
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+            COMMENT "Packaging Release ${OUTPUT_ZIP} this may take a minute...")
 endif()

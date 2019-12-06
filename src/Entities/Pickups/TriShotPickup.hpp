@@ -1,14 +1,15 @@
 //
-// Created by Cody on 11/10/2019.
+// Created by Andy on 12/03/2019.
 //
 
-#ifndef VAPE_TESTPICKUP_HPP
-#define VAPE_TESTPICKUP_HPP
+#ifndef VAPE_TRISHOTPICKUP_HPP
+#define VAPE_TRISHOTPICKUP_HPP
 
 
 #include "Pickup.hpp"
 
-class TestPickup : Pickup {
+class TriShotPickup : public Pickup {
+	static Texture pickup_texture;
 public:
     bool init(vec2 position) override;
     void update(float ms) override;
@@ -17,9 +18,11 @@ public:
 
     vec2 get_position() const override;
     bool collides_with(const Player &player) override;
-    void applyEffect(LevelState& level) override;
+    void applyEffect(Player& player) override;
+	vec2 get_bounding_box() const override;
     bool isOffScreen(const vec2 &screen) override;
+private:
 };
 
 
-#endif //VAPE_TESTPICKUP_HPP
+#endif //VAPE_TRISHOTPICKUP_HPP

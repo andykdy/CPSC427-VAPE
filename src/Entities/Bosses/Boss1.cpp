@@ -20,6 +20,7 @@ namespace
     const size_t DIRECTION_COOLDOWN_MS = 800;
     const size_t BULLET_DAMAGE = 5;
     const size_t INIT_HEALTH = 100;
+    const size_t POINTS_VAL = 10000;
 }
 
 Texture Boss1::boss1_texture;
@@ -66,6 +67,7 @@ bool Boss1::init(vec2 screen) {
 
     health = INIT_HEALTH;
     m_is_alive = true;
+    points = POINTS_VAL;
 
     m_burst_count = 0;
     m_burst_cooldown = BURST_COOLDOWN_MS;

@@ -1,14 +1,14 @@
 //
-// Created by Cody on 11/20/2019.
+// Created by Tanha Kabir on 2019-12-03.
 //
 
-#ifndef VAPE_BULLETSTRAIGHTSHOT_HPP
-#define VAPE_BULLETSTRAIGHTSHOT_HPP
+#ifndef VAPE_WEAPONMACHINEGUN_HPP
+#define VAPE_WEAPONMACHINEGUN_HPP
 
-
+#include <SDL_mixer.h>
 #include "Weapon.hpp"
 
-class BulletStraightShot : public Weapon {
+class WeaponMachineGun: public Weapon {
 private:
     Mix_Chunk* m_bullet_sound;
     float m_bullet_cooldown;
@@ -22,5 +22,4 @@ public:
     void destroy() override;
 };
 
-
-#endif //VAPE_BULLETSTRAIGHTSHOT_HPP
+#endif //VAPE_WEAPONMACHINEGUN_HPP
