@@ -17,6 +17,7 @@ private:
 protected:
     Font* m_font;
     vec3 m_color;
+    float m_alpha;
 public:
     virtual bool init(Font* font);
     void clear();
@@ -30,6 +31,10 @@ public:
 
     void setColor(const vec3& color) {
         m_color = color;
+    }
+
+    void setAlpha(const float alpha) {
+        m_alpha = alpha;
     }
 
 };

@@ -12,6 +12,7 @@ bool Text::init(Font *font) {
     m_font = font;
     setText("");
     m_color = {1.f,1.f,1.f};
+    m_alpha = 1.f;
     return true;
 }
 
@@ -55,6 +56,7 @@ void Text::draw(const mat3 &projection) {
     // Getting uniform locations for glUniform* calls
     GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
     GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
+    GLint alpha_uloc = glGetUniformLocation(effect.program, "falpha");
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
     // Setting vertices and indices
@@ -78,6 +80,7 @@ void Text::draw(const mat3 &projection) {
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.out);
     float color[] = { m_color.x, m_color.y, m_color.z };
     glUniform3fv(color_uloc, 1, color);
+    glUniform1f(alpha_uloc, m_alpha);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
     // Drawing!

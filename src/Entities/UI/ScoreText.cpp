@@ -19,9 +19,8 @@ bool ScoreText::init(Font *font) {
     setText("");
     m_color = {1.f,1.f,1.f};
     m_life = TEXT_LIFE;
-
+    m_alpha = 0.85f;
     return true;
-
 }
 
 
