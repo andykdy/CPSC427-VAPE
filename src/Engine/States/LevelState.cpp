@@ -112,7 +112,7 @@ void LevelState::init() {
     m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
     m_vamp_charge->init({screen.x-21, screen.y-50});
     m_score_ui = &GameEngine::getInstance().getEntityManager()->addEntity<Score>();
-    m_score_ui->init({100,100}, m_font_ranger);
+    m_score_ui->init({100,100}, &m_font_ranger);
     m_vamp_particle_emitter.init();
     m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
     m_uiPanel->init(screen, screen.y, screen.x);
@@ -634,6 +634,7 @@ void LevelState::draw() {
     m_uiPanelBackground->draw(projection_2D);
     m_health->draw(projection_2D);
     m_vamp_charge->draw(projection_2D);
+    m_score_ui->draw(projection_2D);
     m_uiPanel->draw(projection_2D);
     m_dialogue.draw(projection_2D);
 
