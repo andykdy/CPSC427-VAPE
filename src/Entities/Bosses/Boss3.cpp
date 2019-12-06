@@ -18,8 +18,9 @@ namespace
 	const size_t DAMAGE_EFFECT_TIME = 100;
 	const size_t DIRECTION_COOLDOWN_MS = 800;
 	const size_t BULLET_DAMAGE = 5;
-	const size_t INIT_HEALTH = 200;
+	const size_t INIT_HEALTH = 100;
 	const size_t POINTS_VAL = 5000;
+	const size_t ROAM_VELOCITY = 120;
 }
 
 
@@ -58,7 +59,7 @@ bool Boss3::init(vec2 screen) {
 	motion->position = { screen.x/2, 200.f };
 	motion->radians = 3.14;
 	motion->velocity = { 0.f, 0.f };
-
+	m_screen = screen;
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
@@ -78,6 +79,10 @@ void Boss3::destroy() {
 	for (auto bullet : projectiles)
 		bullet->destroy();
 	projectiles.clear();
+
+	for (auto clone : clones)
+		clone->destroy();
+	clones.clear();
 
 	auto* effect = getComponent<EffectComponent>();
 	auto* sprite = getComponent<SpriteComponent>();
@@ -101,7 +106,7 @@ void Boss3::update(float ms) {
 		bullet->update(ms);
 
 	// Simple health based states, only two states for this first boss
-	if (health > 195) state1Update(ms);
+	if (health > 95) state1Update(ms);
 	else if (health > 0) state2Update(ms);
 	else {
 		// death?
@@ -109,20 +114,25 @@ void Boss3::update(float ms) {
 }
 
 void Boss3::state1Update(float ms) {
-	if (!m_is_cloned) {
-		spawnClones();
-		m_is_cloned = true;
-	}
+	
 
 }
 
 void Boss3::state2Update(float ms) {
 	auto* motion = getComponent<MotionComponent>();
-
-	int w, h;
-	glfwGetFramebufferSize(GameEngine::getInstance().getM_window(), &w, &h);
-	vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
-
+	if (!m_is_cloned) {
+		spawnClones();
+		m_is_cloned = true;
+		motion->velocity.x = ms * ROAM_VELOCITY/ 10.f;
+		motion->radians = 3 * M_PI / 2;
+	}
+	if (motion->position.x < 100.f) {
+		motion->velocity.x = ms * ROAM_VELOCITY/10.f;
+		motion->radians = 3 * M_PI / 2;
+	} else if (motion->position.x > m_screen.x - 100.f) {
+		motion->velocity.x = -1.f * ms * ROAM_VELOCITY/10.f;
+		motion->radians = M_PI / 2;
+	}
 }
 
 void Boss3::spawnClones() {

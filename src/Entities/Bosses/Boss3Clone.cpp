@@ -85,6 +85,7 @@ void Boss3Clone::destroy() {
 
 void Boss3Clone::update(float ms) {
 	auto* motion = getComponent<MotionComponent>();
+	float step = ms * 90.f / 10000.f;
 	if (m_curr_state == CloneState::moving) {
 		vec2 displacement = move_to(ms, target_pos,120.f);
 		if (displacement.x < 1.f && displacement.y < 1.f) {
@@ -112,6 +113,12 @@ void Boss3Clone::update(float ms) {
 					spawnBullet();
 				}
 			}
+			float dx = player_pos.x - motion->position.x;
+			motion->velocity.x = dx / 3.f;
+			if (motion->position.y < 300.f)
+				motion->velocity.y = 90.f;
+			else
+				motion->velocity.y = 0.f;
 		}
 		else {
 			move_to(ms, player_pos,90.f);	
@@ -120,6 +127,8 @@ void Boss3Clone::update(float ms) {
 	else if (m_curr_state == CloneState::stunned) {
 		if (m_stun_duration < 0.f) {
 			m_curr_state = m_prev_state;
+			motion->velocity = { 0.f,0.f };
+			motion->radians = M_PI;
 		} else {
 			motion->velocity = { 0.f,-110.f };
 			motion->radians += 0.1f;
@@ -161,6 +170,30 @@ vec2 Boss3Clone::get_bounding_box() const {
     // Returns the local bounding coordinates scaled by the current size of the turtle
     // fabs is to avoid negative scale due to the facing direction.
     return { std::fabs(physics->scale.x) * texture.width, std::fabs(physics->scale.y) * texture.height };
+}
+bool Boss3Clone::collidesWith(Player& player) {
+	auto* motion = getComponent<MotionComponent>();
+
+	vec2 playerbox = player.get_bounding_box();
+
+	bool collides = checkCollision(player.get_position(), playerbox);
+	if (collides)
+		stun();
+	return collides;
+}
+
+bool Boss3Clone::checkCollision(vec2 pos, vec2 box) const {
+	auto* motion = getComponent<MotionComponent>();
+	auto* physics = getComponent<PhysicsComponent>();
+
+	vec2 bbox = this->get_bounding_box();
+
+	float dx = motion->position.x - pos.x;
+	float dy = motion->position.y - pos.y;
+	float d_sq = dx * dx + dy * dy;
+	float dr = (std::max(bbox.x, bbox.y) * 0.4f) + (std::max(box.x, box.y) * 0.4f);
+	float r_sq = dr * dr;
+	return d_sq < r_sq;
 }
 
 void Boss3Clone::set_velocity(vec2 velocity) {

@@ -3,8 +3,10 @@
 
 #include <Engine/ECS/Entity.hpp>
 #include <Entities/Projectiles and Damaging/Projectile.hpp>
+#include <Entities/Player.hpp>
 
 class Projectile;
+class Player;
 
 class Clone : public ECS::Entity {
 public:
@@ -13,6 +15,8 @@ public:
     virtual void draw(const mat3& projection) {};
     virtual void destroy() {};
     virtual void collideWith(const char* typeName, const Entity& other) {};
+	virtual bool collidesWith(Player& player) = 0;
+	virtual bool checkCollision(vec2 pos, vec2 box) const = 0;
     virtual void set_position(vec2 pos) {};
     virtual void set_velocity(vec2 vel) {};
     virtual vec2 get_position()const { return  { 0.f,0.f }; };

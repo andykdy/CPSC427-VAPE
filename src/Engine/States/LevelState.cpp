@@ -495,11 +495,24 @@ void LevelState::update(float ms) {
             m_space.set_boss_dead();
         } else if (m_boss->is_alive()) {
             // Player/Boss collision
-            if (m_player->is_alive() && m_boss->collidesWith(*m_player) && m_player->get_iframes() <= 0.f) {
-                m_player->set_iframes(500.f);
-                lose_health(DAMAGE_COLLIDE);
-                Mix_PlayChannel(-1, m_player_explosion, 0);
+            if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
+				if (m_boss->collidesWith(*m_player)) {
+					m_player->set_iframes(500.f);
+					lose_health(DAMAGE_COLLIDE);
+					Mix_PlayChannel(-1, m_player_explosion, 0);
+				}
                 // TODO Knockback?
+				if (m_boss->hasClones()) {
+					auto& clones = m_boss->clones;
+					auto clone_it = clones.begin();
+					while (clone_it != clones.end()) {
+						if ((*clone_it)->collidesWith(*m_player)) {
+							m_player->set_iframes(500.f);
+							lose_health(DAMAGE_COLLIDE);
+						}
+						clone_it++;
+					}
+				}
             }
 
             // Vamp/Boss collision

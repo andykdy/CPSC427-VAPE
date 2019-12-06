@@ -49,7 +49,7 @@ public:
 private:
 	float m_damage_effect_cooldown;
 	bool m_is_cloned;
-
+	vec2 m_screen;
 	void state1Update(float ms);
 	void state2Update(float ms);
 	void spawnClones();

@@ -38,6 +38,8 @@ public:
 
     // Returns the turtle' bounding box for collision detection, called by collides_with()
     vec2 get_bounding_box() const override;
+	bool collidesWith(Player& player) override; 
+	bool checkCollision(vec2 pos, vec2 box) const override;
 
     void set_velocity(vec2 velocity) override;
 
