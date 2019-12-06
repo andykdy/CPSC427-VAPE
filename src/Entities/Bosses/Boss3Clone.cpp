@@ -1,5 +1,5 @@
 //
-// Created by Tanha Kabir on 2019-11-11.
+// Created by Andy Kim on 12/05/2019.
 //
 
 #include "Boss3Clone.hpp"
@@ -17,16 +17,16 @@
 
 Texture Boss3Clone::texture;
 using namespace std;
-enum CloneState {init, moving, zooming, shooting};
 
 namespace
 {
     const size_t BURST_COOLDOWN_MS = 1000;
     const size_t BULLET_COOLDOWN_MS = 200;
     const size_t BULLET_DAMAGE = 5;
+	const size_t STUN_DURATION_MS = 1500;
 }
 
-bool Boss3Clone::init(vec2 pos) {
+bool Boss3Clone::init(vec2 pos, vec2 disp) {
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
     auto* physics = addComponent<PhysicsComponent>();
@@ -58,6 +58,9 @@ bool Boss3Clone::init(vec2 pos) {
     motion->radians = M_PI;
     motion->velocity = {0.f, 0.f};
 	motion->position = pos;
+	m_curr_state = CloneState::moving;
+	m_prev_state = CloneState::moving;
+	target_pos = disp;
 
     // Setting initial values, scale is negative to make it face the opposite way
     // 1.0 would be as big as the original texture.
@@ -66,6 +69,7 @@ bool Boss3Clone::init(vec2 pos) {
     m_burst_count = 0;
     m_burst_cooldown = BURST_COOLDOWN_MS;
     m_bullet_cooldown = 0;
+	m_stun_duration = 0;
 
     return true;
 }
@@ -80,21 +84,48 @@ void Boss3Clone::destroy() {
 }
 
 void Boss3Clone::update(float ms) {
-    // shoot
-    if (m_burst_cooldown > 0) {
-        m_burst_cooldown -= ms;
-    } else {
-        if (m_burst_count >= 3) {
-            m_burst_count = 0;
-            m_burst_cooldown = BURST_COOLDOWN_MS;
-        } else if (m_bullet_cooldown > 0) {
-            m_bullet_cooldown -= ms;
-        } else {
-            ++m_burst_count;
-            m_bullet_cooldown = BULLET_COOLDOWN_MS;
-            spawnBullet();
-        }
-    }
+	auto* motion = getComponent<MotionComponent>();
+	if (m_curr_state == CloneState::moving) {
+		vec2 displacement = move_to(ms, target_pos,120.f);
+		if (displacement.x < 1.f && displacement.y < 1.f) {
+			m_curr_state = CloneState::attack;
+			motion->velocity = { 0.f,0.f };
+			motion->radians = M_PI;
+		}
+	}
+	else if (m_curr_state == CloneState::attack) {
+		if (m_is_lead) {
+			if (m_burst_cooldown > 0) {
+				m_burst_cooldown -= ms;
+			}
+			else {
+				if (m_burst_count >= 3) {
+					m_burst_count = 0;
+					m_burst_cooldown = BURST_COOLDOWN_MS;
+				}
+				else if (m_bullet_cooldown > 0) {
+					m_bullet_cooldown -= ms;
+				}
+				else {
+					++m_burst_count;
+					m_bullet_cooldown = BULLET_COOLDOWN_MS;
+					spawnBullet();
+				}
+			}
+		}
+		else {
+			move_to(ms, player_pos,90.f);	
+		}
+	}
+	else if (m_curr_state == CloneState::stunned) {
+		if (m_stun_duration < 0.f) {
+			m_curr_state = m_prev_state;
+		} else {
+			motion->velocity = { 0.f,-110.f };
+			motion->radians += 0.1f;
+			m_stun_duration -= ms;
+		}
+	}
 }
 
 void Boss3Clone::draw(const mat3 &projection) {
@@ -112,6 +143,7 @@ void Boss3Clone::draw(const mat3 &projection) {
 
     sprite->draw(projection, transform->out, effect->program);
 }
+
 
 vec2 Boss3Clone::get_position() const {
     auto* motion = getComponent<MotionComponent>();
@@ -142,8 +174,35 @@ void Boss3Clone::spawnBullet() {
     auto* motion = getComponent<MotionComponent>();
     Bullet* bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
     if (bullet->init(motion->position, motion->radians + 3.14f, true, BULLET_DAMAGE)) {
+		bullet->set_speed_slow();
         projectiles.hostile_projectiles.emplace_back(bullet);
     } else {
         throw std::runtime_error("Failed to spawn bullet");
     }
+}
+
+vec2 Boss3Clone::move_to(float ms, vec2 target, float speed) {
+	auto* motion = getComponent<MotionComponent>();
+
+
+	float dy = target.y - motion->position.y;
+	float dx = target.x - motion->position.x;
+
+	float angle = atan2(dx, dy);
+	motion->radians = angle - M_PI;
+
+	motion->velocity = { 180.f * sin(angle), 180.f * cos(angle) };
+	return { dx,dy };
+}
+
+void Boss3Clone::stun() {
+	if (m_curr_state != CloneState::stunned) {
+		m_prev_state = m_curr_state;
+		m_curr_state = CloneState::stunned;
+		m_stun_duration = STUN_DURATION_MS;
+	}
+}
+
+void Boss3Clone::set_lead() {
+	m_is_lead = true;
 }

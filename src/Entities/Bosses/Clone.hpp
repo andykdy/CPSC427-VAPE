@@ -8,7 +8,7 @@ class Projectile;
 
 class Clone : public ECS::Entity {
 public:
-    virtual bool init(vec2 pos) { return false; };
+    virtual bool init(vec2 pos, vec2 disp) { return false; };
     virtual void update(float ms) {};
     virtual void draw(const mat3& projection) {};
     virtual void destroy() {};
@@ -20,9 +20,11 @@ public:
     inline void add_vamp_timer(float ms) { vamp_timer += ms; };
     inline void reset_vamp_timer() { vamp_timer = 0; };
     inline float get_vamp_timer() { return vamp_timer; };
+	virtual void stun() {};
 
     vec2 screen_size = {0, 0};
     float vamp_timer = 0;
+	vec2 player_pos = { 0.f,0.f };
 };
 
 #endif //VAPE_CLONE_HPP

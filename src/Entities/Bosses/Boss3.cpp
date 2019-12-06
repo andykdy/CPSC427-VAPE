@@ -89,8 +89,10 @@ void Boss3::destroy() {
 
 void Boss3::update(float ms) {
 	m_healthbar->setHealth(health);
-	for (auto clone : clones)
+	for (auto clone : clones) {
 		clone->update(ms);
+		clone->player_pos = player_position;
+	}
 	if (m_damage_effect_cooldown > 0)
 		m_damage_effect_cooldown -= ms;
 
@@ -126,15 +128,16 @@ void Boss3::state2Update(float ms) {
 void Boss3::spawnClones() {
 	auto* motion = getComponent<MotionComponent>();
 	vec2 master_pos = motion->position;
+	
+	// One clone is leader, will do different things than the other
 	Boss3Clone* clone1 = &GameEngine::getInstance().getEntityManager()->addEntity<Boss3Clone>();
-	clone1->init({ master_pos.x, master_pos.y - 100.f });
+	clone1->init(master_pos, { master_pos.x - 100.f, master_pos.y + 100.f });
+	clone1->set_lead();
+
 	Boss3Clone* clone2 = &GameEngine::getInstance().getEntityManager()->addEntity<Boss3Clone>();
-	clone2->init({ master_pos.x - 100.f, master_pos.y + 100.f });
-	Boss3Clone* clone3 = &GameEngine::getInstance().getEntityManager()->addEntity<Boss3Clone>();
-	clone3->init({ master_pos.x + 100.f, master_pos.y + 100.f });
+	clone2->init(master_pos, { master_pos.x + 100.f, master_pos.y + 100.f });
 	clones.emplace_back(clone1);
 	clones.emplace_back(clone2);
-	clones.emplace_back(clone3);
 }
 
 void Boss3::draw(const mat3 &projection) {

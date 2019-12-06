@@ -315,11 +315,24 @@ void LevelState::update(float ms) {
                 ++enemy_it;
             }
         }
-        if (m_boss_mode && m_boss->is_alive() && (*bullet_it)->collides_with(*m_boss)) {
-            eraseBullet = true;
-            // TODO sound
-            add_vamp_charge();
-            m_boss->addDamage(2);
+        if (m_boss_mode && m_boss->is_alive()) {
+			if ((*bullet_it)->collides_with(*m_boss)) {
+				eraseBullet = true;
+				// TODO sound
+				add_vamp_charge();
+				m_boss->addDamage(2);
+			} 
+			if (m_boss->hasClones()) {
+				auto& clones = m_boss->clones;
+				auto clone_it = clones.begin();
+				while (clone_it != clones.end()) {
+					if ((*bullet_it)->collides_with(**clone_it)) {
+						(*clone_it)->stun();
+						eraseBullet = true;
+					} 
+					clone_it++;
+				}
+			}
         }
         if (eraseBullet) {
             (*bullet_it)->destroy();
@@ -471,6 +484,7 @@ void LevelState::update(float ms) {
     // Boss specific code
     if (m_boss_mode) {
         m_boss->update(ms);
+		m_boss->player_position = m_player->get_position();
 
         // If boss drops below 0 health, set him as killed, award points, start timer
         if (m_boss->is_alive() && m_boss->getHealth() <= 0) {

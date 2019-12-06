@@ -60,6 +60,8 @@ public:
 
     std::vector<Projectile*> projectiles;
 	std::vector<Clone*> clones;
+	inline bool hasClones() { return !clones.empty(); };
+	vec2 player_position = { 0.f,0.f };
 
     inline int getHealth() const { return health; };
 

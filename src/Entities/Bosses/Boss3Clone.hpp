@@ -1,12 +1,15 @@
 //
-// Created by Tanha Kabir on 2019-11-11.
+// Created by Andy Kim on 12/05/2019.
 //
 
-#ifndef VAPE_ENEMYGENERICSHOOTER_HPP
-#define VAPE_ENEMYGENERICSHOOTER_HPP
+#ifndef VAPE_BOSS3CLONE_HPP
+#define VAPE_BOSS3CLONE_HPP
 
 #include <Entities/Bosses/Clone.hpp>
 #include "common.hpp"
+namespace {
+	enum CloneState { moving, stunned, attack };
+}
 
 // Player enemy
 class Boss3Clone : public Clone{
@@ -14,7 +17,7 @@ class Boss3Clone : public Clone{
     static Texture texture;
 public:
 // Creates all the associated render resources and default transform
-    bool init(vec2 pos) override;
+    bool init(vec2 pos, vec2 disp) override;
 
     // Releases all the associated resources
     void destroy() override;
@@ -38,12 +41,23 @@ public:
 
     void set_velocity(vec2 velocity) override;
 
+	void set_lead();
+	vec2 move_to(float ms, vec2 target, float speed);
+	void stun() override;
 private:
     float m_bullet_cooldown;
     unsigned int m_burst_count;
     float m_burst_cooldown;
+	float m_stun_duration;
+	vec2 m_master_pos;
+	vec2 target_pos;
+	CloneState m_curr_state;
+	CloneState m_prev_state;
+	float m_speed;
+	bool m_is_lead;
+
 
     void spawnBullet();
 };
 
-#endif //VAPE_ENEMYGENERICSHOOTER_HPP
+#endif //VAPE_BOSS3CLONE_HPP
