@@ -7,9 +7,9 @@
 
 #include <Entities/Bosses/Clone.hpp>
 #include "common.hpp"
-namespace {
-	enum CloneState { moving, stunned, attack };
-}
+
+enum CloneState { moving, stunned, attack };
+
 
 // Player enemy
 class Boss3Clone : public Clone{

@@ -11,6 +11,7 @@
 #include <vector>
 #include <common.hpp>
 #include "Boss.hpp"
+enum Boss3State { aiming, charging, cooldown };
 
 class Boss3 : public Boss {
     static Texture boss3_texture;
@@ -50,9 +51,15 @@ private:
 	float m_damage_effect_cooldown;
 	bool m_is_cloned;
 	vec2 m_screen;
+	float m_charge_timer;
+	float m_cooldown_timer;
+	vec2 m_target;
+	Boss3State m_curr_state;
+
 	void state1Update(float ms);
 	void state2Update(float ms);
 	void spawnClones();
+	bool nearBounds();
 };
 
 

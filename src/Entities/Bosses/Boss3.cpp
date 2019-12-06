@@ -21,6 +21,9 @@ namespace
 	const size_t INIT_HEALTH = 100;
 	const size_t POINTS_VAL = 5000;
 	const size_t ROAM_VELOCITY = 120;
+	const size_t COOLDOWN_TIME_MS = 1000;
+	const size_t CHARGE_TIME_MS = 4000;
+	const size_t SCREEN_BUFFER = 100;
 }
 
 
@@ -69,6 +72,10 @@ bool Boss3::init(vec2 screen) {
 	m_is_alive = true;
 	m_is_cloned = false;
 	points = POINTS_VAL;
+	m_cooldown_timer = COOLDOWN_TIME_MS;
+	m_charge_timer = CHARGE_TIME_MS;
+	m_target = { 0.f,0.f };
+	m_curr_state = Boss3State::aiming;
 
 	return true;
 }
@@ -93,6 +100,7 @@ void Boss3::destroy() {
 }
 
 void Boss3::update(float ms) {
+	auto* motion = getComponent<MotionComponent>();
 	m_healthbar->setHealth(health);
 	for (auto clone : clones) {
 		clone->update(ms);
@@ -109,29 +117,80 @@ void Boss3::update(float ms) {
 	if (health > 95) state1Update(ms);
 	else if (health > 0) state2Update(ms);
 	else {
-		// death?
+		motion->velocity = { 0.f,0.f };
+		auto clone_it = clones.begin();
+		while (clone_it != clones.end()) {
+			(*clone_it)->set_velocity({ 0.f,0.f });
+			clone_it++;
+		}
 	}
 }
 
 void Boss3::state1Update(float ms) {
-	
+	auto* motion = getComponent<MotionComponent>();
 
+	float dy = player_position.y - motion->position.y;
+	float dx = player_position.x - motion->position.x;
+	if (m_curr_state == Boss3State::aiming) {
+		if (m_cooldown_timer > 0) {
+			float angle = atan2(dx, dy);
+			motion->radians = angle - M_PI;
+			m_cooldown_timer -= ms;
+		}
+		else {
+			m_cooldown_timer = COOLDOWN_TIME_MS;
+			m_target = { dx,dy };
+			m_curr_state = Boss3State::charging;
+		}
+	}
+	else if (m_curr_state == Boss3State::charging) {
+
+		if (m_charge_timer < 0 || nearBounds()) {
+			m_charge_timer = CHARGE_TIME_MS;
+			motion->velocity = { 0.f,0.f };
+			m_curr_state = Boss3State::cooldown;
+		} else  {
+			motion->velocity.x = m_target.x / 1.5f;
+			motion->velocity.y = m_target.y / 1.5f;
+			m_charge_timer -= ms;
+		}
+	}
+	else if (m_curr_state == Boss3State::cooldown) {
+		motion->velocity = { (m_screen.x/2.f - motion->position.x)/15.f, (m_screen.x / 2.f - motion->position.y)/15.f };
+		if (m_cooldown_timer > 0) {
+			m_cooldown_timer -= ms;
+		}
+		else {
+			m_cooldown_timer = COOLDOWN_TIME_MS;
+			m_curr_state = Boss3State::aiming;
+		}
+	}
 }
 
 void Boss3::state2Update(float ms) {
 	auto* motion = getComponent<MotionComponent>();
-	if (!m_is_cloned) {
-		spawnClones();
-		m_is_cloned = true;
-		motion->velocity.x = ms * ROAM_VELOCITY/ 10.f;
-		motion->radians = 3 * M_PI / 2;
+	if (motion->position.y > 200.f) {
+		motion->velocity.y = ms * -5.f;
 	}
-	if (motion->position.x < 100.f) {
-		motion->velocity.x = ms * ROAM_VELOCITY/10.f;
-		motion->radians = 3 * M_PI / 2;
-	} else if (motion->position.x > m_screen.x - 100.f) {
-		motion->velocity.x = -1.f * ms * ROAM_VELOCITY/10.f;
-		motion->radians = M_PI / 2;
+	else {
+		if (!m_is_cloned) {
+			spawnClones();
+			m_is_cloned = true;
+			motion->velocity.x = ms * ROAM_VELOCITY / 10.f;
+			motion->velocity.y = 0.f;
+			motion->radians = 3 * M_PI / 2;
+
+		}
+		else {
+			if (motion->position.x < 100.f) {
+				motion->velocity.x = ms * ROAM_VELOCITY / 10.f;
+				motion->radians = 3 * M_PI / 2;
+			}
+			else if (motion->position.x > m_screen.x - 100.f) {
+				motion->velocity.x = -1.f * ms * ROAM_VELOCITY / 10.f;
+				motion->radians = M_PI / 2;
+			}
+		}
 	}
 }
 
@@ -229,9 +288,10 @@ bool Boss3::collidesWith(Player &player) {
 		float player_mass = player_r * 100;
 
 		vec2 player_vel = player.get_velocity();
+		vec2 boss_vel = motion->velocity;
 		
 		float vbp1 = 2 * boss_mass / (player_mass + boss_mass);
-		float vbp2 = dot(player_vel, sub(player_pos, motion->position)) / (float)pow(len(sub(player_pos, motion->position)), 2);
+		float vbp2 = dot(sub(player_vel, boss_vel), sub(player_pos, motion->position)) / (float)pow(len(sub(player_pos, motion->position)), 2);
 		vec2 vb = sub(player_vel, mul(sub(player_pos, motion->position), vbp1 * vbp2));
 
 		player.set_velocity(vb);
@@ -252,4 +312,10 @@ bool Boss3::checkCollision(vec2 pos, vec2 box) const {
 	float dr = (std::max(bbox.x, bbox.y) * 0.4f) + (std::max(box.x, box.y) * 0.4f);
 	float r_sq = dr * dr;
 	return d_sq < r_sq;
+}
+
+bool Boss3::nearBounds() {
+	auto* motion = getComponent<MotionComponent>();
+	return (motion->position.x < SCREEN_BUFFER) || (motion->position.y < SCREEN_BUFFER) ||
+		(motion->position.x > m_screen.x - SCREEN_BUFFER) || (motion->position.y > m_screen.y - SCREEN_BUFFER);
 }
