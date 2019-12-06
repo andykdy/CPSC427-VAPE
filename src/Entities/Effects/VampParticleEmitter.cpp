@@ -82,7 +82,7 @@ void VampParticleEmitter::destroy()
     m_particles.clear();
 }
 
-void VampParticleEmitter::update(float ms, vec2 player_position)
+void VampParticleEmitter::update(float ms, Player* player)
 {
     auto particle_it = m_particles.begin();
     while (particle_it != m_particles.end())
@@ -91,7 +91,7 @@ void VampParticleEmitter::update(float ms, vec2 player_position)
         float step = ms / 1000;
 
         if (particle_it->life > 400.f + m_dist(m_rng) * 150.f) {
-            float rads = atan2((player_position.y-particle_it->position.y), (player_position.x-particle_it->position.x));
+            float rads = atan2((player->get_position().y-particle_it->position.y), (player->get_position().x-particle_it->position.x));
 
             vec2 newVel;
             newVel.x = 100 * particle_it->life / 50 * cos(rads);
@@ -99,8 +99,8 @@ void VampParticleEmitter::update(float ms, vec2 player_position)
             particle_it->velocity = newVel;
 
             // check to see if overlapping with player position
-            float x_diff = abs(particle_it->position.x - player_position.x);
-            float y_diff = abs(particle_it->position.y - player_position.y);
+            float x_diff = abs(particle_it->position.x - player->get_position().x);
+            float y_diff = abs(particle_it->position.y - player->get_position().y);
 
             if (x_diff <= 50.f && y_diff <= 50.f) {
                 particle_it = m_particles.erase(particle_it);

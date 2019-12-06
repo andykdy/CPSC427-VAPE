@@ -6,6 +6,7 @@
 #include <algorithm>
 #include "Vamp.hpp"
 #include <Engine/ECS/Entity.hpp>
+#include <Systems/PickupSystem.hpp>
 
 Texture Vamp::vamp_texture;
 
@@ -22,29 +23,13 @@ bool Vamp::init(vec2 position) {
     }
 
     // The position corresponds to the center of the texture
-    float wr = vamp_texture.width * 0.35f;
-    float hr = vamp_texture.height * 0.35f;
-
-    TexturedVertex vertices[4];
-    vertices[0].position = { -wr, +hr, -0.05f };
-    vertices[0].texcoord = { 0.f, 1.f };
-    vertices[1].position = { +wr, +hr, -0.05f };
-    vertices[1].texcoord = { 1.f, 1.f };
-    vertices[2].position = { +wr, -hr, -0.05f };
-    vertices[2].texcoord = { 1.f, 0.f };
-    vertices[3].position = { -wr, -hr, -0.05f };
-    vertices[3].texcoord = { 0.f, 0.f };
+    set_size(1);
 
     // counterclockwise as it's the default opengl front winding direction
-    uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
+    uint16_t indices[] = {0, 3, 1, 1, 3, 2};
 
     // Clearing errors
     gl_flush_errors();
-
-    // Vertex Buffer creation
-    glGenBuffers(1, &mesh.vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
 
     // Index Buffer creation
     glGenBuffers(1, &mesh.ibo);
@@ -59,9 +44,6 @@ bool Vamp::init(vec2 position) {
     // Loading shaders
     if (!effect.load_from_file(shader_path("vamp.vs.glsl"), shader_path("vamp.fs.glsl")))
         return false;
-    
-    m_scale.x = 0.6f;
-    m_scale.y = 0.6f;
 
     motion.radians = 3.14f;
     motion.speed = 360.f;
@@ -70,6 +52,46 @@ bool Vamp::init(vec2 position) {
     m_position.y = position.y;
 
     return true;
+}
+
+void Vamp::set_size(int mode) {
+    TexturedVertex vertices[4];
+    if (mode == 1) {
+        float wr = vamp_texture.width * 0.35f;
+        float hr = vamp_texture.height * 0.35f;
+
+        vertices[0].position = {-wr, +hr, -0.05f};
+        vertices[0].texcoord = {0.f, 1.f};
+        vertices[1].position = {+wr, +hr, -0.05f};
+        vertices[1].texcoord = {1.f, 1.f};
+        vertices[2].position = {+wr, -hr, -0.05f};
+        vertices[2].texcoord = {1.f, 0.f};
+        vertices[3].position = {-wr, -hr, -0.05f};
+        vertices[3].texcoord = {0.f, 0.f};
+
+        m_scale.x = 0.6f;
+        m_scale.y = 0.6f;
+    } else {
+        float mult = 1.05f;
+        float wr = vamp_texture.width * 0.35f * mult;
+        float hr = vamp_texture.height * 0.35f * mult;
+
+        vertices[0].position = {-wr, +hr, -0.05f};
+        vertices[0].texcoord = {0.f, 1.f};
+        vertices[1].position = {+wr, +hr, -0.05f};
+        vertices[1].texcoord = {1.f, 1.f};
+        vertices[2].position = {+wr, -hr, -0.05f};
+        vertices[2].texcoord = {1.f, 0.f};
+        vertices[3].position = {-wr, -hr, -0.05f};
+        vertices[3].texcoord = {0.f, 0.f};
+
+        m_scale.x = 0.6f * mult * 2.f;
+        m_scale.y = 0.6f * mult * 2.f;
+    }
+    // Vertex Buffer creation
+    glGenBuffers(1, &mesh.vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
 }
 
 void Vamp::destroy() {
@@ -82,11 +104,17 @@ void Vamp::destroy() {
     glDeleteShader(effect.program);
 }
 
-void Vamp::update(float ms, vec2 player_position) {
+void Vamp::update(float ms, Player *player) {
     float step = motion.speed * (ms / 1000);
-    m_position.x = player_position.x;
-    m_position.y = player_position.y;
+    m_position.x = player->get_position().x;
+    m_position.y = player->get_position().y;
     motion.radians -= step * 0.015;
+    if (player->get_vamp_expand()) {
+        set_size(2);
+        player->set_vamp_expand(false);
+    } else {
+        set_size(1);
+    }
 }
 
 void Vamp::draw(const mat3 &projection) {

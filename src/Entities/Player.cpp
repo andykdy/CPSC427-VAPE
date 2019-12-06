@@ -74,6 +74,7 @@ bool Player::init(vec2 screen, int hp)
 
 
 	m_light_up_countdown_ms = -1.f;
+	m_init_health = hp;
 	health->m_health = hp;
 	m_iframe = 0.f;
 
@@ -233,6 +234,13 @@ void Player::gain_health(float amount)
 	getComponent<HealthComponent>()->gain_health(amount);
 }
 
+void Player::reset_health()
+{
+    int amount = m_init_health - get_health();
+    gain_health(amount);
+
+}
+
 vec2 Player::get_bounding_box() const {
     auto* physics = getComponent<PhysicsComponent>();
 
@@ -284,3 +292,10 @@ void Player::set_position(vec2 pos) {
 	motion->position = pos;
 }
 
+void Player::set_vamp_expand(bool ex) {
+    m_vamp_expand = ex;
+}
+
+bool Player::get_vamp_expand() {
+    return m_vamp_expand;
+}

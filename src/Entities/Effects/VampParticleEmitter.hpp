@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <random>
+#include <Entities/Player.hpp>
 
 #include "common.hpp"
 
@@ -28,7 +29,7 @@ public:
 
     // Updates all vamp particles
     // ms represents the number of milliseconds elapsed from the previous update() call
-    void update(float ms, vec2 player_position);
+    void update(float ms, Player* player);
 
     // Renders the particles
     // projection is the 2D orthographic projection matrix

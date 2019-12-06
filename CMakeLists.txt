@@ -177,7 +177,7 @@ set(SOURCE_FILES
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 
-           )
+        src/Entities/PickUps/HealthPickup.cpp src/Entities/PickUps/HealthPickup.hpp src/Entities/PickUps/VampExpandPickup.cpp src/Entities/PickUps/VampExpandPickup.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

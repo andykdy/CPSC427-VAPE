@@ -385,7 +385,7 @@ void LevelState::update(float ms) {
     }
 
 
-    m_vamp_particle_emitter.update(ms, m_player->get_position());
+    m_vamp_particle_emitter.update(ms, m_player);
     m_explosion.update(ms);
 
 
@@ -459,7 +459,7 @@ void LevelState::update(float ms) {
             m_vamp_mode = false;
             m_vamp.destroy();
         } else {
-            m_vamp.update(ms, m_player->get_position());
+            m_vamp.update(ms, m_player);
             m_vamp_mode_timer += ms;
             if (m_vamp_mode_timer >= VAMP_TIME_PER_POINT) {
                 m_vamp_mode_charge -= 1;
