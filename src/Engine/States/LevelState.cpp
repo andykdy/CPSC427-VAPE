@@ -38,7 +38,7 @@ namespace
     const size_t MAX_VAMP_CHARGE = 15;
     const size_t VAMP_ACTIVATION_COST = 0;
     const float VAMP_TIME_SLOWDOWN = 0.5f;
-    const float BOSS_EXPLOSION_COOLDOWN = 500;
+    const float BOSS_EXPLOSION_COOLDOWN = 400;
 }
 
 
@@ -484,7 +484,7 @@ void LevelState::update(float ms) {
             // m_points += 5000;
             m_boss->kill();
             m_space.set_boss_dead();
-            m_explosion.spawnBossExplosion((*m_boss).get_position());
+            m_explosion.spawnBossExplosion((*m_boss).get_position(), (*m_boss).get_bounding_box());
         } else if (m_boss->is_alive()) {
             // Player/Boss collision
             if (m_player->is_alive() && m_boss->collidesWith(*m_player) && m_player->get_iframes() <= 0.f) {
@@ -546,7 +546,8 @@ void LevelState::update(float ms) {
         } else if (m_boss->getHealth() <= 0){
             if (m_boss_explosion_cooldown <= 0) {
                 m_boss_explosion_cooldown = BOSS_EXPLOSION_COOLDOWN;
-                m_explosion.spawnBossExplosion((*m_boss).get_position());
+                m_explosion.spawnBossExplosion((*m_boss).get_position(), (*m_boss).get_bounding_box());
+                Mix_PlayChannel(-1, m_player_explosion, 0);
             } else {
                 m_boss_explosion_cooldown -= ms;
             }
