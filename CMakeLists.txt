@@ -134,6 +134,8 @@ set(SOURCE_FILES
         src/Entities/Bosses/Boss1.cpp src/Entities/Bosses/Boss1.hpp
         src/Entities/Bosses/Boss2.cpp src/Entities/Bosses/Boss2.hpp
         src/Entities/Bosses/Boss3.cpp src/Entities/Bosses/Boss3.hpp
+        src/Entities/Bosses/Boss3Clone.cpp src/Entities/Bosses/Boss3Clone.hpp
+        src/Entities/Bosses/Clone.hpp
 
         src/Entities/Pickups/Pickup.hpp
         src/Entities/Pickups/MachineGunPickup.cpp src/Entities/Pickups/MachineGunPickup.hpp

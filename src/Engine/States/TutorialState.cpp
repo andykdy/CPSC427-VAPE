@@ -176,7 +176,7 @@ void TutorialState::update(float ms) {
 			turtle_it++;
 		}
 	}
-	float turtle_limit = m_current_cmp == shooting ? 1 : m_current_cmp == vamp_1 || m_current_cmp == vamp_2 ? m_vamp_quota : 0;
+	float turtle_limit = m_current_cmp == Component::shooting ? 1 : m_current_cmp == vamp_1 || m_current_cmp == vamp_2 ? m_vamp_quota : 0;
 	if (m_turtles.size() < turtle_limit)
 	{
 		if (!spawn_turtle())
@@ -213,7 +213,7 @@ void TutorialState::update(float ms) {
 				Mix_PlayChannel(-1, m_player_explosion, 0);
 				++m_points;
 				add_vamp_charge();
-				if (m_current_cmp == shooting) {
+				if (m_current_cmp == Component::shooting) {
 					m_dialogue.next();
 					m_current_cmp = vamp_1;
 					m_vamp_mode_charge = 12;
@@ -428,7 +428,7 @@ void TutorialState::on_key(GLFWwindow *wwindow, int key, int i, int action, int 
 		if (keyMap[GLFW_KEY_A]) m_mvmt_checklist[2] = true;
 		if (keyMap[GLFW_KEY_D]) m_mvmt_checklist[3] = true;
 		if (m_mvmt_checklist[0] && m_mvmt_checklist[1] && m_mvmt_checklist[2] && m_mvmt_checklist[3]) {
-			m_current_cmp = shooting;
+			m_current_cmp = Component::shooting;
 			m_dialogue.next();
 		}
 	}
