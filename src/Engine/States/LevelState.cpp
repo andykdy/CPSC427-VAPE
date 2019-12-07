@@ -36,9 +36,10 @@ namespace
     const size_t VAMP_TIME_PER_POINT = 200;
     const size_t VAMP_ACTIVATION_COOLDOWN = 300;
     const size_t MAX_VAMP_CHARGE = 15;
-    const size_t VAMP_ACTIVATION_COST = 3;
+    const size_t VAMP_ACTIVATION_COST = 0;
     const float VAMP_TIME_SLOWDOWN = 0.5f;
-
+    const float BOSS_EXPLOSION_COOLDOWN = 400;
+    const float PATH_UPDATE_COOLDOWN = 100;
 }
 
 
@@ -93,12 +94,17 @@ void LevelState::init() {
     m_level_time = 0;
     m_boss_mode = false;
     m_boss_pre = false;
+    m_boss_explosion_cooldown = 0;
     m_vamp_cooldown = 0;
     m_vamp_mode_charge = 0;
     m_vamp_mode_timer = 0;
     m_numVampParticles = 0;
     m_debug_mode = false;
     m_player_invincibility = false;
+    m_path_update_cooldown = 0;
+
+    aiGrid.init(screen.x, screen.y, 32);
+    m_dot.init();
 
     m_pause = &GameEngine::getInstance().getEntityManager()->addEntity<PauseMenu>();
     m_pause->init(screen);
@@ -165,6 +171,8 @@ void LevelState::terminate() {
     if (m_player_explosion != nullptr)
         Mix_FreeChunk(m_player_explosion);
 
+    aiGrid.destroy();
+
     m_pause->destroy();
 
     m_player->destroy();
@@ -187,6 +195,7 @@ void LevelState::terminate() {
 }
 
 void LevelState::update(float ms) {
+    m_path_update_cooldown -= ms;
     if (m_pause->isPaused()) {
         m_pause->update(ms, mouse_position, keyMap);
         return;
@@ -314,11 +323,24 @@ void LevelState::update(float ms) {
                 ++enemy_it;
             }
         }
-        if (m_boss_mode && m_boss->is_alive() && (*bullet_it)->collides_with(*m_boss)) {
-            eraseBullet = true;
-            // TODO sound
-            add_vamp_charge();
-            m_boss->addDamage(2);
+        if (m_boss_mode && m_boss->is_alive()) {
+			if ((*bullet_it)->collides_with(*m_boss)) {
+				eraseBullet = true;
+				// TODO sound
+				add_vamp_charge();
+				m_boss->addDamage(2);
+			} 
+			if (m_boss->hasClones()) {
+				auto& clones = m_boss->clones;
+				auto clone_it = clones.begin();
+				while (clone_it != clones.end()) {
+					if ((*bullet_it)->collides_with(**clone_it)) {
+						(*clone_it)->stun();
+						eraseBullet = true;
+					} 
+					clone_it++;
+				}
+			}
         }
         if (eraseBullet) {
             (*bullet_it)->destroy();
@@ -365,7 +387,6 @@ void LevelState::update(float ms) {
                 }
 
             }
-
             ++enemy_it;
         }
     }
@@ -389,8 +410,11 @@ void LevelState::update(float ms) {
 
 
     m_player->update(ms, keyMap, mouse_position);
-	for (auto& enemy : *enemies)
-		enemy->update(ms);
+	for (auto& enemy : *enemies){
+        if (m_path_update_cooldown <= 0) enemy->set_path(aiGrid.getPath(*enemy, *m_player));
+        enemy->update(ms);
+	}
+
 	/*for (auto& pkup : *pickups)
 		pkup->update(ms);*/
 
@@ -458,7 +482,7 @@ void LevelState::update(float ms) {
             m_vamp_mode = false;
             m_vamp.destroy();
         } else {
-            m_vamp.update(ms, m_player);
+            m_vamp.update(ms, m_player, m_vamp_mode_charge);
             m_vamp_mode_timer += ms;
             if (m_vamp_mode_timer >= VAMP_TIME_PER_POINT) {
                 m_vamp_mode_charge -= 1;
@@ -470,6 +494,7 @@ void LevelState::update(float ms) {
     // Boss specific code
     if (m_boss_mode) {
         m_boss->update(ms);
+		m_boss->player_position = m_player->get_position();
 
         // If boss drops below 0 health, set him as killed, award points, start timer
         if (m_boss->is_alive() && m_boss->getHealth() <= 0) {
@@ -478,25 +503,56 @@ void LevelState::update(float ms) {
             // m_points += 5000;
             m_boss->kill();
             m_space.set_boss_dead();
+            m_explosion.spawnBossExplosion((*m_boss).get_position(), (*m_boss).get_bounding_box());
         } else if (m_boss->is_alive()) {
             // Player/Boss collision
-            if (m_player->is_alive() && m_boss->collidesWith(*m_player) && m_player->get_iframes() <= 0.f) {
-                m_player->set_iframes(500.f);
-                lose_health(DAMAGE_COLLIDE);
-                Mix_PlayChannel(-1, m_player_explosion, 0);
+            if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
+				if (m_boss->collidesWith(*m_player)) {
+					m_player->set_iframes(500.f);
+					lose_health(DAMAGE_COLLIDE);
+					Mix_PlayChannel(-1, m_player_explosion, 0);
+				}
                 // TODO Knockback?
+				if (m_boss->hasClones()) {
+					auto& clones = m_boss->clones;
+					auto clone_it = clones.begin();
+					while (clone_it != clones.end()) {
+						if ((*clone_it)->collidesWith(*m_player)) {
+							m_player->set_iframes(500.f);
+							lose_health(DAMAGE_COLLIDE);
+						}
+						clone_it++;
+					}
+				}
             }
 
             // Vamp/Boss collision
-            if (m_vamp_mode && m_boss->collidesWith(m_vamp)) {
-                m_boss->add_vamp_timer(ms);
+            if (m_vamp_mode) {
+				if (m_boss->collidesWith(m_vamp)) {
+					m_boss->add_vamp_timer(ms);
 
-                if (m_boss->get_vamp_timer() >= VAMP_DAMAGE_TIMER_BOSS) {
-                    m_vamp_particle_emitter.spawn(m_boss->get_position());
-                    m_vamp_particle_emitter.spawn(m_boss->get_position());
-                    m_boss->addDamage(VAMP_DAMAGE_BOSS);
-                    m_boss->reset_vamp_timer();
-                }
+					if (m_boss->get_vamp_timer() >= VAMP_DAMAGE_TIMER_BOSS) {
+						m_vamp_particle_emitter.spawn(m_boss->get_position());
+						m_vamp_particle_emitter.spawn(m_boss->get_position());
+						m_boss->addDamage(VAMP_DAMAGE_BOSS);
+						m_boss->reset_vamp_timer();
+					}
+				}
+				if (m_boss->hasClones()) {
+					auto& clones = m_boss->clones;
+					auto clone_it = clones.begin();
+					while (clone_it != clones.end()) {
+						if ((*clone_it)->collidesWith(m_vamp)) {
+							(*clone_it)->add_vamp_timer(ms);
+							if ((*clone_it)->get_vamp_timer() > VAMP_DAMAGE_TIMER_BOSS) {
+								m_vamp_particle_emitter.spawn((*clone_it)->get_position());
+								m_vamp_particle_emitter.spawn((*clone_it)->get_position());
+								(*clone_it)->reset_vamp_timer();
+							}
+						}
+						clone_it++;
+					}
+				}
             }
 
             auto& bossBullets = m_boss->projectiles;
@@ -536,24 +592,34 @@ void LevelState::update(float ms) {
             }
 
             // If boss dies, continue to next level or main menu
-        } else if (m_boss->getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
-        {
-            if (m_level.nextLevel != nullptr) {
-                GameEngine::getInstance().changeState(new BetweenLevelsState(m_level.nextLevel, m_starting_points, {
-                        m_lives,
-                        m_points,
-                        m_level.nextLevel->id
-                }));
+        } else if (m_boss->getHealth() <= 0){
+            if (m_boss_explosion_cooldown <= 0) {
+                m_boss_explosion_cooldown = BOSS_EXPLOSION_COOLDOWN;
+                m_explosion.spawnBossExplosion((*m_boss).get_position(), (*m_boss).get_bounding_box());
+                Mix_PlayChannel(-1, m_player_explosion, 0);
             } else {
-                saveScore(m_points);
-                saveGameData({0,0,0}); // Clear savegame
-                GameEngine::getInstance().changeState(new OutroState({
-                        m_lives,
-                        m_points,
-                        0
-                }));
+                m_boss_explosion_cooldown -= ms;
             }
+
+             if (m_space.get_boss_dead_time() > 5)
+            {
+                if (m_level.nextLevel != nullptr) {
+                    GameEngine::getInstance().changeState(new BetweenLevelsState(m_level, m_starting_points, {
+                            m_lives,
+                            m_points,
+                            m_level.nextLevel->id
+                    }));
+                } else {
+                    saveScore(m_points);
+                    saveGameData({0,0,0}); // Clear savegame
+                    GameEngine::getInstance().changeState(new OutroState({
+                            m_lives,
+                            m_points,
+                            0
+                    }));
+                }
             return;
+            }
         }
     }
 
@@ -567,6 +633,27 @@ void LevelState::update(float ms) {
             saveScore(m_points);
             GameEngine::getInstance().changeState(new MainMenuState()); // TODO game over state
         }
+    }
+
+    aiGrid.clear();
+    for (auto enemy : *enemies)
+        aiGrid.addToGrid(*enemy);
+    for (auto projectile : projectiles.hostile_projectiles)
+        aiGrid.addToGrid(*projectile);
+    if (m_vamp_mode)
+        aiGrid.addToGrid(m_vamp);
+    aiGrid.addToGrid(*m_player);
+    for (auto projectile : projectiles.friendly_projectiles)
+        aiGrid.addToGrid(*projectile);
+    for (auto pickup : *pickups)
+        aiGrid.addToGrid(*pickup);
+    if (m_boss_mode){
+        aiGrid.addToGrid(*m_boss);
+        // TODO boss clones?
+    }
+
+    if (m_path_update_cooldown <= 0) {
+        m_path_update_cooldown = PATH_UPDATE_COOLDOWN;
     }
 }
 
@@ -612,6 +699,13 @@ void LevelState::draw() {
     mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
     m_space.draw(projection_2D);
+
+    if (m_debug_mode) {
+        aiGrid.draw(projection_2D);
+        for (auto& enemy : (*enemies)) {
+            m_dot.draw(projection_2D, {1,1,1}, enemy->get_path());
+        }
+    }
 
     // Drawing entities
     for (auto* projectile : projectiles.hostile_projectiles)

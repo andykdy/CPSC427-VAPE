@@ -37,6 +37,8 @@ public:
     }
 
     void scroll_up(float ms);
+
+    vec2 getBoundingBox();
 };
 
 

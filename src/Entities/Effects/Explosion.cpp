@@ -108,6 +108,24 @@ void Explosion::spawn(vec2 position)
     }
 }
 
+void Explosion::spawnBossExplosion(vec2 position, vec2 box)
+{
+    vec2 pos = {position.x - box.x/2 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(box.x)))
+            ,position.y - box.y/2 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(box.y)))};
+    for (int i = 0; i < 120; i++){
+        Explosion::Particle p = Particle();
+        p.life = 30.f;
+        p.position = pos;
+        float radius = 0.8f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(2.2f)));
+        float xvel = -1.f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(2)));
+        float yvel = -1.f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(2)));
+        float mult = 3 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(10)));
+        p.velocity = normalize({xvel,yvel});
+        p.velocity = {p.velocity.x * mult, p.velocity.y * mult};
+        p.radius = radius;
+        m_particles.insert(m_particles.begin(),p);
+    }
+}
 
 // Draw pebbles using instancing
 void Explosion::draw(const mat3& projection)

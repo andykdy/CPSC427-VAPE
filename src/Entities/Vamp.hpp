@@ -19,7 +19,7 @@ class Vamp : public EntityOld {
 public:
     bool init(vec2 position);
     void destroy();
-    void update(float ms, Player* player);
+    void update(float ms, Player* player, int vamp_charge_value);
     void draw(const mat3& projection)override;
 
     // Returns the current vamp position (centered)
@@ -37,6 +37,7 @@ private:
     vec2 m_position; // Window coordinates
     vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
     float m_rotation; // in radians
+    float m_alpha;
 };
 
 

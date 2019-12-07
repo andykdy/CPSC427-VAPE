@@ -9,12 +9,14 @@
 #include <Engine/ECS/Entity.hpp>
 #include <Entities/Vamp.hpp>
 #include "../Projectiles and Damaging/Projectile.hpp"
+#include "Clone.hpp"
 #include "Entities/UI/BossHealth/BossHealth.hpp"
 
 // Forward Declarations
 class Projectile;
 class Player;
 class Vamp;
+class Clone;
 
 enum collisionType {
     radius,
@@ -57,6 +59,9 @@ public:
     virtual bool checkCollision(vec2 pos, vec2 box) const = 0;
 
     std::vector<Projectile*> projectiles;
+	std::vector<Clone*> clones;
+	inline bool hasClones() { return !clones.empty(); };
+	vec2 player_position = { 0.f,0.f };
 
     inline int getHealth() const { return health; };
 

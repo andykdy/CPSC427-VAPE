@@ -7,7 +7,7 @@
 
 
 #include <Engine/ECS/System.hpp>
-#include <Entities/PickUps/Pickup.hpp>
+#include <Entities/Pickups/Pickup.hpp>
 
 class Pickup;
 

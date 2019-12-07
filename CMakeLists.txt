@@ -89,6 +89,8 @@ set(SOURCE_FILES
         src/Entities/Vamp.cpp src/Entities/Vamp.hpp
         src/Entities/Intro.cpp src/Entities/Intro.hpp
 
+        src/Entities/EntityGrid.cpp src/Entities/EntityGrid.hpp
+
         src/Entities/Debugging/DebugDot.cpp src/Entities/Debugging/DebugDot.hpp
 
         src/Entities/Enemies/Enemy.hpp
@@ -121,6 +123,7 @@ set(SOURCE_FILES
         src/Entities/UI/PauseMenu/ResumeButton.cpp src/Entities/UI/PauseMenu/ResumeButton.hpp
         src/Entities/UI/PauseMenu/ExitToMenuButton.cpp src/Entities/UI/PauseMenu/ExitToMenuButton.hpp
         src/Entities/UI/PauseMenu/ControlDiagram.cpp src/Entities/UI/PauseMenu/ControlDiagram.hpp
+                src/Entities/UI/WeaponUI/WeaponUI.cpp src/Entities/UI/WeaponUI/WeaponUI.hpp
 
 
         "src/Entities/Projectiles and Damaging/Projectile.hpp"
@@ -132,10 +135,14 @@ set(SOURCE_FILES
         src/Entities/Bosses/Boss1.cpp src/Entities/Bosses/Boss1.hpp
         src/Entities/Bosses/Boss2.cpp src/Entities/Bosses/Boss2.hpp
         src/Entities/Bosses/Boss3.cpp src/Entities/Bosses/Boss3.hpp
+        src/Entities/Bosses/Boss3Clone.cpp src/Entities/Bosses/Boss3Clone.hpp
+        src/Entities/Bosses/Clone.hpp
 
         src/Entities/Pickups/Pickup.hpp
         src/Entities/Pickups/MachineGunPickup.cpp src/Entities/Pickups/MachineGunPickup.hpp
         src/Entities/Pickups/TriShotPickup.cpp src/Entities/Pickups/TriShotPickup.hpp
+        src/Entities/PickUps/HealthPickup.cpp src/Entities/PickUps/HealthPickup.hpp 
+        src/Entities/PickUps/VampExpandPickup.cpp src/Entities/PickUps/VampExpandPickup.hpp 
 
 
 
@@ -177,7 +184,7 @@ set(SOURCE_FILES
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 
-        src/Entities/PickUps/HealthPickup.cpp src/Entities/PickUps/HealthPickup.hpp src/Entities/PickUps/VampExpandPickup.cpp src/Entities/PickUps/VampExpandPickup.hpp src/Entities/UI/WeaponUI/WeaponUI.cpp src/Entities/UI/WeaponUI/WeaponUI.hpp)
+        )
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
