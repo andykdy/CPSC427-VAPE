@@ -21,6 +21,8 @@ public:
     inline void reset_vamp_timer() { vamp_timer = 0; };
     inline float get_vamp_timer() { return vamp_timer; };
     inline int get_points() { return points; };
+    virtual void set_path(std::vector<vec2> path) {};
+    virtual std::vector<vec2> get_path() {return std::vector<vec2>();};
 
     vec2 screen_size = {0, 0};
     vec2 player_position = {0,0,};
