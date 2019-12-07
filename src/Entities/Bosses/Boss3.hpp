@@ -1,13 +1,17 @@
 //
-// Created by Cody on 11/26/2019.
+// Created by Andy Kim on 12/05/2019.
 //
 
 #ifndef VAPE_BOSS3_HPP
 #define VAPE_BOSS3_HPP
 
-
+#include <Engine/GameEngine.hpp>
+#include <Entities/Projectiles and Damaging/bullet.hpp>
+#include <Entities/Bosses/Boss3Clone.hpp>
+#include <vector>
 #include <common.hpp>
 #include "Boss.hpp"
+enum Boss3State { aiming, charging, cooldown };
 
 class Boss3 : public Boss {
     static Texture boss3_texture;
@@ -44,6 +48,19 @@ public:
     bool checkCollision(vec2 pos, vec2 box) const override;
 
 private:
+	float m_damage_effect_cooldown;
+	bool m_is_cloned;
+	vec2 m_screen;
+	float m_charge_timer;
+	float m_cooldown_timer;
+	vec2 m_target;
+	Boss3State m_curr_state;
+
+	void state1Update(float ms);
+	void state2Update(float ms);
+	void spawnClones();
+	bool nearBounds();
+	void spawnBullet();
 };
 
 

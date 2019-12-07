@@ -297,8 +297,12 @@ bool Laser::collides_with(const Enemy &turtle) {
     return false;
 }
 
-bool Laser::collides_with(const Boss &boss) {
-    return false;
+bool Laser::collides_with(const Boss& boss) {
+	return false;
+}
+
+bool Laser::collides_with(const Clone& clone) {
+	return false;
 }
 
 bool Laser::isOffScreen(const vec2 &screen) {
