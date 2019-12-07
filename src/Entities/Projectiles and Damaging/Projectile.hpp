@@ -32,6 +32,8 @@ public:
     virtual bool collides_with(const Boss &boss) = 0;
 
     virtual bool isOffScreen(const vec2& screen) = 0;
+
+    virtual vec2 get_bounding_box() const { return {-1,-1}; };
 };
 
 #endif //VAPE_PROJECTILE_HPP

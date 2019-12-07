@@ -89,6 +89,8 @@ set(SOURCE_FILES
         src/Entities/Vamp.cpp src/Entities/Vamp.hpp
         src/Entities/Intro.cpp src/Entities/Intro.hpp
 
+        src/Entities/EntityGrid.cpp src/Entities/EntityGrid.hpp
+
         src/Entities/Debugging/DebugDot.cpp src/Entities/Debugging/DebugDot.hpp
 
         src/Entities/Enemies/Enemy.hpp

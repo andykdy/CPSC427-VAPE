@@ -38,7 +38,7 @@ namespace
     const size_t MAX_VAMP_CHARGE = 15;
     const size_t VAMP_ACTIVATION_COST = 0;
     const float VAMP_TIME_SLOWDOWN = 0.5f;
-
+    const float BOSS_EXPLOSION_COOLDOWN = 400;
 }
 
 
@@ -100,12 +100,15 @@ void LevelState::init() {
     m_level_time = 0;
     m_boss_mode = false;
     m_boss_pre = false;
+    m_boss_explosion_cooldown = 0;
     m_vamp_cooldown = 0;
     m_vamp_mode_charge = 0;
     m_vamp_mode_timer = 0;
     m_numVampParticles = 0;
     m_debug_mode = false;
     m_player_invincibility = false;
+
+    aiGrid.init(screen.x, screen.y, 32);
 
     m_pause = &GameEngine::getInstance().getEntityManager()->addEntity<PauseMenu>();
     m_pause->init(screen);
@@ -178,6 +181,8 @@ void LevelState::terminate() {
     if (m_player_explosion != nullptr)
         Mix_FreeChunk(m_player_explosion);
     m_player_explosion_file.destroy();
+
+    aiGrid.destroy();
 
     m_pause->destroy();
 
@@ -492,6 +497,7 @@ void LevelState::update(float ms) {
             // m_points += 5000;
             m_boss->kill();
             m_space.set_boss_dead();
+            m_explosion.spawnBossExplosion((*m_boss).get_position(), (*m_boss).get_bounding_box());
         } else if (m_boss->is_alive()) {
             // Player/Boss collision
             if (m_player->is_alive() && m_boss->collidesWith(*m_player) && m_player->get_iframes() <= 0.f) {
@@ -550,24 +556,34 @@ void LevelState::update(float ms) {
             }
 
             // If boss dies, continue to next level or main menu
-        } else if (m_boss->getHealth() <= 0 && m_space.get_boss_dead_time() > 5)
-        {
-            if (m_level.nextLevel != nullptr) {
-                GameEngine::getInstance().changeState(new BetweenLevelsState(m_level.nextLevel, m_starting_points, {
-                        m_lives,
-                        m_points,
-                        m_level.nextLevel->id
-                }));
+        } else if (m_boss->getHealth() <= 0){
+            if (m_boss_explosion_cooldown <= 0) {
+                m_boss_explosion_cooldown = BOSS_EXPLOSION_COOLDOWN;
+                m_explosion.spawnBossExplosion((*m_boss).get_position(), (*m_boss).get_bounding_box());
+                Mix_PlayChannel(-1, m_player_explosion, 0);
             } else {
-                saveScore(m_points);
-                saveGameData({0,0,0}); // Clear savegame
-                GameEngine::getInstance().changeState(new OutroState({
-                        m_lives,
-                        m_points,
-                        0
-                }));
+                m_boss_explosion_cooldown -= ms;
             }
+
+             if (m_space.get_boss_dead_time() > 5)
+            {
+                if (m_level.nextLevel != nullptr) {
+                    GameEngine::getInstance().changeState(new BetweenLevelsState(m_level, m_starting_points, {
+                            m_lives,
+                            m_points,
+                            m_level.nextLevel->id
+                    }));
+                } else {
+                    saveScore(m_points);
+                    saveGameData({0,0,0}); // Clear savegame
+                    GameEngine::getInstance().changeState(new OutroState({
+                            m_lives,
+                            m_points,
+                            0
+                    }));
+                }
             return;
+            }
         }
     }
 
@@ -581,6 +597,23 @@ void LevelState::update(float ms) {
             saveScore(m_points);
             GameEngine::getInstance().changeState(new MainMenuState()); // TODO game over state
         }
+    }
+
+    aiGrid.clear();
+    for (auto enemy : *enemies)
+        aiGrid.addToGrid(*enemy);
+    for (auto projectile : projectiles.hostile_projectiles)
+        aiGrid.addToGrid(*projectile);
+    if (m_vamp_mode)
+        aiGrid.addToGrid(m_vamp);
+    aiGrid.addToGrid(*m_player);
+    for (auto projectile : projectiles.friendly_projectiles)
+        aiGrid.addToGrid(*projectile);
+    for (auto pickup : *pickups)
+        aiGrid.addToGrid(*pickup);
+    if (m_boss_mode){
+        aiGrid.addToGrid(*m_boss);
+        // TODO boss clones?
     }
 }
 
@@ -626,6 +659,10 @@ void LevelState::draw() {
     mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
     m_space.draw(projection_2D);
+
+    if (m_debug_mode) {
+        aiGrid.draw(projection_2D);
+    }
 
     // Drawing entities
     for (auto* projectile : projectiles.hostile_projectiles)

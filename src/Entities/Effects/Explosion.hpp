@@ -34,8 +34,7 @@ public:
     // Spawn new pebble
     void spawn(vec2 position);
 
-    // Trigger collision checks
-    void collides_with();
+    void spawnBossExplosion(vec2 position, vec2 box);
 
 
 private:
