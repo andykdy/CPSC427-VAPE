@@ -38,6 +38,7 @@
 #include <Utils/SaveData.hpp>
 #include <Entities/UI/PauseMenu/PauseMenu.hpp>
 #include <Entities/EntityGrid.hpp>
+#include <Entities/Debugging/DebugDot.hpp>
 
 const size_t INIT_LIVES = 5;
 
@@ -73,6 +74,8 @@ private:
     EntityGrid aiGrid;
 
     PauseMenu* m_pause;
+
+    DebugDot m_dot;
 
     void lose_health(int damage);
     void add_health(int heal);
@@ -131,6 +134,8 @@ private:
     VampParticleEmitter m_vamp_particle_emitter;
     Explosion m_explosion;
     float m_boss_explosion_cooldown;
+
+    float m_path_update_cooldown;
 
     Mix_Music* m_background_music;
     Mix_Music* m_boss_music;

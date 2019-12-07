@@ -78,6 +78,7 @@ public:
     // Draw the grid
     void draw(const mat3 &projection) override;
 
+    std::vector<vec2> getPath(const Enemy& enemy, const Player& player);
     // Find path for fish to edge of screen
     //std::vector<vec2> getPath(const Fish& fish);
     // Find path for turtle to player

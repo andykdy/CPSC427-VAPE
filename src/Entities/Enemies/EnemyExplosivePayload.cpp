@@ -166,3 +166,11 @@ void EnemyExplosivePlayload::spawnPayloadBullets() {
         }
     }
 }
+
+void EnemyExplosivePlayload::set_path(std::vector<vec2> path) {
+    m_path = path;
+}
+
+std::vector<vec2> EnemyExplosivePlayload::get_path() {
+    return m_path;
+}
