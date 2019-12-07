@@ -38,7 +38,7 @@ namespace
     const size_t MAX_VAMP_CHARGE = 15;
     const size_t VAMP_ACTIVATION_COST = 0;
     const float VAMP_TIME_SLOWDOWN = 0.5f;
-
+    const float BOSS_EXPLOSION_COOLDOWN = 500;
 }
 
 
@@ -93,6 +93,7 @@ void LevelState::init() {
     m_level_time = 0;
     m_boss_mode = false;
     m_boss_pre = false;
+    m_boss_explosion_cooldown = 0;
     m_vamp_cooldown = 0;
     m_vamp_mode_charge = 0;
     m_vamp_mode_timer = 0;
@@ -543,7 +544,13 @@ void LevelState::update(float ms) {
 
             // If boss dies, continue to next level or main menu
         } else if (m_boss->getHealth() <= 0){
-            m_explosion.spawnBossExplosion((*m_boss).get_position());
+            if (m_boss_explosion_cooldown <= 0) {
+                m_boss_explosion_cooldown = BOSS_EXPLOSION_COOLDOWN;
+                m_explosion.spawnBossExplosion((*m_boss).get_position());
+            } else {
+                m_boss_explosion_cooldown -= ms;
+            }
+
              if (m_space.get_boss_dead_time() > 5)
             {
                 if (m_level.nextLevel != nullptr) {
