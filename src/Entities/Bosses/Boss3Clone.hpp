@@ -45,15 +45,15 @@ public:
     void set_velocity(vec2 velocity) override;
 
 	void set_lead();
-	vec2 move_to(float ms, vec2 target, float speed);
+	vec2 move_to(vec2 target, float speed);
 	void stun() override;
-	void shutdown(float ms, vec2 master_pos) override;
+	void shutdown(vec2 master_pos) override;
 private:
     float m_bullet_cooldown;
     unsigned int m_burst_count;
     float m_burst_cooldown;
 	float m_stun_duration;
-	vec2 target_pos;
+	vec2 m_target_pos;
 	CloneState m_curr_state;
 	CloneState m_prev_state;
 	float m_speed;

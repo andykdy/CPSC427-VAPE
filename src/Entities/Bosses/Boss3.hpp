@@ -60,6 +60,7 @@ private:
 	void state2Update(float ms);
 	void spawnClones();
 	bool nearBounds();
+	void spawnBullet();
 };
 
 

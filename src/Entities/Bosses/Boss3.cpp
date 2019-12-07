@@ -21,9 +21,11 @@ namespace
 	const size_t INIT_HEALTH = 150;
 	const size_t POINTS_VAL = 5000;
 	const size_t ROAM_VELOCITY = 120;
-	const size_t COOLDOWN_TIME_MS = 1000;
+	const size_t COOLDOWN_TIME_MS = 700;
 	const size_t CHARGE_TIME_MS = 4000;
+	const size_t CHARGE_VELOCITY = 450;
 	const size_t SCREEN_BUFFER = 100;
+	const size_t STAGE_ONE_THRESHOLD = 90;
 }
 
 
@@ -114,13 +116,13 @@ void Boss3::update(float ms) {
 		bullet->update(ms);
 
 	// Simple health based states, only two states for this first boss
-	if (health > 90) state1Update(ms);
+	if (health > STAGE_ONE_THRESHOLD) state1Update(ms);
 	else if (health > 0) state2Update(ms);
 	else {
 		motion->velocity = { 0.f,0.f };
 		auto clone_it = clones.begin();
 		while (clone_it != clones.end()) {
-			(*clone_it)->shutdown(ms, motion->position);
+			(*clone_it)->shutdown(motion->position);
 			clone_it++;
 		}
 	}
@@ -151,8 +153,8 @@ void Boss3::state1Update(float ms) {
 			m_curr_state = Boss3State::cooldown;
 		} else  {
 			float angle = atan2(m_target.y, m_target.x);
-			motion->velocity.x = 360.f * cos(angle);
-			motion->velocity.y = 360.f * sin(angle);
+			motion->velocity.x = CHARGE_VELOCITY * cos(angle);
+			motion->velocity.y = CHARGE_VELOCITY * sin(angle);
 			m_charge_timer -= ms;
 		}
 	}
@@ -178,17 +180,17 @@ void Boss3::state2Update(float ms) {
 		if (!m_is_cloned) {
 			spawnClones();
 			m_is_cloned = true;
-			motion->velocity.x = ms * ROAM_VELOCITY / 10.f;
+			motion->velocity.x = ROAM_VELOCITY;
 			motion->velocity.y = 0.f;
 			motion->radians = 3 * M_PI / 2;
 		}
 		else {
 			if (motion->position.x < 100.f) {
-				motion->velocity.x = ms * ROAM_VELOCITY / 10.f;
+				motion->velocity.x = ROAM_VELOCITY;
 				motion->radians = 3 * M_PI / 2;
 			}
 			else if (motion->position.x > m_screen.x - 100.f) {
-				motion->velocity.x = -1.f * ms * ROAM_VELOCITY / 10.f;
+				motion->velocity.x = -1.f * ROAM_VELOCITY;
 				motion->radians = M_PI / 2;
 			}
 		}
@@ -201,13 +203,18 @@ void Boss3::spawnClones() {
 	
 	// One clone is leader, will do different things than the other
 	Boss3Clone* clone1 = &GameEngine::getInstance().getEntityManager()->addEntity<Boss3Clone>();
-	clone1->init(master_pos, { master_pos.x - 100.f, master_pos.y + 100.f });
+	clone1->init(master_pos, { master_pos.x, master_pos.y - 100.f });
 	clone1->set_lead();
 
 	Boss3Clone* clone2 = &GameEngine::getInstance().getEntityManager()->addEntity<Boss3Clone>();
 	clone2->init(master_pos, { master_pos.x + 100.f, master_pos.y + 100.f });
+
+	Boss3Clone* clone3 = &GameEngine::getInstance().getEntityManager()->addEntity<Boss3Clone>();
+	clone3->init(master_pos, { master_pos.x - 100.f, master_pos.y + 100.f });
+
 	clones.emplace_back(clone1);
 	clones.emplace_back(clone2);
+	clones.emplace_back(clone3);
 }
 
 void Boss3::draw(const mat3 &projection) {
@@ -319,4 +326,17 @@ bool Boss3::nearBounds() {
 	auto* motion = getComponent<MotionComponent>();
 	return (motion->position.x < SCREEN_BUFFER) || (motion->position.y < SCREEN_BUFFER) ||
 		(motion->position.x > m_screen.x - SCREEN_BUFFER) || (motion->position.y > m_screen.y - SCREEN_BUFFER);
+}
+
+void Boss3::spawnBullet() {
+	auto& projectiles = GameEngine::getInstance().getSystemManager()->getSystem<ProjectileSystem>();
+	auto* motion = getComponent<MotionComponent>();
+	Bullet* bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
+	if (bullet->init(motion->position, motion->radians + M_PI, true, BULLET_DAMAGE)) {
+		bullet->set_speed_slow();
+		projectiles.hostile_projectiles.emplace_back(bullet);
+	}
+	else {
+		throw std::runtime_error("Failed to spawn bullet");
+	}
 }

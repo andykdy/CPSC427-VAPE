@@ -23,7 +23,7 @@ namespace
     const size_t BURST_COOLDOWN_MS = 1000;
     const size_t BULLET_COOLDOWN_MS = 200;
     const size_t BULLET_DAMAGE = 5;
-	const size_t STUN_DURATION_MS = 1500;
+	const size_t STUN_DURATION_MS = 1300;
 }
 
 bool Boss3Clone::init(vec2 pos, vec2 disp) {
@@ -60,7 +60,7 @@ bool Boss3Clone::init(vec2 pos, vec2 disp) {
 	motion->position = pos;
 	m_curr_state = CloneState::moving;
 	m_prev_state = CloneState::moving;
-	target_pos = disp;
+	m_target_pos = disp;
 	m_is_active = true;
 
     // Setting initial values, scale is negative to make it face the opposite way
@@ -86,13 +86,12 @@ void Boss3Clone::destroy() {
 
 void Boss3Clone::update(float ms) {
 	auto* motion = getComponent<MotionComponent>();
-	float step = ms * 90.f / 10000.f;
 	if (!m_is_active) {
 		return;
 	}
 	if (m_curr_state == CloneState::moving) {
-		vec2 displacement = move_to(ms, target_pos,120.f);
-		if (displacement.x < 1.f && displacement.y < 1.f) {
+		vec2 displacement = move_to(m_target_pos,120.f);
+		if (abs(displacement.x) < 0.5f && abs(displacement.y) < 0.5f) {
 			m_curr_state = CloneState::attack;
 			motion->velocity = { 0.f,0.f };
 			motion->radians = M_PI;
@@ -125,7 +124,7 @@ void Boss3Clone::update(float ms) {
 				motion->velocity.y = 0.f;
 		}
 		else {
-			move_to(ms, player_pos,90.f);	
+			move_to(player_pos,90.f);	
 		}
 	}
 	else if (m_curr_state == CloneState::stunned) {
@@ -223,7 +222,7 @@ void Boss3Clone::spawnBullet() {
     }
 }
 
-vec2 Boss3Clone::move_to(float ms, vec2 target, float speed) {
+vec2 Boss3Clone::move_to(vec2 target, float speed) {
 	auto* motion = getComponent<MotionComponent>();
 
 
@@ -233,7 +232,7 @@ vec2 Boss3Clone::move_to(float ms, vec2 target, float speed) {
 	float angle = atan2(dx, dy);
 	motion->radians = angle - M_PI;
 
-	motion->velocity = { 180.f * sin(angle), 180.f * cos(angle) };
+	motion->velocity = { speed * sin(angle), speed * cos(angle) };
 	return { dx,dy };
 }
 
@@ -249,7 +248,7 @@ void Boss3Clone::set_lead() {
 	m_is_lead = true;
 }
 
-void Boss3Clone::shutdown(float ms, vec2 master_pos) {
+void Boss3Clone::shutdown(vec2 master_pos) {
 	m_is_active = false;
-	move_to(ms, master_pos, 120.f);
+	move_to(master_pos, 120.f);
 }

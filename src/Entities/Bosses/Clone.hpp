@@ -32,7 +32,7 @@ public:
     inline void reset_vamp_timer() { vamp_timer = 0; };
     inline float get_vamp_timer() { return vamp_timer; };
 	virtual void stun() {};
-	virtual void shutdown(float ms, vec2 master_pos) {};
+	virtual void shutdown(vec2 master_pos) {};
 
     vec2 screen_size = {0, 0};
     float vamp_timer = 0;
