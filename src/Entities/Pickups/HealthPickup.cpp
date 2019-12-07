@@ -122,7 +122,10 @@ bool HealthPickup::isOffScreen(const vec2& screen) {
     return (get_position().y - h > screen.y);
 }
 
-char* HealthPickup::get_png() {
-    char* str = (char*)"health_icon.png";
-    return str;
+const char* HealthPickup::get_png() const {
+    return textures_path("health_icon.png");
+}
+
+bool HealthPickup::isWeapon() {
+    return false;
 }

@@ -123,7 +123,10 @@ bool MachineGunPickup::isOffScreen(const vec2& screen) {
 	return (get_position().y - h > screen.y);
 }
 
-char* MachineGunPickup::get_png() {
-    char* str = (char*)"pickup.png";
-    return str;
+const char* MachineGunPickup::get_png() const {
+    return textures_path("pickup.png");
+}
+
+bool MachineGunPickup::isWeapon() {
+    return true;
 }

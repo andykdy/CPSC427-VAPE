@@ -276,8 +276,10 @@ void LevelState::update(float ms) {
     auto pickup_it = pickups->begin();
     while (pickup_it != pickups->end()) {
         if ((*pickup_it)->collides_with(*m_player)) {
+            if ((*pickup_it)->isWeapon()) {
+                m_weapon_ui->setUI((*pickup_it)->get_png());
+            }
             (*pickup_it)->applyEffect(*m_player);
-            m_weapon_ui->setUI((*pickup_it)->get_png());
             (*pickup_it)->destroy();
             pickup_it = pickups->erase(pickup_it);
 			break;

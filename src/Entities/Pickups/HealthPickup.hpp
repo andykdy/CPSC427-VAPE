@@ -20,7 +20,8 @@ public:
     void applyEffect(Player& player) override;
     vec2 get_bounding_box() const override;
     bool isOffScreen(const vec2 &screen) override;
-    char* get_png() override;
+    const char* get_png() const override;
+    bool isWeapon() override;
 private:
 };
 

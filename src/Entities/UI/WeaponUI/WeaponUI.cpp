@@ -73,12 +73,7 @@ void WeaponUI::destroy() {
 }
 
 void WeaponUI::setUI(const char* weapon_png) {
-    if (!ui_texture.is_valid())
-    {
-        const char str[] = "weapon_png";
-        if (!ui_texture.load_from_file(textures_path(str.malloc())))
-        {
-            throw std::runtime_error("Failed to load health texture");
-        }
+    if (!ui_texture.load_from_file(weapon_png)) {
+        throw std::runtime_error("Failed to load health texture");
     }
 }

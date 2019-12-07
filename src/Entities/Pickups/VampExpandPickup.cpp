@@ -122,7 +122,10 @@ bool VampExpandPickup::isOffScreen(const vec2& screen) {
     return (get_position().y - h > screen.y);
 }
 
-char* VampExpandPickup::get_png() {
-    char* str = (char*)"vamp_icon.png";
-    return str;
+const char* VampExpandPickup::get_png() const {
+    return textures_path("vamp_icon.png");
+}
+
+bool VampExpandPickup::isWeapon() {
+    return false;
 }

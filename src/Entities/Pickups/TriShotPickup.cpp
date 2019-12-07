@@ -122,7 +122,10 @@ bool TriShotPickup::isOffScreen(const vec2& screen) {
 	return (get_position().y - h > screen.y);
 }
 
-char* TriShotPickup::get_png() {
-    char* str = (char*)"pickup.png";
-    return str;
+const char* TriShotPickup::get_png() const {
+    return textures_path("pickup.png");
+}
+
+bool TriShotPickup::isWeapon() {
+    return true;
 }
