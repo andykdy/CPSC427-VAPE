@@ -18,6 +18,7 @@ protected:
     Font* m_font;
     vec3 m_color;
     float m_alpha;
+    vec2 m_scale;
 public:
     virtual bool init(Font* font);
     void clear();
@@ -35,6 +36,10 @@ public:
 
     void setAlpha(const float alpha) {
         m_alpha = alpha;
+    }
+
+    void setScale(const vec2 scale) {
+        m_scale = scale;
     }
 
 };

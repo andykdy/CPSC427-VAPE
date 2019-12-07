@@ -52,6 +52,7 @@ void Score::draw(const mat3 &projection) {
     score_text.setText(pchar);
     score_text.setColor({1.f, 0.8f, 0.0f});
     score_text.setPosition(motion->position);
+    score_text.setScale( {0.85f, 0.85f});
 
     score_text.draw(projection);
 }

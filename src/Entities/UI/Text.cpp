@@ -13,6 +13,7 @@ bool Text::init(Font *font) {
     setText("");
     m_color = {1.f,1.f,1.f};
     m_alpha = 1.f;
+    m_scale = {1.f, 1.f};
     return true;
 }
 
@@ -42,7 +43,7 @@ void Text::destroy() {
 void Text::draw(const mat3 &projection) {
     transform.begin();
     transform.translate(motion.position);
-    transform.scale({1,1});
+    transform.scale(m_scale);
     transform.rotate(0);
     transform.end();
 
