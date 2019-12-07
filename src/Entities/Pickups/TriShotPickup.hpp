@@ -1,7 +1,6 @@
 //
 // Created by Andy on 12/03/2019.
 //
-
 #ifndef VAPE_TRISHOTPICKUP_HPP
 #define VAPE_TRISHOTPICKUP_HPP
 
@@ -21,6 +20,7 @@ public:
     void applyEffect(Player& player) override;
 	vec2 get_bounding_box() const override;
     bool isOffScreen(const vec2 &screen) override;
+    char* get_png() override;
 private:
 };
 

@@ -121,3 +121,8 @@ bool HealthPickup::isOffScreen(const vec2& screen) {
     float h = get_bounding_box().y / 2;
     return (get_position().y - h > screen.y);
 }
+
+char* HealthPickup::get_png() {
+    char* str = (char*)"health_icon.png";
+    return str;
+}

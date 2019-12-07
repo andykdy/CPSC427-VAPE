@@ -121,3 +121,8 @@ bool VampExpandPickup::isOffScreen(const vec2& screen) {
     float h = get_bounding_box().y / 2;
     return (get_position().y - h > screen.y);
 }
+
+char* VampExpandPickup::get_png() {
+    char* str = (char*)"vamp_icon.png";
+    return str;
+}

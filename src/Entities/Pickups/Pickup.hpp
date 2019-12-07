@@ -21,6 +21,7 @@ public:
     virtual void applyEffect(Player& player) = 0;
 	virtual vec2 get_bounding_box()const { return  { 0.f,0.f }; };
     virtual bool isOffScreen(const vec2& screen) = 0;
+    virtual char* get_png() = 0;
 };
 
 #endif //VAPE_PICKUP_HPP

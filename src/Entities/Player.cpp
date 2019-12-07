@@ -270,6 +270,14 @@ void Player::changeWeapon(Weapon *newWeapon) {
     }
 	weapon = newWeapon;
 	weapon->init();
+	set_weapon_ui(weapon);
+}
+
+void Player::set_weapon_ui(Weapon *newWeapon) {
+    if (weapon != nullptr) {
+        weapon->destroy();
+        delete weapon;
+    }
 }
 
 vec2 Player::get_velocity() const {

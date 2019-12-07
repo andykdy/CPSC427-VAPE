@@ -35,9 +35,10 @@
 #include <Entities/UI/Vamp/VampCharge.hpp>
 #include <Entities/UI/UIPanel/UIPanelBackground.hpp>
 #include <Entities/UI/UIPanel/UIPanel.hpp>
-#include <Entities/Pickups/Pickup.hpp>
+#include <Entities/PickUps/Pickup.hpp>
 #include <Utils/SaveData.hpp>
 #include <Entities/UI/PauseMenu/PauseMenu.hpp>
+#include <Entities/UI/WeaponUI/WeaponUI.hpp>
 
 const size_t INIT_LIVES = 5;
 
@@ -100,6 +101,7 @@ private:
 
     // UI
     UIPanelBackground* m_uiPanelBackground;
+    WeaponUI* m_weapon_ui;
     UIPanel* m_uiPanel;
     Health* m_health;
     VampCharge* m_vamp_charge;
