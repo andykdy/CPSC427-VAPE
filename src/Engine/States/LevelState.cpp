@@ -231,7 +231,12 @@ void LevelState::update(float ms) {
     if (m_level_time >= m_level.bossTime - 5000 && !m_boss_pre) {
         Mix_PlayMusic(m_boss_music, -1);
         m_dialogue.activate();
+        m_boss->set_position({screen.x/2, 0 - m_boss->get_bounding_box().y / 2});
         m_boss_pre = true;
+    } else if (m_level_time >= m_level.bossTime - 5000 && m_boss_pre && !m_boss_mode) {
+        float dist = (screen.y/10) - (0 - m_boss->get_bounding_box().y / 2);
+        float msdif = dist / 5000;
+        m_boss->set_position({screen.x/2, m_boss->get_position().y + (ms*msdif)});
     }
     // Spawn the boss
     if (m_level_time >= m_level.bossTime && !m_boss_mode) {
@@ -505,6 +510,28 @@ void LevelState::update(float ms) {
         }
     }
 
+    if (m_boss_pre && m_boss->is_alive()) {
+        // Player/Boss collision
+        if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
+            if (m_boss->collidesWith(*m_player)) {
+                m_player->set_iframes(500.f);
+                lose_health(DAMAGE_COLLIDE);
+                Mix_PlayChannel(-1, m_player_explosion, 0);
+            }
+            // TODO Knockback?
+            if (m_boss->hasClones()) {
+                auto& clones = m_boss->clones;
+                auto clone_it = clones.begin();
+                while (clone_it != clones.end()) {
+                    if ((*clone_it)->collidesWith(*m_player)) {
+                        m_player->set_iframes(500.f);
+                        lose_health(DAMAGE_COLLIDE);
+                    }
+                    clone_it++;
+                }
+            }
+        }
+    }
     // Boss specific code
     if (m_boss_mode) {
         m_boss->update(ms);
@@ -519,27 +546,6 @@ void LevelState::update(float ms) {
             m_space.set_boss_dead();
             m_explosion.spawnBossExplosion((*m_boss).get_position(), (*m_boss).get_bounding_box());
         } else if (m_boss->is_alive()) {
-            // Player/Boss collision
-            if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
-				if (m_boss->collidesWith(*m_player)) {
-					m_player->set_iframes(500.f);
-					lose_health(DAMAGE_COLLIDE);
-					Mix_PlayChannel(-1, m_player_explosion, 0);
-				}
-                // TODO Knockback?
-				if (m_boss->hasClones()) {
-					auto& clones = m_boss->clones;
-					auto clone_it = clones.begin();
-					while (clone_it != clones.end()) {
-						if ((*clone_it)->collidesWith(*m_player)) {
-							m_player->set_iframes(500.f);
-							lose_health(DAMAGE_COLLIDE);
-						}
-						clone_it++;
-					}
-				}
-            }
-
             // Vamp/Boss collision
             if (m_vamp_mode) {
 				if (m_boss->collidesWith(m_vamp)) {
@@ -732,7 +738,7 @@ void LevelState::draw() {
     for (auto* projectile : projectiles.friendly_projectiles)
         projectile->draw(projection_2D);
     m_player->draw(projection_2D);
-    if (m_boss_mode) {
+    if (m_boss_pre) {
         m_boss->draw(projection_2D);
     }
     if (m_vamp_mode) {
