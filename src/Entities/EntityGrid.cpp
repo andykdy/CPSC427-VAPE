@@ -263,6 +263,26 @@ void EntityGrid::draw(const mat3 &projection) {
     }
 }
 
+bool isDestEnemy(const std::vector<std::vector<EType>>& grid, pair pos, pair dest) {
+    return pos.x == dest.x && pos.y == dest.y; // Turtle destination is the specific dest point (player);
+}
+float enemyH(const std::vector<std::vector<EType>>& grid, pair pos, pair dest) {
+    // Direct distance to player - admissible
+    return (float)(std::sqrt(std::pow((pos.x - dest.x), 2) + std::pow((pos.y - dest.y), 2) ));
+}
+
+std::vector<vec2> EntityGrid::getPath(const Enemy& enemy, const Player& player) {
+    vec2 tpos = enemy.get_position();
+    vec2 tbox = enemy.get_bounding_box();
+
+    vec2 spos = player.get_position();
+    auto sx = (int)std::floor((spos.x) / (float)size);
+    auto sy = (int)std::floor((spos.y) / (float)size);
+    pair s = { sx, sy };
+
+    return search(tpos, tbox, {}, &isDestEnemy, &enemyH, s);
+}
+
 /*
 bool isDestFish(const std::vector<std::vector<EType>>& egrid, pair pos, pair dest) {
     return pos.x == 0; // Fish destination is anywhere on left edge of screen
@@ -347,7 +367,7 @@ std::vector<vec2> EntityGrid::getPath(const Salmon &salmon, const std::vector<Fi
 
         return search(spos, sbox, {EType::enemy}, &isDestSalmon, &salmonH, f);
     } else {
-        return search(spos, sbox, {EType::enemy}, &isDestSalmonAlt, &salmonH, {0, 0}); // TODO dest, heuristic
+        return search(spos, sbox, {EType::enemy}, &isDestSalmonAlt, &salmonH, {0, 0}); // TD dest, heuristic
     }
 }*/
 

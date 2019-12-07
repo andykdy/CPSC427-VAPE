@@ -39,6 +39,7 @@ namespace
     const size_t VAMP_ACTIVATION_COST = 0;
     const float VAMP_TIME_SLOWDOWN = 0.5f;
     const float BOSS_EXPLOSION_COOLDOWN = 400;
+    const float PATH_UPDATE_COOLDOWN = 100;
 }
 
 
@@ -107,8 +108,10 @@ void LevelState::init() {
     m_numVampParticles = 0;
     m_debug_mode = false;
     m_player_invincibility = false;
+    m_path_update_cooldown = 0;
 
     aiGrid.init(screen.x, screen.y, 32);
+    m_dot.init();
 
     m_pause = &GameEngine::getInstance().getEntityManager()->addEntity<PauseMenu>();
     m_pause->init(screen);
@@ -206,6 +209,7 @@ void LevelState::terminate() {
 }
 
 void LevelState::update(float ms) {
+    m_path_update_cooldown -= ms;
     if (m_pause->isPaused()) {
         m_pause->update(ms, mouse_position, keyMap);
         return;
@@ -420,8 +424,11 @@ void LevelState::update(float ms) {
 
 
     m_player->update(ms, keyMap, mouse_position);
-	for (auto& enemy : *enemies)
-		enemy->update(ms);
+	for (auto& enemy : *enemies){
+        if (m_path_update_cooldown <= 0) enemy->set_path(aiGrid.getPath(*enemy, *m_player));
+        enemy->update(ms);
+	}
+
 	/*for (auto& pkup : *pickups)
 		pkup->update(ms);*/
 
@@ -659,6 +666,10 @@ void LevelState::update(float ms) {
         aiGrid.addToGrid(*m_boss);
         // TODO boss clones?
     }
+
+    if (m_path_update_cooldown <= 0) {
+        m_path_update_cooldown = PATH_UPDATE_COOLDOWN;
+    }
 }
 
 void LevelState::draw() {
@@ -706,6 +717,9 @@ void LevelState::draw() {
 
     if (m_debug_mode) {
         aiGrid.draw(projection_2D);
+        for (auto& enemy : (*enemies)) {
+            m_dot.draw(projection_2D, {1,1,1}, enemy->get_path());
+        }
     }
 
     // Drawing entities

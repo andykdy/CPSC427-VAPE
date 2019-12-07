@@ -55,9 +55,7 @@ Integrated with ffmpeg to add in video playback for use in intro/ending
 Added a pause menu, which displays a control diagram, and uses dynamic buttons like the main menu, for resuming/exiting.
 
 ## Between-level state
-TODO
-
-## TODO
+Was originally planned to show some interesting information, but currently just shows "Level n completed, press enter to continue" to add a break in-between levels
 
 # Milestone Components
 
@@ -79,7 +77,12 @@ We also added text rendering using stb_truetype.
 Also integrated PhysFS to load assets from a package file. 
 
 ## Advanced Graphics
-Multiple particle systems: Explosions, Vamp mode particles, Boss2 laser priming/warning
+Multiple particle systems: Explosions, Vamp mode particles, Boss2 laser priming/warning.
+Does video rendering count?
 
 ## Advanced Gameplay
-TODO
+A* pathfinding was implemented, basically the same as I (Cody) had made for A2. 
+The screen is divided up into a grid of configurable size, and entities are added to the grid, 
+setting the value of the grid position to a certain type, depending on what they are (player, enemy, pickup, etc)
+In debug mode (Shift+F) the grid can be seen, with squares colored based on what entity is inside them.
+Furthermore, enemies that utilize pathfinding (only present in level 3) will have their path drawn as a set of dots.

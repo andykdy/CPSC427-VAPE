@@ -39,6 +39,7 @@
 #include <Entities/UI/PauseMenu/PauseMenu.hpp>
 #include <Utils/PhysFSHelpers.hpp>
 #include <Entities/EntityGrid.hpp>
+#include <Entities/Debugging/DebugDot.hpp>
 
 const size_t INIT_LIVES = 5;
 
@@ -74,6 +75,8 @@ private:
     EntityGrid aiGrid;
 
     PauseMenu* m_pause;
+
+    DebugDot m_dot;
 
     void lose_health(int damage);
     void add_health(int heal);
@@ -133,6 +136,7 @@ private:
     Explosion m_explosion;
     float m_boss_explosion_cooldown;
 
+    float m_path_update_cooldown;
     RWFile m_background_music_file;
     RWFile m_boss_music_file;
     RWFile m_victory_music_file;
