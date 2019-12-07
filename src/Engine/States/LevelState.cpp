@@ -596,6 +596,7 @@ void LevelState::update(float ms) {
         }else {
             saveScore(m_points);
             GameEngine::getInstance().changeState(new MainMenuState()); // TODO game over state
+            return;
         }
     }
 

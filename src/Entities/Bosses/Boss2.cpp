@@ -344,6 +344,11 @@ void Boss2::destroy() {
     for (auto laser : projectiles)
         laser->destroy();
     projectiles.clear();
+    m_lasers.clear();
+
+    m_easy_patterns.clear();
+    m_medium_patterns.clear();
+    m_hard_patterns.clear();
 
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();

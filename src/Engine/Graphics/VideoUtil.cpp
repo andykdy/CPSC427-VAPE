@@ -43,16 +43,16 @@ bool VideoUtil::open(const char *filename) {
     // Alloc a buffer for the stream
     const int ioBufferSize = 32768;
     //const std::shared_ptr<unsigned char> buffer(reinterpret_cast<unsigned char*>(av_malloc(ioBufferSize + AV_INPUT_BUFFER_PADDING_SIZE)), &av_free);
-    m_buffer = reinterpret_cast<unsigned char*>(av_malloc(ioBufferSize + AV_INPUT_BUFFER_PADDING_SIZE));
+    auto * buffer = reinterpret_cast<unsigned char*>(av_malloc(ioBufferSize + AV_INPUT_BUFFER_PADDING_SIZE));
 
-    if (!m_buffer){
+    if (!buffer){
         std::cout << "Could not allocate buffer.\n";
     }
 
 
     // Get a AVContext stream
-    AVIOContext* ioContext = avio_alloc_context(
-            m_buffer,    // Buffer
+    m_io_ctx = avio_alloc_context(
+            buffer,    // Buffer
             ioBufferSize,  // Buffer size
             0,                   // Buffer is only readable - set to 1 for read/write
             m_file_stream,      // User (your) specified data
@@ -60,7 +60,7 @@ bool VideoUtil::open(const char *filename) {
             nullptr,                   // Function - Write Packets
             &seekFunction       // Function - Seek to position in stream (see example)
     );
-    if(ioContext == nullptr){
+    if(m_io_ctx == nullptr){
         fprintf(stderr, "Failed to allocate context!\n");
         close();
         return false;
@@ -70,7 +70,7 @@ bool VideoUtil::open(const char *filename) {
     m_format_ctx = avformat_alloc_context();
 
     // Set up the Format Context
-    m_format_ctx->pb = ioContext;
+    m_format_ctx->pb = m_io_ctx;
     m_format_ctx->flags |= AVFMT_FLAG_CUSTOM_IO; // we set up our own IO
 
     // Open video with avformat
@@ -141,22 +141,20 @@ bool VideoUtil::open(const char *filename) {
 }
 
 void VideoUtil::close() {
-    if (m_sws_ctx) {
-        sws_freeContext(m_sws_ctx);
+    if (m_sws_ctx) sws_freeContext(m_sws_ctx);
+    if (m_io_ctx) {
+        av_free(m_io_ctx->buffer);
+        av_free(m_io_ctx);
+    }
+    if (m_format_ctx) {
+        avformat_close_input(&m_format_ctx);
+        avformat_free_context(m_format_ctx);
     }
     if (m_frame) av_frame_free(&m_frame);
     if (m_packet) av_packet_free(&m_packet);
     if (m_codec_ctx) {
         avcodec_close(m_codec_ctx);
         avcodec_free_context(&m_codec_ctx);
-    }
-    if (m_format_ctx) {
-        avformat_close_input(&m_format_ctx);
-        av_free(m_format_ctx->pb);
-        avformat_free_context(m_format_ctx);
-    }
-    if (m_buffer) {
-        av_free(m_buffer);
     }
     delete m_file_stream;
 }

@@ -21,7 +21,7 @@ extern "C" {
 class VideoUtil {
 private:
     PhysFSStream* m_file_stream;
-    unsigned char* m_buffer;
+    AVIOContext* m_io_ctx;
     AVFormatContext * m_format_ctx;
     AVCodecContext * m_codec_ctx;
     SwsContext* m_sws_ctx;
