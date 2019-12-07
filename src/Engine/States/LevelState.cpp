@@ -324,11 +324,24 @@ void LevelState::update(float ms) {
                 ++enemy_it;
             }
         }
-        if (m_boss_mode && m_boss->is_alive() && (*bullet_it)->collides_with(*m_boss)) {
-            eraseBullet = true;
-            // TODO sound
-            add_vamp_charge();
-            m_boss->addDamage(2);
+        if (m_boss_mode && m_boss->is_alive()) {
+			if ((*bullet_it)->collides_with(*m_boss)) {
+				eraseBullet = true;
+				// TODO sound
+				add_vamp_charge();
+				m_boss->addDamage(2);
+			} 
+			if (m_boss->hasClones()) {
+				auto& clones = m_boss->clones;
+				auto clone_it = clones.begin();
+				while (clone_it != clones.end()) {
+					if ((*bullet_it)->collides_with(**clone_it)) {
+						(*clone_it)->stun();
+						eraseBullet = true;
+					} 
+					clone_it++;
+				}
+			}
         }
         if (eraseBullet) {
             (*bullet_it)->destroy();
@@ -375,7 +388,6 @@ void LevelState::update(float ms) {
                 }
 
             }
-
             ++enemy_it;
         }
     }
@@ -483,6 +495,7 @@ void LevelState::update(float ms) {
     // Boss specific code
     if (m_boss_mode) {
         m_boss->update(ms);
+		m_boss->player_position = m_player->get_position();
 
         // If boss drops below 0 health, set him as killed, award points, start timer
         if (m_boss->is_alive() && m_boss->getHealth() <= 0) {
@@ -494,23 +507,53 @@ void LevelState::update(float ms) {
             m_explosion.spawnBossExplosion((*m_boss).get_position(), (*m_boss).get_bounding_box());
         } else if (m_boss->is_alive()) {
             // Player/Boss collision
-            if (m_player->is_alive() && m_boss->collidesWith(*m_player) && m_player->get_iframes() <= 0.f) {
-                m_player->set_iframes(500.f);
-                lose_health(DAMAGE_COLLIDE);
-                Mix_PlayChannel(-1, m_player_explosion, 0);
+            if (m_player->is_alive() && m_player->get_iframes() <= 0.f) {
+				if (m_boss->collidesWith(*m_player)) {
+					m_player->set_iframes(500.f);
+					lose_health(DAMAGE_COLLIDE);
+					Mix_PlayChannel(-1, m_player_explosion, 0);
+				}
                 // TODO Knockback?
+				if (m_boss->hasClones()) {
+					auto& clones = m_boss->clones;
+					auto clone_it = clones.begin();
+					while (clone_it != clones.end()) {
+						if ((*clone_it)->collidesWith(*m_player)) {
+							m_player->set_iframes(500.f);
+							lose_health(DAMAGE_COLLIDE);
+						}
+						clone_it++;
+					}
+				}
             }
 
             // Vamp/Boss collision
-            if (m_vamp_mode && m_boss->collidesWith(m_vamp)) {
-                m_boss->add_vamp_timer(ms);
+            if (m_vamp_mode) {
+				if (m_boss->collidesWith(m_vamp)) {
+					m_boss->add_vamp_timer(ms);
 
-                if (m_boss->get_vamp_timer() >= VAMP_DAMAGE_TIMER_BOSS) {
-                    m_vamp_particle_emitter.spawn(m_boss->get_position());
-                    m_vamp_particle_emitter.spawn(m_boss->get_position());
-                    m_boss->addDamage(VAMP_DAMAGE_BOSS);
-                    m_boss->reset_vamp_timer();
-                }
+					if (m_boss->get_vamp_timer() >= VAMP_DAMAGE_TIMER_BOSS) {
+						m_vamp_particle_emitter.spawn(m_boss->get_position());
+						m_vamp_particle_emitter.spawn(m_boss->get_position());
+						m_boss->addDamage(VAMP_DAMAGE_BOSS);
+						m_boss->reset_vamp_timer();
+					}
+				}
+				if (m_boss->hasClones()) {
+					auto& clones = m_boss->clones;
+					auto clone_it = clones.begin();
+					while (clone_it != clones.end()) {
+						if ((*clone_it)->collidesWith(m_vamp)) {
+							(*clone_it)->add_vamp_timer(ms);
+							if ((*clone_it)->get_vamp_timer() > VAMP_DAMAGE_TIMER_BOSS) {
+								m_vamp_particle_emitter.spawn((*clone_it)->get_position());
+								m_vamp_particle_emitter.spawn((*clone_it)->get_position());
+								(*clone_it)->reset_vamp_timer();
+							}
+						}
+						clone_it++;
+					}
+				}
             }
 
             auto& bossBullets = m_boss->projectiles;

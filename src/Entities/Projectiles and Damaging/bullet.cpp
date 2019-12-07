@@ -122,20 +122,35 @@ bool Bullet::collides_with(const Player &player) {
     return false;
 }
 
-bool Bullet::collides_with(const Enemy &enemy) {
-    auto* motion = getComponent<MotionComponent>();
-    auto* physics = getComponent<PhysicsComponent>();
+bool Bullet::collides_with(const Enemy& enemy) {
+	auto* motion = getComponent<MotionComponent>();
+	auto* physics = getComponent<PhysicsComponent>();
 
-    float dx = motion->position.x - enemy.get_position().x;
-    float dy = motion->position.y - enemy.get_position().y;
-    float d_sq = dx * dx + dy * dy;
-    float other_r = std::max(enemy.get_bounding_box().x, enemy.get_bounding_box().y);
-    float my_r = std::max(physics->scale.x, physics->scale.y);
-    float r = std::max(other_r, my_r);
-    r *= 0.6f;
-    if (d_sq < r * r)
-        return true;
-    return false;
+	float dx = motion->position.x - enemy.get_position().x;
+	float dy = motion->position.y - enemy.get_position().y;
+	float d_sq = dx * dx + dy * dy;
+	float other_r = std::max(enemy.get_bounding_box().x, enemy.get_bounding_box().y);
+	float my_r = std::max(physics->scale.x, physics->scale.y);
+	float r = std::max(other_r, my_r);
+	r *= 0.6f;
+	if (d_sq < r * r)
+		return true;
+	return false;
+}
+bool Bullet::collides_with(const Clone& clone) {
+	auto* motion = getComponent<MotionComponent>();
+	auto* physics = getComponent<PhysicsComponent>();
+
+	float dx = motion->position.x - clone.get_position().x;
+	float dy = motion->position.y - clone.get_position().y;
+	float d_sq = dx * dx + dy * dy;
+	float other_r = std::max(clone.get_bounding_box().x, clone.get_bounding_box().y);
+	float my_r = std::max(physics->scale.x, physics->scale.y);
+	float r = std::max(other_r, my_r);
+	r *= 0.6f;
+	if (d_sq < r * r)
+		return true;
+	return false;
 }
 
 bool Bullet::collides_with(const Boss &boss) {
