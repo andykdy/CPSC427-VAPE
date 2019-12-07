@@ -273,7 +273,6 @@ bool Boss2::init(vec2 screen) {
     {
         throw std::runtime_error("Failed to load boss2 mesh");
     }
-    fprintf(stderr, "test1");
 
     // Reading sources
     std::stringstream mesh_ss;
@@ -283,7 +282,6 @@ bool Boss2::init(vec2 screen) {
     std::getline(mesh_ss, line);
 
     size_t num_vertices;
-    fprintf(stderr, line.c_str());
     sscanf(line.c_str(), "%zu\n", &num_vertices);
     for (size_t i = 0; i < num_vertices; ++i)
     {
