@@ -130,6 +130,7 @@ private:
     // Effects
     VampParticleEmitter m_vamp_particle_emitter;
     Explosion m_explosion;
+    float m_boss_explosion_cooldown;
 
     Mix_Music* m_background_music;
     Mix_Music* m_boss_music;
