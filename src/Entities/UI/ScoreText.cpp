@@ -20,6 +20,7 @@ bool ScoreText::init(Font *font) {
     m_color = {1.f,1.f,1.f};
     m_life = TEXT_LIFE;
     m_alpha = 0.85f;
+    m_scale = {1.0f, 1.0f};
     return true;
 }
 

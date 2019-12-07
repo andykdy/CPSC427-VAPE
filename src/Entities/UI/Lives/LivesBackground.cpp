@@ -2,12 +2,14 @@
 // Created by matte on 2019-12-06.
 //
 
+
+
 #include <Components/TransformComponent.hpp>
 #include <Components/EffectComponent.hpp>
 #include <Components/MeshComponent.hpp>
-#include "ScoreBackground.hpp"
+#include "LivesBackground.hpp"
 
-bool ScoreBackground::init(vec2 screen) {
+bool LivesBackground::init(vec2 screen) {
     auto* transform = addComponent<TransformComponent>();
     auto* effect = addComponent<EffectComponent>();
     auto* mesh = addComponent<MeshComponent>();
@@ -60,7 +62,7 @@ bool ScoreBackground::init(vec2 screen) {
 
 }
 
-void ScoreBackground::draw(const mat3 &projection) {
+void LivesBackground::draw(const mat3 &projection) {
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
     auto* mesh = getComponent<MeshComponent>();
@@ -68,7 +70,7 @@ void ScoreBackground::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     transform->begin();
-    transform->translate({455, m_screen.y-90});
+    transform->translate({145, m_screen.y-90});
     transform->rotate(0);
     transform->scale({1,1});
     transform->end();
@@ -105,7 +107,7 @@ void ScoreBackground::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void ScoreBackground::destroy() {
+void LivesBackground::destroy() {
     auto* mesh = getComponent<MeshComponent>();
     mesh->release();
     Entity::destroy();

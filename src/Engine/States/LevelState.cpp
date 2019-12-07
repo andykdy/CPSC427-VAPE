@@ -114,7 +114,11 @@ void LevelState::init() {
     m_score_ui = &GameEngine::getInstance().getEntityManager()->addEntity<Score>();
     m_score_ui->init({483,screen.y-65}, &m_font_ranger);
     m_score_background = &GameEngine::getInstance().getEntityManager()->addEntity<ScoreBackground>();
-    m_score_background->init(screen, screen.y);
+    m_score_background->init(screen);
+    m_lives_background = &GameEngine::getInstance().getEntityManager()->addEntity<LivesBackground>();
+    m_lives_background->init(screen);
+    m_lives_ui = &GameEngine::getInstance().getEntityManager()->addEntity<Lives>();
+    m_lives_ui->init({168,screen.y-65}, &m_font_ranger, m_lives);
     m_vamp_particle_emitter.init();
     m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
     m_uiPanel->init(screen, screen.y, screen.x);
@@ -178,6 +182,9 @@ void LevelState::terminate() {
     m_uiPanel->destroy();
     m_health->destroy();
     m_score_ui->destroy();
+    m_score_background->destroy();
+    m_lives_background->destroy();
+    m_lives_ui->destroy();
     m_vamp_charge->destroy();
     if (m_boss != nullptr)
         m_boss->destroy();
@@ -562,6 +569,7 @@ void LevelState::update(float ms) {
         m_space.get_salmon_dead_time() > 5) {
         if (m_lives > 0){
             --m_lives;
+            m_lives_ui->setLives(m_lives);
             reset();
         }else {
             saveScore(m_points);
@@ -638,6 +646,8 @@ void LevelState::draw() {
     m_vamp_charge->draw(projection_2D);
     m_score_background->draw(projection_2D);
     m_score_ui->draw(projection_2D);
+    m_lives_background->draw(projection_2D);
+    m_lives_ui->draw(projection_2D);
     m_uiPanel->draw(projection_2D);
     m_dialogue.draw(projection_2D);
 

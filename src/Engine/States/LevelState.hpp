@@ -41,6 +41,8 @@
 #include <Entities/UI/ScoreText.hpp>
 #include <Entities/UI/PlayerScore/Score.hpp>
 #include <Entities/UI/PlayerScore/ScoreBackground.hpp>
+#include <Entities/UI/Lives/LivesBackground.hpp>
+#include <Entities/UI/Lives/Lives.hpp>
 
 const size_t INIT_LIVES = 5;
 
@@ -108,6 +110,8 @@ private:
     VampCharge* m_vamp_charge;
     Score* m_score_ui;
     ScoreBackground* m_score_background;
+    Lives* m_lives_ui;
+    LivesBackground* m_lives_background;
 	Dialogue m_dialogue;
 
 	// Text rendering

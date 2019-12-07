@@ -2,12 +2,12 @@
 // Created by matte on 2019-12-06.
 //
 
-#ifndef VAPE_SCOREBACKGROUND_HPP
-#define VAPE_SCOREBACKGROUND_HPP
+#ifndef VAPE_LIVESBACKGROUND_HPP
+#define VAPE_LIVESBACKGROUND_HPP
 
 #include <Engine/ECS/Entity.hpp>
 
-class ScoreBackground: public ECS::Entity {
+class LivesBackground: public ECS::Entity {
 private:
     vec2 m_screen;
 public:
@@ -17,4 +17,4 @@ public:
 
 };
 
-#endif //VAPE_SCOREBACKGROUND_HPP
+#endif //VAPE_LIVESBACKGROUND_HPP
