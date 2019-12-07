@@ -150,7 +150,6 @@ void PickupEnemy::spawn_pickup() {
                 auto *p = &e->addEntity<MachineGunPickup>();
                 p->init(motion->position);
                 ps.pickups.emplace_back(p);
-
                 break;
             }
         case 2:{

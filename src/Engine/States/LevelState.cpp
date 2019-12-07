@@ -114,8 +114,8 @@ void LevelState::init() {
     m_vamp_particle_emitter.init();
     m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
     m_uiPanel->init(screen, screen.y, screen.x);
-    m_weapon_ui = &GameEngine::getInstance().getEntityManager()->addEntity<WeaponUI>();
-    m_weapon_ui->init({screen.x/2, screen.y-55});
+//    m_weapon_ui = &GameEngine::getInstance().getEntityManager()->addEntity<WeaponUI>();
+//    m_weapon_ui->init({screen.x/2, screen.y-55});
     m_dialogue.init(m_level.bossDialogue);
     m_dialogue.deactivate();
     m_space.init(m_level.backgroundTexture);
@@ -173,7 +173,7 @@ void LevelState::terminate() {
 
     m_uiPanelBackground->destroy();
     m_uiPanel->destroy();
-    m_weapon_ui->destroy();
+//    m_weapon_ui->destroy();
     m_health->destroy();
     m_vamp_charge->destroy();
     if (m_boss != nullptr)
@@ -276,9 +276,9 @@ void LevelState::update(float ms) {
     auto pickup_it = pickups->begin();
     while (pickup_it != pickups->end()) {
         if ((*pickup_it)->collides_with(*m_player)) {
-            if ((*pickup_it)->isWeapon()) {
-                m_weapon_ui->setUI((*pickup_it)->get_png());
-            }
+//            if ((*pickup_it)->isWeapon()) {
+//                m_weapon_ui->setUI((*pickup_it)->get_png());
+//            }
             (*pickup_it)->applyEffect(*m_player);
             (*pickup_it)->destroy();
             pickup_it = pickups->erase(pickup_it);
@@ -640,7 +640,7 @@ void LevelState::draw() {
     m_explosion.draw(projection_2D);
 
     m_uiPanelBackground->draw(projection_2D);
-    m_weapon_ui->draw(projection_2D);
+//    m_weapon_ui->draw(projection_2D);
     m_health->draw(projection_2D);
     m_vamp_charge->draw(projection_2D);
     m_uiPanel->draw(projection_2D);

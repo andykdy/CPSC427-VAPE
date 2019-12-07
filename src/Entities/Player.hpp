@@ -75,8 +75,6 @@ public:
 
 	void changeWeapon(Weapon* newWeapon);
 
-    void set_weapon_ui(Weapon* newWeapon);
-
     void set_vamp_expand(bool ex);
 
 	bool get_vamp_expand();
