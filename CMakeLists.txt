@@ -177,7 +177,7 @@ set(SOURCE_FILES
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 
-        src/Entities/UI/ScoreText.cpp src/Entities/UI/ScoreText.hpp src/Entities/UI/PlayerScore/Score.cpp src/Entities/UI/PlayerScore/Score.hpp src/Entities/UI/PlayerScore/ScoreBackground.cpp src/Entities/UI/PlayerScore/ScoreBackground.hpp src/Entities/UI/Lives/LivesBackground.cpp src/Entities/UI/Lives/LivesBackground.hpp src/Entities/UI/Lives/Lives.cpp src/Entities/UI/Lives/Lives.hpp)
+        src/Entities/UI/ScoreText.cpp src/Entities/UI/ScoreText.hpp src/Entities/UI/PlayerScore/Score.cpp src/Entities/UI/PlayerScore/Score.hpp src/Entities/UI/PlayerScore/ScoreBackground.cpp src/Entities/UI/PlayerScore/ScoreBackground.hpp src/Entities/UI/Lives/LivesBackground.cpp src/Entities/UI/Lives/LivesBackground.hpp src/Entities/UI/Lives/Lives.cpp src/Entities/UI/Lives/Lives.hpp src/Entities/UI/Weapon/WeaponBackground.cpp src/Entities/UI/Weapon/WeaponBackground.hpp src/Entities/UI/Weapon/WeaponUI.cpp src/Entities/UI/Weapon/WeaponUI.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
