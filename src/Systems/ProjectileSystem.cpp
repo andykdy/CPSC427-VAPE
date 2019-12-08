@@ -91,7 +91,9 @@ void ProjectileSystem::clear() {
     for (auto* projectile : friendly_projectiles) {
         projectile->destroy();
     }
+    friendly_projectiles.clear();
     for (auto* projectile : hostile_projectiles) {
         projectile->destroy();
     }
+    hostile_projectiles.clear();
 }

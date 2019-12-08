@@ -47,7 +47,7 @@ bool Boss3::init(vec2 screen) {
 	{
 		if (!boss3_texture.load_from_file(textures_path("boss3.png")))
 		{
-			fprintf(stderr, "Failed to load Boss1 texture!");
+			fprintf(stderr, "Failed to load Boss3 texture!");
 			return false;
 		}
 	}

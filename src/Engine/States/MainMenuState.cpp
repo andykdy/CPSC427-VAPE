@@ -16,7 +16,8 @@
 #include "OutroState.hpp"
 
 void MainMenuState::init() {
-    m_background_music = Mix_LoadMUS(audio_path("mainmenu.wav"));
+    m_background_music_file.init(audio_path("mainmenu.wav"));
+    m_background_music = Load_Music(m_background_music_file);
 
     // Playing background music indefinitely
     Mix_PlayMusic(m_background_music, -1);
@@ -69,6 +70,7 @@ void MainMenuState::init() {
 void MainMenuState::terminate() {
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
+    m_background_music_file.destroy();
 
     for (auto& button : m_buttons)
         button->destroy();

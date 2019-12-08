@@ -8,7 +8,8 @@
 #include "ControlsState.hpp"
 
 void IntroState::init() {
-    m_background_music = Mix_LoadMUS(audio_path("intro.wav"));
+    m_background_music_file.init(audio_path("intro.wav"));
+    m_background_music = Load_Music(m_background_music_file);
 
 
     if (m_background_music == nullptr)
@@ -30,6 +31,7 @@ void IntroState::init() {
 void IntroState::terminate() {
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
+    m_background_music_file.destroy();
     m_video.destroy();
     m_skip.destroy();
 }

@@ -16,6 +16,7 @@
 #include <Entities/UI/MainMenu/MainMenu.hpp>
 #include <Entities/UI/Button.hpp>
 #include <Entities/UI/Cursor.hpp>
+#include <Utils/PhysFSHelpers.hpp>
 
 class MainMenuState : public GameState{
 public:
@@ -42,6 +43,7 @@ private:
     unsigned int m_button_cursor;
     Cursor* m_cursor;
 
+	RWFile m_background_music_file;
 	Mix_Music* m_background_music;
 };
 

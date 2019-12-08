@@ -19,13 +19,14 @@
 // Get defintion of PROJECT_SOURCE_DIR from:
 #include "project_path.hpp"
 
-#define shader_path(name) PROJECT_SOURCE_DIR "./shaders/" name
-#define data_path PROJECT_SOURCE_DIR "./data"
-#define textures_path(name)  data_path "/textures/" name
-#define audio_path(name) data_path  "/audio/" name
-#define mesh_path(name) data_path  "/meshes/" name
-#define video_path(name) data_path "/videos/" name
-#define font_path(name) data_path "/fonts/" name
+#define shader_path(name) "shaders/" name
+#define data_path "../" "./data"
+#define pak_data_path "data"
+#define textures_path(name)  pak_data_path "/textures/" name
+#define audio_path(name) pak_data_path  "/audio/" name
+#define mesh_path(name) pak_data_path  "/meshes/" name
+#define video_path(name) pak_data_path "/videos/" name
+#define font_path(name) pak_data_path "/fonts/" name
 
 // Not much math is needed and there are already way too many libraries linked (:
 // If you want to do some overloads..

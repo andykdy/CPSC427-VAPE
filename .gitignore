@@ -300,4 +300,7 @@ data/data.7z
 
 *.fla
 
-cmake-build-*/
+cmake-*/
+
+data.7z
+assets.vapepak

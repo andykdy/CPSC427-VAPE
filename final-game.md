@@ -72,7 +72,9 @@ A state was added between levels to give a bit of a breather, instead of going s
 We integrated with FFmpeg/Libav to add video rendering. 
 The VideoUtil class can demux/decode video files and read frames into pixel data, which is utilized by the Video Entity to create its texture each frame.
 
-We also added text rendering using stb_truetype
+We also added text rendering using stb_truetype.
+
+Also integrated PhysFS to load assets from a package file. 
 
 ## Advanced Graphics
 Multiple particle systems: Explosions, Vamp mode particles, Boss2 laser priming/warning.

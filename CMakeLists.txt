@@ -183,10 +183,11 @@ set(SOURCE_FILES
         src/Levels/Levels.hpp
         src/Levels/Level1.hpp
         src/Levels/Level2.hpp
-        src/Levels/Level2.hpp
         src/Levels/Level3.hpp
 
         src/Utils/SaveData.cpp src/Utils/SaveData.hpp
+        src/Utils/PhysFSHelpers.hpp src/Utils/PhysFSHelpers.cpp
+        src/Utils/PhysFSStream.cpp src/Utils/PhysFSStream.hpp
 
         src/Entities/Video.cpp src/Entities/Video.hpp
 
@@ -212,6 +213,7 @@ set_target_properties(${name} PROPERTIES
 target_include_directories(${PROJECT_NAME} PUBLIC ext/stb_truetype/)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/stb_image/)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/gl3w)
+target_include_directories(${PROJECT_NAME} PUBLIC ext/physfs-cpp/)
 
 # Find OpenGL
 find_package(OpenGL REQUIRED)
@@ -220,6 +222,15 @@ if (OPENGL_FOUND)
    target_include_directories(${PROJECT_NAME} PUBLIC ${OPENGL_INCLUDE_DIR})
    target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENGL_gl_LIBRARY})
 endif()
+
+
+# Get and build physfs
+include(${PROJECT_SOURCE_DIR}/cmake/Modules/physfs.cmake)
+
+fetch_physfs(
+        ${PROJECT_SOURCE_DIR}/cmake/Modules
+        ${PROJECT_BINARY_DIR}/physfs
+)
 
 # glfw, sdl could be precompiled (on windows) or installed by a package manager (on OSX and Linux)
 
@@ -325,12 +336,23 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${GLFW_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${SDL2_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${FFMPEG_INCLUDE_DIRS})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES} ${FFMPEG_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES} ${FFMPEG_LIBRARIES} physfs)
 
 # Needed to add this
 if(IS_OS_LINUX)
   target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS})
 endif()
+
+
+# Package assets
+set(ASSET_FILE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets.vapepak)
+if (NOT EXISTS ${ASSET_FILE})
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E tar cf ${ASSET_FILE} --format=zip -- data shaders
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+            COMMENT "Packaging assets to ${ASSET_FILE} this may take a minute...")
+endif()
+
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     set(OUTPUT_DIR ./releases)
@@ -345,9 +367,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     endif()
 
     set(ZIP_FILES
-            bin
-            data
-            shaders
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
             README.md
             version.txt)
 

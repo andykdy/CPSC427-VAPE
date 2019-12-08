@@ -2,9 +2,13 @@
 // Created by Cody on 11/17/2019.
 //
 
+#include <iostream>
+#include <fstream>
+#include <memory>
 #include "VideoUtil.hpp"
 
 VideoUtil::VideoUtil() {
+    m_file_stream = nullptr;
     m_format_ctx = nullptr;
     m_codec_ctx = nullptr;
     m_sws_ctx = nullptr;
@@ -15,12 +19,64 @@ VideoUtil::VideoUtil() {
     m_frame = nullptr;
 }
 
+static int readFunction(void* opaque, uint8_t* buf, int buf_size) {
+    auto& stream = *reinterpret_cast<PhysFSStream*>(opaque);
+    return (int)stream.read(buf, buf_size);
+}
+
+static int64_t seekFunction(void* opaque, int64_t offset, int whence) {
+    auto& stream = *reinterpret_cast<PhysFSStream*>(opaque);
+    if (0x10000 == whence)
+    {
+        return stream.getSize();
+    }
+    return stream.seek(offset);
+}
+
 bool VideoUtil::open(const char *filename) {
     // TODO cleanup on fails
+
+    // av_log_set_level(AV_LOG_DEBUG);
+
+    m_file_stream = new PhysFSStream(filename);
+
+    // Alloc a buffer for the stream
+    const int ioBufferSize = 32768;
+    //const std::shared_ptr<unsigned char> buffer(reinterpret_cast<unsigned char*>(av_malloc(ioBufferSize + AV_INPUT_BUFFER_PADDING_SIZE)), &av_free);
+    auto * buffer = reinterpret_cast<unsigned char*>(av_malloc(ioBufferSize + AV_INPUT_BUFFER_PADDING_SIZE));
+
+    if (!buffer){
+        std::cout << "Could not allocate buffer.\n";
+    }
+
+
+    // Get a AVContext stream
+    m_io_ctx = avio_alloc_context(
+            buffer,    // Buffer
+            ioBufferSize,  // Buffer size
+            0,                   // Buffer is only readable - set to 1 for read/write
+            m_file_stream,      // User (your) specified data
+            &readFunction,      // Function - Reading Packets (see example)
+            nullptr,                   // Function - Write Packets
+            &seekFunction       // Function - Seek to position in stream (see example)
+    );
+    if(m_io_ctx == nullptr){
+        fprintf(stderr, "Failed to allocate context!\n");
+        close();
+        return false;
+    }
+
+    // Allocate a AVContext
+    m_format_ctx = avformat_alloc_context();
+
+    // Set up the Format Context
+    m_format_ctx->pb = m_io_ctx;
+    m_format_ctx->flags |= AVFMT_FLAG_CUSTOM_IO; // we set up our own IO
 
     // Open video with avformat
     if (avformat_open_input(&m_format_ctx, filename, nullptr, nullptr) < 0) {
         fprintf(stderr, "Failed to open video file!\n");
+        close();
         return false;
     }
 
@@ -85,8 +141,14 @@ bool VideoUtil::open(const char *filename) {
 }
 
 void VideoUtil::close() {
-    if (m_sws_ctx) {
-        sws_freeContext(m_sws_ctx);
+    if (m_sws_ctx) sws_freeContext(m_sws_ctx);
+    if (m_io_ctx) {
+        av_free(m_io_ctx->buffer);
+        av_free(m_io_ctx);
+    }
+    if (m_format_ctx) {
+        avformat_close_input(&m_format_ctx);
+        avformat_free_context(m_format_ctx);
     }
     if (m_frame) av_frame_free(&m_frame);
     if (m_packet) av_packet_free(&m_packet);
@@ -94,10 +156,7 @@ void VideoUtil::close() {
         avcodec_close(m_codec_ctx);
         avcodec_free_context(&m_codec_ctx);
     }
-    if (m_format_ctx) {
-        avformat_close_input(&m_format_ctx);
-        avformat_free_context(m_format_ctx);
-    }
+    delete m_file_stream;
 }
 
 bool VideoUtil::readFrame() {

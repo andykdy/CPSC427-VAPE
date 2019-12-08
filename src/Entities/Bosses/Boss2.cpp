@@ -244,10 +244,9 @@ bool Boss2::init(vec2 screen) {
     // Load shared texture
     if (!boss2_texture.is_valid())
     {
-        if (!boss2_texture.load_from_file(textures_path("boss2.png")))
+        if (!boss2_texture.load_from_file(textures_path("Boss2.png")))
         {
-            fprintf(stderr, "Failed to load Boss1 texture!");
-            return false;
+            throw std::runtime_error("Failed to load Boss2 texture!");
         }
     }
 
@@ -262,13 +261,35 @@ bool Boss2::init(vec2 screen) {
         return false;
 
     // Collision Mesh
-    FILE* mesh_file = fopen(mesh_path("boss2.testmesh"), "r");
+    std::string path = mesh_path("boss2.testmesh");
+    if (!PHYSFS_exists(path.c_str()))
+    {
+        std::stringstream ss;
+        ss << "Unable to find " << path  << std::endl;
+        throw std::runtime_error(ss.str().c_str());
+    }
+    auto* mesh_is = new PhysFS::ifstream(path.c_str());
+    if (!mesh_is->good())
+    {
+        throw std::runtime_error("Failed to load boss2 mesh");
+    }
+
+    // Reading sources
+    std::stringstream mesh_ss;
+    mesh_ss << mesh_is->rdbuf();
+    delete mesh_is;
+    std::string line;
+    std::getline(mesh_ss, line);
+
     size_t num_vertices;
-    fscanf(mesh_file, "%zu\n", &num_vertices);
+    sscanf(line.c_str(), "%zu\n", &num_vertices);
     for (size_t i = 0; i < num_vertices; ++i)
     {
+        if (!std::getline(mesh_ss, line)) {
+            throw std::runtime_error("Failed to load boss2 mesh");
+        }
         float x, y;
-        fscanf(mesh_file, "%f %f\n", &x, &y);
+        sscanf(line.c_str(), "%f %f\n", &x, &y);
         Vertex vertex;
         vertex.position = { x, y, -0.01f };
         vertex.color = { 1.f,1.f,1.f };
@@ -323,6 +344,11 @@ void Boss2::destroy() {
     for (auto laser : projectiles)
         laser->destroy();
     projectiles.clear();
+    m_lasers.clear();
+
+    m_easy_patterns.clear();
+    m_medium_patterns.clear();
+    m_hard_patterns.clear();
 
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();

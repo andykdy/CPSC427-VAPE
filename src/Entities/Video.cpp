@@ -145,4 +145,6 @@ void Video::destroy() {
 	glDeleteShader(effect.vertex);
 	glDeleteShader(effect.fragment);
 	glDeleteShader(effect.program);
+
+    m_video_reader.close();
 }

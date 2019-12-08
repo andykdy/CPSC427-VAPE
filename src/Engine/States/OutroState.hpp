@@ -36,7 +36,8 @@ public:
 private:
     Video m_video;
     EnterSkip m_skip;
-    Mix_Music *m_background_music;
+    RWFile m_background_music_file;
+    Mix_Music* m_background_music;
 };
 
 
