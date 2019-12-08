@@ -124,7 +124,7 @@ void Boss3Clone::update(float ms) {
 				motion->velocity.y = 0.f;
 		}
 		else {
-			move_to(player_pos,90.f);	
+			move_to(player_pos,120.f);	
 		}
 	}
 	else if (m_curr_state == CloneState::stunned) {
@@ -237,7 +237,7 @@ vec2 Boss3Clone::move_to(vec2 target, float speed) {
 }
 
 void Boss3Clone::stun() {
-	if (m_curr_state != CloneState::stunned) {
+	if (m_curr_state != CloneState::stunned && m_curr_state != CloneState::moving) {
 		m_prev_state = m_curr_state;
 		m_curr_state = CloneState::stunned;
 		m_stun_duration = STUN_DURATION_MS;
