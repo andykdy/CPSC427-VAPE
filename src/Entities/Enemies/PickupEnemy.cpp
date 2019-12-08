@@ -137,33 +137,39 @@ void PickupEnemy::spawn_pickup() {
 
 	ECS::EntityManager* e = GameEngine::getInstance().getEntityManager();
 
-    int rd = rand() % 3;
+    int rd = rand() % 4;
 
     switch (rd) {
         case 0: {
-                auto *p = &e->addEntity<HealthPickup>();
-                p->init(motion->position);
-                ps.pickups.emplace_back(p);
-                break;
-            }
+            auto *p = &e->addEntity<VampExpandPickup>();
+            p->init(motion->position);
+            ps.pickups.emplace_back(p);
+            break;
+        }
         case 1:{
-                auto *p = &e->addEntity<MachineGunPickup>();
-                p->init(motion->position);
-                ps.pickups.emplace_back(p);
-                break;
-            }
+            auto *p = &e->addEntity<VampExpandPickup>();
+            p->init(motion->position);
+            ps.pickups.emplace_back(p);
+            break;
+        }
         case 2:{
-                auto *p = &e->addEntity<TriShotPickup>();
-                p->init(motion->position);
-                ps.pickups.emplace_back(p);
-                break;
-            }
+            auto *p = &e->addEntity<VampExpandPickup>();
+            p->init(motion->position);
+            ps.pickups.emplace_back(p);
+            break;
+        }
+        case 3:{
+            auto *p = &e->addEntity<VampExpandPickup>();
+            p->init(motion->position);
+            ps.pickups.emplace_back(p);
+            break;
+        }
         default:{
-                auto *p = &e->addEntity<VampExpandPickup>();
-                p->init(motion->position);
-                ps.pickups.emplace_back(p);
-                break;
-            }
+            auto *p = &e->addEntity<VampExpandPickup>();
+            p->init(motion->position);
+            ps.pickups.emplace_back(p);
+            break;
+        }
     }
 
 

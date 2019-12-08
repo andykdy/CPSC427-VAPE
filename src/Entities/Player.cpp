@@ -24,7 +24,8 @@
 namespace
 {
 	const size_t BULLET_COOLDOWN_MS = 300;
-	const size_t spriteWH = 450;
+    const size_t MAX_HEALTH = 75;
+    const size_t spriteWH = 450;
 	const size_t spriteFrames = 10;
 	const vec2 screenBuffer = { 20, 50 };
 }
@@ -236,7 +237,7 @@ void Player::gain_health(float amount)
 
 void Player::reset_health()
 {
-    int amount = m_init_health - get_health();
+    int amount = MAX_HEALTH - get_health();
     gain_health(amount);
 
 }

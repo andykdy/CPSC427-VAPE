@@ -29,7 +29,7 @@ public:
 
     // Updates all vamp particles
     // ms represents the number of milliseconds elapsed from the previous update() call
-    void update(float ms, Player* player);
+    void update(float ms, vec2 player_position);
 
     // Renders the particles
     // projection is the 2D orthographic projection matrix

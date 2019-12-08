@@ -105,7 +105,7 @@ bool VampExpandPickup::collides_with(const Player &player) {
 }
 
 void VampExpandPickup::applyEffect(Player& player) {
-    player.reset_health();
+    player.set_vamp_expand(true);
 }
 
 vec2 VampExpandPickup::get_bounding_box() const
