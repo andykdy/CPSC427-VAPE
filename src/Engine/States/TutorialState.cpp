@@ -19,11 +19,21 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-	const size_t VAMP_MODE_DURATION = 2000;
+	const size_t VAMP_MODE_DURATION = 1500;
 	const size_t MAX_HEALTH = 75;
 	const size_t INIT_HEALTH = 50;
 	const size_t DAMAGE_COLLIDE = 5;
 	const size_t VAMP_HEAL = 2;
+	const size_t VAMP_DAMAGE_TIMER = 125;
+	const size_t VAMP_DAMAGE_TIMER_BOSS = 400;
+	const size_t VAMP_DAMAGE_BOSS = 4;
+	const size_t VAMP_TIME_PER_POINT = 200;
+	const size_t VAMP_ACTIVATION_COOLDOWN = 300;
+	const size_t MAX_VAMP_CHARGE = 15;
+	const size_t VAMP_ACTIVATION_COST = 0;
+	const float VAMP_TIME_SLOWDOWN = 0.5f;
+	const float BOSS_EXPLOSION_COOLDOWN = 400;
+	const float PATH_UPDATE_COOLDOWN = 100;
 	const size_t VAMP_KILLS_NEEDED = 3;
 }
 
@@ -31,7 +41,9 @@ namespace
 TutorialState::TutorialState() :
 	m_points(0),
 	m_next_turtle_spawn(0.f),
-	m_next_fish_spawn(0.f)
+	m_next_fish_spawn(0.f),
+	m_font_ranger(Font(font_path("spaceranger.ttf"))),
+	m_font_condensed(Font(font_path("Cheltenham Condensed Bold.ttf")))
 {
 	// Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -70,6 +82,14 @@ void TutorialState::init() {
 
 	GameEngine::getInstance().setM_current_speed(1.f);
 
+	m_vamp_mode = false;
+	m_vamp_cooldown = 0;
+	m_vamp_mode_charge = 0;
+	m_vamp_mode_timer = 0;
+	m_numVampParticles = 0;
+	m_debug_mode = false;
+	m_player_invincibility = false;
+
 	m_pause = &GameEngine::getInstance().getEntityManager()->addEntity<PauseMenu>();
 	m_pause->init(screen);
 
@@ -80,10 +100,21 @@ void TutorialState::init() {
     m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
     m_uiPanel->init(screen, screen.y, screen.x);
     m_health = &GameEngine::getInstance().getEntityManager()->addEntity<Health>();
-    m_health->init({53, screen.y-50});
+	m_health->init({22, screen.y-50});
 
     m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
-    m_vamp_charge->init({screen.x-52, screen.y-50});
+	m_vamp_charge->init({screen.x-21, screen.y-50});
+	m_score_ui = &GameEngine::getInstance().getEntityManager()->addEntity<Score>();
+	m_score_ui->init({483,screen.y-65}, &m_font_ranger);
+	m_score_background = &GameEngine::getInstance().getEntityManager()->addEntity<ScoreBackground>();
+	m_score_background->init(screen);
+	m_lives_background = &GameEngine::getInstance().getEntityManager()->addEntity<LivesBackground>();
+	m_lives_background->init(screen);
+	m_lives_ui = &GameEngine::getInstance().getEntityManager()->addEntity<Lives>();
+	m_lives_ui->init({168,screen.y-65}, &m_font_ranger, 0);
+	m_weapon_ui = &GameEngine::getInstance().getEntityManager()->addEntity<WeaponUI>();
+	m_weapon_ui->init(&m_font_ranger, &m_font_condensed);
+	m_vamp_particle_emitter.init();
 	m_vamp_mode_charge = 0;
 
 	GameEngine::getInstance().getSystemManager()->addSystem<MotionSystem>();
@@ -128,15 +159,29 @@ void TutorialState::terminate() {
 	m_vamp.destroy();
 	for (auto& turtle : m_turtles)
 		turtle->destroy();
+
     m_uiPanelBackground->destroy();
     m_uiPanel->destroy();
 	m_health->destroy();
+	m_score_ui->destroy();
+	m_score_background->destroy();
+	m_lives_background->destroy();
+	m_lives_ui->destroy();
+	m_weapon_ui->destroy();
 	m_vamp_charge->destroy();
+	for (auto& text : m_text)
+		text.destroy();
+
+	for (auto& score_text : m_score_text)
+		score_text.destroy();
+
 	m_turtles.clear();
 	m_dialogue.destroy();
 	m_explosion.destroy();
 	m_continue_UI.destroy();
 	m_space.destroy();
+
+	m_vamp_particle_emitter.destroy();
 }
 
 void TutorialState::update(float ms) {
@@ -152,6 +197,8 @@ void TutorialState::update(float ms) {
 	vec2 screen = { (float)w / GameEngine::getInstance().getM_screen_scale(), (float)h / GameEngine::getInstance().getM_screen_scale() };
 	m_health->setHealth(m_player->get_health());
 	m_vamp_charge->setVampCharge(m_vamp_mode_charge);
+	m_score_ui->setScore(m_points);
+	m_weapon_ui->setAmmo(m_player->getWeaponAmmo());
 
 	// Checking Player - Turtle collisions
 	auto turtle_it = m_turtles.begin();
@@ -207,11 +254,12 @@ void TutorialState::update(float ms) {
 			if ((*bullet_it)->collides_with(**turtle_it))
 			{
 				eraseBullet = true;
+				spawn_score_text((*turtle_it)->get_points(), (*turtle_it)->get_position());
                 m_explosion.spawn((*turtle_it)->get_position());
+				m_points += (*turtle_it)->get_points();
 				(*turtle_it)->destroy();
 				turtle_it = m_turtles.erase(turtle_it);
 				Mix_PlayChannel(-1, m_player_explosion, 0);
-				++m_points;
 				add_vamp_charge();
 				if (m_current_cmp == Component::shooting) {
 					m_dialogue.next();
@@ -231,29 +279,56 @@ void TutorialState::update(float ms) {
 			++bullet_it;
 	}
 
+	// add health if enough vampParticles
+	m_numVampParticles += m_vamp_particle_emitter.getCapturedParticles();
+	// 6 is average of particles dropped per kill
+	if (m_numVampParticles >= 6) {
+		add_health(VAMP_HEAL);
+		m_numVampParticles = 0;
+	}
+
+	// check for vamp/enemy collisions
+	m_vamp_cooldown -= ms;
+
 	// check for vamp/turtle collisions
 	if (m_vamp_mode) {
 		turtle_it = m_turtles.begin();
 		while (turtle_it != m_turtles.end()) {
 			if (m_vamp.collides_with(**turtle_it)) {
+				(*turtle_it)->add_vamp_timer(ms);
+				m_vamp_particle_emitter.spawn((*turtle_it)->get_position());
                 m_explosion.spawn((*turtle_it)->get_position());
-                Mix_PlayChannel(-1, m_player_explosion, 0);
+				m_points += (*turtle_it)->get_points();
+				spawn_score_text((*turtle_it)->get_points(), (*turtle_it)->get_position());
+				Mix_PlayChannel(-1, m_player_explosion, 0);
 				(*turtle_it)->destroy();
 				turtle_it = m_turtles.erase(turtle_it);
-				add_health(VAMP_HEAL);
 				m_vamp_quota--;
 				continue;
 			}
 			++turtle_it;
 		}
 	}
-	if (m_vamp_quota == 0 && m_current_cmp == vamp_2 && !m_vamp_mode) {
+	if (m_vamp_quota == 0 && m_current_cmp == vamp_2) {
 		m_current_cmp = clear;
 		m_dialogue.next();
 		m_continue_UI.set_activity(true);
 	}
 
     m_space.update(ms);
+
+	auto text_it = m_score_text.begin();
+	while (text_it != m_score_text.end()) {
+		text_it->scroll_up(ms);
+		if (!text_it->is_alive()) {
+			(text_it)->destroy();
+			text_it = m_score_text.erase(text_it);
+			continue;
+		}
+		++text_it;
+	}
+
+	m_vamp_particle_emitter.update(ms, m_player->get_position());
     m_explosion.update(ms);
 	// Updating all entities, making the turtle and fish
 	// faster based on current
@@ -263,12 +338,28 @@ void TutorialState::update(float ms) {
 		turtle->update(ms);
 	}
 
-	// for debugging purposes
-	if (keyMap[GLFW_KEY_F]) {
-		m_vamp_mode_charge = 15;
+	// debug state
+	if (m_debug_mode)
+	{
+
+		if (keyMap[GLFW_KEY_F]) {
+			add_health(MAX_HEALTH);
+		}
+
+		if (keyMap[GLFW_KEY_G]) {
+			m_vamp_mode_charge = MAX_VAMP_CHARGE;
+		}
+
+		if (m_player_invincibility) {
+			m_vamp_mode_charge = MAX_VAMP_CHARGE;
+			add_health(MAX_HEALTH);
+		}
 	}
+	bool end_vamp_mode = false;
+
 	if (m_current_cmp == vamp_2) {
-		m_vamp_mode_charge = 15;
+		if (m_vamp_quota > 0)
+			m_vamp_mode_charge = MAX_VAMP_CHARGE;
 	}
 
 	if (m_vamp_mode_charge == 15 && m_current_cmp == vamp_1) {
@@ -276,24 +367,38 @@ void TutorialState::update(float ms) {
  		m_dialogue.next();
 	}
 
-	if (m_vamp_mode_charge >= 15 && keyMap[GLFW_KEY_ENTER]) {
-		m_vamp_mode = true;
-		m_vamp_mode_timer = VAMP_MODE_DURATION;
-		m_vamp_mode_charge = 0;
-		GameEngine::getInstance().setM_current_speed(0.5f);
+	if (keyMap[GLFW_KEY_ENTER] && m_vamp_cooldown <= 0) {
+		m_vamp_cooldown = VAMP_ACTIVATION_COOLDOWN;
 
-		m_vamp.init(m_player->get_position());
+		if (!m_vamp_mode && m_vamp_mode_charge >= VAMP_ACTIVATION_COST + 1)
+		{
+			m_vamp_mode = true;
+			m_vamp_mode_charge -= VAMP_ACTIVATION_COST;
+
+			GameEngine::getInstance().setM_current_speed(VAMP_TIME_SLOWDOWN);
+			m_vamp_charge->setVampCharge(m_vamp_mode_charge);
+			m_vamp.init(m_player->get_position());
+		} else {
+			end_vamp_mode = true;
+		}
+	}
+	if (!m_player->is_alive()) {
+		end_vamp_mode = true;
 	}
 
-	if (m_vamp_mode_timer > 0.f) {
-		m_vamp_mode_timer -= ms;
-		m_vamp.update(ms, m_player, m_vamp_mode_charge);
-
-
-		if (m_vamp_mode_timer <= 0.f) {
+	if (m_vamp_mode) {
+		if (m_vamp_mode_charge <= 0 || end_vamp_mode) {
 			GameEngine::getInstance().setM_current_speed(1.f);
 			m_vamp_mode = false;
+			m_player->set_vamp_expand(false);
 			m_vamp.destroy();
+		} else {
+			m_vamp.update(ms, m_player, m_vamp_mode_charge);
+			m_vamp_mode_timer += ms;
+			if (m_vamp_mode_timer >= VAMP_TIME_PER_POINT) {
+				m_vamp_mode_charge -= 1;
+				m_vamp_mode_timer = 0;
+			}
 		}
 	}
 
@@ -348,18 +453,32 @@ void TutorialState::draw() {
 	if (m_vamp_mode) {
 		m_vamp.draw(projection_2D);
 	}
+	m_vamp_particle_emitter.draw(projection_2D);
 	for (auto* projectile: projectiles.friendly_projectiles)
 		projectile->draw(projection_2D);
 	m_player->draw(projection_2D);
 	m_uiPanelBackground->draw(projection_2D);
 	m_health->draw(projection_2D);
 	m_vamp_charge->draw(projection_2D);
+	m_score_background->draw(projection_2D);
+	m_score_ui->draw(projection_2D);
+	m_lives_background->draw(projection_2D);
+	m_lives_ui->draw(projection_2D);
+	m_weapon_ui->draw(projection_2D);
 	if (m_continue_UI.isActive()) {
 		m_continue_UI.draw(projection_2D);
 	}
     m_uiPanel->draw(projection_2D);
 	m_dialogue.draw(projection_2D);
     m_explosion.draw(projection_2D);
+
+	for (auto& text : m_text) {
+		text.draw(projection_2D);
+	}
+
+	for (auto& score_text : m_score_text) {
+		score_text.draw(projection_2D);
+	}
 
 
 
@@ -390,14 +509,27 @@ void TutorialState::add_health(int heal) {
 }
 
 void TutorialState::add_vamp_charge() {
-	if (m_vamp_mode_charge < 15) {
-		m_vamp_mode_charge++;
+	if (!m_vamp_mode) {
 
-		if (m_vamp_mode_charge == 15) {
-			// TODO - replace with more appropriate sound
-			Mix_PlayChannel(-1, m_player_charged, 0);
+		if (m_vamp_mode_charge < MAX_VAMP_CHARGE) {
+			m_vamp_mode_charge++;
+
+			if (m_vamp_mode_charge == MAX_VAMP_CHARGE) {
+				Mix_PlayChannel(-1, m_player_charged, 0);
+			}
 		}
 	}
+}
+
+
+void TutorialState::spawn_score_text(int pts, vec2 pos) {
+	m_score_text.emplace_back();
+	m_score_text.back().init(&m_font_ranger);
+	std::string s = std::to_string(pts);
+	char const *pchar = s.c_str();
+	m_score_text.back().setText(pchar);
+	m_score_text.back().setColor({1.f, 0.8f, 0.0f});
+	m_score_text.back().setPosition(pos);
 }
 
 

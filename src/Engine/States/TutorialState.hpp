@@ -20,6 +20,13 @@
 #include "Entities/UI/Dialogue/Dialogue.hpp"
 #include "Entities/UI/Dialogue/Continue.hpp"
 
+#include <Entities/UI/ScoreText.hpp>
+#include <Entities/UI/PlayerScore/Score.hpp>
+#include <Entities/UI/PlayerScore/ScoreBackground.hpp>
+#include <Entities/UI/Lives/LivesBackground.hpp>
+#include <Entities/UI/Lives/Lives.hpp>
+#include <Entities/UI/Weapon/WeaponUI.hpp>
+
 // stlib
 #include <vector>
 #include <random>
@@ -31,6 +38,7 @@
 #include <Entities/UI/UIPanel/UIPanelBackground.hpp>
 #include <Entities/UI/UIPanel/UIPanel.hpp>
 #include <Entities/UI/PauseMenu/PauseMenu.hpp>
+#include <Entities/Effects/VampParticleEmitter.hpp>
 #include <Utils/PhysFSHelpers.hpp>
 
 enum Component {
@@ -71,6 +79,7 @@ private:
 
 	void lose_health(int damage);
 	void add_health(int heal);
+    void spawn_score_text(int pts, vec2 position);
 
 	void reset();
 
@@ -86,6 +95,7 @@ private:
 	// Space effect
 	Space m_space;
 
+    unsigned int m_lives;
 	// Number of fish eaten by the salmon, displayed in the window title
 	unsigned int m_points;
 
@@ -98,6 +108,21 @@ private:
 	Continue m_continue_UI;
     UIPanelBackground* m_uiPanelBackground;
     UIPanel* m_uiPanel ;
+    Score* m_score_ui;
+    ScoreBackground* m_score_background;
+    Lives* m_lives_ui;
+    LivesBackground* m_lives_background;
+    WeaponUI* m_weapon_ui;
+
+    // Text rendering
+    Font m_font_ranger;
+    Font m_font_condensed;
+    // Font m_font_scoring;
+    std::vector<Text> m_text;
+    std::vector<ScoreText> m_score_text;
+
+    bool m_debug_mode;
+    bool m_player_invincibility;
 
 	float m_next_turtle_spawn;
 	float m_next_fish_spawn;
@@ -109,10 +134,14 @@ private:
 
 	// Vamp mode
 	Vamp m_vamp;
-	bool m_vamp_mode;
-	float m_vamp_mode_timer;
-	unsigned int m_vamp_mode_charge;
+    bool m_vamp_mode;
+    float m_vamp_mode_timer;
     float m_vamp_cooldown;
+    unsigned int m_vamp_mode_charge;
+    int m_numVampParticles;
+
+    // Effects
+    VampParticleEmitter m_vamp_particle_emitter;
     Explosion m_explosion;
 
 	RWFile m_background_music_file;
