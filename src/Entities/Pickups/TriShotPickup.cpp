@@ -26,7 +26,7 @@ bool TriShotPickup::init(vec2 position) {
 	// Load shared texture
 	if (!pickup_texture.is_valid())
 	{
-		if (!pickup_texture.load_from_file(textures_path("pickup.png")))
+		if (!pickup_texture.load_from_file(textures_path("trishot_pickup.png")))
 		{
 			fprintf(stderr, "Failed to load pickup enemy texture!");
 			return false;
