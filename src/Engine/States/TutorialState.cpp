@@ -52,7 +52,9 @@ TutorialState::TutorialState() :
 void TutorialState::init() {
 	m_background_music_file.init(audio_path("music_tutorial.wav"));
 	m_background_music = Load_Music(m_background_music_file);
-	m_player_dead_sound_file.init(audio_path("salmon_dead.wav"));
+    m_player_damage_sound_file.init(audio_path("player_damaged.wav"));
+    m_player_damage_sound = Load_Wav(m_player_damage_sound_file);
+    m_player_dead_sound_file.init(audio_path("player_death.wav"));
 	m_player_dead_sound = Load_Wav(m_player_dead_sound_file);
 	m_player_eat_sound_file.init(audio_path("salmon_eat.wav"));
 	m_player_eat_sound = Load_Wav(m_player_eat_sound_file);
@@ -61,7 +63,8 @@ void TutorialState::init() {
 	m_player_charged_file.init(audio_path("vamp_charge.wav"));
 	m_player_charged = Load_Wav(m_player_charged_file);
 
-	if (m_background_music == nullptr || m_player_dead_sound == nullptr || m_player_eat_sound == nullptr)
+	if (m_background_music == nullptr ||  m_player_damage_sound == nullptr
+        ||  m_player_dead_sound == nullptr || m_player_eat_sound == nullptr || m_player_explosion == nullptr || m_player_charged == nullptr)
 	{
 		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
 			audio_path("music.wav"),
@@ -152,6 +155,12 @@ void TutorialState::terminate() {
 	if (m_player_explosion != nullptr)
 		Mix_FreeChunk(m_player_explosion);
 	m_player_explosion_file.destroy();
+	if (m_player_charged != nullptr)
+	    Mix_FreeChunk(m_player_charged);
+	m_player_charged_file.destroy();
+	if (m_player_damage_sound != nullptr)
+	    Mix_FreeChunk(m_player_damage_sound);
+	m_player_damage_sound_file.destroy();
 
 	m_pause->destroy();
 
@@ -406,6 +415,7 @@ void TutorialState::update(float ms) {
 	if (!m_player->is_alive() &&
 		m_space.get_salmon_dead_time() > 5) {
 		reset();
+        return;
 	}
 }
 
@@ -489,11 +499,12 @@ void TutorialState::draw() {
 }
 
 void TutorialState::lose_health(int damage) {
-	m_player->lose_health(damage);
-	Mix_PlayChannel(-1, m_player_dead_sound, 0);
-	if (!m_player->is_alive()) {
-		m_space.set_salmon_dead();
-	}
+    m_player->lose_health(damage);
+    Mix_PlayChannel(-1, m_player_damage_sound, 0);
+    if (!m_player->is_alive()) {
+        Mix_PlayChannel(-1, m_player_dead_sound, -1);
+        m_space.set_salmon_dead();
+    }
 }
 
 void TutorialState::add_health(int heal) {

@@ -155,6 +155,9 @@ private:
 	RWFile m_player_charged_file;
 	Mix_Chunk* m_player_charged;
 
+    RWFile m_player_damage_sound_file;
+    Mix_Chunk* m_player_damage_sound;
+
 	// C++ rng
 	std::default_random_engine m_rng;
 	std::uniform_real_distribution<float> m_dist; // default 0..1
