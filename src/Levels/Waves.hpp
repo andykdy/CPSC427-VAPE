@@ -49,6 +49,11 @@ namespace Levels {
                       genSpawn(spawn < Turtle > , {400, -150}, TD, 0.f),
                       genSpawn(spawn < Turtle > , {500, -100}, TD, 0.f)
     };
+    const Wave TM3Fast = {genSpawn(spawn < Turtle > , {300, -100}, TD2, 0.f),
+                      genSpawn(spawn < Turtle > , {400, -150}, TD2, 0.f),
+                      genSpawn(spawn < Turtle > , {500, -100}, TD2, 0.f)
+    };
+
     const Wave TR3 = {genSpawn(spawn < Turtle > , {500, -100}, TD, 0.f),
                       genSpawn(spawn < Turtle > , {600, -150}, TD, 0.f),
                       genSpawn(spawn < Turtle > , {700, -100}, TD, 0.f)
@@ -219,11 +224,26 @@ namespace Levels {
      */
     const Wave TMSpeedsterSingle = {genSpawn(spawn <EnemySpeedster>, {SW/2, -100}, TD, 0.f)};
 
+    const Wave TSPaced4Speedster = {
+            genSpawn(spawn < EnemySpeedster > , {150, -100}, TD, 0.f),
+            genSpawn(spawn < EnemySpeedster > , {300, -100}, TD, 0.f),
+            genSpawn(spawn < EnemySpeedster > , {450, -100}, TD, 0.f),
+            genSpawn(spawn < EnemySpeedster > , {600, -100}, TD, 0.f),
+    };
+
     const Wave LM2Speedster = {genSpawn(spawn < EnemySpeedster > , {-100, 200}, TR, 0.f),
                               genSpawn(spawn < EnemySpeedster > , {-150, 400}, TR, 0.f),};
 
-    const Wave LRM2Speedster = {genSpawn(spawn < EnemySpeedster > , {-100, 200}, TR, 0.f),
+    const Wave LM3Speedster = {genSpawn(spawn < EnemySpeedster > , {-100, 200}, TR, 0.f),
+                               genSpawn(spawn < EnemySpeedster > , {-150, 400}, TR, 0.f),
+                               genSpawn(spawn < EnemySpeedster > , {-200, 600}, TR, 0.f),};
+
+    const Wave RM2Speedster = {genSpawn(spawn < EnemySpeedster > , {-100, 300}, TR, 0.f),
                                 genSpawn(spawn < EnemySpeedster > , {SW + 150, 500}, TL, 0.f),};
+
+    const Wave RM3Speedster = {genSpawn(spawn < EnemySpeedster > , {-100, 300}, TR, 0.f),
+                               genSpawn(spawn < EnemySpeedster > , {SW + 150, 500}, TL, 0.f),
+                               genSpawn(spawn < EnemySpeedster > , {SW + 200, 700}, TL, 0.f),};
 
 	/*
 	 *
