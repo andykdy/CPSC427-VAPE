@@ -284,3 +284,10 @@ void Player::set_position(vec2 pos) {
 	motion->position = pos;
 }
 
+Weapon* Player::getWeapon() {
+    return weapon;
+}
+
+float Player::getWeaponAmmo() {
+    return weapon->getAmmo();
+}

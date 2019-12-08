@@ -43,6 +43,7 @@
 #include <Entities/UI/PlayerScore/ScoreBackground.hpp>
 #include <Entities/UI/Lives/LivesBackground.hpp>
 #include <Entities/UI/Lives/Lives.hpp>
+#include <Entities/UI/Weapon/WeaponUI.hpp>
 
 const size_t INIT_LIVES = 5;
 
@@ -112,10 +113,12 @@ private:
     ScoreBackground* m_score_background;
     Lives* m_lives_ui;
     LivesBackground* m_lives_background;
+    WeaponUI* m_weapon_ui;
 	Dialogue m_dialogue;
 
 	// Text rendering
     Font m_font_ranger;
+    Font m_font_condensed;
     // Font m_font_scoring;
     std::vector<Text> m_text;
     std::vector<ScoreText> m_score_text;

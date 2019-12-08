@@ -47,7 +47,8 @@ LevelState::LevelState(Levels::Level level, PlayerData data) :
         m_points(data.points),
         m_starting_points(data.points),
         m_lives(data.lives),
-        m_font_ranger(Font(font_path("spaceranger.ttf")))
+        m_font_ranger(Font(font_path("spaceranger.ttf"))),
+        m_font_condensed(Font(font_path("Cheltenham Condensed Bold.ttf")))
 
 {
 
@@ -119,6 +120,8 @@ void LevelState::init() {
     m_lives_background->init(screen);
     m_lives_ui = &GameEngine::getInstance().getEntityManager()->addEntity<Lives>();
     m_lives_ui->init({168,screen.y-65}, &m_font_ranger, m_lives);
+    m_weapon_ui = &GameEngine::getInstance().getEntityManager()->addEntity<WeaponUI>();
+    m_weapon_ui->init(&m_font_ranger, &m_font_condensed);
     m_vamp_particle_emitter.init();
     m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
     m_uiPanel->init(screen, screen.y, screen.x);
@@ -185,6 +188,7 @@ void LevelState::terminate() {
     m_score_background->destroy();
     m_lives_background->destroy();
     m_lives_ui->destroy();
+    m_weapon_ui->destroy();
     m_vamp_charge->destroy();
     if (m_boss != nullptr)
         m_boss->destroy();
@@ -236,6 +240,7 @@ void LevelState::update(float ms) {
     m_health->setHealth(m_player->get_health());
     m_vamp_charge->setVampCharge(m_vamp_mode_charge);
     m_score_ui->setScore(m_points);
+    m_weapon_ui->setAmmo(m_player->getWeaponAmmo());
 
 
 
@@ -648,6 +653,7 @@ void LevelState::draw() {
     m_score_ui->draw(projection_2D);
     m_lives_background->draw(projection_2D);
     m_lives_ui->draw(projection_2D);
+    m_weapon_ui->draw(projection_2D);
     m_uiPanel->draw(projection_2D);
     m_dialogue.draw(projection_2D);
 
