@@ -16,6 +16,7 @@
 #include <Entities/Pickups/HealthPickup.hpp>
 #include <Entities/Pickups/VampExpandPickup.hpp>
 #include <Systems/PickupSystem.hpp>
+#include <chrono>
 
 
 Texture PickupEnemy::enemy_texture;
@@ -62,6 +63,10 @@ bool PickupEnemy::init()
 	// 1.0 would be as big as the original texture.
 	physics->scale = { -0.14f, 0.14f };
 	points = POINTS_VAL;
+
+	std::random_device rd;
+	m_rand = std::default_random_engine(rd());
+	m_rand.seed(std::chrono::system_clock::now().time_since_epoch().count());
 
 	return true;
 }
@@ -137,23 +142,23 @@ void PickupEnemy::spawn_pickup() {
 
 	ECS::EntityManager* e = GameEngine::getInstance().getEntityManager();
 
-    int rd = rand() % 4;
+    int rd = m_rand() % 4;
 
     switch (rd) {
         case 0: {
-            auto *p = &e->addEntity<VampExpandPickup>();
+            auto *p = &e->addEntity<HealthPickup>();
             p->init(motion->position);
             ps.pickups.emplace_back(p);
             break;
         }
         case 1:{
-            auto *p = &e->addEntity<VampExpandPickup>();
+            auto *p = &e->addEntity<MachineGunPickup>();
             p->init(motion->position);
             ps.pickups.emplace_back(p);
             break;
         }
         case 2:{
-            auto *p = &e->addEntity<VampExpandPickup>();
+            auto *p = &e->addEntity<TriShotPickup>();
             p->init(motion->position);
             ps.pickups.emplace_back(p);
             break;
@@ -165,7 +170,7 @@ void PickupEnemy::spawn_pickup() {
             break;
         }
         default:{
-            auto *p = &e->addEntity<VampExpandPickup>();
+            auto *p = &e->addEntity<HealthPickup>();
             p->init(motion->position);
             ps.pickups.emplace_back(p);
             break;
