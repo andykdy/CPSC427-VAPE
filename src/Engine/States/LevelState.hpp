@@ -153,6 +153,7 @@ private:
     RWFile m_background_music_file;
     RWFile m_boss_music_file;
     RWFile m_victory_music_file;
+    RWFile m_player_damage_sound_file;
     RWFile m_player_dead_sound_file;
     RWFile m_player_eat_sound_file;
     RWFile m_player_explosion_file;
@@ -161,6 +162,7 @@ private:
     Mix_Music* m_background_music;
     Mix_Music* m_boss_music;
     Mix_Music* m_victory_music;
+    Mix_Chunk* m_player_damage_sound;
     Mix_Chunk* m_player_dead_sound;
     Mix_Chunk* m_player_eat_sound;
     Mix_Chunk* m_player_explosion;

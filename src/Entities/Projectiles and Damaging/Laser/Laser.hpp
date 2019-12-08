@@ -5,6 +5,7 @@
 #ifndef VAPE_LASER_HPP
 #define VAPE_LASER_HPP
 
+#include <Utils/PhysFSHelpers.hpp>
 #include "Entities/Projectiles and Damaging/Projectile.hpp"
 #include "LaserBeamSprite.hpp"
 
@@ -45,6 +46,9 @@ public:
     void setRotationTarget(vec2 position);
     inline void setRotation(float rotation) { m_rotation = rotation; };
 private:
+	RWFile m_laser_sound_file;
+	Mix_Chunk* m_laser_sound;
+	int m_playing_channel;
     LaserBeamSprite* m_spr;
     vec2 m_origin;
     float m_rotation;

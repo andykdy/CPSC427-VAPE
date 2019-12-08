@@ -92,7 +92,6 @@ public:
 private:
     ControlDiagram* m_controls;
     EnterContinue m_continue;
-    // TODO "Press Enter to continue" prompt
 };
 
 #endif //VAPE_CONTROLSSTATE_HPP

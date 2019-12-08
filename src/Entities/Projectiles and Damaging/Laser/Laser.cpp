@@ -25,6 +25,16 @@ bool Laser::init(vec2 position, float rotation, bool hostile, int damage) {
     if (gl_has_errors())
         return false;
 
+    // Load sound
+    m_laser_sound_file.init(audio_path("laser-looping.wav"));
+    m_laser_sound = Load_Wav(m_laser_sound_file);
+    if ( m_laser_sound == nullptr)
+    {
+        fprintf(stderr, "Failed to load sound laser-looping.wav\n %s\n make sure the data directory is present",
+                audio_path("pow.wav"));
+        throw std::runtime_error("Failed to load sound pow.wav");
+    }
+
 
     std::vector<GLfloat> screen_vertex_buffer_data;
     constexpr float z = -0.1;
@@ -73,10 +83,16 @@ bool Laser::init(vec2 position, float rotation, bool hostile, int damage) {
     Projectile::m_damage = damage;
     Projectile::m_erase_on_collide = false;
 
+    m_playing_channel = -1;
+
     return true;
 }
 
 void Laser::destroy() {
+    if (m_laser_sound != nullptr)
+        Mix_FreeChunk(m_laser_sound);
+    m_laser_sound_file.destroy();
+
     m_spr->destroy();
 
     auto* effect = getComponent<EffectComponent>();
@@ -95,14 +111,21 @@ void Laser::update(float ms) {
         if (m_chargeTimer > 0)
             m_chargeTimer -= ms;
         else {
+            if (m_playing_channel == -1) m_playing_channel = Mix_PlayChannel(-1, m_laser_sound, 0);
             m_chargeTimer = 0;
             m_state = laserState::firing;
         }
     }
     if (m_state == laserState::firing) {
-        if (m_fireTimer > 0)
+        if (m_fireTimer > 0){
+            if (m_playing_channel != -1 && Mix_Playing(m_playing_channel) == 0) {
+                m_playing_channel = Mix_PlayChannel(-1, m_laser_sound, 0);
+            }
             m_fireTimer -= ms;
+        }
         else {
+            if (m_playing_channel != -1) Mix_HaltChannel(m_playing_channel);
+            m_playing_channel = -1;
             m_fireTimer = 0;
             m_state = laserState::off;
         }
@@ -310,6 +333,8 @@ bool Laser::isOffScreen(const vec2 &screen) {
 }
 
 void Laser::fire(float chargeDur, float fireDur) {
+    if (m_playing_channel != -1) Mix_HaltChannel(m_playing_channel);
+    m_playing_channel = -1;
     m_state = laserState::primed;
     m_chargeTimer = chargeDur;
     m_fireTimer = fireDur;
