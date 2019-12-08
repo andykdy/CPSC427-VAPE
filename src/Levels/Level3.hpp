@@ -36,6 +36,7 @@ namespace Levels {
 		{22500, TMTargetSingle},
 		{23500, LM3},
 		{23501, RM3},
+		{24000, TMPickupSingle},
 
 		{25000, TL3Fast},
 		{25500, TR3Fast},
@@ -62,6 +63,8 @@ namespace Levels {
 		{41000, TLDiag3},
 		{41001, TRDiag3},
 		{42000, TSpaced4},
+
+		{43000, TMPickupSingle},
 
 		{44000, TSpaced4Fast},
 		{44500, TM3},
