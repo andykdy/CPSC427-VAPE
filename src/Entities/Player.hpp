@@ -54,6 +54,8 @@ public:
 	// Gain health after draining an enemy in vamp mode
     void gain_health(float amount);
 
+    void reset_health();
+
 	// Returns the bounding box for collision detection
 	vec2 get_bounding_box() const;
 
@@ -78,12 +80,20 @@ public:
 	float getWeaponAmmo();
 
 
+    void set_vamp_expand(bool ex);
+
+	bool get_vamp_expand();
+
 private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up
 	float m_iframe; // Used to indicate how long the player should be invulnerable for
 
+	int m_init_health;
+
   	std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;
+
+	bool m_vamp_expand;
 
 	Weapon* weapon;
 

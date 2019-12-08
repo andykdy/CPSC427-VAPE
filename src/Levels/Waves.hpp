@@ -154,11 +154,17 @@ namespace Levels {
      *
      *
      */
-    const Wave TSpaced3GenericShooter = {
-            genSpawn(spawn < EnemyGenericShooter > , {250, -100}, TD, 0.f),
-            genSpawn(spawn < EnemyGenericShooter > , {400, -200}, TD, 0.f),
-            genSpawn(spawn < EnemyGenericShooter > , {550, -100}, TD, 0.f),
-    };
+
+	const Wave TSpaced2GenericShooter = {
+			genSpawn(spawn < EnemyGenericShooter > , {SW/2 + 200, -100}, TD, 0.f),
+			genSpawn(spawn < EnemyGenericShooter > , {SW/2 - 200, -100}, TD, 0.f),
+	};
+
+	const Wave TSpaced3GenericShooter = {
+			genSpawn(spawn < EnemyGenericShooter > , {250, -100}, TD, 0.f),
+			genSpawn(spawn < EnemyGenericShooter > , {400, -200}, TD, 0.f),
+			genSpawn(spawn < EnemyGenericShooter > , {550, -100}, TD, 0.f),
+	};
 
     const Wave TSpaced4GenericShooter = {
             genSpawn(spawn < EnemyGenericShooter > , {150, -100}, TD, 0.f),
@@ -195,7 +201,16 @@ namespace Levels {
      * Explosive Payload Waves
      *
      */
-    const Wave TLExplosiveSingle = {genSpawn(spawn < EnemyExplosivePlayload > , {100, -100}, TD, 0.f)};
+	// Note: Explosive payload homes in on player, thus setting a velocity is not necessary
+
+    const Wave TLExplosiveSingle = { genSpawn(spawn < EnemyExplosivePlayload > , {100, -100}, TD, 0.f)};
+	const Wave TRExplosiveSingle = { genSpawn(spawn < EnemyExplosivePlayload > , {SW - 100, -100}, TD, 0.f) };
+	const Wave TMExplosiveSingle = { genSpawn(spawn < EnemyExplosivePlayload > , {SW/2, -100}, TD, 0.f) };
+	const Wave TExplosiveDouble = { genSpawn(spawn < EnemyExplosivePlayload > , {200, -100}, TD, 0.f),
+									genSpawn(spawn < EnemyExplosivePlayload > , {SW - 200, -100}, TD, 0.f) };
+	const Wave TExplosiveTriple = { genSpawn(spawn < EnemyExplosivePlayload > , {200, -100}, TD, 0.f),
+									genSpawn(spawn < EnemyExplosivePlayload > , {SW/2, -200}, TD, 0.f),
+									genSpawn(spawn < EnemyExplosivePlayload > , {SW - 200, -100}, TD, 0.f) };
 
     /*
      *

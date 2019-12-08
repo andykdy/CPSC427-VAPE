@@ -32,7 +32,8 @@ public:
 
     bool collides_with(const Player &player) override;
     bool collides_with(const Enemy &turtle) override;
-    bool collides_with(const Boss &boss) override; // TODO player lasers?
+	bool collides_with(const Boss& boss) override; // TODO player lasers?
+	bool collides_with(const Clone& clone) override;
 
     bool isOffScreen(const vec2 &screen) override;
 

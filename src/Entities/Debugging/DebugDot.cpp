@@ -101,3 +101,9 @@ void DebugDot::draw(const mat3 &projection, vec3 color, vec2 pos, float rad, vec
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
+
+void DebugDot::draw(const mat3 &projection, vec3 color, std::vector<vec2> path, float rad, vec2 scale) {
+    for (auto pos : path){
+        draw(projection, color, pos, rad, scale);
+    }
+}

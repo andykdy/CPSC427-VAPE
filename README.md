@@ -26,6 +26,7 @@
     - V -> Invincibility
     - 1 -> At main menu only, go straight to level 1
     - 2 -> At main menu only, go straight to level 2
+    - 3 -> At main menu only, go straight to level 3
     - Tab -> At main menu only, go straight to the BetweenLevelState between level 1 and 2
     - 0 -> At main menu only, go straight to outro
 
@@ -63,7 +64,7 @@ Once you complete the last level you are presented with an outro and credits, be
 - Level 3 BGM:
     - ROBORG - HATED
 - Level 3 Boss:
-    - TODO
+    - Perturbator - Disco Inferno
 - Outro:
     - Magic Sword - Awakening
 

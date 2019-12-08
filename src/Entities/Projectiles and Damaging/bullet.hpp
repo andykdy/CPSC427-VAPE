@@ -23,10 +23,11 @@ public:
     // Collision routines for player, turtles and fish
     bool collides_with(const Player& player) override;
     bool collides_with(const Enemy& turtle) override;
-    bool collides_with(const Boss& boss) override; //TODO either generic collides, or generic boss/enemy
+	bool collides_with(const Boss& boss) override;//TODO either generic collides, or generic boss/enemy
+	bool collides_with(const Clone& clone) override;
 
     // Returns the bullet' bounding box for collision detection, called by collides_with()
-    vec2 get_bounding_box()const;
+    vec2 get_bounding_box()const override;
 
     bool isOffScreen(const vec2 &screen) override;
 

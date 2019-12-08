@@ -42,6 +42,9 @@ public:
         m_scale = scale;
     }
 
+    void scroll_up(float ms);
+
+    vec2 getBoundingBox();
 };
 
 

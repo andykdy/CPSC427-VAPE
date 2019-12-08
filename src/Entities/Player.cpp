@@ -24,7 +24,8 @@
 namespace
 {
 	const size_t BULLET_COOLDOWN_MS = 300;
-	const size_t spriteWH = 450;
+    const size_t MAX_HEALTH = 75;
+    const size_t spriteWH = 450;
 	const size_t spriteFrames = 10;
 	const vec2 screenBuffer = { 20, 50 };
 }
@@ -74,6 +75,7 @@ bool Player::init(vec2 screen, int hp)
 
 
 	m_light_up_countdown_ms = -1.f;
+	m_init_health = hp;
 	health->m_health = hp;
 	m_iframe = 0.f;
 
@@ -233,6 +235,13 @@ void Player::gain_health(float amount)
 	getComponent<HealthComponent>()->gain_health(amount);
 }
 
+void Player::reset_health()
+{
+    int amount = MAX_HEALTH - get_health();
+    gain_health(amount);
+
+}
+
 vec2 Player::get_bounding_box() const {
     auto* physics = getComponent<PhysicsComponent>();
 
@@ -284,8 +293,15 @@ void Player::set_position(vec2 pos) {
 	motion->position = pos;
 }
 
+void Player::set_vamp_expand(bool ex) {
+    m_vamp_expand = ex;
+}
 Weapon* Player::getWeapon() {
     return weapon;
+}
+
+bool Player::get_vamp_expand() {
+    return m_vamp_expand;
 }
 
 float Player::getWeaponAmmo() {

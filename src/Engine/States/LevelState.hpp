@@ -35,9 +35,10 @@
 #include <Entities/UI/Vamp/VampCharge.hpp>
 #include <Entities/UI/UIPanel/UIPanelBackground.hpp>
 #include <Entities/UI/UIPanel/UIPanel.hpp>
-#include <Entities/Pickups/Pickup.hpp>
 #include <Utils/SaveData.hpp>
 #include <Entities/UI/PauseMenu/PauseMenu.hpp>
+#include <Entities/EntityGrid.hpp>
+#include <Entities/Debugging/DebugDot.hpp>
 #include <Entities/UI/ScoreText.hpp>
 #include <Entities/UI/PlayerScore/Score.hpp>
 #include <Entities/UI/PlayerScore/ScoreBackground.hpp>
@@ -47,10 +48,10 @@
 
 const size_t INIT_LIVES = 5;
 
-class Pickup;
+class EntityGrid;
 
 class LevelState : public GameState {
-    friend class Pickup;
+    friend class EntityGrid;
 public:
     //! Constructor, taking in gameplay options
     explicit LevelState(Levels::Level level, PlayerData data);
@@ -76,7 +77,11 @@ public:
 private:
     Levels::Level m_level;
 
+    EntityGrid aiGrid;
+
     PauseMenu* m_pause;
+
+    DebugDot m_dot;
 
     void lose_health(int damage);
     void add_health(int heal);
@@ -141,6 +146,9 @@ private:
     // Effects
     VampParticleEmitter m_vamp_particle_emitter;
     Explosion m_explosion;
+    float m_boss_explosion_cooldown;
+
+    float m_path_update_cooldown;
 
     Mix_Music* m_background_music;
     Mix_Music* m_boss_music;
