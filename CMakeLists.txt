@@ -366,10 +366,14 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
         set(OUTPUT_ZIP ${OUTPUT_DIR}/Vape-Linux.zip)
     endif()
 
-    set(ZIP_FILES
-            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    file(GLOB ZIP_FILES
+            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/*.dll"
+            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/*.vape"
+            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/*.vapepak"
+            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/*.exe"
             README.md
-            version.txt)
+            version.txt
+            )
 
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E tar cf ${OUTPUT_ZIP} --format=zip -- ${ZIP_FILES}
