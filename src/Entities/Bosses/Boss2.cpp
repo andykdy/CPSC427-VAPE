@@ -50,9 +50,9 @@ namespace
             {0,0,0,0,0,0},
             {0,0,-0.78f,0.78f,0,0},
             {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
-            {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
+            {CHARGE0,CHARGE0+1,CHARGE0+2,CHARGE0+3,CHARGE0+4,CHARGE0+5},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            8100,
+            8105,
     };
 
 
@@ -61,9 +61,9 @@ namespace
             {0,0,0,0,0,0},
             {0,0.78f,0,0,-0.78f,0},
             {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
-            {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
+            {CHARGE0,CHARGE0+1,CHARGE0+2,CHARGE0+3,CHARGE0+4,CHARGE0+5},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            8100
+            8105
     };
 
 
@@ -72,9 +72,9 @@ namespace
             {0,0,0,0,0,0},
             {0,0,0,0,0,0},
             {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
-            {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
+            {CHARGE0,CHARGE0+1,CHARGE0+2,CHARGE0+3,CHARGE0+4,CHARGE0+5},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            8100,
+            8105,
 
             {Levels::RM3,}
     };
@@ -84,9 +84,9 @@ namespace
             {0,0,0,0,0,0},
             {0,0,0,0,0,0},
             {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
-            {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
+            {CHARGE0,CHARGE0+1,CHARGE0+2,CHARGE0+3,CHARGE0+4,CHARGE0+5},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            8100,
+            8105,
 
             {Levels::LM3Low,}
     };
@@ -96,9 +96,9 @@ namespace
             {0,0,0,0,0,0},
             {0,0,0,0,0,0},
             {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
-            {CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0,CHARGE0},
+            {CHARGE0,CHARGE0+1,CHARGE0+2,CHARGE0+3,CHARGE0+4,CHARGE0+5},
             {FIRE0,FIRE0,FIRE0,FIRE0,FIRE0,FIRE0},
-            8100
+            8105
     };
 
     const std::vector<AttackPattern> EasyPatterns = {
@@ -118,9 +118,9 @@ namespace
             {0.78f,0,0,0,0,-0.78f},
             {0,0,-0.78f,0.78f,0,0},
             {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
-            {CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1},
+            {CHARGE1,CHARGE1+1,CHARGE1+2,CHARGE1+3,CHARGE1+4,CHARGE1+5},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
-            4700
+            4705
     };
 
     const AttackPattern M12345 = {
@@ -154,9 +154,9 @@ namespace
             {-0.18f,-0.18f,-0.18f,0.18f,0.18f,0.18f},
             {0.78f,0.78f,0.78f,-0.78f,-0.78f,-0.78f},
             {ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0,ROTATION0},
-            {CHARGE1+500,CHARGE1,CHARGE1-500,CHARGE1-500,CHARGE1,CHARGE1+500},
+            {CHARGE1+500,CHARGE1,CHARGE1-500,CHARGE1-501,CHARGE1,CHARGE1+501},
             {FIRE1,FIRE1,FIRE1/2,FIRE1/2,FIRE1,FIRE1},
-            4600,
+            4601,
 
             {Levels::TM3,}
     };
@@ -213,9 +213,9 @@ namespace
             {0.78f,0.f,-0.78f,0.78f,0.f,-0.78f},
             {0.48f,0.3f,-0.48f,0.48f,-0.3f,-0.48f},
             {ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2,ROTATION2},
-            {CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1,CHARGE1},
+            {CHARGE1,CHARGE1+1,CHARGE1+2,CHARGE1+3,CHARGE1+4,CHARGE1+5},
             {FIRE1,FIRE1,FIRE1,FIRE1,FIRE1,FIRE1},
-            CHARGE1+FIRE1,
+            CHARGE1+FIRE1+10,
     };
 
     const std::vector<AttackPattern> HardPatterns = {
