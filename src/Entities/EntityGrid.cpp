@@ -413,11 +413,15 @@ std::vector<vec2> EntityGrid::search(vec2 position, vec2 bbox, const std::vector
     const float MAX = std::numeric_limits<float>::max();
 
     // Track which nodes have been closed
-    bool closed[gridW][gridH];
+    // bool closed[gridW][gridH];
+    std::vector<std::vector<bool>> closed(gridW);
 
     // Generate node map with initial values
-    Node map[gridW][gridH];
+    // Node map[gridW][gridH];
+    std::vector<std::vector<Node>> map(gridW);
     for (int x = 0; x < gridW; x++){
+        closed[x] = std::vector<bool>(gridH);
+        map[x] = std::vector<Node>(gridH);
         for (int y = 0; y < gridH; y++){
             map[x][y].position = {x, y};
             map[x][y].parent = {-1,-1};

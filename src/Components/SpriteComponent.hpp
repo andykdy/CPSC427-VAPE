@@ -35,8 +35,8 @@ public:
         gl_flush_errors();
 
         // Allocate Vertex Data Buffer
-//		TexturedVertex vertexData[totalSprites * 4];
-        TexturedVertex vertexData [ totalSprites * 4 ];
+        std::vector<TexturedVertex> vertexData(totalSprites*4);
+        // TexturedVertex vertexData [ totalSprites * 4 ];
         glGenBuffers(1, &vertexDataBuffer);
 
         // Allocate Index Buffers
@@ -80,7 +80,7 @@ public:
         }
         // Bind vertex data
         glBindBuffer(GL_ARRAY_BUFFER, vertexDataBuffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * totalSprites * 4, vertexData, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * totalSprites * 4, vertexData.data(), GL_STATIC_DRAW);
 
         // Vertex Array (Container for Vertex + Index buffer)
         glGenVertexArrays(1, &vao);
