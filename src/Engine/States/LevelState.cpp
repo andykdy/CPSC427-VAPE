@@ -68,7 +68,9 @@ void LevelState::init() {
     m_boss_music = Load_Music(m_boss_music_file);
     m_victory_music_file.init(audio_path("music_victory.wav"));
     m_victory_music = Load_Music(m_victory_music_file);
-    m_player_dead_sound_file.init(audio_path("salmon_dead.wav"));
+    m_player_damage_sound_file.init(audio_path("player_damaged.wav"));
+    m_player_damage_sound = Load_Wav(m_player_damage_sound_file);
+    m_player_dead_sound_file.init(audio_path("player_death.wav"));
     m_player_dead_sound = Load_Wav(m_player_dead_sound_file);
     m_player_eat_sound_file.init(audio_path("salmon_eat.wav"));
     m_player_eat_sound = Load_Wav(m_player_eat_sound_file);
@@ -79,7 +81,7 @@ void LevelState::init() {
 
 
     if (m_background_music == nullptr || m_boss_music == nullptr || m_victory_music == nullptr ||
-        m_player_dead_sound == nullptr || m_player_eat_sound == nullptr)
+        m_player_damage_sound == nullptr || m_player_dead_sound == nullptr || m_player_eat_sound == nullptr)
     {
         fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
                 audio_path("music.wav"),
@@ -167,6 +169,7 @@ void LevelState::init() {
 }
 
 void LevelState::terminate() {
+    Mix_HaltChannel(-1);
     auto & spawn = GameEngine::getInstance().getSystemManager()->getSystem<EnemySpawnerSystem>();
     spawn.reset(m_level.timeline);
 
@@ -185,6 +188,8 @@ void LevelState::terminate() {
     if (m_victory_music != nullptr)
         Mix_FreeMusic(m_victory_music);
     m_victory_music_file.destroy();
+    if (m_player_damage_sound != nullptr)
+        Mix_FreeChunk(m_player_damage_sound);
     if (m_player_dead_sound != nullptr)
         Mix_FreeChunk(m_player_dead_sound);
     m_player_dead_sound_file.destroy();
@@ -661,6 +666,7 @@ void LevelState::update(float ms) {
             --m_lives;
             m_lives_ui->setLives(m_lives);
             reset();
+            return;
         }else {
             saveScore(m_points);
             GameEngine::getInstance().changeState(new MainMenuState()); // TODO game over state
@@ -791,8 +797,9 @@ void LevelState::draw() {
 
 void LevelState::lose_health(int damage) {
     m_player->lose_health(damage);
-    Mix_PlayChannel(-1, m_player_dead_sound, 0);
+    Mix_PlayChannel(-1, m_player_damage_sound, 0);
     if (!m_player->is_alive()) {
+        Mix_PlayChannel(-1, m_player_dead_sound, -1);
         m_space.set_salmon_dead();
     }
 }

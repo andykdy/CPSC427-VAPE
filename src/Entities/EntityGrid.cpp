@@ -99,9 +99,8 @@ void EntityGrid::destroy() {
 // Set all squares as emtpy
 void EntityGrid::clear() {
     for (int x = 0; x < gridW; x++) {
-        grid[x].clear();
         for (int y = 0; y < gridH; y++) {
-            grid[x].emplace_back(EType::empty);
+            grid[x][y] = EType::empty;
         }
     }
 }
