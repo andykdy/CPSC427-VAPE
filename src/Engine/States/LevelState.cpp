@@ -126,7 +126,6 @@ void LevelState::init() {
     m_explosion.init();
     m_boss = m_level.spawnBoss(GameEngine::getInstance().getEntityManager());
     m_boss->init(screen);
-
     m_space.set_position({screen.x/2, 0});
     // TODO - remove
     // m_font_ranger = Font(font_path("spaceranger.ttf"));
@@ -486,9 +485,10 @@ void LevelState::update(float ms) {
         if (m_vamp_mode_charge <= 0 || end_vamp_mode) {
             GameEngine::getInstance().setM_current_speed(1.f);
             m_vamp_mode = false;
+            m_player->set_vamp_expand(false);
             m_vamp.destroy();
         } else {
-            m_vamp.update(ms, m_player->get_position(), m_vamp_mode_charge);
+            m_vamp.update(ms, m_player, m_vamp_mode_charge);
             m_vamp_mode_timer += ms;
             if (m_vamp_mode_timer >= VAMP_TIME_PER_POINT) {
                 m_vamp_mode_charge -= 1;

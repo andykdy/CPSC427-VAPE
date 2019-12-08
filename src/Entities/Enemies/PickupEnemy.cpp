@@ -13,7 +13,10 @@
 #include <Entities/Pickups/Pickup.hpp>
 #include <Entities/Pickups/TriShotPickup.hpp>
 #include <Entities/Pickups/MachineGunPickup.hpp>
+#include <Entities/Pickups/HealthPickup.hpp>
+#include <Entities/Pickups/VampExpandPickup.hpp>
 #include <Systems/PickupSystem.hpp>
+#include <chrono>
 
 
 Texture PickupEnemy::enemy_texture;
@@ -30,6 +33,7 @@ bool PickupEnemy::init()
 	auto* motion = addComponent<MotionComponent>();
 	auto* transform = addComponent<TransformComponent>();
 	auto* enemy = addComponent<EnemyComponent>();
+
 
 	// Load shared texture
 	if (!enemy_texture.is_valid())
@@ -59,6 +63,10 @@ bool PickupEnemy::init()
 	// 1.0 would be as big as the original texture.
 	physics->scale = { -0.14f, 0.14f };
 	points = POINTS_VAL;
+
+	std::random_device rd;
+	m_rand = std::default_random_engine(rd());
+	m_rand.seed(std::chrono::system_clock::now().time_since_epoch().count());
 
 	return true;
 }
@@ -133,8 +141,43 @@ void PickupEnemy::spawn_pickup() {
 	auto& ps = GameEngine::getInstance().getSystemManager()->getSystem<PickupSystem>();
 
 	ECS::EntityManager* e = GameEngine::getInstance().getEntityManager();
-	auto* p = &e->addEntity<MachineGunPickup>();
-		
-	p->init(motion->position);
-	ps.pickups.emplace_back(p);
+
+    int rd = m_rand() % 4;
+
+    switch (rd) {
+        case 0: {
+            auto *p = &e->addEntity<HealthPickup>();
+            p->init(motion->position);
+            ps.pickups.emplace_back(p);
+            break;
+        }
+        case 1:{
+            auto *p = &e->addEntity<MachineGunPickup>();
+            p->init(motion->position);
+            ps.pickups.emplace_back(p);
+            break;
+        }
+        case 2:{
+            auto *p = &e->addEntity<TriShotPickup>();
+            p->init(motion->position);
+            ps.pickups.emplace_back(p);
+            break;
+        }
+        case 3:{
+            auto *p = &e->addEntity<VampExpandPickup>();
+            p->init(motion->position);
+            ps.pickups.emplace_back(p);
+            break;
+        }
+        default:{
+            auto *p = &e->addEntity<HealthPickup>();
+            p->init(motion->position);
+            ps.pickups.emplace_back(p);
+            break;
+        }
+    }
+
+
+
+
 }
