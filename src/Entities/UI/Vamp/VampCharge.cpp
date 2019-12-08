@@ -63,23 +63,10 @@ void VampCharge::draw(const mat3 &projection) {
     auto* physics = getComponent<PhysicsComponent>();
     auto* sprite = getComponent<SpriteComponent>();
 
-//    for (int i = 0; i < charge; i++) {
-//        transform->begin();
-//        vec2 offset = {i * 3.55f, 0.f};
-//        offset.x -= motion->position.x;
-//        offset.y += motion->position.y;
-//        transform->translate(offset);
-//        transform->scale(physics->scale);
-//        transform->end();
-//
-//        sprite->draw(projection, transform->out, effect->program, {1.f, 0.f, 0.f});
-//    }
-
-
     int num = 4*charge;
     for (int i = 0; i < num; i++) {
         transform->begin();
-        vec2 offset = {(float)i/1.1f * - 5.f, 0.f};
+        vec2 offset = {(float)i/1.05f * - 5.f, 0.f};
         offset.x += motion->position.x;
         offset.y += motion->position.y;
         transform->translate(offset);

@@ -296,7 +296,14 @@ void Player::set_position(vec2 pos) {
 void Player::set_vamp_expand(bool ex) {
     m_vamp_expand = ex;
 }
+Weapon* Player::getWeapon() {
+    return weapon;
+}
 
 bool Player::get_vamp_expand() {
     return m_vamp_expand;
+}
+
+float Player::getWeaponAmmo() {
+    return weapon->getAmmo();
 }

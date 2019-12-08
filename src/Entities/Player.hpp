@@ -75,10 +75,14 @@ public:
 
 	void changeWeapon(Weapon* newWeapon);
 
+	Weapon* getWeapon();
+
+	float getWeaponAmmo();
+
+
     void set_vamp_expand(bool ex);
 
 	bool get_vamp_expand();
-
 
 private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up

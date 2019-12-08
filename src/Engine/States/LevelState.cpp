@@ -48,7 +48,8 @@ LevelState::LevelState(Levels::Level level, PlayerData data) :
         m_points(data.points),
         m_starting_points(data.points),
         m_lives(data.lives),
-        m_font_ranger(Font(font_path("spaceranger.ttf")))
+        m_font_ranger(Font(font_path("spaceranger.ttf"))),
+        m_font_condensed(Font(font_path("Cheltenham Condensed Bold.ttf")))
 
 {
 
@@ -114,9 +115,19 @@ void LevelState::init() {
     m_uiPanelBackground = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanelBackground>();
     m_uiPanelBackground->init(screen, screen.y * 0.1f);
     m_health = &GameEngine::getInstance().getEntityManager()->addEntity<Health>();
-    m_health->init({53, screen.y-50});
+    m_health->init({22, screen.y-50});
     m_vamp_charge = &GameEngine::getInstance().getEntityManager()->addEntity<VampCharge>();
-    m_vamp_charge->init({screen.x-52, screen.y-50});
+    m_vamp_charge->init({screen.x-21, screen.y-50});
+    m_score_ui = &GameEngine::getInstance().getEntityManager()->addEntity<Score>();
+    m_score_ui->init({483,screen.y-65}, &m_font_ranger);
+    m_score_background = &GameEngine::getInstance().getEntityManager()->addEntity<ScoreBackground>();
+    m_score_background->init(screen);
+    m_lives_background = &GameEngine::getInstance().getEntityManager()->addEntity<LivesBackground>();
+    m_lives_background->init(screen);
+    m_lives_ui = &GameEngine::getInstance().getEntityManager()->addEntity<Lives>();
+    m_lives_ui->init({168,screen.y-65}, &m_font_ranger, m_lives);
+    m_weapon_ui = &GameEngine::getInstance().getEntityManager()->addEntity<WeaponUI>();
+    m_weapon_ui->init(&m_font_ranger, &m_font_condensed);
     m_vamp_particle_emitter.init();
     m_uiPanel = &GameEngine::getInstance().getEntityManager()->addEntity<UIPanel>();
     m_uiPanel->init(screen, screen.y, screen.x);
@@ -180,6 +191,11 @@ void LevelState::terminate() {
     m_uiPanelBackground->destroy();
     m_uiPanel->destroy();
     m_health->destroy();
+    m_score_ui->destroy();
+    m_score_background->destroy();
+    m_lives_background->destroy();
+    m_lives_ui->destroy();
+    m_weapon_ui->destroy();
     m_vamp_charge->destroy();
     if (m_boss != nullptr)
         m_boss->destroy();
@@ -187,6 +203,9 @@ void LevelState::terminate() {
 
     for (auto& text : m_text)
         text.destroy();
+
+    for (auto& score_text : m_score_text)
+        score_text.destroy();
 
     m_explosion.destroy();
     m_space.destroy();
@@ -233,6 +252,10 @@ void LevelState::update(float ms) {
 
     m_health->setHealth(m_player->get_health());
     m_vamp_charge->setVampCharge(m_vamp_mode_charge);
+    m_score_ui->setScore(m_points);
+    m_weapon_ui->setAmmo(m_player->getWeaponAmmo());
+
+
 
     // Update the player's position and screen size for the enemies
     for(auto& enemy: *enemies) {
@@ -308,13 +331,7 @@ void LevelState::update(float ms) {
             {
                 eraseBullet = true;
 
-                m_text.emplace_back();
-                m_text.back().init(&m_font_ranger);
-                std::string s = std::to_string((*enemy_it)->get_points());
-                char const *pchar = s.c_str();
-                m_text.back().setText(pchar);
-                m_text.back().setColor({1.f, 0.8f, 0.0f});
-                m_text.back().setPosition((*enemy_it)->get_position());
+                spawn_score_text((*enemy_it)->get_points(), (*enemy_it)->get_position());
 
                 m_explosion.spawn((*enemy_it)->get_position());
                 m_points += (*enemy_it)->get_points();
@@ -377,13 +394,7 @@ void LevelState::update(float ms) {
                     m_explosion.spawn((*enemy_it)->get_position());
                     m_points += (*enemy_it)->get_points();
 
-                    m_text.emplace_back();
-                    m_text.back().init(&m_font_ranger);
-                    std::string s = std::to_string((*enemy_it)->get_points());
-                    char const *pchar = s.c_str();
-                    m_text.back().setText(pchar);
-                    m_text.back().setColor({1.f, 0.8f, 0.0f});
-                    m_text.back().setPosition((*enemy_it)->get_position());
+                    spawn_score_text((*enemy_it)->get_points(), (*enemy_it)->get_position());
 
                     Mix_PlayChannel(-1, m_player_explosion, 0);
                     (*enemy_it)->destroy();
@@ -398,12 +409,12 @@ void LevelState::update(float ms) {
 
     m_space.update(ms);
 
-    auto text_it = m_text.begin();
-    while (text_it != m_text.end()) {
+    auto text_it = m_score_text.begin();
+    while (text_it != m_score_text.end()) {
         text_it->scroll_up(ms);
         if (!text_it->is_alive()) {
             (text_it)->destroy();
-            text_it = m_text.erase(text_it);
+            text_it = m_score_text.erase(text_it);
             continue;
         }
         ++text_it;
@@ -630,11 +641,12 @@ void LevelState::update(float ms) {
         }
     }
 
-    // If salmon is dead, restart the game after the fading animation
+    // If player is dead, restart the game after the fading animation
     if (!m_player->is_alive() &&
         m_space.get_salmon_dead_time() > 5) {
         if (m_lives > 0){
             --m_lives;
+            m_lives_ui->setLives(m_lives);
             reset();
         }else {
             saveScore(m_points);
@@ -737,11 +749,20 @@ void LevelState::draw() {
     m_uiPanelBackground->draw(projection_2D);
     m_health->draw(projection_2D);
     m_vamp_charge->draw(projection_2D);
+    m_score_background->draw(projection_2D);
+    m_score_ui->draw(projection_2D);
+    m_lives_background->draw(projection_2D);
+    m_lives_ui->draw(projection_2D);
+    m_weapon_ui->draw(projection_2D);
     m_uiPanel->draw(projection_2D);
     m_dialogue.draw(projection_2D);
 
     for (auto& text : m_text) {
         text.draw(projection_2D);
+    }
+
+    for (auto& score_text : m_score_text) {
+        score_text.draw(projection_2D);
     }
 
 
@@ -785,6 +806,16 @@ void LevelState::add_vamp_charge() {
             }
         }
     }
+}
+
+void LevelState::spawn_score_text(int pts, vec2 pos) {
+    m_score_text.emplace_back();
+    m_score_text.back().init(&m_font_ranger);
+    std::string s = std::to_string(pts);
+    char const *pchar = s.c_str();
+    m_score_text.back().setText(pchar);
+    m_score_text.back().setColor({1.f, 0.8f, 0.0f});
+    m_score_text.back().setPosition(pos);
 }
 
 void LevelState::on_key(GLFWwindow *wwindow, int key, int i, int action, int mod) {
