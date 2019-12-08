@@ -123,7 +123,6 @@ set(SOURCE_FILES
         src/Entities/UI/PauseMenu/ResumeButton.cpp src/Entities/UI/PauseMenu/ResumeButton.hpp
         src/Entities/UI/PauseMenu/ExitToMenuButton.cpp src/Entities/UI/PauseMenu/ExitToMenuButton.hpp
         src/Entities/UI/PauseMenu/ControlDiagram.cpp src/Entities/UI/PauseMenu/ControlDiagram.hpp
-        src/Entities/UI/WeaponUI/WeaponUI.cpp src/Entities/UI/WeaponUI/WeaponUI.hpp
         src/Entities/UI/ScoreText.cpp src/Entities/UI/ScoreText.hpp 
         src/Entities/UI/PlayerScore/Score.cpp src/Entities/UI/PlayerScore/Score.hpp 
         src/Entities/UI/PlayerScore/ScoreBackground.cpp src/Entities/UI/PlayerScore/ScoreBackground.hpp 
