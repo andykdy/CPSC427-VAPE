@@ -7,11 +7,6 @@
 #include <iostream>
 #include "Text.hpp"
 
-namespace {
-    const size_t TEXT_SCROLL_SPEED = 100;
-    const size_t TEXT_LIFE = 1000;
-}
-
 bool Text::init(Font *font) {
     // Loading shaders
     if (!effect.load_from_file(shader_path("font.vs.glsl"), shader_path("font.fs.glsl")))
@@ -20,7 +15,8 @@ bool Text::init(Font *font) {
     m_font = font;
     setText("");
     m_color = {1.f,1.f,1.f};
-    m_life = TEXT_LIFE;
+    m_alpha = 1.f;
+    m_scale = {1.f, 1.f};
     return true;
 }
 
@@ -47,17 +43,10 @@ void Text::destroy() {
     glDeleteShader(effect.program);
 }
 
-void Text::scroll_up(float ms)
-{
-    float step = TEXT_SCROLL_SPEED * (ms / 1000);
-    motion.position.y -= step;
-    m_life -= ms;
-}
-
 void Text::draw(const mat3 &projection) {
     transform.begin();
     transform.translate(motion.position);
-    transform.scale({1,1});
+    transform.scale(m_scale);
     transform.rotate(0);
     transform.end();
 
@@ -71,6 +60,7 @@ void Text::draw(const mat3 &projection) {
     // Getting uniform locations for glUniform* calls
     GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
     GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
+    GLint alpha_uloc = glGetUniformLocation(effect.program, "falpha");
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
     // Setting vertices and indices
@@ -94,6 +84,7 @@ void Text::draw(const mat3 &projection) {
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.out);
     float color[] = { m_color.x, m_color.y, m_color.z };
     glUniform3fv(color_uloc, 1, color);
+    glUniform1f(alpha_uloc, m_alpha);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
     // Drawing!
@@ -165,5 +156,5 @@ vec2 Text::getBoundingBox() {
             ymin = vertex.position.y;
     }
     std::cout << xmax-xmin << ", " << ymax-ymin << std::endl;
-    return {std::fabs((xmax-xmin) * 1), std::fabs((ymax-ymin)*1)};
+    return {std::fabs((xmax-xmin) * m_scale.x), std::fabs((ymax-ymin)*m_scale.y)};
 }

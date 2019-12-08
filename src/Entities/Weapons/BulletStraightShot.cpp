@@ -25,7 +25,7 @@ void BulletStraightShot::init() {
         throw std::runtime_error("Failed to load sound pow.wav");
     }
 
-    amo = 1.f;
+    amo = 0.f;
 }
 
 void BulletStraightShot::fire(const vec2 &origin_position, float origin_rotation) {

@@ -123,6 +123,13 @@ set(SOURCE_FILES
         src/Entities/UI/PauseMenu/ResumeButton.cpp src/Entities/UI/PauseMenu/ResumeButton.hpp
         src/Entities/UI/PauseMenu/ExitToMenuButton.cpp src/Entities/UI/PauseMenu/ExitToMenuButton.hpp
         src/Entities/UI/PauseMenu/ControlDiagram.cpp src/Entities/UI/PauseMenu/ControlDiagram.hpp
+        src/Entities/UI/ScoreText.cpp src/Entities/UI/ScoreText.hpp 
+        src/Entities/UI/PlayerScore/Score.cpp src/Entities/UI/PlayerScore/Score.hpp 
+        src/Entities/UI/PlayerScore/ScoreBackground.cpp src/Entities/UI/PlayerScore/ScoreBackground.hpp 
+        src/Entities/UI/Lives/LivesBackground.cpp src/Entities/UI/Lives/LivesBackground.hpp 
+        src/Entities/UI/Lives/Lives.cpp src/Entities/UI/Lives/Lives.hpp 
+        src/Entities/UI/Weapon/WeaponBackground.cpp src/Entities/UI/Weapon/WeaponBackground.hpp 
+        src/Entities/UI/Weapon/WeaponUI.cpp src/Entities/UI/Weapon/WeaponUI.hpp
 
 
         "src/Entities/Projectiles and Damaging/Projectile.hpp"
@@ -140,6 +147,8 @@ set(SOURCE_FILES
         src/Entities/Pickups/Pickup.hpp
         src/Entities/Pickups/MachineGunPickup.cpp src/Entities/Pickups/MachineGunPickup.hpp
         src/Entities/Pickups/TriShotPickup.cpp src/Entities/Pickups/TriShotPickup.hpp
+        src/Entities/PickUps/HealthPickup.cpp src/Entities/PickUps/HealthPickup.hpp 
+        src/Entities/PickUps/VampExpandPickup.cpp src/Entities/PickUps/VampExpandPickup.hpp 
 
 
 

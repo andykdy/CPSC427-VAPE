@@ -1,14 +1,14 @@
 //
-// Created by Andy on 12/03/2019.
+// Created by Andrea Park on 2019-12-05.
 //
-#ifndef VAPE_TRISHOTPICKUP_HPP
-#define VAPE_TRISHOTPICKUP_HPP
 
+#ifndef VAPE_HEALTHPICKUP_HPP
+#define VAPE_HEALTHPICKUP_HPP
 
 #include "Pickup.hpp"
 
-class TriShotPickup : public Pickup {
-	static Texture pickup_texture;
+class HealthPickup : public Pickup {
+    static Texture pickup_texture;
 public:
     bool init(vec2 position) override;
     void update(float ms) override;
@@ -18,7 +18,7 @@ public:
     vec2 get_position() const override;
     bool collides_with(const Player &player) override;
     void applyEffect(Player& player) override;
-	vec2 get_bounding_box() const override;
+    vec2 get_bounding_box() const override;
     bool isOffScreen(const vec2 &screen) override;
     const char* get_png() const override;
     bool isWeapon() override;
@@ -26,4 +26,4 @@ private:
 };
 
 
-#endif //VAPE_TRISHOTPICKUP_HPP
+#endif //VAPE_HEALTHPICKUP_HPP

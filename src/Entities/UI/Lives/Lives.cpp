@@ -1,7 +1,8 @@
 //
-// Created by Tanha Kabir on 2019-10-03.
+// Created by matte on 2019-12-06.
 //
 
+#include "Lives.hpp"
 #include <cmath>
 #include <algorithm>
 #include <Components/EffectComponent.hpp>
@@ -10,43 +11,35 @@
 #include <Components/TransformComponent.hpp>
 #include <Components/SpriteComponent.hpp>
 #include <Engine/GameEngine.hpp>
-#include "Health.hpp"
 
-Texture Health::health_point_texture;
+namespace
+{
+    const std::string LIVES_TEXT = "LIVES: ";
+}
 
-bool Health::init(vec2 position) {
+bool Lives::init(vec2 position, Font* font, int player_lives) {
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
     auto* physics = addComponent<PhysicsComponent>();
     auto* motion = addComponent<MotionComponent>();
     auto* transform = addComponent<TransformComponent>();
 
-    // Load shared texture
-    if (!health_point_texture.is_valid())
-    {
-        if (!health_point_texture.load_from_file(textures_path("UI_base_bar.png")))
-        {
-            throw std::runtime_error("Failed to load health texture");
-        }
-    }
-
     // Loading shaders
     if (!effect->load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         throw std::runtime_error("Failed to load texture shaders");
 
-    if (!sprite->initTexture(&health_point_texture))
-        throw std::runtime_error("Failed to initialize health sprite");
-
-    physics->scale = { 0.7f, 1.f };
+    lives_font = font;
+    lives_text.init(lives_font);
+    lives = player_lives;
     motion->position = { position.x, position.y };
 
     return true;
 }
 
-void Health::update(float ms) {
+void Lives::update(float ms) {
 }
 
-void Health::draw(const mat3 &projection) {
+void Lives::draw(const mat3 &projection) {
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
     auto* motion = getComponent<MotionComponent>();
@@ -55,28 +48,30 @@ void Health::draw(const mat3 &projection) {
 
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
-    for (int i = 0; i < health; i++) {
-        transform->begin();
-        vec2 offset = {i * 3.75f, 0.f};
-        offset.x += motion->position.x;
-        offset.y += motion->position.y;
-        transform->translate(offset);
-        transform->scale(physics->scale);
-        transform->end();
 
-        sprite->draw(projection, transform->out, effect->program, {0.f, 1.f, 0.f});
-    }
+    std::string lives_str = std::to_string(lives);
+    std::string padded_score = std::string(2 - lives_str.length(), '0') + lives_str;
+    std::string formatted_score = LIVES_TEXT + padded_score;
+    // add zeros to score to fill it out
+    char const *pchar = formatted_score.c_str();
+    lives_text.setText(pchar);
+    lives_text.setColor({1.f, 0.8f, 0.0f});
+    lives_text.setPosition(motion->position);
+    lives_text.setScale( {0.85f, 0.85f});
+
+    lives_text.draw(projection);
 }
 
-void Health::destroy() {
+void Lives::setLives(int player_lives) {
+    lives = player_lives;
+}
+
+void Lives::destroy() {
+    lives_text.destroy();
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();
 
     effect->release();
     sprite->release();
     ECS::Entity::destroy();
-}
-
-void Health::setHealth(int health) {
-    Health::health = health;
 }

@@ -1,7 +1,8 @@
 //
-// Created by Tanha Kabir on 2019-10-03.
+// Created by matte on 2019-12-05.
 //
 
+#include "Score.hpp"
 #include <cmath>
 #include <algorithm>
 #include <Components/EffectComponent.hpp>
@@ -10,43 +11,30 @@
 #include <Components/TransformComponent.hpp>
 #include <Components/SpriteComponent.hpp>
 #include <Engine/GameEngine.hpp>
-#include "Health.hpp"
 
-Texture Health::health_point_texture;
-
-bool Health::init(vec2 position) {
+bool Score::init(vec2 position, Font* font) {
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
     auto* physics = addComponent<PhysicsComponent>();
     auto* motion = addComponent<MotionComponent>();
     auto* transform = addComponent<TransformComponent>();
 
-    // Load shared texture
-    if (!health_point_texture.is_valid())
-    {
-        if (!health_point_texture.load_from_file(textures_path("UI_base_bar.png")))
-        {
-            throw std::runtime_error("Failed to load health texture");
-        }
-    }
-
     // Loading shaders
     if (!effect->load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         throw std::runtime_error("Failed to load texture shaders");
 
-    if (!sprite->initTexture(&health_point_texture))
-        throw std::runtime_error("Failed to initialize health sprite");
+    score_font = font;
+    score_text.init(score_font);
 
-    physics->scale = { 0.7f, 1.f };
     motion->position = { position.x, position.y };
 
     return true;
 }
 
-void Health::update(float ms) {
+void Score::update(float ms) {
 }
 
-void Health::draw(const mat3 &projection) {
+void Score::draw(const mat3 &projection) {
     auto* transform = getComponent<TransformComponent>();
     auto* effect = getComponent<EffectComponent>();
     auto* motion = getComponent<MotionComponent>();
@@ -55,20 +43,21 @@ void Health::draw(const mat3 &projection) {
 
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
-    for (int i = 0; i < health; i++) {
-        transform->begin();
-        vec2 offset = {i * 3.75f, 0.f};
-        offset.x += motion->position.x;
-        offset.y += motion->position.y;
-        transform->translate(offset);
-        transform->scale(physics->scale);
-        transform->end();
 
-        sprite->draw(projection, transform->out, effect->program, {0.f, 1.f, 0.f});
-    }
+    std::string score_str = std::to_string(score);
+    std::string padded_score = std::string(7 - score_str.length(), '0') + score_str;
+    // add zeros to score to fill it out
+    char const *pchar = padded_score.c_str();
+    score_text.setText(pchar);
+    score_text.setColor({1.f, 0.8f, 0.0f});
+    score_text.setPosition(motion->position);
+    score_text.setScale( {0.85f, 0.85f});
+
+    score_text.draw(projection);
 }
 
-void Health::destroy() {
+void Score::destroy() {
+    score_text.destroy();
     auto* effect = getComponent<EffectComponent>();
     auto* sprite = getComponent<SpriteComponent>();
 
@@ -77,6 +66,6 @@ void Health::destroy() {
     ECS::Entity::destroy();
 }
 
-void Health::setHealth(int health) {
-    Health::health = health;
+void Score::setScore(int score) {
+    Score::score = score;
 }

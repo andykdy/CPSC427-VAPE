@@ -8,7 +8,7 @@
 #include <Engine/GameEngine.hpp>
 
 namespace {
-    const size_t BULLET_COOLDOWN_MS = 50;
+    const size_t BULLET_COOLDOWN_MS = 150;
     const size_t TOTAL_AMO = 100;
 }
 

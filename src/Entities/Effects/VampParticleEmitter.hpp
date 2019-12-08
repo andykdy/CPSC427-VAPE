@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <random>
+#include <Entities/Player.hpp>
 
 #include "common.hpp"
 

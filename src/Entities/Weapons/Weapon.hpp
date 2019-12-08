@@ -21,6 +21,8 @@ public:
     virtual void update(float ms) = 0;
 
     virtual void destroy() = 0;
+
+    inline float getAmmo() { return amo; };
 };
 
 #endif //VAPE_WEAPON_HPP
