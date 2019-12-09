@@ -19,6 +19,7 @@ int main(int argv, char** args) {
 	PHYSFS_init(args[0]);
 	if (!PHYSFS_mount("./assets.vapepak", "", 1)){
         std::cout << "Unable to mount assets.vapepak, ensure it exists" << std::endl;
+        std::cout << PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()) << std::endl;
 		std::cout << "Press any key to exit" << std::endl;
 		std::cin.get();
 		return EXIT_FAILURE;
