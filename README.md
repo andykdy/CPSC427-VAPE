@@ -95,3 +95,6 @@ You may need to add an empty line to cmakelists.txt to force it to build.
 - Build on the target platform with cmake, using release build type `-DCMAKE_BUILD_TYPE=Release`
     - On Windows, If you build with MINGW the user will also need to have MINGW configured and in PATH to run the EXE. Recommend building the releases with the Visual Studio toolchain.
 - The release should be packaged automatically into the `releases` folder
+
+
+- Note that, on Mac, trying to run the executable file directly from finder may not work (something about how mac sets the working directory, idk). Running it from the terminal as ./vape will work though
