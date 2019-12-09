@@ -173,7 +173,7 @@ namespace Levels {
             {100500, TMTargetSingle},
 
             {102000, TSPaced4Speedster},
-            {103000, TRTargetSingle},
+            {103000, TLDiag3},
             {103500, LM3},
             {104000, TMTargetSingle},
             {104001, TLPickupSingle},
