@@ -8,7 +8,7 @@
 
 namespace {
     const size_t BULLET_COOLDOWN_MS = 300;
-    const size_t TOTAL_AMO = 10;
+    const size_t TOTAL_AMO = 33;
 }
 
 void WeaponTriShot::init() {

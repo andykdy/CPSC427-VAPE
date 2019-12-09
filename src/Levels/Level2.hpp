@@ -97,7 +97,7 @@ namespace Levels {
             {57000, TSPaced4Speedster},
             {58000, TRTargetSingle},
             {58500, LM3},
-            {59000, TRTargetSingle},
+            {59000, TLTargetSingle},
             {59001, TRPickupSingle},
             {59500, RM3},
 
@@ -175,8 +175,8 @@ namespace Levels {
             {102000, TSPaced4Speedster},
             {103000, TRTargetSingle},
             {103500, LM3},
-            {104000, TRTargetSingle},
-            {104001, TRPickupSingle},
+            {104000, TMTargetSingle},
+            {104001, TLPickupSingle},
             {104500, RM3},
 
     };
