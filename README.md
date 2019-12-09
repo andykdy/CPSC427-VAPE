@@ -16,10 +16,11 @@
 
 # Controls
 - W, A, S, D  -> Movement
+- WASD/Arrow keys -> Menu navigation
 - Spacebar -> Shoot
-- Enter ->  Vamp Mode / Skip Cutscenes
+- Enter ->  Vamp Mode / Skip Cutscenes / Menu Select
 - Shift -> Continue (Dialogues)
-- Escape -> Return to main menu (saves game to start of current level)
+- Escape -> Open/close pause menu
 - [Debug] Shift+F to enter/exit debug mode
     - F -> Fill vamp mode
     - G -> Fill Health
@@ -32,13 +33,13 @@
 
 
 # Content
-The game consists of the main menu a tutorial, intro/outo, and two levels.
+The game consists of the main menu a tutorial, intro, three levels, and an outro.
 
 From the main menu, you can choose to continue a saved game (auto-saved at the start of each level / after you die. and cleared after beating the game), start a new game, play the tutorial, or exit the game.
 
 Upon entering the tutorial, you will be walked through each of the controls and basic gameplay mechanics.
 
-When you start a new game, you will be presented with an into cutscene before moving to the first level. Upon entering the first level the game will spawn waves of basic enemies for about a minute, before spawning the boss.
+When you start a new game, you will be presented with an into cutscene before moving to the first level. Within a level, waves of enemies will spawn for 1-2 minutes before the boss is spawned.
 If you die, the level will restart and you will lose a life. Once all lives are lost you are returned to the main menu. Once the boss is defeated, you will be move to the next level.
 
 Once you complete the last level you are presented with an outro and credits, before being returned to the main menu.
@@ -73,6 +74,7 @@ Once you complete the last level you are presented with an outro and credits, be
     - Space Pirate Captain Harlock (2013)
 
 # Dependencies
+- PhysFS is a dependency, which should be downloaded and built by cmake automatically when building.
 ## Windows
 - All dependencies are included
 ## Mac / Linux
@@ -81,19 +83,24 @@ Once you complete the last level you are presented with an outro and credits, be
 - SDL_Mixer
 - FFmpeg
 ## Assets
+### Video Assets
 As video assets cannot be stored on github, you will need to retrieve them yourself.
 
-If the build process works as intended, cmake should automatically download the assets.
+If the build process works as intended, cmake should automatically download the assets (data.7z) and unpack them.
 
-If you need to download a new version of the zip, just delete /data/data.7z and any videos and it will redownload next time you build. 
+If you need to download a new version of the zip, just delete /data.7z and any videos and it should redownload next time you build. 
 You may need to add an empty line to cmakelists.txt to force it to build.
 
 Otherwise, you can always just comment out "download_assets()" in cmakelists.txt and download manually from the [google drive folder](https://drive.google.com/file/d/1a3yCBgBnr--UWfNw-07EkQegSBvIE2ON/view?usp=sharing)
+### Asset Packaging
+The compiled executable expects a "assets.vapepak" asset package file adjacent to it, which it accesses using PhysFS.
+As part of the build process, assets should be packaged automatically and placed in the runtime output directory.
 
+Similarly to the Video Assets, if you need to repackage the assets (like if new assets are added to the game), 
+you will need to delete the existing bin/assets.vapepak file and re-build.
+You may need to add an empty line to cmakelists.txt to force it to build.
 
 # Building a release
-
 - Build on the target platform with cmake, using release build type `-DCMAKE_BUILD_TYPE=Release`
-- ~~There should now be a `bin` folder containing the executable and any necessary dlls if on Windows.~~
-- ~~Zip up the `bin`, `data`, and `shaders` folders, along with the readme, and name appropriately indicating target platform.~~
+    - On Windows, If you build with MINGW the user will also need to have MINGW configured and in PATH to run the EXE. Reccomend building the releases with the Visual Studio toolchain.
 - The release should be packaged automatically into the `releases` folder

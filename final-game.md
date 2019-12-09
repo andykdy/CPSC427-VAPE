@@ -11,24 +11,45 @@ Added an outro state to the game, which displays a cutscene and credits.
 
 ## Implement Scoring
 Basic scoring has been implemented since the start, and we've tracked leaderboard scores since last milestone.
-TODO talk about any changes
+Floating score indicator text was added which appears whenever you kill an enemy, indicating how many points you got for killing it.
+Score was added to the UI panel.
 
 # Week: November 22
 
 ## Bug Fixes
-TODO
+Various bug fixes done throughout, lots of issues to do with differing development environments / compilers. Also fixed a number of memory leaks.
 
 ## Implement Scoring Modifiers
-TODO
+Was not implemented.
 
 ## Finalized art assets
-TODO
+Done.
 
 # Week: November 29
 
 ## Sound Effects and Music Finalized
-TODO
+Level 3 music added. Laser sound effects added. Player damage sound added, player death sound changed.
 
+# Caried over from previous Milstone
+
+## Additional enemy types
+New enemy types were added
+- Speedster enemy which charges up before speeding across the creen.
+- Explosive Payload enemy, which will create a circular burst of bullets if you shoot it during its explosive phase.
+
+## Additional item pickups
+Item pickups were finally added. A new enemy type was added which will drop a random pickup on death.
+Four pickups were created: 
+- Health (heals player to full)
+- Vamp Expansion (Increases vamp area size for the next/current use of vamp)
+- Tri-Shot weapon (Gives the player the tri-shot weapon. Limited ammo, fires three bullets at 45/90/135 degrees)
+- Machine Gun ewapon (Gives the player the machine gun weapon. Limited ammo, fires large number of bullets in rapid succession)
+
+## 3+ Levels
+Third level was added, integrating new enemy types.
+Third boss was created, which has two phases.
+- First phase: Charges at the player
+- Secon phase: Spawns invincible clones which chase or shoot the player
 
 # Implemented outside of schedule
 
@@ -57,6 +78,12 @@ Added a pause menu, which displays a control diagram, and uses dynamic buttons l
 ## Between-level state
 Was originally planned to show some interesting information, but currently just shows "Level n completed, press enter to continue" to add a break in-between levels
 
+## Text Rendering
+Truetype font rendering was added using stb_truetype.
+
+## PhysFS
+PhysFS integration was added to allow assets to be packaged into an archive to hide them from the user, but still be accessible at runtime.
+
 # Milestone Components
 
 ## User Testing
@@ -74,7 +101,7 @@ The VideoUtil class can demux/decode video files and read frames into pixel data
 
 We also added text rendering using stb_truetype.
 
-Also integrated PhysFS to load assets from a package file. 
+Also integrated PhysFS to load assets from an archive. 
 
 ## Advanced Graphics
 Multiple particle systems: Explosions, Vamp mode particles, Boss2 laser priming/warning.
