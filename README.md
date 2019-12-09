@@ -8,6 +8,18 @@
 - Matteo Alps-Mocellin 32909146
 - Sam Parhimchik 41037152
 - Tanha Kabir 10850155
+![Game Coverart](media/cover-cropped.png)
+![Gameplay Image 1](media/level1-vamp.jpg)
+![Gameplay Image 2](media/boss2-lasers.jpg)
+![Gameplay Image 3](media/level3.png)
+TODO: Link to gameplay youtube video (currently creating)
+
+
+## Description
+Vampire Astonaut Pirate Escape Nation, or (VAPE Nation for short) is a vertically scrolling shoot-em-up, staring the vampire space pirate, Vaypur, as he fights of waves of bounty hunters in his escape from the Galactic Empire.
+The game features a variety of different enemies spread out across 3 levels, each level concluded by an epic boss fight utilizing unique mechanics.
+Vaypur has a two basic attacks: his ship's guns, and his vampiric aura. Killing enemies charges up his bloodlust, allowing him to activate his vampiric aura and leech health off of any enemies within it.
+There are also a variety of pickups you can encounter during levels which may help you, including health, vamp radius increase, machine gun weapon, and tri-shot weapon.
 
 ## Releases
 - [Skeletal Game](https://github.students.cs.ubc.ca/CPSC427/vape_nation/releases/tag/skeletal-game)
