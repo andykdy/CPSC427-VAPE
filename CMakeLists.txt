@@ -375,9 +375,12 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
             README.md
             version.txt
             )
+    if (IS_OS_MAC)
+        set(MAC_EXE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/vape")
+    endif()
 
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E tar cf ${OUTPUT_ZIP} --format=zip -- ${ZIP_FILES}
+            COMMAND ${CMAKE_COMMAND} -E tar cf ${OUTPUT_ZIP} --format=zip -- ${ZIP_FILES} ${MAC_EXE}
             WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
             COMMENT "Packaging Release ${OUTPUT_ZIP} this may take a minute...")
 endif()
