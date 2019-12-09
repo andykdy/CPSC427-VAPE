@@ -155,6 +155,5 @@ vec2 Text::getBoundingBox() {
         else if (vertex.position.y < ymin)
             ymin = vertex.position.y;
     }
-    std::cout << xmax-xmin << ", " << ymax-ymin << std::endl;
     return {std::fabs((xmax-xmin) * m_scale.x), std::fabs((ymax-ymin)*m_scale.y)};
 }
