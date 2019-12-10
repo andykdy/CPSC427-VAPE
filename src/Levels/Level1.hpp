@@ -22,8 +22,9 @@ namespace Levels {
             {14000, TM3},
             {16000, TSpaced4},
 
-            {20000, LM3},
-            {20500, RM3},
+            {20000, LM2GenericShooter},
+            {20500, RM2GenericShooter},
+            {21000, TMPickupSingle},
 
             {25000, TL3},
             {25001, TR3},
@@ -55,7 +56,8 @@ namespace Levels {
             {45500, RM3Fast},
             {46000, TL3Fast},
             {46001, TR3Fast},
-            {46500, TSpaced4Fast},
+            {46500, TSpaced4GenericShooter},
+            // {46500, TSpaced4Fast},
             {48000, TRDiag3},
             {48001, TLDiag3},
             {49000, TL3},
@@ -71,18 +73,48 @@ namespace Levels {
             {56000, RSpaced4},
 
             {58000, TSpaced4Fast},
+            {58100, TSpaced4GenericShooter},
+            {58101, RSpaced4},
+            {58102, TRPickupSingle},
+
+
+            {62000, LM3Fast},
+            {62500, RM3Fast},
+            {63000, TL3Fast},
+            {63001, TR3Fast},
+
+            {66000, LM2GenericShooter},
+            {66500, TSpaced4},
+            {67001, TR3Fast},
+
+            {69000, LM3},
+            {69001, RM3},
+            {69002, TSpaced4},
+
+            {71000, LM2GenericShooter},
+            {71001, RM2GenericShooter},
+
+            {74000, TM3},
+            {74500, TL3Fast},
+            {74501, TR3Fast},
+
+            {77000, TSpaced4Fast},
+            {77100, TSpaced4GenericShooter},
+            {77101, LSpaced4},
+            {77200, TLPickupSingle}
     };
 
     const Level level1 = Level(
+            1,
             //{},
             level1Timeline,
             spawnBoss<Boss1>,
             //10000,
-            70000,
+            90000,
             textures_path("space_bg.png"),
             audio_path("music_level1.wav"),
             audio_path("music_boss1.wav"),
-            "Boss1Dialogue.png",
+            "Dialogues/Boss1Dialogue.png",
             &level2
     );
 }

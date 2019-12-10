@@ -1,0 +1,58 @@
+Dr. Memory version 2.2.0 build 1 built on Jul  1 2019 00:42:20
+Windows version: WinVer=105;Rel=1903;Build=18362;Edition=Enterprise
+Dr. Memory results for pid 49904: "vape.exe"
+Application cmdline: ""C:\Users\ctman\CLionProjects\CPSC 427\CPSC427-VAPE\bin\vape.exe""
+Recorded 117 suppression(s) from default C:\Program Files (x86)\Dr. Memory\bin\suppress-default.txt
+
+Error #1: UNINITIALIZED READ: reading 0x0202f8f0-0x0202f8f4 4 byte(s) within 0x0202f784-0x0202f984
+# 0 system call NtUserGetRawInputDeviceInfo parameter value #2
+# 1 USER32.dll!GetRawInputDeviceInfoA
+# 2 glfw3.dll!glfwWindowShouldClose                                         +0x179c   (0x6ac3631d <glfw3.dll+0x631d>)
+# 3 glfw3.dll!glfwWindowShouldClose                                         +0xbc4    (0x6ac35745 <glfw3.dll+0x5745>)
+# 4 DINPUT8.dll!DirectInput8Create                                          +0x1579   (0x680159da <DINPUT8.dll+0x59da>)
+# 5 glfw3.dll!glfwWindowShouldClose                                         +0x7bc    (0x6ac3533d <glfw3.dll+0x533d>)
+# 6 glfw3.dll!glfwWindowShouldClose                                         +0x19e    (0x6ac34d1f <glfw3.dll+0x4d1f>)
+# 7 glfw3.dll!glfwInit                                                      +0x21     (0x6ac31cb2 <glfw3.dll+0x1cb2>)
+# 8 GameEngine::init                                                         [C:/Users/ctman/CLionProjects/CPSC 427/CPSC427-VAPE/src/Engine/GameEngine.cpp:43]
+# 9 main                                                                     [C:/Users/ctman/CLionProjects/CPSC 427/CPSC427-VAPE/src/main.cpp:28]
+Note: @0:00:06.143 in thread 27568
+
+Error #2: UNINITIALIZED READ: reading 0x1223fe04-0x1223fef0 236 byte(s) within 0x1223fde0-0x1223fef0
+# 0 system call NtCreateFile parameter #9
+# 1 AVRT.dll!AvSetMmThreadCharacteristicsW             +0x154    (0x57491965 <AVRT.dll+0x1965>)
+# 2 AVRT.dll!AvSetMmThreadCharacteristicsW             +0x7e     (0x5749188f <AVRT.dll+0x188f>)
+# 3 SDL2.dll!?                                         +0x0      (0x6c7ff350 <SDL2.dll+0xbf350>)
+# 4 SDL2.dll!?                                         +0x0      (0x6c744459 <SDL2.dll+0x4459>)
+# 5 SDL2.dll!?                                         +0x0      (0x6c7a98c9 <SDL2.dll+0x698c9>)
+# 6 SDL2.dll!?                                         +0x0      (0x6c807bfe <SDL2.dll+0xc7bfe>)
+# 7 ntdll.dll!__RtlUserThreadStart
+Note: @0:03:03.076 in thread 37324
+
+Reached maximum leak report limit (-report_leak_max). No further leaks will be reported.
+
+===========================================================================
+FINAL SUMMARY:
+
+DUPLICATE ERROR COUNTS:
+	Error #   1:      3
+
+SUPPRESSIONS USED:
+
+ERRORS FOUND:
+      0 unique,     0 total unaddressable access(es)
+      2 unique,     4 total uninitialized access(es)
+      0 unique,     0 total invalid heap argument(s)
+      0 unique,     0 total GDI usage error(s)
+      0 unique,     0 total handle leak(s)
+      0 unique,     0 total warning(s)
+      0 unique,     0 total,      0 byte(s) of leak(s)
+      0 unique,     0 total,      0 byte(s) of possible leak(s)
+ERRORS IGNORED:
+    405 potential error(s) (suspected false positives)
+         (details: C:\Users\ctman\AppData\Roaming\Dr. Memory\DrMemory-vape.exe.49904.000\potential_errors.txt)
+    124 potential leak(s) (suspected false positives)
+         (details: C:\Users\ctman\AppData\Roaming\Dr. Memory\DrMemory-vape.exe.49904.000\potential_errors.txt)
+   2410 unique,  9195 total, 3974867 byte(s) of still-reachable allocation(s)
+         (re-run with "-show_reachable" for details)
+  14914 leak(s) beyond -report_leak_max
+Details: C:\Users\ctman\AppData\Roaming\Dr. Memory\DrMemory-vape.exe.49904.000\results.txt

@@ -12,8 +12,9 @@
 #include <Entities/Enemies/turtle.hpp>
 #include "Entities/Enemies/EnemyGenericShooter.hpp"
 #include "Entities/Enemies/EnemyTargettedShooter.hpp"
-
-// TODO change turtle to enemy superclass?
+#include "Entities/Enemies/EnemyExplosivePayload.hpp"
+#include "Entities/Enemies/EnemySpeedster.hpp"
+#include "Entities/Enemies/PickupEnemy.hpp"
 
 namespace Levels {
     typedef Boss* BossSpawner(ECS::EntityManager *e);
@@ -53,6 +54,7 @@ namespace Levels {
     }
 
     struct Level {
+        unsigned int id;
         Timeline timeline;
         BossSpawner* spawnBoss;
         size_t bossTime;
@@ -64,8 +66,8 @@ namespace Levels {
 
         const Level* nextLevel = nullptr;
 
-        Level(const Timeline t, BossSpawner bs, size_t time, const char* bt, const char* bgm, const char* bm, const char* bd, const Level *next = nullptr) :
-                timeline(t), spawnBoss(bs), bossTime(time), backgroundTexture(bt), backgroundMusic(bgm), bossMusic(bm), bossDialogue(bd), nextLevel(next)  {}
+        Level(unsigned int id, const Timeline t, BossSpawner bs, size_t time, const char* bt, const char* bgm, const char* bm, const char* bd, const Level *next = nullptr) :
+                id(id), timeline(t), spawnBoss(bs), bossTime(time), backgroundTexture(bt), backgroundMusic(bgm), bossMusic(bm), bossDialogue(bd), nextLevel(next)  {}
     };
 
 }

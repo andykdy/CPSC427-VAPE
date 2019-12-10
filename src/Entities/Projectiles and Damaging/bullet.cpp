@@ -19,7 +19,7 @@ Texture Bullet::bullet_texture;
 float BULLET_SPEED = 1250;
 float BULLET_SPEED_SLOW = 750;
 
-bool Bullet::init(vec2 position, float rotation) {
+bool Bullet::init(vec2 position, float rotation, bool hostile, int damage) {
     gl_flush_errors();
     auto* sprite = addComponent<SpriteComponent>();
     auto* effect = addComponent<EffectComponent>();
@@ -56,6 +56,9 @@ bool Bullet::init(vec2 position, float rotation) {
     motion->position.x = position.x + 100*sin(motion->radians);
     motion->position.y = position.y + 100*cos(motion->radians);
 
+    Projectile::m_hostile = hostile;
+    Projectile::m_damage = damage;
+    Projectile::m_erase_on_collide = true;
     return true;
 }
 
@@ -89,7 +92,11 @@ void Bullet::draw(const mat3 &projection) {
     transform->rotate(-motion->radians - 3.14f);
     transform->end();
 
-    sprite->draw(projection, transform->out, effect->program);
+    if (m_hostile) {
+        sprite->draw(projection, transform->out, effect->program, {1.0f, 0.5f, 0.5f });
+    } else {
+        sprite->draw(projection, transform->out, effect->program);
+    }
 }
 
 vec2 Bullet::get_position()const
@@ -115,36 +122,35 @@ bool Bullet::collides_with(const Player &player) {
     return false;
 }
 
-bool Bullet::collides_with(const Enemy &enemy) {
-    auto* motion = getComponent<MotionComponent>();
-    auto* physics = getComponent<PhysicsComponent>();
+bool Bullet::collides_with(const Enemy& enemy) {
+	auto* motion = getComponent<MotionComponent>();
+	auto* physics = getComponent<PhysicsComponent>();
 
-    float dx = motion->position.x - enemy.get_position().x;
-    float dy = motion->position.y - enemy.get_position().y;
-    float d_sq = dx * dx + dy * dy;
-    float other_r = std::max(enemy.get_bounding_box().x, enemy.get_bounding_box().y);
-    float my_r = std::max(physics->scale.x, physics->scale.y);
-    float r = std::max(other_r, my_r);
-    r *= 0.6f;
-    if (d_sq < r * r)
-        return true;
-    return false;
+	float dx = motion->position.x - enemy.get_position().x;
+	float dy = motion->position.y - enemy.get_position().y;
+	float d_sq = dx * dx + dy * dy;
+	float other_r = std::max(enemy.get_bounding_box().x, enemy.get_bounding_box().y);
+	float my_r = std::max(physics->scale.x, physics->scale.y);
+	float r = std::max(other_r, my_r);
+	r *= 0.6f;
+	if (d_sq < r * r)
+		return true;
+	return false;
 }
+bool Bullet::collides_with(const Clone& clone) {
+	auto* motion = getComponent<MotionComponent>();
+	auto* physics = getComponent<PhysicsComponent>();
 
-bool Bullet::collides_with(const Fish &fish) {
-    auto* motion = getComponent<MotionComponent>();
-    auto* physics = getComponent<PhysicsComponent>();
-
-    float dx = motion->position.x - fish.get_position().x;
-    float dy = motion->position.y - fish.get_position().y;
-    float d_sq = dx * dx + dy * dy;
-    float other_r = std::max(fish.get_bounding_box().x, fish.get_bounding_box().y);
-    float my_r = std::max(physics->scale.x, physics->scale.y);
-    float r = std::max(other_r, my_r);
-    r *= 0.6f;
-    if (d_sq < r * r)
-        return true;
-    return false;
+	float dx = motion->position.x - clone.get_position().x;
+	float dy = motion->position.y - clone.get_position().y;
+	float d_sq = dx * dx + dy * dy;
+	float other_r = std::max(clone.get_bounding_box().x, clone.get_bounding_box().y);
+	float my_r = std::max(physics->scale.x, physics->scale.y);
+	float r = std::max(other_r, my_r);
+	r *= 0.6f;
+	if (d_sq < r * r)
+		return true;
+	return false;
 }
 
 bool Bullet::collides_with(const Boss &boss) {

@@ -15,14 +15,15 @@
 #include "common.hpp"
 #include "Entities/Player.hpp"
 #include "Entities/Enemies/turtle.hpp"
-//#include "Entities/Prototype.hpp"
-#include "Entities/fish.hpp"
 #include "Entities/Space.hpp"
 #include "Entities/Projectiles and Damaging/bullet.hpp"
-#include "Entities/UI/Dialogue.hpp"
+#include "Entities/UI/Dialogue/Dialogue.hpp"
 #include "Entities/UI/PlayerHealth/Health.hpp"
-#include "Entities/Explosion.hpp"
+#include "Entities/Effects/Explosion.hpp"
+#include "Entities/Effects/VampParticleEmitter.hpp"
 #include "Levels/Level.hpp"
+#include <Engine/Graphics/Font.hpp>
+#include <Entities/UI/Text.hpp>
 
 // stlib
 #include <vector>
@@ -32,17 +33,29 @@
 #include <Entities/Vamp.hpp>
 #include <Entities/Bosses/Boss1.hpp>
 #include <Entities/UI/Vamp/VampCharge.hpp>
-#include <Entities/UI/UIPanelBackground.hpp>
-#include <Entities/UI/UIPanel.hpp>
-#include <Entities/Pickups/Pickup.hpp>
+#include <Entities/UI/UIPanel/UIPanelBackground.hpp>
+#include <Entities/UI/UIPanel/UIPanel.hpp>
+#include <Utils/SaveData.hpp>
+#include <Entities/UI/PauseMenu/PauseMenu.hpp>
+#include <Utils/PhysFSHelpers.hpp>
+#include <Entities/EntityGrid.hpp>
+#include <Entities/Debugging/DebugDot.hpp>
+#include <Entities/UI/ScoreText.hpp>
+#include <Entities/UI/PlayerScore/Score.hpp>
+#include <Entities/UI/PlayerScore/ScoreBackground.hpp>
+#include <Entities/UI/Lives/LivesBackground.hpp>
+#include <Entities/UI/Lives/Lives.hpp>
+#include <Entities/UI/Weapon/WeaponUI.hpp>
 
-class Pickup;
+const size_t INIT_LIVES = 5;
+
+class EntityGrid;
 
 class LevelState : public GameState {
-    friend class Pickup;
+    friend class EntityGrid;
 public:
     //! Constructor, taking in gameplay options
-    explicit LevelState(Levels::Level level, unsigned int points);
+    explicit LevelState(Levels::Level level, PlayerData data);
 
     //! Initializes the state
     void init() override;
@@ -65,11 +78,17 @@ public:
 private:
     Levels::Level m_level;
 
+    EntityGrid aiGrid;
+
+    PauseMenu* m_pause;
+
+    DebugDot m_dot;
+
     void lose_health(int damage);
     void add_health(int heal);
 
     void add_vamp_charge();
-
+    void spawn_score_text(int pts, vec2 position);
     void reset();
 
     // Tracks keys being pressed
@@ -81,25 +100,38 @@ private:
     // Space effect
     Space m_space;
 
+    unsigned int m_lives;
     // Number of fish eaten by the salmon, displayed in the window title
     unsigned int m_points;
+    unsigned int m_starting_points;
     unsigned int m_highscore;
 
     // Game entities
     Player* m_player;
     Boss* m_boss;
-    std::vector<Pickup*> m_pickups; // TODO Maybe should be in a Pickup System eventuallyy
-    std::vector<Enemy*> *m_turtles;
 
     // UI
     UIPanelBackground* m_uiPanelBackground;
     UIPanel* m_uiPanel;
     Health* m_health;
     VampCharge* m_vamp_charge;
+    Score* m_score_ui;
+    ScoreBackground* m_score_background;
+    Lives* m_lives_ui;
+    LivesBackground* m_lives_background;
+    WeaponUI* m_weapon_ui;
 	Dialogue m_dialogue;
 
+	// Text rendering
+    Font m_font_ranger;
+    Font m_font_condensed;
+    // Font m_font_scoring;
+    std::vector<Text> m_text;
+    std::vector<ScoreText> m_score_text;
+
     float m_level_time;
-    float m_vamp_cooldown;
+    bool m_debug_mode;
+    bool m_player_invincibility;
 
     bool m_boss_pre;
     bool m_boss_mode;
@@ -108,22 +140,33 @@ private:
     Vamp m_vamp;
     bool m_vamp_mode;
     float m_vamp_mode_timer;
+    float m_vamp_cooldown;
     unsigned int m_vamp_mode_charge;
+    int m_numVampParticles;
+
+    // Effects
+    VampParticleEmitter m_vamp_particle_emitter;
     Explosion m_explosion;
+    float m_boss_explosion_cooldown;
 
-
+    float m_path_update_cooldown;
+    RWFile m_background_music_file;
+    RWFile m_boss_music_file;
+    RWFile m_victory_music_file;
+    RWFile m_player_damage_sound_file;
+    RWFile m_player_dead_sound_file;
+    RWFile m_player_eat_sound_file;
+    RWFile m_player_explosion_file;
+    RWFile m_player_charged_file;
 
     Mix_Music* m_background_music;
     Mix_Music* m_boss_music;
     Mix_Music* m_victory_music;
+    Mix_Chunk* m_player_damage_sound;
     Mix_Chunk* m_player_dead_sound;
     Mix_Chunk* m_player_eat_sound;
     Mix_Chunk* m_player_explosion;
     Mix_Chunk* m_player_charged;
-
-    // C++ rng
-    std::default_random_engine m_rng;
-    std::uniform_real_distribution<float> m_dist; // default 0..1
 };
 
 

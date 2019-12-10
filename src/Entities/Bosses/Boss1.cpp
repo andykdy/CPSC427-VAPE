@@ -18,7 +18,9 @@ namespace
     const size_t BULLET_COOLDOWN_MS = 100;
     const size_t DAMAGE_EFFECT_TIME = 100;
     const size_t DIRECTION_COOLDOWN_MS = 800;
+    const size_t BULLET_DAMAGE = 5;
     const size_t INIT_HEALTH = 100;
+    const size_t POINTS_VAL = 10000;
 }
 
 Texture Boss1::boss1_texture;
@@ -65,6 +67,7 @@ bool Boss1::init(vec2 screen) {
 
     health = INIT_HEALTH;
     m_is_alive = true;
+    points = POINTS_VAL;
 
     m_burst_count = 0;
     m_burst_cooldown = BURST_COOLDOWN_MS;
@@ -105,7 +108,7 @@ void Boss1::update(float ms) {
     if (health > 50) state1Update(ms);
     else if (health > 0) state2Update(ms);
     else {
-        // TODO death
+        // death?
     }
 }
 
@@ -211,7 +214,7 @@ vec2 Boss1::get_bounding_box() const {
 void Boss1::spawnBullet() {
     auto* motion = getComponent<MotionComponent>();
     Bullet* bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
-    if (bullet->init(motion->position, motion->radians+ 3.14f)) {
+    if (bullet->init(motion->position, motion->radians+ 3.14f, true, BULLET_DAMAGE)) {
         projectiles.emplace_back(bullet);
     } else {
         throw std::runtime_error("Failed to spawn bullet");
@@ -227,8 +230,45 @@ bool Boss1::collidesWith(const Vamp& vamp) {
     return checkCollision(vamp.get_position(), vamp.get_bounding_box());
 }
 
-bool Boss1::collidesWith(const Player &player) {
-    return checkCollision(player.get_position(), player.get_bounding_box());
+bool Boss1::collidesWith(Player &player) {
+    auto* motion = getComponent<MotionComponent>();
+
+    vec2 playerbox = player.get_bounding_box();
+
+    bool collides = checkCollision(player.get_position(), playerbox);
+    if (collides) {
+        vec2 player_pos = player.get_position();
+        float player_r = std::max(playerbox.x, playerbox.y) * 0.4f;
+        float boss_r = std::max(get_bounding_box().x, get_bounding_box().y) * 0.4f;
+
+        auto dist = std::sqrt((float)pow(player_pos.x - motion->position.x,2) + (float)pow(player_pos.y - motion->position.y , 2));
+        float overlap = (dist - player_r - boss_r);
+        float dx = (player_pos.x - motion->position.x)/dist;
+        float dy = (player_pos.y - motion->position.y)/dist;
+        player_pos.x -= overlap * dx;
+        player_pos.y -= overlap * dy;
+        player.set_position(player_pos);
+
+
+        float boss_mass = boss_r*200;
+        float player_mass = player_r*100;
+
+        vec2 player_vel = player.get_velocity();
+        vec2 boss_vel = {0,0};
+        if (dir == Direction::right) {
+            boss_vel.x = m_speed;
+        } else {
+            boss_vel.x = -m_speed;
+        }
+
+        float vbp1 = 2*boss_mass/(player_mass+boss_mass);
+        float vbp2 = dot(sub(player_vel, boss_vel), sub(player_pos, motion->position)) / (float)pow(len(sub(player_pos, motion->position)), 2);
+        vec2 vb = sub(player_vel, mul(sub(player_pos, motion->position), vbp1*vbp2));
+
+        player.set_velocity(vb);
+        player.set_acceleration({0,0});
+    }
+    return collides;
 }
 
 bool Boss1::checkCollision(vec2 pos, vec2 box) const {
@@ -240,6 +280,10 @@ bool Boss1::checkCollision(vec2 pos, vec2 box) const {
     float dx = motion->position.x - pos.x;
     float dy = motion->position.y - pos.y;
     float d_sq = dx * dx + dy * dy;
+    float dr = (std::max(bbox.x, bbox.y)*0.4f) + (std::max(box.x, box.y)*0.4f);
+    float r_sq = dr * dr;
+    return d_sq < r_sq;
+
     float other_r = std::max(box.x, box.y);
     float my_r = std::max(bbox.x, bbox.y);
     float r = std::max(other_r, my_r);

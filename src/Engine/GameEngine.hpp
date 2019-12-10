@@ -72,6 +72,10 @@ public:
 
     void setM_current_speed(float m_current_speed);
 
+    void toggleM_debug_mode();
+
+    bool getM_debug_mode();
+
     ECS::EntityManager *getEntityManager();
     ECS::SystemManager *getSystemManager();
 
@@ -91,11 +95,14 @@ private:
     ECS::SystemManager systemManager;
 
     float m_current_speed = 1.f;
+    bool m_debug_mode = false;
 
     float elapsed_ms{};
 
     bool running{};
     GameState *state{};
+
+    bool changingState = false;
 };
 
 

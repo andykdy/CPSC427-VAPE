@@ -1,10 +1,6 @@
 // Header
 #include "Player.hpp"
 
-// internal
-#include "Entities/Enemies/turtle.hpp"
-#include "Entities/fish.hpp"
-
 // stlib
 #include <string>
 #include <algorithm>
@@ -18,13 +14,18 @@
 #include <Components/BoundaryComponent.hpp>
 #include <Components/HealthComponent.hpp>
 #include <Engine/GameEngine.hpp>
-#include "Entities/Projectiles and Damaging/bullet.hpp"
+#include <Entities/Weapons/BulletStraightShot.hpp>
+#include "Entities/Weapons/WeaponTriShot.hpp"
+#include "Entities/Weapons/WeaponMachineGun.hpp"
+#include <Components/PlayerComponent.hpp>
+#include <Systems/ProjectileSystem.hpp>
 
 // Same as static in c, local to compilation unit
 namespace
 {
 	const size_t BULLET_COOLDOWN_MS = 300;
-	const size_t spriteWH = 450;
+    const size_t MAX_HEALTH = 75;
+    const size_t spriteWH = 450;
 	const size_t spriteFrames = 10;
 	const vec2 screenBuffer = { 20, 50 };
 }
@@ -39,19 +40,11 @@ bool Player::init(vec2 screen, int hp)
 	auto* physics = addComponent<PhysicsComponent>();
 	auto* motion = addComponent<MotionComponent>();
 	auto* transform = addComponent<TransformComponent>();
+	auto* player = addComponent<PlayerComponent>();
 	auto* health = addComponent<HealthComponent>();
 
 	addComponent<BoundaryComponent>(screenBuffer.x, screen.x - screenBuffer.x,
 									screenBuffer.y, screen.y*0.9f - screenBuffer.y);
-
-	// Load sound
-	m_player_bullet_sound = Mix_LoadWAV(audio_path("pow.wav"));
-	if ( m_player_bullet_sound == nullptr)
-	{
-		fprintf(stderr, "Failed to load sound player_bullet.wav\n %s\n make sure the data directory is present",
-				audio_path("player_bullet.wav"));
-		throw std::runtime_error("Failed to load sound player_bullet.wav");
-	}
 
 	m_vertices.clear();
 	m_indices.clear();
@@ -82,9 +75,14 @@ bool Player::init(vec2 screen, int hp)
 
 
 	m_light_up_countdown_ms = -1.f;
-	m_bullet_cooldown = -1.f;
+	m_init_health = hp;
 	health->m_health = hp;
 	m_iframe = 0.f;
+
+	// weapon = new WeaponTriShot();
+    // weapon = new WeaponMachineGun();
+	weapon = new BulletStraightShot();
+	weapon->init();
 
 	return !gl_has_errors();
 
@@ -93,12 +91,10 @@ bool Player::init(vec2 screen, int hp)
 // Releases all graphics resources
 void Player::destroy()
 {
-	if (m_player_bullet_sound != nullptr)
-		Mix_FreeChunk(m_player_bullet_sound);
-
-	for (auto bullet : bullets)
-		bullet->destroy();
-	bullets.clear();
+    if (weapon != nullptr) {
+        weapon->destroy();
+        delete weapon;
+    }
 
 	auto* effect = getComponent<EffectComponent>();
 	auto* sprite = getComponent<SpriteComponent>();
@@ -113,17 +109,17 @@ void Player::update(float ms, std::map<int, bool> &keyMap, vec2 mouse_position)
 {
     auto* motion = getComponent<MotionComponent>();
 
-	// Update player bullets
-	for (auto& bullet : bullets)
-		bullet->update(ms);
+    if (weapon != nullptr) {
+        weapon->update(ms);
+        // Spawning player bullets
+        if (is_alive() && keyMap[GLFW_KEY_SPACE]) {
+            weapon->fire(motion->position, motion->radians + 3.14f);
+        }
 
-	// Spawning player bullets
-	m_bullet_cooldown -= ms;
-	if (is_alive() && keyMap[GLFW_KEY_SPACE] && m_bullet_cooldown < 0.f) {
-		spawn_bullet();
-		m_bullet_cooldown = BULLET_COOLDOWN_MS;
-		Mix_PlayChannel(-1, m_player_bullet_sound, 0);
-	}
+        if(weapon->amo < 0) {
+            changeWeapon(new BulletStraightShot());
+        }
+    }
 
 	if (is_alive())
 	{
@@ -164,11 +160,6 @@ void Player::draw(const mat3& projection)
     auto* physics = getComponent<PhysicsComponent>();
     auto* sprite = getComponent<SpriteComponent>();
 
-    // Draw player bullets
-    for (auto bullet : bullets)
-        bullet->draw(projection);
-
-
     transform->begin();
     transform->translate(motion->position);
     transform->scale(physics->scale);
@@ -182,37 +173,19 @@ void Player::draw(const mat3& projection)
 	sprite->draw(projection, transform->out, effect->program, {1.f, mod * 1.f,mod * 1.f});
 }
 
-// TODO collisionSystem
 // Simple bounding box collision check
 // This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
 // if the center point of either object is inside the other's bounding-box-circle. You don't
 // need to try to use this technique.
-bool Player::collides_with(const Enemy& turtle)
+bool Player::collides_with(const Enemy& enemy)
 {
     auto* motion = getComponent<MotionComponent>();
     auto* physics = getComponent<PhysicsComponent>();
 
-	float dx = motion->position.x - turtle.get_position().x;
-	float dy = motion->position.y - turtle.get_position().y;
+	float dx = motion->position.x - enemy.get_position().x;
+	float dy = motion->position.y - enemy.get_position().y;
 	float d_sq = dx * dx + dy * dy;
-	float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
-	float my_r = std::max(physics->scale.x, physics->scale.y);
-	float r = std::max(other_r, my_r);
-	r *= 0.6f;
-	if (d_sq < r * r)
-		return true;
-	return false;
-}
-
-bool Player::collides_with(const Fish& fish)
-{
-    auto* motion = getComponent<MotionComponent>();
-    auto* physics = getComponent<PhysicsComponent>();
-
-    float dx = motion->position.x - fish.get_position().x;
-	float dy = motion->position.y - fish.get_position().y;
-	float d_sq = dx * dx + dy * dy;
-	float other_r = std::max(fish.get_bounding_box().x, fish.get_bounding_box().y);
+	float other_r = std::max(enemy.get_bounding_box().x, enemy.get_bounding_box().y);
 	float my_r = std::max(physics->scale.x, physics->scale.y);
 	float r = std::max(other_r, my_r);
 	r *= 0.6f;
@@ -262,14 +235,11 @@ void Player::gain_health(float amount)
 	getComponent<HealthComponent>()->gain_health(amount);
 }
 
-void Player::spawn_bullet() {
-    auto* motion = getComponent<MotionComponent>();
-	Bullet* bullet = &GameEngine::getInstance().getEntityManager()->addEntity<Bullet>();
-	if (bullet->init(motion->position, motion->radians + 3.14f)) {
-		bullets.emplace_back(bullet);
-	} else {
-		throw std::runtime_error("Failed to spawn bullet");
-	}
+void Player::reset_health()
+{
+    int amount = MAX_HEALTH - get_health();
+    gain_health(amount);
+
 }
 
 vec2 Player::get_bounding_box() const {
@@ -294,3 +264,46 @@ int Player::get_health() const {
 	return getComponent<HealthComponent>()->get_health();
 }
 
+void Player::changeWeapon(Weapon *newWeapon) {
+    if (weapon != nullptr) {
+        weapon->destroy();
+        delete weapon;
+    }
+	weapon = newWeapon;
+	weapon->init();
+}
+
+vec2 Player::get_velocity() const {
+	auto* motion = getComponent<MotionComponent>();
+	return motion->velocity;
+}
+
+void Player::set_velocity(vec2 vel) {
+	auto* motion = getComponent<MotionComponent>();
+	motion->velocity = vel;
+}
+
+void Player::set_acceleration(vec2 acc) {
+	auto* motion = getComponent<MotionComponent>();
+	motion->acceleration = acc;
+}
+
+void Player::set_position(vec2 pos) {
+	auto* motion = getComponent<MotionComponent>();
+	motion->position = pos;
+}
+
+void Player::set_vamp_expand(bool ex) {
+    m_vamp_expand = ex;
+}
+Weapon* Player::getWeapon() {
+    return weapon;
+}
+
+bool Player::get_vamp_expand() {
+    return m_vamp_expand;
+}
+
+float Player::getWeaponAmmo() {
+    return weapon->getAmmo();
+}

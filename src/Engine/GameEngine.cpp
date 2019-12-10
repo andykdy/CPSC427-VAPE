@@ -127,6 +127,7 @@ void GameEngine::terminate() {
  * @param state the new GameState to be swapped in
  */
 void GameEngine::changeState(GameState *state) {
+    changingState = true;
     if (this->state != nullptr) {
         this->state->terminate();
         delete (this->state);
@@ -135,6 +136,7 @@ void GameEngine::changeState(GameState *state) {
     systemManager.clear();
     this->state = state;
     state->init();
+    changingState = false;
 }
 
 /*!
@@ -164,6 +166,15 @@ void GameEngine::draw() {
  * Runs the state's key handler
  */
 void GameEngine::on_key(GLFWwindow *window, int key, int i, int action, int mod) {
+    if (changingState)
+        return;
+
+    // entering debug mode
+    if (action == GLFW_RELEASE && key == GLFW_KEY_F && mod == GLFW_MOD_SHIFT)
+    {
+        toggleM_debug_mode();
+    }
+
     state->on_key(window, key, i, action, mod);
 }
 
@@ -171,6 +182,8 @@ void GameEngine::on_key(GLFWwindow *window, int key, int i, int action, int mod)
  * Runs the state's mouse movement handler
  */
 void GameEngine::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
+    if (changingState)
+        return;
     state->on_mouse_move(window, xpos, ypos);
 }
 
@@ -178,6 +191,8 @@ void GameEngine::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
  * Runs the state's mouse button handler
  */
 void GameEngine::on_mouse_button(GLFWwindow *window, int button, int action, int mods) {
+    if (changingState)
+        return;
     state->on_mouse_button(window, button, action, mods);
 }
 
@@ -202,6 +217,16 @@ float GameEngine::getM_current_speed() const {
 void GameEngine::setM_current_speed(float m_current_speed) {
     GameEngine::m_current_speed = m_current_speed;
 }
+
+void GameEngine::toggleM_debug_mode() {
+    GameEngine::m_debug_mode = !GameEngine::m_debug_mode;
+}
+
+bool GameEngine::getM_debug_mode() {
+    return GameEngine::m_debug_mode;
+}
+
+
 
 ECS::EntityManager *GameEngine::getEntityManager() {
     return &entityManager;

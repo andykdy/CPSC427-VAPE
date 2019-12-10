@@ -7,10 +7,11 @@
 
 #include "common.hpp"
 #include "Entities/Enemies/Enemy.hpp"
-#include "fish.hpp"
 #include <Engine/ECS/Entity.hpp>
+#include "Entities/Player.hpp"
 
 class Enemy;
+class Player;
 
 class Vamp : public EntityOld {
     static Texture vamp_texture;
@@ -18,22 +19,25 @@ class Vamp : public EntityOld {
 public:
     bool init(vec2 position);
     void destroy();
-    void update(float ms,  vec2 player_position);
+    void update(float ms, Player* player, int vamp_charge_value);
     void draw(const mat3& projection)override;
 
     // Returns the current vamp position (centered)
     vec2 get_position()const;
 
     // Collision routines for turtles and fish
-    bool collides_with(const Enemy& turtle);
+    bool collides_with(const Enemy& enemy);
 
     // Returns the vamp mode's bounding box for collision detection, called by collides_with()
     vec2 get_bounding_box()const;
+
+    void set_size(int mode);
 
 private:
     vec2 m_position; // Window coordinates
     vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
     float m_rotation; // in radians
+    float m_alpha;
 };
 
 

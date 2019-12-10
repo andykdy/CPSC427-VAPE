@@ -6,20 +6,32 @@
 
 #include <chrono>
 #include <iostream>
+#include <physfs.hpp>
 #include "Engine/GameEngine.hpp"
 #include "Engine/States/MainMenuState.hpp"
+
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "stb_truetype.h"
 
 using Clock = std::chrono::high_resolution_clock;
 
 int main(int argv, char** args) {
+	PHYSFS_init(args[0]);
+	if (!PHYSFS_mount("./assets.vapepak", "", 1)){
+        std::cout << "Unable to mount assets.vapepak, ensure it exists" << std::endl;
+        std::cout << PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()) << std::endl;
+		std::cout << "Press any key to exit" << std::endl;
+		std::cin.get();
+		return EXIT_FAILURE;
+	}
 	GameEngine& game = GameEngine::getInstance();
 	try {
 		game.init();
 	}
 	catch(std::runtime_error &e){
-//		printf(e.what());
+		printf(e.what());
         // Time to read the error message
-        std::cout << "Press any key to exit" << std::endl;
+        std::cout << std::endl << "Press any key to exit" << std::endl;
         std::cin.get();
 		return EXIT_FAILURE;
 	}

@@ -7,14 +7,15 @@
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
 #include <Engine/GameEngine.hpp>
-#include <Engine/States/TutorialState.hpp>
+#include <Levels/Level1.hpp>
+#include <Engine/States/LevelState.hpp>
 #include "Intro.hpp"
 
 
 // Same as static in c, local to compilation unit
 namespace
 {
-    const size_t DELAY = 10000;
+    const size_t DELAY = 14000;
 }
 
 bool Intro::init(vec2 screen) {
@@ -51,7 +52,9 @@ bool Intro::init(vec2 screen) {
     return true;
 }
 
-void Intro::update(float ms) { m_timer -= ms; }
+void Intro::update(float ms) {
+    m_timer -= ms;
+}
 
 void Intro::draw(const mat3 &projection) {
     auto* transform = getComponent<TransformComponent>();
@@ -74,7 +77,7 @@ void Intro::draw(const mat3 &projection) {
             sprite->initTexture(introTextures[m_part]);
             m_timer = DELAY;
         } else {
-            GameEngine::getInstance().changeState(new TutorialState());
+            GameEngine::getInstance().changeState(new LevelState(Levels::level1, {INIT_LIVES,0,0}));
         }
     }
 }

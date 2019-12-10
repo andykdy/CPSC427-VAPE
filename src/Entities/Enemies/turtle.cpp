@@ -7,8 +7,13 @@
 #include <Components/PhysicsComponent.hpp>
 #include <Components/MotionComponent.hpp>
 #include <Components/TransformComponent.hpp>
+#include <Components/EnemyComponent.hpp>
 
 Texture Turtle::turtle_texture;
+
+namespace {
+    const size_t POINTS_VAL = 100;
+}
 
 bool Turtle::init()
 {
@@ -17,6 +22,7 @@ bool Turtle::init()
 	auto* physics = addComponent<PhysicsComponent>();
 	auto* motion = addComponent<MotionComponent>();
 	auto* transform = addComponent<TransformComponent>();
+	auto* enemy = addComponent<EnemyComponent>();
 
 	// Load shared texture
 	if (!turtle_texture.is_valid())
@@ -34,7 +40,7 @@ bool Turtle::init()
 
 
 	if (!sprite->initTexture(&turtle_texture))
-		throw std::runtime_error("Failed to initialize health sprite");
+		throw std::runtime_error("Failed to initialize turtle sprite");
 
 	if (gl_has_errors())
 		return false;
@@ -45,6 +51,7 @@ bool Turtle::init()
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
 	physics->scale = { -0.28f, 0.28f };
+	points = POINTS_VAL;
 
 	return true;
 }

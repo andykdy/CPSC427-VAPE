@@ -3,11 +3,15 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../ext/stb_image/stb_image.h"
 
+#define PHYFSPP_IMPL
+#include "physfs.hpp"
+
 // stlib
 #include <vector>
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include <physfs.h>
 
 void gl_flush_errors()
 {
@@ -203,11 +207,37 @@ bool Texture::load_from_file(const char* path)
 {
 	if (path == nullptr) 
 		return false;
+	if (!PHYSFS_exists(path))
+	{
+		std::cout << "Unable to find " << path << std::endl;
+		return false; //file doesn't exist
+	}
 	Texture::path = std::string(path);
-	
-	stbi_uc* data = stbi_load(path, &width, &height, NULL, 4);
-	if (data == NULL)
+
+	PHYSFS_file* myfile = PHYSFS_openRead(path);
+
+	// Get the lenght of the file
+	auto m_size = PHYSFS_fileLength(myfile);
+
+	// Get the file data.
+	auto m_data = new uint8_t[m_size];
+
+	auto length_read = PHYSFS_readBytes(myfile, m_data, static_cast<PHYSFS_uint64>(m_size));
+
+	if (length_read != m_size)
+	{
+		std::cout << PHYSFS_getLastErrorCode() << std::endl;
+		delete [] m_data;
+		m_data = nullptr;
 		return false;
+	}
+
+	PHYSFS_close(myfile);
+
+	stbi_uc* data = stbi_load_from_memory(m_data, static_cast<int>(m_size), &width, &height, nullptr, 4);
+	if (data == nullptr)
+		return false;
+	delete [] m_data;
 
 	gl_flush_errors();
 	glGenTextures(1, &id);
@@ -287,10 +317,10 @@ bool EntityOld::Effect::load_from_file(const char* vs_path, const char* fs_path)
 	gl_flush_errors();
 
 	// Opening files
-	std::ifstream vs_is(vs_path);
-	std::ifstream fs_is(fs_path);
+	auto* vs_is = new PhysFS::ifstream(vs_path);
+	auto* fs_is = new PhysFS::ifstream(fs_path);
 
-	if (!vs_is.good() || !fs_is.good())
+	if (!vs_is->good() || !fs_is->good())
 	{
 		fprintf(stderr, "Failed to load shader files %s, %s", vs_path, fs_path);
 		return false;
@@ -298,8 +328,10 @@ bool EntityOld::Effect::load_from_file(const char* vs_path, const char* fs_path)
 
 	// Reading sources
 	std::stringstream vs_ss, fs_ss;
-	vs_ss << vs_is.rdbuf();
-	fs_ss << fs_is.rdbuf();
+	vs_ss << vs_is->rdbuf();
+	fs_ss << fs_is->rdbuf();
+	delete vs_is;
+	delete fs_is;
 	std::string vs_str = vs_ss.str();
 	std::string fs_str = fs_ss.str();
 	const char* vs_src = vs_str.c_str();
@@ -351,14 +383,32 @@ bool EntityOld::Effect::load_from_file(const char* vs_path, const char* fs_path)
 		return false;
 	}
 
+    if (vertex != 0) {
+        glDeleteShader(vertex);
+        vertex = 0;
+    }
+    if (fragment != 0) {
+        glDeleteShader(fragment);
+        fragment = 0;
+    }
+
 	return true;
 }
 
 void EntityOld::Effect::release()
 {
-	glDeleteProgram(program);
-	glDeleteShader(vertex);
-	glDeleteShader(fragment);
+    if (program != 0) {
+        glDeleteProgram(program);
+        program = 0;
+    }
+    if (vertex != 0) {
+        glDeleteShader(vertex);
+        vertex = 0;
+    }
+    if (fragment != 0) {
+        glDeleteShader(fragment);
+        fragment = 0;
+    }
 }
 
 void EntityOld::Transform::begin()

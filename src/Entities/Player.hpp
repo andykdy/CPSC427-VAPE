@@ -4,12 +4,12 @@
 #include "common.hpp"
 #include "Entities/Projectiles and Damaging/Projectile.hpp"
 #include <vector>
-#include <SDL_mixer.h>
 #include <Engine/ECS/Entity.hpp>
+#include <Entities/Weapons/Weapon.hpp>
 #include "Entities/Enemies/Enemy.hpp"
 
-class Fish;
 class Projectile;
+class Weapon;
 class Enemy;
 
 class Player : public ECS::Entity
@@ -32,7 +32,6 @@ public:
 
 	// Collision routines for turtles and fish
 	bool collides_with(const Enemy& turtle);
-	bool collides_with(const Fish& fish);
 
 	// Returns the current position
 	vec2 get_position() const;
@@ -55,10 +54,10 @@ public:
 	// Gain health after draining an enemy in vamp mode
     void gain_health(float amount);
 
+    void reset_health();
+
 	// Returns the bounding box for collision detection
 	vec2 get_bounding_box() const;
-
-	std::vector<Projectile*> bullets;
 
 	// Called when the salmon collides with an enemy, activate invulerability frames 
 	void set_iframes(float magnitude);
@@ -67,15 +66,35 @@ public:
 
 	int get_health() const;
 
-private:
-	Mix_Chunk* m_player_bullet_sound;
+	vec2 get_velocity() const;
+	void set_velocity(vec2 vel);
 
+	void set_acceleration(vec2 acc);
+
+	void set_position(vec2 pos);
+
+	void changeWeapon(Weapon* newWeapon);
+
+	Weapon* getWeapon();
+
+	float getWeaponAmmo();
+
+
+    void set_vamp_expand(bool ex);
+
+	bool get_vamp_expand();
+
+private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up
 	float m_iframe; // Used to indicate how long the player should be invulnerable for
+
+	int m_init_health;
 
   	std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;
 
-	float m_bullet_cooldown;
-	void spawn_bullet();
+	bool m_vamp_expand;
+
+	Weapon* weapon;
+
 };

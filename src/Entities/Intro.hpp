@@ -6,7 +6,10 @@
 #define VAPE_INTRO_HPP
 
 #include "common.hpp"
+#include "Video.hpp"
 #include <Engine/ECS/ECS.hpp>
+
+// TODO: this could maybe be refactored out into a "slideshow" class, and have it take in a set of textures+durations+music. Then use if for potention in-between cutscenes and ending
 
 class Intro : public ECS::Entity {
 public:

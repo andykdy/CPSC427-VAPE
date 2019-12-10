@@ -9,19 +9,21 @@
 #include <Engine/ECS/Entity.hpp>
 #include <Entities/Vamp.hpp>
 #include "../Projectiles and Damaging/Projectile.hpp"
+#include "Clone.hpp"
 #include "Entities/UI/BossHealth/BossHealth.hpp"
 
 // Forward Declarations
 class Projectile;
 class Player;
 class Vamp;
+class Clone;
 
 enum collisionType {
     radius,
     exact
 };
 
-class Boss : public ECS::Entity { // TODO refactor to new entity
+class Boss : public ECS::Entity {
     // Shared between all turtles, no need to load one for each instance
     static Texture boss_texture;
 protected:
@@ -29,6 +31,7 @@ protected:
     int health = 1;
     bool m_is_alive = true;
     float vamp_timer = 0;
+    int points = 0;
 public:
     // Creates all the associated render resources and default transform
     virtual bool init(vec2 screen) = 0;
@@ -56,6 +59,9 @@ public:
     virtual bool checkCollision(vec2 pos, vec2 box) const = 0;
 
     std::vector<Projectile*> projectiles;
+	std::vector<Clone*> clones;
+	inline bool hasClones() { return !clones.empty(); };
+	vec2 player_position = { 0.f,0.f };
 
     inline int getHealth() const { return health; };
 
@@ -67,13 +73,15 @@ public:
 
     virtual bool collidesWith(const Vamp& vamp) = 0;
 
-    virtual bool collidesWith(const Player& player) = 0;
+    virtual bool collidesWith(Player& player) = 0;
 
     inline void add_vamp_timer(float ms) { vamp_timer += ms; };
 
     inline void reset_vamp_timer() { vamp_timer = 0; };
 
     inline float get_vamp_timer() { return vamp_timer; };
+
+    inline int get_points() { return points; };
 };
 
 #endif //VAPE_BOSS_HPP
