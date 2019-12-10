@@ -28,6 +28,7 @@ There are also a variety of pickups you can encounter during levels which may he
 - [Skeletal Game](https://github.students.cs.ubc.ca/CPSC427/vape_nation/releases/tag/skeletal-game)
 - [Mimimal Playability](https://github.students.cs.ubc.ca/CPSC427/vape_nation/releases/tag/minimal-playability)
 - [Playable Game](https://github.students.cs.ubc.ca/CPSC427/vape_nation/releases/tag/playable)
+- [Final Game](https://github.students.cs.ubc.ca/CPSC427/vape_nation/releases/tag/final-game)
 
 # Controls
 - W, A, S, D  -> Movement
