@@ -25,10 +25,10 @@ Vaypur has a two basic attacks: his ship's guns, and his vampiric aura. Killing 
 There are also a variety of pickups you can encounter during levels which may help you, including health, vamp radius increase, machine gun weapon, and tri-shot weapon.
 
 ## Releases
-- [Skeletal Game](https://github.students.cs.ubc.ca/CPSC427/vape_nation/releases/tag/skeletal-game)
-- [Mimimal Playability](https://github.students.cs.ubc.ca/CPSC427/vape_nation/releases/tag/minimal-playability)
-- [Playable Game](https://github.students.cs.ubc.ca/CPSC427/vape_nation/releases/tag/playable)
-- [Final Game](https://github.students.cs.ubc.ca/CPSC427/vape_nation/releases/tag/final-game)
+- [Skeletal Game](https://github.com/ctman96/CPSC427-VAPE/releases/tag/skeletal-game)
+- [Mimimal Playability](https://github.com/ctman96/CPSC427-VAPE/releases/tag/minimal-playability)
+- [Playable Game](https://github.com/ctman96/CPSC427-VAPE/releases/tag/advanced-game)
+- [Final Game](https://github.com/ctman96/CPSC427-VAPE/releases/tag/final-game)
 
 # Controls
 - W, A, S, D  -> Movement
